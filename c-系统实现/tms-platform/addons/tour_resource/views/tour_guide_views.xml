@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_guide_search" model="ir.ui.view">
+        <field name="name">tour.guide.search</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <search string="导游搜索">
+                <field name="name"/>
+                <field name="guide_code"/>
+                <field name="mobile"/>
+                <field name="help_code"/>
+                <filter name="active" string="启用" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <filter name="unaudited" string="未审核" domain="[('audit_chk','=',False)]"/>
+                <separator/>
+                <filter name="group_sex" string="性别" context="{'group_by':'sex'}"/>
+                <filter name="group_star" string="星级" context="{'group_by':'guide_star'}"/>
+                <filter name="group_area" string="服务区域" context="{'group_by':'area'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_guide" model="ir.actions.act_window">
+        <field name="name">导游档案</field>
+        <field name="res_model">tour.guide</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_guide_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_guide_list" model="ir.ui.view">
+        <field name="name">tour.guide.list</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <list string="导游档案">
+                <field name="name"/>
+                <field name="guide_code"/>
+                <field name="sex"/>
+                <field name="mobile"/>
+                <field name="guide_star"/>
+                <field name="language_name"/>
+                <field name="area"/>
+                <field name="is_tour_guide"/>
+                <field name="guide_leader"/>
+                <field name="audit_chk"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_guide_form" model="ir.ui.view">
+        <field name="name">tour.guide.form</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <form string="导游档案">
+                <header>
+                    <button name="action_audit_approve" string="审核通过" type="object"
+                        class="btn-primary" invisible="audit_chk == True"/>
+                    <field name="audit_chk" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="导游姓名"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="guide_code"/>
+                            <field name="help_code"/>
+                            <field name="sex"/>
+                            <field name="nation"/>
+                            <field name="born_place"/>
+                            <field name="edu"/>
+                            <field name="marital_status"/>
+                            <field name="birthday"/>
+                        </group>
+                        <group>
+                            <field name="mobile"/>
+                            <field name="tel"/>
+                            <field name="id_num"/>
+                            <field name="zip_code"/>
+                            <field name="addr"/>
+                            <field name="partner_id"/>
+                            <field name="job_no"/>
+                            <field name="guide_account"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="导游资质">
+                            <group>
+                                <group>
+                                    <field name="language_name"/>
+                                    <field name="licence"/>
+                                    <field name="licence_type"/>
+                                    <field name="guide_type"/>
+                                    <field name="guide_lead_type"/>
+                                </group>
+                                <group>
+                                    <field name="guide_leader"/>
+                                    <field name="is_tour_guide"/>
+                                    <field name="is_driver_guide"/>
+                                    <field name="guide_star"/>
+                                    <field name="grade"/>
+                                    <field name="recommend_class"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="area"/>
+                                    <field name="power_area"/>
+                                    <field name="guide_group"/>
+                                    <field name="group_type"/>
+                                    <field name="shop_type"/>
+                                </group>
+                                <group>
+                                    <field name="entry_time"/>
+                                    <field name="working_date"/>
+                                    <field name="career_years"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="guide_advantage"/>
+                            </group>
+                        </page>
+                        <page string="结算信息">
+                            <group>
+                                <group>
+                                    <field name="account_bank"/>
+                                    <field name="account_name"/>
+                                    <field name="account_no"/>
+                                </group>
+                                <group>
+                                    <field name="loan_rate"/>
+                                    <field name="cw_code"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="司机兼导游">
+                            <group>
+                                <field name="driver_licence"/>
+                                <field name="driver_seat_num"/>
+                                <field name="driver_car_type"/>
+                                <field name="driver_car_name"/>
+                            </group>
+                        </page>
+                        <page string="审核与归属">
+                            <group>
+                                <group>
+                                    <field name="audit_chk"/>
+                                    <field name="audit_user"/>
+                                    <field name="audit_date"/>
+                                </group>
+                                <group>
+                                    <field name="company_id"/>
+                                    <field name="department_id"/>
+                                    <field name="active"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="audit_brief"/>
+                                <field name="remark"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

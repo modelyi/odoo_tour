@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'TMS Resource - 资源管理',
+    'version': '19.0.0.1.0',
+    'category': 'Travel/TMS',
+    'summary': '旅行社资源管理：导游、车辆、供应商、购物协议',
+    'description': """
+        TMS Resource Module
+        ===================
+        旅行社资源管理模块：
+        - 导游档案 (tour.guide)
+        - 车辆档案 (tour.vehicle)
+        - 供应商扩展 (res.partner + sup_type)
+        - 购物协议 (tour.shop.agreement)
+    """,
+    'author': 'SolePro',
+    'website': 'https://tms.solepro.cloud',
+    'license': 'LGPL-3',
+    'depends': ['base', 'mail', 'contacts', 'hr', 'tour_base'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/tour_guide_views.xml',
+        'views/tour_vehicle_views.xml',
+        'views/res_partner_views.xml',
+        'views/tour_shop_agreement_views.xml',
+        'views/menu.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

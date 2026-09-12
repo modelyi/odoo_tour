@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tour_payment_claim_search" model="ir.ui.view">
+        <field name="name">tour.payment.claim.search</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <search string="收款登记搜索">
+                <field name="name"/>
+                <field name="supplier_id"/>
+                <field name="plan_id"/>
+                <field name="plan_code"/>
+                <field name="account_id"/>
+                <field name="pay_way_id"/>
+                <field name="pay_channel_id"/>
+                <field name="pay_date"/>
+                <separator/>
+                <filter name="group_state" string="认领状态" context="{'group_by':'claim_state'}"/>
+                <filter name="group_channel" string="支付渠道" context="{'group_by':'pay_channel_id'}"/>
+                <filter name="state_0" string="待认领" domain="[('claim_state','=','0')]"/>
+                <filter name="state_1" string="待审核" domain="[('claim_state','=','1')]"/>
+                <filter name="state_2" string="已审核" domain="[('claim_state','=','2')]"/>
+                <filter name="state_3" string="已平账" domain="[('claim_state','=','3')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tour_payment_claim" model="ir.actions.act_window">
+        <field name="name">收款登记/认领</field>
+        <field name="res_model">tour.payment.claim</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_payment_claim_search"/>
+    </record>
+
+    <record id="view_tour_payment_claim_list" model="ir.ui.view">
+        <field name="name">tour.payment.claim.list</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <list string="收款登记/认领">
+                <field name="name"/>
+                <field name="pay_date"/>
+                <field name="supplier_id"/>
+                <field name="plan_code"/>
+                <field name="pay_money" sum="收款合计"/>
+                <field name="use_money"/>
+                <field name="balance_money"/>
+                <field name="pay_channel_id"/>
+                <field name="account_id"/>
+                <field name="claim_state" widget="badge" decoration-success="claim_state=='3'" decoration-info="claim_state=='2'" decoration-warning="claim_state=='1'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_payment_claim_form" model="ir.ui.view">
+        <field name="name">tour.payment.claim.form</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <form string="收款登记/认领">
+                <header>
+                    <button name="action_claim" string="认领" type="object" class="btn-primary"
+                        invisible="claim_state != '0'"/>
+                    <button name="action_audit" string="审核" type="object" class="btn-primary"
+                        invisible="claim_state != '1'"/>
+                    <button name="action_settle" string="平账" type="object"
+                        invisible="claim_state != '2'"/>
+                    <button name="action_reject" string="退回" type="object"
+                        invisible="claim_state != '1'"/>
+                    <field name="claim_state" widget="statusbar" statusbar_visible="0,1,2,3"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="收款编号"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="payee_id"/>
+                            <field name="pay_date"/>
+                            <field name="pay_money"/>
+                            <field name="use_money"/>
+                            <field name="balance_money"/>
+                        </group>
+                        <group>
+                            <field name="supplier_id"/>
+                            <field name="account_id"/>
+                            <field name="plan_id"/>
+                            <field name="plan_code"/>
+                            <field name="star_state"/>
+                        </group>
+                    </group>
+                    <group string="结算方式（两维度）">
+                        <field name="pay_way_id"/>
+                        <field name="pay_channel_id"/>
+                    </group>
+                    <group string="付款方信息">
+                        <field name="bank_name_pay"/>
+                        <field name="account_name_pay"/>
+                        <field name="account_no_pay"/>
+                        <field name="tax_code"/>
+                    </group>
+                    <group string="手续费">
+                        <field name="trans_fee_rate"/>
+                        <field name="trans_fee"/>
+                    </group>
+                    <group string="摘要">
+                        <field name="brief"/>
+                    </group>
+                    <group string="留痕">
+                        <field name="company_id"/>
+                        <field name="department_id"/>
+                        <field name="op_user_id"/>
+                        <field name="op_date"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

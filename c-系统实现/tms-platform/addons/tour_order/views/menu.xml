@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 订单管理顶级菜单（挂在 tour_base 的「旅行社管理」根菜单下） -->
+    <menuitem id="menu_tms_order"
+        name="订单管理"
+        parent="tour_base.menu_tms_root"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_plan"
+        name="团队订单"
+        parent="menu_tms_order"
+        action="action_tour_plan"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_plan_reg"
+        name="报名"
+        parent="menu_tms_order"
+        action="action_tour_plan_reg"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_merge"
+        name="并团"
+        parent="menu_tms_order"
+        action="action_tour_merge"
+        sequence="30"/>
+
+    <menuitem id="menu_tour_plan_change"
+        name="单团变更"
+        parent="menu_tms_order"
+        action="action_tour_plan_change"
+        sequence="40"/>
+</odoo>

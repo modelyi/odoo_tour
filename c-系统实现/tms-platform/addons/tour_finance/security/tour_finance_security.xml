@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 财务出纳权限组：可查看完整银行卡号（最小化访问 [内控-数据安全]） -->
+    <record id="group_tour_finance_treasurer" model="res.groups">
+        <field name="name">财务出纳（可查看完整卡号）</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

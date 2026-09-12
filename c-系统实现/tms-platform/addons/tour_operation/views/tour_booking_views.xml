@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_booking_search" model="ir.ui.view">
+        <field name="name">tour.booking.search</field>
+        <field name="model">tour.booking</field>
+        <field name="arch" type="xml">
+            <search string="预订安排搜索">
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="plan_code"/>
+                <field name="guide_id"/>
+                <field name="vehicle_id"/>
+                <field name="supplier_id"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <separator/>
+                <filter name="group_plan" string="团队订单" context="{'group_by':'plan_id'}"/>
+                <filter name="group_resource_type" string="资源类型" context="{'group_by':'resource_type'}"/>
+                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
+                <separator/>
+                <filter name="type_guide" string="派导" domain="[('resource_type','=','guide')]"/>
+                <filter name="type_vehicle" string="派车" domain="[('resource_type','=','vehicle')]"/>
+                <filter name="type_hotel" string="订房" domain="[('resource_type','=','hotel')]"/>
+                <filter name="type_meal" string="订餐" domain="[('resource_type','=','meal')]"/>
+                <filter name="type_scenic" string="门票" domain="[('resource_type','=','scenic')]"/>
+                <separator/>
+                <filter name="state_draft" string="草稿" domain="[('state','=','draft')]"/>
+                <filter name="state_confirmed" string="已确认" domain="[('state','=','confirmed')]"/>
+                <filter name="state_completed" string="已完成" domain="[('state','=','completed')]"/>
+                <filter name="state_cancelled" string="已取消" domain="[('state','=','cancelled')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_booking" model="ir.actions.act_window">
+        <field name="name">预订安排</field>
+        <field name="res_model">tour.booking</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_booking_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                为团队订单创建资源预订（派导/派车/订房/订餐/门票）
+            </p>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_booking_list" model="ir.ui.view">
+        <field name="name">tour.booking.list</field>
+        <field name="model">tour.booking</field>
+        <field name="arch" type="xml">
+            <list string="预订安排">
+                <field name="name"/>
+                <field name="plan_code"/>
+                <field name="plan_id"/>
+                <field name="resource_type"/>
+                <field name="guide_id"/>
+                <field name="vehicle_id"/>
+                <field name="supplier_id"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="guest_count"/>
+                <field name="amount_total" sum="金额合计"/>
+                <field name="seat_warning" optional="hide"/>
+                <field name="state" widget="badge"
+                    decoration-success="state in ('confirmed','completed')"
+                    decoration-info="state=='draft'"
+                    decoration-danger="state=='cancelled'"/>
+                <field name="confirm_state" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_tour_booking_calendar" model="ir.ui.view">
+        <field name="name">tour.booking.calendar</field>
+        <field name="model">tour.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="预订安排日历" date_start="begin_date" date_stop="end_date"
+                color="resource_type" mode="month">
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="resource_type"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Kanban View（计调看板：按资源类型） -->
+    <record id="view_tour_booking_kanban" model="ir.ui.view">
+        <field name="name">tour.booking.kanban</field>
+        <field name="model">tour.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="resource_type" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="plan_code"/>
+                <field name="resource_type"/>
+                <field name="guide_id"/>
+                <field name="vehicle_id"/>
+                <field name="supplier_id"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+                <field name="confirm_state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_title">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div><field name="plan_id"/> <field name="plan_code"/></div>
+                            <div>
+                                <t t-if="record.resource_type.raw_value == 'guide'"><field name="guide_id"/></t>
+                                <t t-if="record.resource_type.raw_value == 'vehicle'"><field name="vehicle_id"/></t>
+                                <t t-if="record.resource_type.raw_value in ['hotel','meal','scenic']"><field name="supplier_id"/></t>
+                            </div>
+                            <div><field name="begin_date"/> ~ <field name="end_date"/></div>
+                            <div class="text-muted">金额：<field name="amount_total"/></div>
+                            <field name="state" widget="badge"
+                                decoration-success="state in ('confirmed','completed')"
+                                decoration-info="state=='draft'"
+                                decoration-danger="state=='cancelled'"/>
+                            <t t-if="record.resource_type.raw_value in ['hotel','scenic']">
+                                <field name="confirm_state" widget="badge"
+                                    decoration-success="confirm_state=='confirmed'"
+                                    decoration-muted="confirm_state=='unconfirmed'"/>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_booking_form" model="ir.ui.view">
+        <field name="name">tour.booking.form</field>
+        <field name="model">tour.booking</field>
+        <field name="arch" type="xml">
+            <form string="预订安排">
+                <header>
+                    <button name="action_confirm" string="确认" type="object" class="btn-primary"
+                        invisible="state != 'draft'"/>
+                    <button name="action_complete" string="完成" type="object"
+                        invisible="state != 'confirmed'"/>
+                    <button name="action_force_assign" string="强制安排" type="object"
+                        groups="tour_operation.group_tour_operation_force_assign"
+                        confirm="确认强制安排？将记录操作人与时间留痕。"
+                        invisible="not force_reason"/>
+                    <button name="action_confirm_resource" string="资源到位确认" type="object"
+                        groups="tour_operation.group_tour_operation_confirm"
+                        invisible="resource_type not in ('hotel','scenic') or confirm_state == 'confirmed'"/>
+                    <button name="action_cancel" string="取消" type="object"
+                        invisible="state in ('completed','cancelled')"/>
+                    <button name="action_set_draft" string="恢复草稿" type="object"
+                        invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="plan_code"/>
+                            <field name="resource_type"/>
+                            <field name="guide_id" invisible="resource_type != 'guide'"/>
+                            <field name="vehicle_id" invisible="resource_type != 'vehicle'"/>
+                            <field name="supplier_id" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
+                            <field name="supplier_name" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
+                        </group>
+                        <group>
+                            <field name="begin_date"/>
+                            <field name="end_date"/>
+                            <field name="guest_count"/>
+                            <field name="amount_total"/>
+                            <field name="confirm_state" invisible="resource_type not in ('hotel','scenic')"/>
+                            <field name="company_id"/>
+                            <field name="department_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="派导" invisible="resource_type != 'guide'">
+                            <group>
+                                <group>
+                                    <field name="guide_fee"/>
+                                </group>
+                                <group>
+                                    <field name="amount_total"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="派车" invisible="resource_type != 'vehicle'">
+                            <group>
+                                <group>
+                                    <field name="car_fee"/>
+                                    <field name="seat_num"/>
+                                    <field name="seat_warning" widget="boolean_toggle" readonly="1"
+                                        invisible="not seat_warning"/>
+                                </group>
+                                <group>
+                                    <field name="pick_time"/>
+                                    <field name="pick_place"/>
+                                    <field name="drop_time"/>
+                                    <field name="drop_place"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="订房" invisible="resource_type != 'hotel'">
+                            <group>
+                                <group>
+                                    <field name="night_num"/>
+                                    <field name="room_price"/>
+                                    <field name="room_single"/>
+                                    <field name="room_standard"/>
+                                    <field name="room_triangle"/>
+                                    <field name="room_accompany"/>
+                                    <field name="room_additional"/>
+                                </group>
+                                <group>
+                                    <field name="amount_total"/>
+                                    <field name="confirm_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="订餐" invisible="resource_type != 'meal'">
+                            <group>
+                                <group>
+                                    <field name="meal_type"/>
+                                    <field name="table_count"/>
+                                    <field name="price_per_table"/>
+                                </group>
+                                <group>
+                                    <field name="amount_total"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="门票" invisible="resource_type != 'scenic'">
+                            <group>
+                                <group>
+                                    <field name="unit_price"/>
+                                    <field name="adult_num"/>
+                                    <field name="child_num"/>
+                                    <field name="old_man_num"/>
+                                    <field name="student_num"/>
+                                </group>
+                                <group>
+                                    <field name="amount_total"/>
+                                    <field name="confirm_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="强制与备注">
+                            <group>
+                                <group>
+                                    <field name="force_reason"/>
+                                    <field name="force_user_id"/>
+                                    <field name="force_date"/>
+                                </group>
+                                <group>
+                                    <field name="remark"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -19,6 +19,9 @@
     'data': [
         'security/ir.model.access.csv',
         'views/tour_line_views.xml',
+        'views/tour_departure_views.xml',
+        'views/tour_line_detail_views.xml',
+        'views/tour_base_data_views.xml',
         'views/menu.xml',
     ],
     'demo': [

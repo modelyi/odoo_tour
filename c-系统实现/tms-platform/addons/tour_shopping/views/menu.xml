@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 购物管理顶级菜单（挂在 tour_base 的「旅行社管理」根菜单下） -->
+    <menuitem id="menu_tms_shopping"
+        name="购物管理"
+        parent="tour_base.menu_tms_root"
+        sequence="35"/>
+
+    <menuitem id="menu_tour_shop_record"
+        name="购物记录"
+        parent="menu_tms_shopping"
+        action="action_tour_shop_record"
+        sequence="10"/>
+</odoo>

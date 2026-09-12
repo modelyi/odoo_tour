@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_shop_record_search" model="ir.ui.view">
+        <field name="name">tour.shop.record.search</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <search string="购物记录搜索">
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="plan_code"/>
+                <field name="shop_id"/>
+                <field name="agreement_id"/>
+                <field name="guide_id"/>
+                <field name="shop_date"/>
+                <separator/>
+                <filter name="group_shop" string="购物店" context="{'group_by':'shop_id'}"/>
+                <filter name="group_guide" string="导游" context="{'group_by':'guide_id'}"/>
+                <filter name="group_date" string="购物日期" context="{'group_by':'shop_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_shop_record" model="ir.actions.act_window">
+        <field name="name">购物记录</field>
+        <field name="res_model">tour.shop.record</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_shop_record_search"/>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_shop_record_list" model="ir.ui.view">
+        <field name="name">tour.shop.record.list</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <list string="购物记录">
+                <field name="name"/>
+                <field name="plan_code"/>
+                <field name="shop_id"/>
+                <field name="shop_date"/>
+                <field name="amount" sum="购物金额合计"/>
+                <field name="commission_rate"/>
+                <field name="commission_amount" sum="返佣金额合计"/>
+                <field name="guide_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_shop_record_form" model="ir.ui.view">
+        <field name="name">tour.shop.record.form</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <form string="购物记录">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="购物记录编号"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="plan_code"/>
+                            <field name="shop_id"/>
+                            <field name="agreement_id"/>
+                        </group>
+                        <group>
+                            <field name="shop_date"/>
+                            <field name="guide_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <group string="购物明细">
+                        <group>
+                            <field name="amount"/>
+                            <field name="commission_rate"/>
+                            <field name="commission_amount"/>
+                        </group>
+                    </group>
+                    <group string="备注">
+                        <field name="remark" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

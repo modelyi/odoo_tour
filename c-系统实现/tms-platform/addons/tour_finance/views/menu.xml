@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 财务管理顶级菜单（挂在 tour_base 的「旅行社管理」根菜单下） -->
+    <menuitem id="menu_tms_finance"
+        name="财务管理"
+        parent="tour_base.menu_tms_root"
+        sequence="40"/>
+
+    <menuitem id="menu_tour_bank_account"
+        name="银行账户"
+        parent="menu_tms_finance"
+        action="action_tour_bank_account"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_pay_channel"
+        name="支付渠道"
+        parent="menu_tms_finance"
+        action="action_tour_pay_channel"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_plan_account"
+        name="单团核算"
+        parent="menu_tms_finance"
+        action="action_tour_plan_account"
+        sequence="30"/>
+
+    <menuitem id="menu_tour_payment_claim"
+        name="收款登记/认领"
+        parent="menu_tms_finance"
+        action="action_tour_payment_claim"
+        sequence="40"/>
+
+    <menuitem id="menu_tour_reconciliation"
+        name="对账"
+        parent="menu_tms_finance"
+        action="action_tour_reconciliation"
+        sequence="50"/>
+
+    <menuitem id="menu_tour_commission"
+        name="佣金"
+        parent="menu_tms_finance"
+        action="action_tour_commission"
+        sequence="60"/>
+</odoo>

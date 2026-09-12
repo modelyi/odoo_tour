@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_vehicle_search" model="ir.ui.view">
+        <field name="name">tour.vehicle.search</field>
+        <field name="model">tour.vehicle</field>
+        <field name="arch" type="xml">
+            <search string="车辆搜索">
+                <field name="name"/>
+                <field name="licence"/>
+                <field name="driver_name"/>
+                <field name="mobile"/>
+                <field name="supplier_id"/>
+                <filter name="active" string="启用" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter name="autarky" string="自营车辆" domain="[('is_autarky','=',True)]"/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <separator/>
+                <filter name="group_car_type" string="车型" context="{'group_by':'car_type'}"/>
+                <filter name="group_supplier" string="所属车队" context="{'group_by':'supplier_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_vehicle" model="ir.actions.act_window">
+        <field name="name">车辆档案</field>
+        <field name="res_model">tour.vehicle</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_vehicle_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_vehicle_list" model="ir.ui.view">
+        <field name="name">tour.vehicle.list</field>
+        <field name="model">tour.vehicle</field>
+        <field name="arch" type="xml">
+            <list string="车辆档案">
+                <field name="name"/>
+                <field name="licence"/>
+                <field name="driver_name"/>
+                <field name="mobile"/>
+                <field name="seat_num"/>
+                <field name="extra_seat"/>
+                <field name="car_type"/>
+                <field name="supplier_id"/>
+                <field name="is_autarky"/>
+                <field name="audit_chk"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_vehicle_form" model="ir.ui.view">
+        <field name="name">tour.vehicle.form</field>
+        <field name="model">tour.vehicle</field>
+        <field name="arch" type="xml">
+            <form string="车辆档案">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="车牌号"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="licence"/>
+                            <field name="driver_name"/>
+                            <field name="driver_code"/>
+                            <field name="help_code"/>
+                            <field name="sex"/>
+                            <field name="nation"/>
+                            <field name="born_place"/>
+                            <field name="edu"/>
+                            <field name="age"/>
+                        </group>
+                        <group>
+                            <field name="mobile"/>
+                            <field name="tel"/>
+                            <field name="id_num"/>
+                            <field name="zip_code"/>
+                            <field name="addr"/>
+                            <field name="supplier_id"/>
+                            <field name="supplier_name"/>
+                            <field name="is_autarky"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="车辆证照">
+                            <group>
+                                <group>
+                                    <field name="licence_date"/>
+                                    <field name="licence_type"/>
+                                    <field name="buy_date"/>
+                                    <field name="car_type"/>
+                                </group>
+                                <group>
+                                    <field name="seat_num"/>
+                                    <field name="extra_seat"/>
+                                    <field name="power_area"/>
+                                    <field name="cw_code"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="结算信息">
+                            <group>
+                                <field name="loan_rate"/>
+                                <field name="opening_bank"/>
+                                <field name="bank_account"/>
+                            </group>
+                        </page>
+                        <page string="审核与归属">
+                            <group>
+                                <group>
+                                    <field name="audit_chk"/>
+                                    <field name="audit_user"/>
+                                    <field name="audit_date"/>
+                                </group>
+                                <group>
+                                    <field name="company_id"/>
+                                    <field name="department_id"/>
+                                    <field name="active"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="audit_brief"/>
+                                <field name="remark"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 计调强制安排权限组 -->
+    <record id="group_tour_operation_force_assign" model="res.groups">
+        <field name="name">计调强制安排</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- 营运中心二次确认权限组 -->
+    <record id="group_tour_operation_confirm" model="res.groups">
+        <field name="name">营运中心二次确认</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

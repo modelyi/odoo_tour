@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 计调操作顶级菜单（挂在 tour_base 的「旅行社管理」根菜单下） -->
+    <menuitem id="menu_tms_operation"
+        name="计调操作"
+        parent="tour_base.menu_tms_root"
+        sequence="25"/>
+
+    <menuitem id="menu_tour_booking"
+        name="预订安排"
+        parent="menu_tms_operation"
+        action="action_tour_booking"
+        sequence="10"/>
+</odoo>

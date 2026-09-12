@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ 结算方式 tour.pay.way ============ -->
+    <record id="action_tour_pay_way" model="ir.actions.act_window">
+        <field name="name">结算方式</field>
+        <field name="res_model">tour.pay.way</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_tour_pay_way_list" model="ir.ui.view">
+        <field name="name">tour.pay.way.list</field>
+        <field name="model">tour.pay.way</field>
+        <field name="arch" type="xml">
+            <list string="结算方式">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="pay_type"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_pay_way_form" model="ir.ui.view">
+        <field name="name">tour.pay.way.form</field>
+        <field name="model">tour.pay.way</field>
+        <field name="arch" type="xml">
+            <form string="结算方式">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="pay_type"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <field name="brief"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ 业务类型 tour.biz.type ============ -->
+    <record id="action_tour_biz_type" model="ir.actions.act_window">
+        <field name="name">业务类型</field>
+        <field name="res_model">tour.biz.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_tour_biz_type_list" model="ir.ui.view">
+        <field name="name">tour.biz.type.list</field>
+        <field name="model">tour.biz.type</field>
+        <field name="arch" type="xml">
+            <list string="业务类型">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="help_code"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_biz_type_form" model="ir.ui.view">
+        <field name="name">tour.biz.type.form</field>
+        <field name="model">tour.biz.type</field>
+        <field name="arch" type="xml">
+            <form string="业务类型">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="help_code"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <field name="brief"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ 通用基础数据 tour.base.item ============ -->
+    <record id="action_tour_base_item" model="ir.actions.act_window">
+        <field name="name">通用基础数据</field>
+        <field name="res_model">tour.base.item</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_tour_base_item_list" model="ir.ui.view">
+        <field name="name">tour.base.item.list</field>
+        <field name="model">tour.base.item</field>
+        <field name="arch" type="xml">
+            <list string="通用基础数据">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="item_type"/>
+                <field name="help_code"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_base_item_form" model="ir.ui.view">
+        <field name="name">tour.base.item.form</field>
+        <field name="model">tour.base.item</field>
+        <field name="arch" type="xml">
+            <form string="通用基础数据">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="item_type"/>
+                            <field name="help_code"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <field name="brief"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ 单团利润（tour.plan.account） ============ -->
+    <record id="view_tour_plan_account_report_search" model="ir.ui.view">
+        <field name="name">tour.plan.account.report.search</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <search string="单团利润搜索">
+                <field name="plan_code"/>
+                <field name="plan_id"/>
+                <field name="department_id"/>
+                <field name="biz_mode"/>
+                <separator/>
+                <filter name="group_plan" string="按团" context="{'group_by':'plan_id'}"/>
+                <filter name="group_department" string="按部门" context="{'group_by':'department_id'}"/>
+                <filter name="group_biz" string="按业务模式" context="{'group_by':'biz_mode'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tour_plan_account_report_pivot" model="ir.ui.view">
+        <field name="name">tour.plan.account.report.pivot</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <pivot string="单团利润">
+                <field name="plan_id" type="row"/>
+                <field name="department_id" type="col"/>
+                <field name="biz_mode" type="col"/>
+                <field name="income_total" type="measure"/>
+                <field name="income_commission" type="measure"/>
+                <field name="cost_total" type="measure"/>
+                <field name="receivable" type="measure"/>
+                <field name="invoice_gap" type="measure"/>
+                <field name="profit" type="measure"/>
+                <field name="profit_no_shop" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_tour_plan_account_report_graph" model="ir.ui.view">
+        <field name="name">tour.plan.account.report.graph</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <graph string="单团利润">
+                <field name="plan_id" type="row"/>
+                <field name="profit" type="measure"/>
+                <field name="income_total" type="measure"/>
+                <field name="cost_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ 导游业绩（tour.commission） ============ -->
+    <record id="view_tour_commission_report_search" model="ir.ui.view">
+        <field name="name">tour.commission.report.search</field>
+        <field name="model">tour.commission</field>
+        <field name="arch" type="xml">
+            <search string="导游业绩搜索">
+                <field name="plan_code"/>
+                <field name="guide_id"/>
+                <field name="shop_id"/>
+                <field name="department_id"/>
+                <separator/>
+                <filter name="group_guide" string="按导游" context="{'group_by':'guide_id'}"/>
+                <filter name="group_plan" string="按团" context="{'group_by':'plan_id'}"/>
+                <filter name="group_department" string="按部门" context="{'group_by':'department_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tour_commission_report_pivot" model="ir.ui.view">
+        <field name="name">tour.commission.report.pivot</field>
+        <field name="model">tour.commission</field>
+        <field name="arch" type="xml">
+            <pivot string="导游业绩">
+                <field name="guide_id" type="row"/>
+                <field name="plan_id" type="col"/>
+                <field name="department_id" type="col"/>
+                <field name="shop_amount" type="measure"/>
+                <field name="commission_total" type="measure"/>
+                <field name="guide_share_before_tax" type="measure"/>
+                <field name="premium" type="measure"/>
+                <field name="guide_tax" type="measure"/>
+                <field name="guide_net_pay" type="measure"/>
+                <field name="company_retain" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_tour_commission_report_graph" model="ir.ui.view">
+        <field name="name">tour.commission.report.graph</field>
+        <field name="model">tour.commission</field>
+        <field name="arch" type="xml">
+            <graph string="导游业绩">
+                <field name="guide_id" type="row"/>
+                <field name="guide_net_pay" type="measure"/>
+                <field name="commission_total" type="measure"/>
+                <field name="guide_tax" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ 购物返佣（tour.shop.record） ============ -->
+    <record id="view_tour_shop_record_report_search" model="ir.ui.view">
+        <field name="name">tour.shop.record.report.search</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <search string="购物返佣搜索">
+                <field name="plan_code"/>
+                <field name="shop_id"/>
+                <field name="guide_id"/>
+                <field name="shop_date"/>
+                <separator/>
+                <filter name="group_shop" string="按购物店" context="{'group_by':'shop_id'}"/>
+                <filter name="group_plan" string="按团" context="{'group_by':'plan_id'}"/>
+                <filter name="group_guide" string="按导游" context="{'group_by':'guide_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tour_shop_record_report_pivot" model="ir.ui.view">
+        <field name="name">tour.shop.record.report.pivot</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <pivot string="购物返佣">
+                <field name="shop_id" type="row"/>
+                <field name="plan_id" type="col"/>
+                <field name="guide_id" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="commission_rate" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_tour_shop_record_report_graph" model="ir.ui.view">
+        <field name="name">tour.shop.record.report.graph</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <graph string="购物返佣">
+                <field name="shop_id" type="row"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ 每日收支（tour.payment.claim） ============ -->
+    <record id="view_tour_payment_claim_report_search" model="ir.ui.view">
+        <field name="name">tour.payment.claim.report.search</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <search string="每日收支搜索">
+                <field name="pay_date"/>
+                <field name="account_id"/>
+                <field name="pay_way_id"/>
+                <field name="pay_channel_id"/>
+                <field name="supplier_id"/>
+                <separator/>
+                <filter name="group_day" string="按日" context="{'group_by':'pay_date'}"/>
+                <filter name="group_account" string="按收款账户" context="{'group_by':'account_id'}"/>
+                <filter name="group_pay_way" string="按收付场景" context="{'group_by':'pay_way_id'}"/>
+                <filter name="group_channel" string="按支付渠道" context="{'group_by':'pay_channel_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tour_payment_claim_report_pivot" model="ir.ui.view">
+        <field name="name">tour.payment.claim.report.pivot</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <pivot string="每日收支">
+                <field name="pay_date" type="row"/>
+                <field name="account_id" type="col"/>
+                <field name="pay_way_id" type="col"/>
+                <field name="pay_channel_id" type="col"/>
+                <field name="pay_money" type="measure"/>
+                <field name="use_money" type="measure"/>
+                <field name="balance_money" type="measure"/>
+                <field name="trans_fee" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_tour_payment_claim_report_graph" model="ir.ui.view">
+        <field name="name">tour.payment.claim.report.graph</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <graph string="每日收支">
+                <field name="pay_date" type="row"/>
+                <field name="pay_money" type="measure"/>
+                <field name="use_money" type="measure"/>
+                <field name="balance_money" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>

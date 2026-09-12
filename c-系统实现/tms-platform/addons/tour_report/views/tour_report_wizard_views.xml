@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tour_report_wizard_form" model="ir.ui.view">
+        <field name="name">tour.report.wizard.form</field>
+        <field name="model">tour.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="报表向导">
+                <group>
+                    <group>
+                        <field name="report_type"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="group_by"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="生成报表"
+                            type="object" class="btn-primary"/>
+                    <button string="取消" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 单团利润向导 -->
+    <record id="action_report_plan_profit" model="ir.actions.act_window">
+        <field name="name">单团利润</field>
+        <field name="res_model">tour.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'plan_profit'}</field>
+    </record>
+
+    <!-- 导游业绩向导 -->
+    <record id="action_report_guide_performance" model="ir.actions.act_window">
+        <field name="name">导游业绩</field>
+        <field name="res_model">tour.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'guide_performance'}</field>
+    </record>
+
+    <!-- 购物返佣向导 -->
+    <record id="action_report_shop_commission" model="ir.actions.act_window">
+        <field name="name">购物返佣</field>
+        <field name="res_model">tour.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'shop_commission'}</field>
+    </record>
+
+    <!-- 每日收支向导 -->
+    <record id="action_report_daily_income_expense" model="ir.actions.act_window">
+        <field name="name">每日收支</field>
+        <field name="res_model">tour.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'daily_income_expense'}</field>
+    </record>
+</odoo>

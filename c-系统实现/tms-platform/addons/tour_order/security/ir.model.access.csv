@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_plan_user,tour.plan.user,model_tour_plan,base.group_user,1,1,1,0
+access_tour_plan_manager,tour.plan.manager,model_tour_plan,base.group_system,1,1,1,1
+access_tour_plan_reg_user,tour.plan.reg.user,model_tour_plan_reg,base.group_user,1,1,1,0
+access_tour_plan_reg_manager,tour.plan.reg.manager,model_tour_plan_reg,base.group_system,1,1,1,1
+access_tour_merge_user,tour.merge.user,model_tour_merge,base.group_user,1,1,1,0
+access_tour_merge_manager,tour.merge.manager,model_tour_merge,base.group_system,1,1,1,1
+access_tour_plan_change_user,tour.plan.change.user,model_tour_plan_change,base.group_user,1,1,1,0
+access_tour_plan_change_manager,tour.plan.change.manager,model_tour_plan_change,base.group_system,1,1,1,1

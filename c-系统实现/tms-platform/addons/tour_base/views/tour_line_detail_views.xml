@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action -->
+    <record id="action_tour_line_detail" model="ir.actions.act_window">
+        <field name="name">行程明细</field>
+        <field name="res_model">tour.line.detail</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_line_detail_list" model="ir.ui.view">
+        <field name="name">tour.line.detail.list</field>
+        <field name="model">tour.line.detail</field>
+        <field name="arch" type="xml">
+            <list string="行程明细">
+                <field name="sequence" widget="handle"/>
+                <field name="line_id"/>
+                <field name="day_no"/>
+                <field name="title"/>
+                <field name="city"/>
+                <field name="hotel"/>
+                <field name="traffic"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_line_detail_form" model="ir.ui.view">
+        <field name="name">tour.line.detail.form</field>
+        <field name="model">tour.line.detail</field>
+        <field name="arch" type="xml">
+            <form string="行程明细">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="line_id"/>
+                            <field name="day_no"/>
+                            <field name="title"/>
+                            <field name="city"/>
+                        </group>
+                        <group>
+                            <field name="hotel"/>
+                            <field name="traffic"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="meal_breakfast"/>
+                        <field name="meal_lunch"/>
+                        <field name="meal_dinner"/>
+                    </group>
+                    <field name="content" placeholder="行程内容..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
