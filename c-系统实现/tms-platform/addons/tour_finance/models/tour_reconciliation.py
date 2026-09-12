@@ -11,6 +11,13 @@ class TourReconciliation(models.Model):
 
     name = fields.Char('对账单号', required=True, copy=False, default='新建')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '新建':
+                vals['name'] = self.env['ir.sequence'].next_by_code('tour.reconciliation') or '新建'
+        return super().create(vals_list)
+
     verify_type = fields.Selection([
         ('group_tour', '团款对账'),
         ('ditch', '地接对账'),

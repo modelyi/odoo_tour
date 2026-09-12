@@ -27,6 +27,9 @@
     'data': [
         'security/tour_finance_security.xml',
         'security/ir.model.access.csv',
+        'data/tour_payment_claim_sequence.xml',
+        'data/tour_commission_sequence.xml',
+        'data/tour_reconciliation_sequence.xml',
         'data/tour_pay_channel_data.xml',
         'views/tour_bank_account_views.xml',
         'views/tour_pay_channel_views.xml',

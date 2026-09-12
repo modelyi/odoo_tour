@@ -56,7 +56,7 @@ class TourVehicle(models.Model):
 
     # === 状态与审核 ===
     active = fields.Boolean('启用状态', default=True, tracking=True)
-    audit_chk = fields.Boolean('审核状态')
+    audit_chk = fields.Boolean('审核状态', default=True)
     audit_user = fields.Char('审核人')
     audit_brief = fields.Text('审核说明')
     audit_date = fields.Datetime('审核时间')

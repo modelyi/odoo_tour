@@ -11,7 +11,7 @@ class TourPaymentClaim(models.Model):
 
     # === 标识 ===
     name = fields.Char('收款编号', required=True, copy=False, default='新建',
-                       help='自动流水，如 CL-000123')
+                       help='自动流水，如 SK-000123')
     payee_id = fields.Many2one('res.users', string='收款人',
                                default=lambda self: self.env.user,
                                help='收款人（自动=当前用户）')
@@ -72,6 +72,13 @@ class TourPaymentClaim(models.Model):
         'unique(name)',
         '收款编号已存在',
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '新建':
+                vals['name'] = self.env['ir.sequence'].next_by_code('tour.payment.claim') or '新建'
+        return super().create(vals_list)
 
     @api.depends('pay_money', 'use_money')
     def _compute_balance_money(self):

@@ -10,6 +10,13 @@ class TourCommission(models.Model):
 
     name = fields.Char('佣金编号', required=True, copy=False, default='新建')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '新建':
+                vals['name'] = self.env['ir.sequence'].next_by_code('tour.commission') or '新建'
+        return super().create(vals_list)
+
     # === 佣金来源 ===
     plan_id = fields.Many2one('tour.plan', string='团队订单', required=True, index=True,
                               ondelete='restrict')
