@@ -36,7 +36,9 @@ services:
       retries: 5
 
   odoo:
-    image: odoo:19
+    build:
+      context: .
+      dockerfile: Dockerfile.odoo
     container_name: tms-odoo
     restart: unless-stopped
     depends_on:
@@ -60,7 +62,7 @@ services:
     networks:
       - tms-net
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/database/list >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/login >/dev/null || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 20

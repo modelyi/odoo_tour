@@ -21,6 +21,9 @@
         'views/tour_line_views.xml',
         'views/menu.xml',
     ],
+    'demo': [
+        'demo/tour_base_demo.xml',
+    ],
     'installable': True,
     'application': True,
     'auto_install': False,

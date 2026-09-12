@@ -2,6 +2,9 @@
 a-调研/易途系统数据.db
 a-调研/et_data/
 
+# 脱敏后的 demo 数据（大文件，不进 GitHub）
+a-调研/et_data_demo/
+
 # 截图（已嵌入 spa.html）
 a-调研/screenshots/
 

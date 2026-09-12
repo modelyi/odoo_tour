@@ -1,0 +1,838 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 由 gen_demo_data.py 从脱敏调研数据自动生成 -->
+
+    <!-- ===== 线路分类 tour.line.type ===== -->
+    <record id="line_type_1" model="tour.line.type">
+            <field name="name">品质纯玩/深度</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_2" model="tour.line.type">
+            <field name="name">懒慢游线路</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_3" model="tour.line.type">
+            <field name="name">北京线路</field>
+            <field name="code">BJXL</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_4" model="tour.line.type">
+            <field name="name">东北</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_5" model="tour.line.type">
+            <field name="name">北京</field>
+            <field name="code">BJ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_6" model="tour.line.type">
+            <field name="name">贵州</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_7" model="tour.line.type">
+            <field name="name">天津</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_8" model="tour.line.type">
+            <field name="name">内蒙草原</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_9" model="tour.line.type">
+            <field name="name">三峡</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_10" model="tour.line.type">
+            <field name="name">北戴河</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_11" model="tour.line.type">
+            <field name="name">财务专用</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_12" model="tour.line.type">
+            <field name="name">山东省内近郊</field>
+            <field name="code">SDSNJJ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_13" model="tour.line.type">
+            <field name="name">泰安一日游</field>
+            <field name="code">TAYRY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_14" model="tour.line.type">
+            <field name="name">烟台双飞4日游</field>
+            <field name="code">YTSF4RY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_15" model="tour.line.type">
+            <field name="name">泰安西湖一日游</field>
+            <field name="code">TAXHYRY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_16" model="tour.line.type">
+            <field name="name">颐和园一日游</field>
+            <field name="code">YHYYRY</field>
+            <field name="description">电商部一日游</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_17" model="tour.line.type">
+            <field name="name">淄博</field>
+            <field name="code">ZB</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_18" model="tour.line.type">
+            <field name="name">山东省内游</field>
+            <field name="code">SDSNY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_19" model="tour.line.type">
+            <field name="name">内蒙古独立团</field>
+            <field name="code">NMGDLT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_20" model="tour.line.type">
+            <field name="name">湖南衡阳铭城西安经典/全线</field>
+            <field name="code">HNHYMCXAPFJD6T</field>
+            <field name="description">双飞（客服王佳）批发商</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_21" model="tour.line.type">
+            <field name="name">大散东市3日游/东华市4日游</field>
+            <field name="code">DSDS3RY</field>
+            <field name="description">百度推广</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_22" model="tour.line.type">
+            <field name="name">西安独立团</field>
+            <field name="code">DSDHS4RY</field>
+            <field name="description">百度推广</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_23" model="tour.line.type">
+            <field name="name">内蒙古草原+响沙湾+成吉思汗陵+康巴什+博物院</field>
+            <field name="code">NMGCYXSWCJSHLKBSBWY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_24" model="tour.line.type">
+            <field name="name">西安（精华/经典）线路</field>
+            <field name="code">XAJHJDXL</field>
+            <field name="description">同业批发商</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_25" model="tour.line.type">
+            <field name="name">醉美臻唐——精品西安深度游</field>
+            <field name="code">ZMZTJPXASDY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_26" model="tour.line.type">
+            <field name="name">散拼行程</field>
+            <field name="code">SRDZ</field>
+            <field name="description">百度</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_27" model="tour.line.type">
+            <field name="name">西安一日游</field>
+            <field name="code">XAYRY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_28" model="tour.line.type">
+            <field name="name">梦幻草原双飞6日游</field>
+            <field name="code">MHCYSF6RY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_29" model="tour.line.type">
+            <field name="name">北京产品</field>
+            <field name="code">BJCP</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_30" model="tour.line.type">
+            <field name="name">天津喜途产品5晚6天</field>
+            <field name="code">ZJJ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_31" model="tour.line.type">
+            <field name="name">青州</field>
+            <field name="code">QZ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_32" model="tour.line.type">
+            <field name="name">产品推广</field>
+            <field name="code">CPTG</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_33" model="tour.line.type">
+            <field name="name">汉中洋县油菜花1日游</field>
+            <field name="code">HZYXYCH1RY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_34" model="tour.line.type">
+            <field name="name">2021西安散客连线</field>
+            <field name="code">2021XASKLX</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_35" model="tour.line.type">
+            <field name="name">【筋斗云纯净】</field>
+            <field name="code">JDYCJ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_36" model="tour.line.type">
+            <field name="name">五月千人会议团</field>
+            <field name="code">WYQRHYT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_37" model="tour.line.type">
+            <field name="name">【筋斗云深度2n3】</field>
+            <field name="code">SD</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_38" model="tour.line.type">
+            <field name="name">【筋斗云亲子2n3】</field>
+            <field name="code">JDYQZ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_39" model="tour.line.type">
+            <field name="name">【筋斗云夕阳红2n3】</field>
+            <field name="code">JDYXYH</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_40" model="tour.line.type">
+            <field name="name">【筋斗云蓝精灵2n3】</field>
+            <field name="code">JDYLJL</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_41" model="tour.line.type">
+            <field name="name">【筋斗云纯净3n4】</field>
+            <field name="code">JDYCJ3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_42" model="tour.line.type">
+            <field name="name">【筋斗云纯净2n3】</field>
+            <field name="code">JDYCJ2N3</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_43" model="tour.line.type">
+            <field name="name">【筋斗云纯净4n5】</field>
+            <field name="code">JDYCJ4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_44" model="tour.line.type">
+            <field name="name">【筋斗云纯净5n6】</field>
+            <field name="code">JDYCJ5N6</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_45" model="tour.line.type">
+            <field name="name">【筋斗云深度3n4】</field>
+            <field name="code">JDYSD3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_46" model="tour.line.type">
+            <field name="name">【筋斗云深度4n5】</field>
+            <field name="code">JDYSD4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_47" model="tour.line.type">
+            <field name="name">【筋斗云深度5n6】</field>
+            <field name="code">JDYSD5N6</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_48" model="tour.line.type">
+            <field name="name">【筋斗云蓝精灵3n4】</field>
+            <field name="code">JDYLJL3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_49" model="tour.line.type">
+            <field name="name">【筋斗云蓝精灵4n5】</field>
+            <field name="code">JDYLJL4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_50" model="tour.line.type">
+            <field name="name">【筋斗云亲子3n4】</field>
+            <field name="code">JDYQZ3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_51" model="tour.line.type">
+            <field name="name">【筋斗云亲子4n5】</field>
+            <field name="code">JDYQZ4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_52" model="tour.line.type">
+            <field name="name">【筋斗云夕阳红3n4】</field>
+            <field name="code">JDYXYH3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_53" model="tour.line.type">
+            <field name="name">【筋斗云夕阳红4n5】</field>
+            <field name="code">JDYXYH4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_54" model="tour.line.type">
+            <field name="name">五一专线</field>
+            <field name="code">WYZX</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_55" model="tour.line.type">
+            <field name="name">品质b+2n3</field>
+            <field name="code">PZB2N3</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_56" model="tour.line.type">
+            <field name="name">品质b+3n4</field>
+            <field name="code">PZB3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_57" model="tour.line.type">
+            <field name="name">品质b+4n5</field>
+            <field name="code">PZB4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_58" model="tour.line.type">
+            <field name="name">品质b+5n6</field>
+            <field name="code">PZB5N6</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_59" model="tour.line.type">
+            <field name="name">品质b+6n7</field>
+            <field name="code">PZB6N7</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_60" model="tour.line.type">
+            <field name="name">夕阳红c+2n3</field>
+            <field name="code">XYHC2N3</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_61" model="tour.line.type">
+            <field name="name">夕阳红c+3n4</field>
+            <field name="code">XYHC3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_62" model="tour.line.type">
+            <field name="name">夕阳红c+4n5</field>
+            <field name="code">XYHC4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_63" model="tour.line.type">
+            <field name="name">夕阳红c+5n6</field>
+            <field name="code">XYHC5N6</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_64" model="tour.line.type">
+            <field name="name">夕阳红c 2n3</field>
+            <field name="code">XYHC2N3</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_65" model="tour.line.type">
+            <field name="name">夕阳红c 3n4</field>
+            <field name="code">XYHC3N4</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_66" model="tour.line.type">
+            <field name="name">夕阳红c 4n5</field>
+            <field name="code">XYHC4N5</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_67" model="tour.line.type">
+            <field name="name">夕阳红c 5n6</field>
+            <field name="code">XYHC5N6</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_68" model="tour.line.type">
+            <field name="name">私人订制</field>
+            <field name="code">SRDZ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_69" model="tour.line.type">
+            <field name="name">乌兰布统纯玩3日</field>
+            <field name="code">WLBTCW3R</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_70" model="tour.line.type">
+            <field name="name">遇见草原</field>
+            <field name="code">YJCY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_71" model="tour.line.type">
+            <field name="name">赤峰草原散客</field>
+            <field name="code">CFCYSK</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_72" model="tour.line.type">
+            <field name="name">内蒙赤峰团队</field>
+            <field name="code">NMCFTD</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_73" model="tour.line.type">
+            <field name="name">四合院（大手拉小手）</field>
+            <field name="code">SHYHYSGQZY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_74" model="tour.line.type">
+            <field name="name">乌兰布统3日</field>
+            <field name="code">WLBT3R</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_75" model="tour.line.type">
+            <field name="name">2023东线1日游</field>
+            <field name="code">2023DX1RY</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_76" model="tour.line.type">
+            <field name="name">6人团</field>
+            <field name="code">6RT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_77" model="tour.line.type">
+            <field name="name">纯玩无购物</field>
+            <field name="code">CWWGW</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_78" model="tour.line.type">
+            <field name="name">三门峡老陕驿站</field>
+            <field name="code">SMXLSYZ</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_79" model="tour.line.type">
+            <field name="name">携程自营环球跟团</field>
+            <field name="code">XCZYHQGT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_80" model="tour.line.type">
+            <field name="name">西安天马总部供应商线路</field>
+            <field name="code">XATMZBGYSXL</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_81" model="tour.line.type">
+            <field name="name">尊享6人团</field>
+            <field name="code">ZX6RT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_82" model="tour.line.type">
+            <field name="name">携程自营璀璨12人</field>
+            <field name="code">XCZYCC12R</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_83" model="tour.line.type">
+            <field name="name">大国6人团</field>
+            <field name="code">DG6RT</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="line_type_84" model="tour.line.type">
+            <field name="name">内蒙古聚惠之旅</field>
+            <field name="code">neimenggujuhuizhilv</field>
+            <field name="description">百度推广</field>
+            <field name="sequence">1</field>
+    </record>
+    <record id="line_type_85" model="tour.line.type">
+            <field name="name">内蒙古蓝钻奢悦</field>
+            <field name="code">NMGLZSY</field>
+            <field name="sequence">2</field>
+    </record>
+
+    <!-- ===== 结算方式 tour.pay.way ===== -->
+    <record id="pay_way_1" model="tour.pay.way">
+            <field name="name">公司现付</field>
+            <field name="code">0</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="pay_way_2" model="tour.pay.way">
+            <field name="name">公司现收</field>
+            <field name="code">0</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="pay_way_3" model="tour.pay.way">
+            <field name="name">企业码支付</field>
+            <field name="code">111</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="pay_way_4" model="tour.pay.way">
+            <field name="name">企业码员工代付</field>
+            <field name="code">-111</field>
+            <field name="sequence">0</field>
+    </record>
+    <record id="pay_way_5" model="tour.pay.way">
+            <field name="name">导游现付</field>
+            <field name="code">1</field>
+            <field name="sequence">1</field>
+    </record>
+    <record id="pay_way_6" model="tour.pay.way">
+            <field name="name">签单</field>
+            <field name="code">-2</field>
+            <field name="sequence">2</field>
+    </record>
+    <record id="pay_way_7" model="tour.pay.way">
+            <field name="name">导游现收</field>
+            <field name="code">3</field>
+            <field name="sequence">3</field>
+    </record>
+
+    <!-- ===== 业务类型 tour.biz.type ===== -->
+    <record id="biz_type_1" model="tour.biz.type">
+            <field name="name">团队</field>
+            <field name="help_code">T</field>
+    </record>
+    <record id="biz_type_2" model="tour.biz.type">
+            <field name="name">单订</field>
+            <field name="help_code">DT</field>
+    </record>
+    <record id="biz_type_3" model="tour.biz.type">
+            <field name="name">散客</field>
+            <field name="help_code">S</field>
+    </record>
+    <record id="biz_type_4" model="tour.biz.type">
+            <field name="name">购物</field>
+            <field name="help_code">GW</field>
+    </record>
+    <record id="biz_type_5" model="tour.biz.type">
+            <field name="name">调账</field>
+            <field name="help_code">TZ</field>
+    </record>
+
+    <!-- ===== 通用基础数据 tour.base.item ===== -->
+    <record id="type2_1" model="tour.base.item">
+            <field name="item_type">type2</field>
+            <field name="name">大床房</field>
+            <field name="help_code">drj</field>
+            <field name="brief">单人间</field>
+    </record>
+    <record id="type2_2" model="tour.base.item">
+            <field name="item_type">type2</field>
+            <field name="name">双人间</field>
+            <field name="help_code">srj</field>
+            <field name="brief">双人间</field>
+    </record>
+    <record id="type2_3" model="tour.base.item">
+            <field name="item_type">type2</field>
+            <field name="name">三人间</field>
+            <field name="help_code">SRJ</field>
+            <field name="brief">三人间</field>
+    </record>
+    <record id="type2_4" model="tour.base.item">
+            <field name="item_type">type2</field>
+            <field name="name">四人间</field>
+            <field name="help_code">s</field>
+            <field name="brief">四人间</field>
+    </record>
+    <record id="type3_1" model="tour.base.item">
+            <field name="item_type">type3</field>
+            <field name="name">团餐</field>
+            <field name="help_code">TC</field>
+    </record>
+    <record id="type3_2" model="tour.base.item">
+            <field name="item_type">type3</field>
+            <field name="name">自助餐</field>
+            <field name="help_code">ZZC</field>
+    </record>
+    <record id="type5_1" model="tour.base.item">
+            <field name="item_type">type5</field>
+            <field name="name">飞机</field>
+            <field name="help_code">FJ</field>
+            <field name="brief">1</field>
+    </record>
+    <record id="type5_2" model="tour.base.item">
+            <field name="item_type">type5</field>
+            <field name="name">火车</field>
+            <field name="help_code">HC</field>
+            <field name="brief">2</field>
+    </record>
+    <record id="type5_3" model="tour.base.item">
+            <field name="item_type">type5</field>
+            <field name="name">大巴车</field>
+            <field name="help_code">QC</field>
+            <field name="brief">3</field>
+    </record>
+    <record id="duty_1" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">总经理</field>
+            <field name="help_code">ZJL</field>
+    </record>
+    <record id="duty_2" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">业务经理</field>
+            <field name="help_code">YWJL</field>
+    </record>
+    <record id="duty_3" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">部门主管</field>
+            <field name="help_code">BMZG</field>
+    </record>
+    <record id="duty_4" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">计调</field>
+            <field name="help_code">JD</field>
+    </record>
+    <record id="duty_5" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">操作</field>
+            <field name="help_code">CZ</field>
+    </record>
+    <record id="duty_6" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">外联</field>
+            <field name="help_code">WL</field>
+    </record>
+    <record id="duty_7" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">会计</field>
+            <field name="help_code">HJ</field>
+    </record>
+    <record id="duty_8" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">出纳</field>
+            <field name="help_code">CN</field>
+    </record>
+    <record id="duty_9" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">行政</field>
+            <field name="help_code">HZ</field>
+    </record>
+    <record id="duty_10" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">收款</field>
+            <field name="help_code">SK</field>
+    </record>
+    <record id="duty_11" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">市场</field>
+            <field name="help_code">SC</field>
+    </record>
+    <record id="duty_12" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">销售计调</field>
+            <field name="help_code">XSJT</field>
+    </record>
+    <record id="duty_13" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">操作计调</field>
+            <field name="help_code">CZJT</field>
+    </record>
+    <record id="duty_14" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">总监</field>
+            <field name="help_code">ZJ</field>
+    </record>
+    <record id="duty_15" model="tour.base.item">
+            <field name="item_type">duty</field>
+            <field name="name">总监助理</field>
+            <field name="help_code">ZJZL</field>
+    </record>
+
+    <!-- ===== 线路产品 tour.line（样本）===== -->
+    <record id="line_1" model="tour.line">
+            <field name="name">纯玩广场</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">CWGC</field>
+            <field name="day_num">1</field>
+            <field name="self_paid_item">三轮车90
+四合院30
+恭王府70</field>
+    </record>
+    <record id="line_2" model="tour.line">
+            <field name="name">纯玩长城</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">CWCC</field>
+            <field name="day_num">1</field>
+            <field name="self_paid_item">滑车120/缆车140
+奥运演出160</field>
+    </record>
+    <record id="line_3" model="tour.line">
+            <field name="name">纯玩颐和园</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">CWYHY</field>
+            <field name="day_num">1</field>
+    </record>
+    <record id="line_4" model="tour.line">
+            <field name="name">深度广场</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SDGC</field>
+            <field name="day_num">1</field>
+            <field name="self_paid_item">三轮车90
+四合院30</field>
+    </record>
+    <record id="line_5" model="tour.line">
+            <field name="name">深度长城</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SDCC</field>
+            <field name="day_num">1</field>
+            <field name="self_paid_item">滑车120/缆车140</field>
+    </record>
+    <record id="line_6" model="tour.line">
+            <field name="name">深度颐和园</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SDYHY</field>
+            <field name="day_num">1</field>
+    </record>
+    <record id="line_7" model="tour.line">
+            <field name="name">懒慢游4N5</field>
+            <field name="line_type_id" ref="line_type_2"/>
+            <field name="help_code">LMY</field>
+            <field name="day_num">5</field>
+            <field name="self_paid_item">无</field>
+    </record>
+    <record id="line_8" model="tour.line">
+            <field name="name">懒慢游2N3</field>
+            <field name="line_type_id" ref="line_type_2"/>
+            <field name="help_code">LMYSZ2N3</field>
+            <field name="day_num">3</field>
+    </record>
+    <record id="line_9" model="tour.line">
+            <field name="name">懒慢游3N4</field>
+            <field name="line_type_id" ref="line_type_2"/>
+            <field name="help_code">LMYSZ3N4</field>
+            <field name="day_num">4</field>
+    </record>
+    <record id="line_10" model="tour.line">
+            <field name="name">携程京艳皇城12人团</field>
+            <field name="line_type_id" ref="line_type_2"/>
+            <field name="help_code">JYHC</field>
+            <field name="day_num">5</field>
+            <field name="self_paid_item">什刹海人力黄包车胡同游120元/人，景区内交通工具自愿乘坐。
+1.本日【八达岭长城】有长城缆车或滑道属交通工具未含，游客如需请自理（140元）
+2.本日【奥林匹克公园】会涉及奥运官方梦之队大型演出属于小门票未含，游客如需请自理（160元/人）</field>
+    </record>
+    <record id="line_11" model="tour.line">
+            <field name="name">携程京艳皇城9人团</field>
+            <field name="line_type_id" ref="line_type_2"/>
+            <field name="help_code">JYHC3N4</field>
+            <field name="day_num">5</field>
+    </record>
+    <record id="line_12" model="tour.line">
+            <field name="name">纯玩3N4</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">CW3N4</field>
+            <field name="day_num">4</field>
+    </record>
+    <record id="line_13" model="tour.line">
+            <field name="name">纯玩2N3</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">CW2N3</field>
+            <field name="day_num">3</field>
+    </record>
+    <record id="line_14" model="tour.line">
+            <field name="name">深度纯玩4N5</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SD4N5</field>
+            <field name="day_num">5</field>
+    </record>
+    <record id="line_15" model="tour.line">
+            <field name="name">深度纯玩3N4</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SD3N4</field>
+            <field name="day_num">4</field>
+    </record>
+    <record id="line_16" model="tour.line">
+            <field name="name">深度纯玩2N3</field>
+            <field name="line_type_id" ref="line_type_1"/>
+            <field name="help_code">SD2N3</field>
+            <field name="day_num">3</field>
+    </record>
+    <record id="line_17" model="tour.line">
+            <field name="name">天津休闲大巴2日游</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">TJXXDB2RY</field>
+            <field name="day_num">2</field>
+            <field name="send_traffic">大巴</field>
+            <field name="end_traffic">大巴</field>
+    </record>
+    <record id="line_18" model="tour.line">
+            <field name="name">璀璨古北大巴3日游</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">CCGBDB3RY</field>
+            <field name="day_num">3</field>
+            <field name="send_traffic">大巴</field>
+            <field name="end_traffic">大巴</field>
+    </record>
+    <record id="line_19" model="tour.line">
+            <field name="name">古北高铁3天</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">GBGT3T</field>
+            <field name="day_num">3</field>
+    </record>
+    <record id="line_20" model="tour.line">
+            <field name="name">三峡</field>
+            <field name="line_type_id" ref="line_type_9"/>
+            <field name="help_code">SX</field>
+            <field name="day_num">5</field>
+            <field name="send_traffic">大巴</field>
+            <field name="end_traffic">大巴</field>
+    </record>
+    <record id="line_21" model="tour.line">
+            <field name="name">北京京韵品质高铁4日游-【济南、泰安版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYPZGT4RYJNTAB</field>
+            <field name="day_num">4</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_22" model="tour.line">
+            <field name="name">北京京韵品质高铁5日游【淄博版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYPZGT5RYZBB</field>
+            <field name="day_num">5</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_23" model="tour.line">
+            <field name="name">北京京韵漫游高铁4日游【济南、泰安版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYMYGT4RYJNTAB</field>
+            <field name="day_num">4</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_24" model="tour.line">
+            <field name="name">北京京韵漫游高铁5日游【淄博版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYMYGT5RYZBB</field>
+            <field name="day_num">5</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_25" model="tour.line">
+            <field name="name">北京京艳皇牌高铁4日游【济南、泰安版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYHPGT4RYJNTAB</field>
+            <field name="day_num">4</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_26" model="tour.line">
+            <field name="name">北京京艳皇牌高铁5日游【淄博版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJJYHPGT5RYZBB</field>
+            <field name="day_num">5</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_27" model="tour.line">
+            <field name="name">北京奢享帝都高铁4日游【济南、泰安版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJSXDDGT4RYJNTAB</field>
+            <field name="day_num">4</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_28" model="tour.line">
+            <field name="name">北京奢享帝都高铁5日游【淄博版】</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">BJSXDDGT5RYZBB</field>
+            <field name="day_num">5</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_29" model="tour.line">
+            <field name="name">乐享京城高铁3日游</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">YXJCGT3RY</field>
+            <field name="day_num">3</field>
+            <field name="send_traffic">高铁</field>
+            <field name="end_traffic">高铁</field>
+    </record>
+    <record id="line_30" model="tour.line">
+            <field name="name">特价北京大巴3日游</field>
+            <field name="line_type_id" ref="line_type_5"/>
+            <field name="help_code">TJBJDB3RY</field>
+            <field name="day_num">3</field>
+            <field name="send_traffic">大巴</field>
+            <field name="end_traffic">大巴</field>
+    </record>
+
+</odoo>
