@@ -1,0 +1,8063 @@
+[
+  {
+    "id": "1",
+    "name": "线路产品",
+    "field_count": 82,
+    "record_count": "212",
+    "api": "/Line/GetSearchList/ResMng.LineList",
+    "page": "资源中心>线路模板",
+    "files": "et_data/line_products.csv",
+    "fields": [
+      {
+        "name": "_feeexclude",
+        "desc": ""
+      },
+      {
+        "name": "LineFeatureRich",
+        "desc": ""
+      },
+      {
+        "name": "AuthorID",
+        "desc": ""
+      },
+      {
+        "name": "RegType",
+        "desc": ""
+      },
+      {
+        "name": "FakeNum",
+        "desc": ""
+      },
+      {
+        "name": "Author",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "AutoBuildLineCode",
+        "desc": ""
+      },
+      {
+        "name": "IsSpecial",
+        "desc": ""
+      },
+      {
+        "name": "IsJw",
+        "desc": ""
+      },
+      {
+        "name": "IsDJS",
+        "desc": ""
+      },
+      {
+        "name": "AttachFileName",
+        "desc": ""
+      },
+      {
+        "name": "AttachFileGuidID",
+        "desc": ""
+      },
+      {
+        "name": "LineID",
+        "desc": "线路ID（主键）"
+      },
+      {
+        "name": "LineTypeID",
+        "desc": "线路分类ID"
+      },
+      {
+        "name": "LineType",
+        "desc": "线路分类名称"
+      },
+      {
+        "name": "LineCode",
+        "desc": "线路编号"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "LineName",
+        "desc": "线路名称"
+      },
+      {
+        "name": "DayNum",
+        "desc": "天数"
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "SendPlace",
+        "desc": "出发地"
+      },
+      {
+        "name": "EndPlace",
+        "desc": "目的地"
+      },
+      {
+        "name": "SendTraffic",
+        "desc": ""
+      },
+      {
+        "name": "EndTraffic",
+        "desc": ""
+      },
+      {
+        "name": "SrvText",
+        "desc": "行程安排"
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "OtherRemark",
+        "desc": ""
+      },
+      {
+        "name": "ShoppingInfo",
+        "desc": "购物信息"
+      },
+      {
+        "name": "SelfPaidItem",
+        "desc": "自费项目"
+      },
+      {
+        "name": "WarmHint",
+        "desc": "温馨提示"
+      },
+      {
+        "name": "AllowOutsideJoin",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "XCID",
+        "desc": ""
+      },
+      {
+        "name": "LineKind",
+        "desc": ""
+      },
+      {
+        "name": "LineCamp",
+        "desc": ""
+      },
+      {
+        "name": "LineTypeCatalog",
+        "desc": ""
+      },
+      {
+        "name": "DJSupplierName",
+        "desc": ""
+      },
+      {
+        "name": "DJSupplierID",
+        "desc": ""
+      },
+      {
+        "name": "FeeInclude",
+        "desc": "费用包含"
+      },
+      {
+        "name": "FeeExclude",
+        "desc": "费用不含"
+      },
+      {
+        "name": "ToRegPlanName",
+        "desc": ""
+      },
+      {
+        "name": "AdultPrice",
+        "desc": "成人价"
+      },
+      {
+        "name": "ChildPrice",
+        "desc": "儿童价"
+      },
+      {
+        "name": "OldManPrice",
+        "desc": "老人价"
+      },
+      {
+        "name": "BabyPrice",
+        "desc": "婴儿价"
+      },
+      {
+        "name": "StudentPrice",
+        "desc": "学生价"
+      },
+      {
+        "name": "ShortName",
+        "desc": ""
+      },
+      {
+        "name": "LineScore",
+        "desc": ""
+      },
+      {
+        "name": "SpecialRecommendation",
+        "desc": ""
+      },
+      {
+        "name": "LineFeature",
+        "desc": ""
+      },
+      {
+        "name": "Attentions",
+        "desc": ""
+      },
+      {
+        "name": "GroupType",
+        "desc": ""
+      },
+      {
+        "name": "LineAttachmentList",
+        "desc": ""
+      },
+      {
+        "name": "Guide_ShareRate",
+        "desc": ""
+      },
+      {
+        "name": "Guide_Premium",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "FromProvince",
+        "desc": ""
+      },
+      {
+        "name": "FromCity",
+        "desc": ""
+      },
+      {
+        "name": "ToProvince",
+        "desc": ""
+      },
+      {
+        "name": "ToCity",
+        "desc": ""
+      },
+      {
+        "name": "LineDetailsRich",
+        "desc": ""
+      },
+      {
+        "name": "SerialsID",
+        "desc": ""
+      },
+      {
+        "name": "LineMarks",
+        "desc": ""
+      },
+      {
+        "name": "LineStrategy",
+        "desc": ""
+      },
+      {
+        "name": "UserID",
+        "desc": "用户ID"
+      },
+      {
+        "name": "UserName",
+        "desc": "用户姓名"
+      },
+      {
+        "name": "Keywords",
+        "desc": ""
+      },
+      {
+        "name": "PlanClass",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_Date",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "线路分类",
+    "field_count": 25,
+    "record_count": "85",
+    "api": "/LineType/GetSearchList/ResMng.LineTypeList",
+    "page": "资源中心>线路分类",
+    "files": "et_data/line_types.csv",
+    "fields": [
+      {
+        "name": "AllowOutsideJoin",
+        "desc": ""
+      },
+      {
+        "name": "LineTypeID",
+        "desc": "线路分类ID"
+      },
+      {
+        "name": "TypeCode",
+        "desc": ""
+      },
+      {
+        "name": "TypeName",
+        "desc": ""
+      },
+      {
+        "name": "TypeBrief",
+        "desc": ""
+      },
+      {
+        "name": "Layer",
+        "desc": ""
+      },
+      {
+        "name": "ParentID",
+        "desc": "父级ID"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "Opdate",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "Price",
+        "desc": ""
+      },
+      {
+        "name": "LineTypeCatalog",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "Custom",
+        "desc": ""
+      },
+      {
+        "name": "LineTypeImg",
+        "desc": ""
+      },
+      {
+        "name": "BasePrice",
+        "desc": ""
+      },
+      {
+        "name": "UserID",
+        "desc": "用户ID"
+      },
+      {
+        "name": "UserName",
+        "desc": "用户姓名"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "客户档案",
+    "field_count": 117,
+    "record_count": "1335",
+    "api": "/Supplier/GetSearchList/ResMng.SupplierList",
+    "page": "资源中心>客户档案",
+    "files": "et_data/customers.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "地接社档案",
+    "field_count": 117,
+    "record_count": "194",
+    "api": "/Supplier/GetSearchList/ResMng.SupplierList2",
+    "page": "资源中心>地接社档案",
+    "files": "et_data/ditches.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "name": "酒店档案",
+    "field_count": 117,
+    "record_count": "886",
+    "api": "/Supplier/GetSearchList/ResMng.HotelList",
+    "page": "资源中心>酒店档案",
+    "files": "et_data/hotels.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "name": "餐厅档案",
+    "field_count": 117,
+    "record_count": "240",
+    "api": "/Supplier/GetSearchList/ResMng.MealList",
+    "page": "资源中心>餐厅档案",
+    "files": "et_data/meals.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "name": "车辆公司",
+    "field_count": 117,
+    "record_count": "137",
+    "api": "/Supplier/GetSearchList/ResMng.VehicleList",
+    "page": "资源中心>车辆公司",
+    "files": "et_data/vehicle_comps.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "name": "票务公司",
+    "field_count": 117,
+    "record_count": "9",
+    "api": "/Supplier/GetSearchList/ResMng.TicketList",
+    "page": "资源中心>票务公司",
+    "files": "et_data/tickets.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "9",
+    "name": "景区景点",
+    "field_count": 117,
+    "record_count": "337",
+    "api": "/Supplier/GetSearchList/ResMng.ScenicList",
+    "page": "资源中心>景区景点",
+    "files": "et_data/scenics.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "10",
+    "name": "购物店",
+    "field_count": 117,
+    "record_count": "77",
+    "api": "/Supplier/GetSearchList/ResMng.ShopList",
+    "page": "资源中心>购物店档案",
+    "files": "et_data/shops.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "11",
+    "name": "保险公司",
+    "field_count": 117,
+    "record_count": "6",
+    "api": "/Supplier/GetSearchList/ResMng.InsuranceList",
+    "page": "资源中心>保险公司",
+    "files": "et_data/insurances.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "12",
+    "name": "自费公司",
+    "field_count": 117,
+    "record_count": "121",
+    "api": "/Supplier/GetSearchList/ResMng.SelfFeeList",
+    "page": "资源中心>自费公司",
+    "files": "et_data/self_fees.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "13",
+    "name": "导游档案",
+    "field_count": 64,
+    "record_count": "2173",
+    "api": "/Guide/GetSearchList/ResMng.GuideList",
+    "page": "资源中心>导游档案",
+    "files": "et_data/guides.csv",
+    "fields": [
+      {
+        "name": "GuideID",
+        "desc": "导游ID"
+      },
+      {
+        "name": "SupID",
+        "desc": "供应商ID（主键）"
+      },
+      {
+        "name": "IsTourGuide",
+        "desc": ""
+      },
+      {
+        "name": "GuideLeadType",
+        "desc": ""
+      },
+      {
+        "name": "SupName",
+        "desc": "供应商名称"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "GuideCode",
+        "desc": "导游证号"
+      },
+      {
+        "name": "GuideName",
+        "desc": "导游姓名"
+      },
+      {
+        "name": "Sex",
+        "desc": "性别"
+      },
+      {
+        "name": "Nation",
+        "desc": "民族"
+      },
+      {
+        "name": "BornPlace",
+        "desc": ""
+      },
+      {
+        "name": "Edu",
+        "desc": ""
+      },
+      {
+        "name": "IDNum",
+        "desc": ""
+      },
+      {
+        "name": "Tel",
+        "desc": ""
+      },
+      {
+        "name": "Mobile",
+        "desc": ""
+      },
+      {
+        "name": "ZipCode",
+        "desc": ""
+      },
+      {
+        "name": "Addr",
+        "desc": ""
+      },
+      {
+        "name": "Photo",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "LanguageName",
+        "desc": ""
+      },
+      {
+        "name": "Licence",
+        "desc": ""
+      },
+      {
+        "name": "GuideType",
+        "desc": ""
+      },
+      {
+        "name": "GuideAccount",
+        "desc": ""
+      },
+      {
+        "name": "GuidePwd",
+        "desc": ""
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "JobNo",
+        "desc": ""
+      },
+      {
+        "name": "MaritalStatus",
+        "desc": ""
+      },
+      {
+        "name": "EntryTme",
+        "desc": ""
+      },
+      {
+        "name": "GuideGroup",
+        "desc": ""
+      },
+      {
+        "name": "CareerYears",
+        "desc": ""
+      },
+      {
+        "name": "AccountBank",
+        "desc": ""
+      },
+      {
+        "name": "AccountName",
+        "desc": "账户名称"
+      },
+      {
+        "name": "AccountNo",
+        "desc": "账号"
+      },
+      {
+        "name": "LoanRate",
+        "desc": ""
+      },
+      {
+        "name": "Area",
+        "desc": ""
+      },
+      {
+        "name": "LicenceType",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RecommendClass",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "Birthday",
+        "desc": ""
+      },
+      {
+        "name": "GuideLeader",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "GuideStar",
+        "desc": ""
+      },
+      {
+        "name": "DriverLicence",
+        "desc": ""
+      },
+      {
+        "name": "DriverSeatNum",
+        "desc": ""
+      },
+      {
+        "name": "DriverCarType",
+        "desc": ""
+      },
+      {
+        "name": "IsDriverGuide",
+        "desc": ""
+      },
+      {
+        "name": "DriverCarName",
+        "desc": ""
+      },
+      {
+        "name": "WorkingDate",
+        "desc": ""
+      },
+      {
+        "name": "GroupType",
+        "desc": ""
+      },
+      {
+        "name": "ShopType",
+        "desc": ""
+      },
+      {
+        "name": "GuideAdvantage",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "14",
+    "name": "车辆档案",
+    "field_count": 49,
+    "record_count": "71",
+    "api": "/Driver/GetSearchList/ResMng.DriverList",
+    "page": "资源中心>车辆档案",
+    "files": "et_data/vehicles.csv",
+    "fields": [
+      {
+        "name": "_auditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "_auditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "_auditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "DriverID",
+        "desc": "司机ID"
+      },
+      {
+        "name": "SupplierID",
+        "desc": ""
+      },
+      {
+        "name": "SupplierName",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "IsAutarky",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "DriverCode",
+        "desc": ""
+      },
+      {
+        "name": "DriverName",
+        "desc": "司机姓名"
+      },
+      {
+        "name": "Sex",
+        "desc": "性别"
+      },
+      {
+        "name": "Nation",
+        "desc": "民族"
+      },
+      {
+        "name": "BornPlace",
+        "desc": ""
+      },
+      {
+        "name": "Edu",
+        "desc": ""
+      },
+      {
+        "name": "IDNum",
+        "desc": ""
+      },
+      {
+        "name": "Age",
+        "desc": ""
+      },
+      {
+        "name": "Tel",
+        "desc": ""
+      },
+      {
+        "name": "Mobile",
+        "desc": ""
+      },
+      {
+        "name": "ZipCode",
+        "desc": ""
+      },
+      {
+        "name": "Addr",
+        "desc": ""
+      },
+      {
+        "name": "Photo",
+        "desc": ""
+      },
+      {
+        "name": "Photo2",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "Licence",
+        "desc": ""
+      },
+      {
+        "name": "BuyDate",
+        "desc": ""
+      },
+      {
+        "name": "SeatNum",
+        "desc": ""
+      },
+      {
+        "name": "CarType",
+        "desc": ""
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "LoanRate",
+        "desc": ""
+      },
+      {
+        "name": "LicenceDate",
+        "desc": ""
+      },
+      {
+        "name": "LicenceType",
+        "desc": ""
+      },
+      {
+        "name": "Openingbank",
+        "desc": ""
+      },
+      {
+        "name": "BankAccount",
+        "desc": "银行账号"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "Driver_Account",
+        "desc": ""
+      },
+      {
+        "name": "Driver_Pwd",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "15",
+    "name": "团队订单",
+    "field_count": 137,
+    "record_count": "86925",
+    "api": "/Plan/SearchPlanAndReg/Plan.List",
+    "page": "常规业务>团队订单",
+    "files": "et_data/team_orders.csv",
+    "fields": [
+      {
+        "name": "rows",
+        "desc": ""
+      },
+      {
+        "name": "GuestCount",
+        "desc": "客人数"
+      },
+      {
+        "name": "SysServiceFee",
+        "desc": ""
+      },
+      {
+        "name": "RegID",
+        "desc": "报名ID"
+      },
+      {
+        "name": "MainRegID",
+        "desc": ""
+      },
+      {
+        "name": "RegCode",
+        "desc": "报名单号"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "SupplierID",
+        "desc": ""
+      },
+      {
+        "name": "SupplierName",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUser",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserWeiXin",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserAddress",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserTel",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserMobile",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserFax",
+        "desc": ""
+      },
+      {
+        "name": "OutCode",
+        "desc": ""
+      },
+      {
+        "name": "AdultNum",
+        "desc": "成人数"
+      },
+      {
+        "name": "LeftPlace",
+        "desc": ""
+      },
+      {
+        "name": "ReceivePlace",
+        "desc": ""
+      },
+      {
+        "name": "ChildNum",
+        "desc": "儿童数"
+      },
+      {
+        "name": "GuideNum",
+        "desc": ""
+      },
+      {
+        "name": "OldManNum",
+        "desc": ""
+      },
+      {
+        "name": "ValidNum",
+        "desc": ""
+      },
+      {
+        "name": "InDptName",
+        "desc": ""
+      },
+      {
+        "name": "BabyNum",
+        "desc": ""
+      },
+      {
+        "name": "StudentNum",
+        "desc": ""
+      },
+      {
+        "name": "LineID",
+        "desc": "线路ID（主键）"
+      },
+      {
+        "name": "PlanName",
+        "desc": "计划名称"
+      },
+      {
+        "name": "OrderState",
+        "desc": "订单状态"
+      },
+      {
+        "name": "PlanClass",
+        "desc": ""
+      },
+      {
+        "name": "BeginDate",
+        "desc": "开始日期"
+      },
+      {
+        "name": "EndDate",
+        "desc": "结束日期"
+      },
+      {
+        "name": "GuideContact",
+        "desc": ""
+      },
+      {
+        "name": "Nation",
+        "desc": "民族"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "ReceiveTag",
+        "desc": ""
+      },
+      {
+        "name": "GuestContact",
+        "desc": "客人联系人"
+      },
+      {
+        "name": "UserID",
+        "desc": "用户ID"
+      },
+      {
+        "name": "UserName",
+        "desc": "用户姓名"
+      },
+      {
+        "name": "OpStateChk",
+        "desc": ""
+      },
+      {
+        "name": "ZTSConfirmChk",
+        "desc": ""
+      },
+      {
+        "name": "HotelStar",
+        "desc": ""
+      },
+      {
+        "name": "FromType",
+        "desc": ""
+      },
+      {
+        "name": "BizMode",
+        "desc": ""
+      },
+      {
+        "name": "GatherChk",
+        "desc": ""
+      },
+      {
+        "name": "OutState",
+        "desc": ""
+      },
+      {
+        "name": "InState",
+        "desc": ""
+      },
+      {
+        "name": "RegVerificationChk",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk0",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk",
+        "desc": ""
+      },
+      {
+        "name": "VerifyChk",
+        "desc": ""
+      },
+      {
+        "name": "VerifyDate",
+        "desc": ""
+      },
+      {
+        "name": "InUserID",
+        "desc": ""
+      },
+      {
+        "name": "InUserName",
+        "desc": ""
+      },
+      {
+        "name": "UpdateUser",
+        "desc": ""
+      },
+      {
+        "name": "UpdateTime",
+        "desc": ""
+      },
+      {
+        "name": "ReceiveTraffic",
+        "desc": ""
+      },
+      {
+        "name": "LeftTraffic",
+        "desc": ""
+      },
+      {
+        "name": "FirstPlanID",
+        "desc": ""
+      },
+      {
+        "name": "PlanCode",
+        "desc": "团号"
+      },
+      {
+        "name": "PlanBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "MainRegCode",
+        "desc": ""
+      },
+      {
+        "name": "PlanID_MainReg",
+        "desc": ""
+      },
+      {
+        "name": "FromID",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "outPrice_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "InCom_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "InCome_Change",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Normal",
+        "desc": ""
+      },
+      {
+        "name": "SumMoney_Delegate",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Delegate",
+        "desc": ""
+      },
+      {
+        "name": "SumUnPay",
+        "desc": ""
+      },
+      {
+        "name": "SumMoney_Return",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Return",
+        "desc": ""
+      },
+      {
+        "name": "PlanEndDate",
+        "desc": ""
+      },
+      {
+        "name": "PlanNum",
+        "desc": ""
+      },
+      {
+        "name": "SumAdultNum",
+        "desc": ""
+      },
+      {
+        "name": "SumChildNum",
+        "desc": ""
+      },
+      {
+        "name": "SumOldmanNum",
+        "desc": ""
+      },
+      {
+        "name": "SumBabyNum",
+        "desc": ""
+      },
+      {
+        "name": "SumGuideNum",
+        "desc": ""
+      },
+      {
+        "name": "SumStudentNum",
+        "desc": ""
+      },
+      {
+        "name": "PlanType",
+        "desc": ""
+      },
+      {
+        "name": "State",
+        "desc": "状态"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UnPay_Apply",
+        "desc": ""
+      },
+      {
+        "name": "ApplyPayMoney",
+        "desc": ""
+      },
+      {
+        "name": "ApplyPay_UnChk",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "ActualShuttleTime",
+        "desc": ""
+      },
+      {
+        "name": "GuestOccupation",
+        "desc": ""
+      },
+      {
+        "name": "Currency",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Accompany",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Additional",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Single",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Standard",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Triangle",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser_Cmp",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "IsReceivedGuest",
+        "desc": ""
+      },
+      {
+        "name": "IsDSafe",
+        "desc": ""
+      },
+      {
+        "name": "IsSendHotelDpt",
+        "desc": ""
+      },
+      {
+        "name": "MainBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "MainEndDate",
+        "desc": ""
+      },
+      {
+        "name": "Fake_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Fake",
+        "desc": ""
+      },
+      {
+        "name": "PrePrice_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "ExchangeRate",
+        "desc": ""
+      },
+      {
+        "name": "VerifyID",
+        "desc": ""
+      },
+      {
+        "name": "SumPay",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceMoney",
+        "desc": ""
+      },
+      {
+        "name": "UnInvoiceMoney",
+        "desc": ""
+      },
+      {
+        "name": "PlanOtherRemark",
+        "desc": ""
+      },
+      {
+        "name": "OrderDate",
+        "desc": ""
+      },
+      {
+        "name": "RegOrderType",
+        "desc": ""
+      },
+      {
+        "name": "VerChk",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "SumDeposit",
+        "desc": ""
+      },
+      {
+        "name": "RegOpenId",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "VerifyBrief",
+        "desc": ""
+      },
+      {
+        "name": "SalesName",
+        "desc": ""
+      },
+      {
+        "name": "SpecialExplain",
+        "desc": ""
+      },
+      {
+        "name": "ChannelEx",
+        "desc": ""
+      },
+      {
+        "name": "PlanRemark",
+        "desc": ""
+      },
+      {
+        "name": "HotelDayNum",
+        "desc": ""
+      },
+      {
+        "name": "ShortName",
+        "desc": ""
+      },
+      {
+        "name": "InSum",
+        "desc": ""
+      },
+      {
+        "name": "OutSum",
+        "desc": ""
+      },
+      {
+        "name": "Profit",
+        "desc": ""
+      },
+      {
+        "name": "InSum_NoShop",
+        "desc": ""
+      },
+      {
+        "name": "OutSum_NoShop",
+        "desc": ""
+      },
+      {
+        "name": "Profit_NoShop",
+        "desc": ""
+      },
+      {
+        "name": "guidelist",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "name": "订单报名",
+    "field_count": 77,
+    "record_count": "86753",
+    "api": "/PlanReg/SearchReg/PlanMng.ListRegDSN",
+    "page": "地接散拼>订单",
+    "files": "et_data/plan_regs.csv",
+    "fields": [
+      {
+        "name": "rows",
+        "desc": ""
+      },
+      {
+        "name": "RegID",
+        "desc": "报名ID"
+      },
+      {
+        "name": "MainRegID",
+        "desc": ""
+      },
+      {
+        "name": "RegCode",
+        "desc": "报名单号"
+      },
+      {
+        "name": "GuestCount",
+        "desc": "客人数"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "SupplierID",
+        "desc": ""
+      },
+      {
+        "name": "SupplierName",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUser",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserTel",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserMobile",
+        "desc": ""
+      },
+      {
+        "name": "SupplierUserFax",
+        "desc": ""
+      },
+      {
+        "name": "ActualShuttleTime",
+        "desc": ""
+      },
+      {
+        "name": "OutCode",
+        "desc": ""
+      },
+      {
+        "name": "AdultNum",
+        "desc": "成人数"
+      },
+      {
+        "name": "ChildNum",
+        "desc": "儿童数"
+      },
+      {
+        "name": "GuideNum",
+        "desc": ""
+      },
+      {
+        "name": "OldManNum",
+        "desc": ""
+      },
+      {
+        "name": "BabyNum",
+        "desc": ""
+      },
+      {
+        "name": "StudentNum",
+        "desc": ""
+      },
+      {
+        "name": "LineID",
+        "desc": "线路ID（主键）"
+      },
+      {
+        "name": "PlanName",
+        "desc": "计划名称"
+      },
+      {
+        "name": "PlanClass",
+        "desc": ""
+      },
+      {
+        "name": "BeginDate",
+        "desc": "开始日期"
+      },
+      {
+        "name": "EndDate",
+        "desc": "结束日期"
+      },
+      {
+        "name": "GuideContact",
+        "desc": ""
+      },
+      {
+        "name": "GuestOccupation",
+        "desc": ""
+      },
+      {
+        "name": "Nation",
+        "desc": "民族"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "ReceivePlace",
+        "desc": ""
+      },
+      {
+        "name": "ReceiveTraffic",
+        "desc": ""
+      },
+      {
+        "name": "ReceiveTag",
+        "desc": ""
+      },
+      {
+        "name": "LeftPlace",
+        "desc": ""
+      },
+      {
+        "name": "LeftTraffic",
+        "desc": ""
+      },
+      {
+        "name": "PlanType",
+        "desc": ""
+      },
+      {
+        "name": "FromType",
+        "desc": ""
+      },
+      {
+        "name": "BizMode",
+        "desc": ""
+      },
+      {
+        "name": "GatherChk",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "UpdateUser",
+        "desc": ""
+      },
+      {
+        "name": "UpdateTime",
+        "desc": ""
+      },
+      {
+        "name": "OutState",
+        "desc": ""
+      },
+      {
+        "name": "InState",
+        "desc": ""
+      },
+      {
+        "name": "RegVerificationChk",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk0",
+        "desc": ""
+      },
+      {
+        "name": "AuditChk",
+        "desc": ""
+      },
+      {
+        "name": "VerifyChk",
+        "desc": ""
+      },
+      {
+        "name": "VerifyDate",
+        "desc": ""
+      },
+      {
+        "name": "InUserID",
+        "desc": ""
+      },
+      {
+        "name": "InUserName",
+        "desc": ""
+      },
+      {
+        "name": "FromID",
+        "desc": ""
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "HotelRoom_Single",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Standard",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Triangle",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Accompany",
+        "desc": ""
+      },
+      {
+        "name": "HotelRoom_Additional",
+        "desc": ""
+      },
+      {
+        "name": "MainRegCode",
+        "desc": ""
+      },
+      {
+        "name": "PlanID_MainReg",
+        "desc": ""
+      },
+      {
+        "name": "HotelStar",
+        "desc": ""
+      },
+      {
+        "name": "InCom_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Normal",
+        "desc": ""
+      },
+      {
+        "name": "SumUnPay",
+        "desc": ""
+      },
+      {
+        "name": "SumMoney_Delegate",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Delegate",
+        "desc": ""
+      },
+      {
+        "name": "SumMoney_Return",
+        "desc": ""
+      },
+      {
+        "name": "SumPay_Return",
+        "desc": ""
+      },
+      {
+        "name": "outPrice_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "PrePrice_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "PreCost_QuoSum",
+        "desc": ""
+      },
+      {
+        "name": "FirstPlanID",
+        "desc": ""
+      },
+      {
+        "name": "HotelDayNum",
+        "desc": ""
+      },
+      {
+        "name": "OrderDate",
+        "desc": ""
+      },
+      {
+        "name": "SalesName",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "name": "收款登记",
+    "field_count": 30,
+    "record_count": "51",
+    "api": "/PayClaim/SearchPayClaim/PayClaim.List1",
+    "page": "收款认领>收款登记",
+    "files": "et_data/pay_claims.csv",
+    "fields": [
+      {
+        "name": "rows",
+        "desc": ""
+      },
+      {
+        "name": "PayClaimID",
+        "desc": ""
+      },
+      {
+        "name": "PayeeID",
+        "desc": ""
+      },
+      {
+        "name": "Payee",
+        "desc": ""
+      },
+      {
+        "name": "IsMainReg",
+        "desc": ""
+      },
+      {
+        "name": "SupplierID",
+        "desc": ""
+      },
+      {
+        "name": "SupplierName",
+        "desc": ""
+      },
+      {
+        "name": "PayDate",
+        "desc": ""
+      },
+      {
+        "name": "PayMoney",
+        "desc": ""
+      },
+      {
+        "name": "UseMoney",
+        "desc": ""
+      },
+      {
+        "name": "AccountID",
+        "desc": "账户ID"
+      },
+      {
+        "name": "BankName_Pay",
+        "desc": ""
+      },
+      {
+        "name": "AccountName_Pay",
+        "desc": ""
+      },
+      {
+        "name": "AccountNo_Pay",
+        "desc": ""
+      },
+      {
+        "name": "PayType",
+        "desc": ""
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "ClaimState",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "TaxCode",
+        "desc": ""
+      },
+      {
+        "name": "exPort",
+        "desc": ""
+      },
+      {
+        "name": "BalanceMoney",
+        "desc": ""
+      },
+      {
+        "name": "TransFeeRate",
+        "desc": ""
+      },
+      {
+        "name": "TransFee",
+        "desc": ""
+      },
+      {
+        "name": "StarState",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "18",
+    "name": "银行账户",
+    "field_count": 23,
+    "record_count": "72",
+    "api": "/Account/GetSearchList/ResMng.AccountList",
+    "page": "财务管理>银行账户管理",
+    "files": "et_data/accounts.csv",
+    "fields": [
+      {
+        "name": "AccountID",
+        "desc": "账户ID"
+      },
+      {
+        "name": "InOutDate",
+        "desc": ""
+      },
+      {
+        "name": "AccountName",
+        "desc": "账户名称"
+      },
+      {
+        "name": "BankName",
+        "desc": "开户行"
+      },
+      {
+        "name": "BankAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "BalanceMoney",
+        "desc": ""
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CodeName",
+        "desc": ""
+      },
+      {
+        "name": "Currency",
+        "desc": ""
+      },
+      {
+        "name": "Abstract",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "AccountType",
+        "desc": "账户类型"
+      },
+      {
+        "name": "TransFeeRate",
+        "desc": ""
+      },
+      {
+        "name": "TaxpayerNo",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "19",
+    "name": "结算方式",
+    "field_count": 6,
+    "record_count": "7",
+    "api": "/Item/SearchPayWayItemList/Item.PayWayItemList",
+    "page": "基础数据>结算方式",
+    "files": "et_data/pay_ways.csv",
+    "fields": [
+      {
+        "name": "PayWayID",
+        "desc": "结算方式ID"
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "PayWayName",
+        "desc": "结算方式名称"
+      },
+      {
+        "name": "PayWayType",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SortID",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "20",
+    "name": "部门设置",
+    "field_count": 23,
+    "record_count": "22",
+    "api": "/Department/GetSearchList/SysMng.DeptList",
+    "page": "系统管理>部门设置",
+    "files": "et_data/departments.csv",
+    "fields": [
+      {
+        "name": "rows",
+        "desc": ""
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "cmpUseChk",
+        "desc": ""
+      },
+      {
+        "name": "DptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "DptCode",
+        "desc": "部门代码"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "DptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "DptTel",
+        "desc": "部门电话"
+      },
+      {
+        "name": "DptFax",
+        "desc": ""
+      },
+      {
+        "name": "DptZip",
+        "desc": ""
+      },
+      {
+        "name": "DptAddr",
+        "desc": "部门地址"
+      },
+      {
+        "name": "DptBank",
+        "desc": ""
+      },
+      {
+        "name": "DptAccount",
+        "desc": ""
+      },
+      {
+        "name": "DptAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "DptTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "DptRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "ParentID",
+        "desc": "父级ID"
+      },
+      {
+        "name": "CwCode",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "21",
+    "name": "用户管理",
+    "field_count": 53,
+    "record_count": "327",
+    "api": "/User/SearchUserList/SysMng.UserList",
+    "page": "系统管理>用户管理",
+    "files": "et_data/users.csv",
+    "fields": [
+      {
+        "name": "WeChatQRCode",
+        "desc": ""
+      },
+      {
+        "name": "QryBeginDateLimit",
+        "desc": ""
+      },
+      {
+        "name": "QryEndDateLimit",
+        "desc": ""
+      },
+      {
+        "name": "UserID",
+        "desc": "用户ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "UserCode",
+        "desc": ""
+      },
+      {
+        "name": "UserName",
+        "desc": "用户姓名"
+      },
+      {
+        "name": "UserTel",
+        "desc": ""
+      },
+      {
+        "name": "UserMobile",
+        "desc": ""
+      },
+      {
+        "name": "Language",
+        "desc": ""
+      },
+      {
+        "name": "UserFax",
+        "desc": ""
+      },
+      {
+        "name": "UserQQ",
+        "desc": ""
+      },
+      {
+        "name": "UserMsn",
+        "desc": ""
+      },
+      {
+        "name": "UserEmail",
+        "desc": ""
+      },
+      {
+        "name": "UserAccount",
+        "desc": "用户账号"
+      },
+      {
+        "name": "WeChatCode",
+        "desc": ""
+      },
+      {
+        "name": "UserPwd",
+        "desc": ""
+      },
+      {
+        "name": "Duty",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "OnlineDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "DptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "DptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "Birthday",
+        "desc": ""
+      },
+      {
+        "name": "et818UserID",
+        "desc": ""
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "EditChk",
+        "desc": ""
+      },
+      {
+        "name": "ChargeType",
+        "desc": ""
+      },
+      {
+        "name": "ChargeIDs",
+        "desc": ""
+      },
+      {
+        "name": "ChargeNames",
+        "desc": ""
+      },
+      {
+        "name": "WeiXinUserID",
+        "desc": ""
+      },
+      {
+        "name": "WeiXinUserName",
+        "desc": ""
+      },
+      {
+        "name": "WxOpenId",
+        "desc": ""
+      },
+      {
+        "name": "PDScore",
+        "desc": ""
+      },
+      {
+        "name": "ExpiredDate",
+        "desc": ""
+      },
+      {
+        "name": "AbsUseChk",
+        "desc": ""
+      },
+      {
+        "name": "MobileOnLineState",
+        "desc": ""
+      },
+      {
+        "name": "PcOnline",
+        "desc": ""
+      },
+      {
+        "name": "MobileOnline",
+        "desc": ""
+      },
+      {
+        "name": "IsUse_CmpPower",
+        "desc": ""
+      },
+      {
+        "name": "UserAddr",
+        "desc": ""
+      },
+      {
+        "name": "RoleType",
+        "desc": ""
+      },
+      {
+        "name": "DptContractNo",
+        "desc": ""
+      },
+      {
+        "name": "BankName_Rec",
+        "desc": ""
+      },
+      {
+        "name": "AccountName_Rec",
+        "desc": ""
+      },
+      {
+        "name": "AccountNo_Rec",
+        "desc": ""
+      },
+      {
+        "name": "CWPayPwd",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "QuickMeuIDs",
+        "desc": ""
+      },
+      {
+        "name": "IDNum",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "22",
+    "name": "公司信息",
+    "field_count": 117,
+    "record_count": "7",
+    "api": "/Company/GetSearchList/SysMng.CmpList",
+    "page": "系统管理>公司信息",
+    "files": "et_data/companies.csv",
+    "fields": [
+      {
+        "name": "_finacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realFinacesyschk",
+        "desc": ""
+      },
+      {
+        "name": "_realAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "ClassTypeID",
+        "desc": ""
+      },
+      {
+        "name": "CmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "CmpCode",
+        "desc": "公司代码"
+      },
+      {
+        "name": "ContractNo",
+        "desc": ""
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "CmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "CmpManager",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerMobile",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthday",
+        "desc": ""
+      },
+      {
+        "name": "BossBirthdayType",
+        "desc": ""
+      },
+      {
+        "name": "CmpTel",
+        "desc": ""
+      },
+      {
+        "name": "CmpFax",
+        "desc": ""
+      },
+      {
+        "name": "CmpZip",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr",
+        "desc": ""
+      },
+      {
+        "name": "CmpBank",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccount",
+        "desc": ""
+      },
+      {
+        "name": "CmpAccountNo",
+        "desc": ""
+      },
+      {
+        "name": "CmpTOPLOGO",
+        "desc": ""
+      },
+      {
+        "name": "CmpRPTLOGO",
+        "desc": ""
+      },
+      {
+        "name": "ReportPrintStamp",
+        "desc": ""
+      },
+      {
+        "name": "LevelName",
+        "desc": ""
+      },
+      {
+        "name": "Remark",
+        "desc": "备注"
+      },
+      {
+        "name": "SupTypeID",
+        "desc": "供应商类型ID"
+      },
+      {
+        "name": "Province",
+        "desc": "省份"
+      },
+      {
+        "name": "CityName",
+        "desc": "城市"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "ManageAreaSet",
+        "desc": ""
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "SystemUserChk",
+        "desc": ""
+      },
+      {
+        "name": "GrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AuthorDate",
+        "desc": ""
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "licenseID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpID",
+        "desc": ""
+      },
+      {
+        "name": "et818CmpCode",
+        "desc": ""
+      },
+      {
+        "name": "loginAddr",
+        "desc": ""
+      },
+      {
+        "name": "Purchaser",
+        "desc": ""
+      },
+      {
+        "name": "LevelID",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt",
+        "desc": ""
+      },
+      {
+        "name": "UserID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserName_WL",
+        "desc": ""
+      },
+      {
+        "name": "ValidDayNum",
+        "desc": "有效天数"
+      },
+      {
+        "name": "CZ_ExportID",
+        "desc": ""
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "AllGrantNum",
+        "desc": ""
+      },
+      {
+        "name": "AgrPrice",
+        "desc": ""
+      },
+      {
+        "name": "Zone",
+        "desc": ""
+      },
+      {
+        "name": "CountyTown",
+        "desc": ""
+      },
+      {
+        "name": "VerifyUser",
+        "desc": ""
+      },
+      {
+        "name": "ServiceType",
+        "desc": ""
+      },
+      {
+        "name": "ServicePrice",
+        "desc": ""
+      },
+      {
+        "name": "ServiceCalcMode",
+        "desc": ""
+      },
+      {
+        "name": "ChannelID",
+        "desc": ""
+      },
+      {
+        "name": "ChannelName",
+        "desc": ""
+      },
+      {
+        "name": "IsContract",
+        "desc": ""
+      },
+      {
+        "name": "BuyerID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserID",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_UserName",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Brief",
+        "desc": ""
+      },
+      {
+        "name": "CmpAuditChk_Date",
+        "desc": ""
+      },
+      {
+        "name": "ChargePeriod",
+        "desc": ""
+      },
+      {
+        "name": "FinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "TaxPayerNo",
+        "desc": ""
+      },
+      {
+        "name": "InvoiceTitle",
+        "desc": ""
+      },
+      {
+        "name": "Latitude",
+        "desc": ""
+      },
+      {
+        "name": "Longtitue",
+        "desc": ""
+      },
+      {
+        "name": "UFT_export",
+        "desc": ""
+      },
+      {
+        "name": "IsInvoice",
+        "desc": ""
+      },
+      {
+        "name": "Grade",
+        "desc": ""
+      },
+      {
+        "name": "RegEx",
+        "desc": ""
+      },
+      {
+        "name": "RegExBrief",
+        "desc": ""
+      },
+      {
+        "name": "ServiceFeeRoundWay",
+        "desc": ""
+      },
+      {
+        "name": "ContractDate",
+        "desc": ""
+      },
+      {
+        "name": "CmpManagerIDCode",
+        "desc": ""
+      },
+      {
+        "name": "AllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserID",
+        "desc": ""
+      },
+      {
+        "name": "CreateUserName",
+        "desc": ""
+      },
+      {
+        "name": "CreateDate",
+        "desc": "创建时间"
+      },
+      {
+        "name": "Invoice_Rule",
+        "desc": ""
+      },
+      {
+        "name": "ContractBeginDate",
+        "desc": ""
+      },
+      {
+        "name": "ContractEndDate",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmtType",
+        "desc": ""
+      },
+      {
+        "name": "ResIsolation",
+        "desc": ""
+      },
+      {
+        "name": "SortCode",
+        "desc": ""
+      },
+      {
+        "name": "IsnoRepeat",
+        "desc": ""
+      },
+      {
+        "name": "MongoCmpId",
+        "desc": ""
+      },
+      {
+        "name": "UserDptID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserDptName_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpID_WL",
+        "desc": ""
+      },
+      {
+        "name": "UserCmpName_WL",
+        "desc": ""
+      },
+      {
+        "name": "MerchantIds",
+        "desc": ""
+      },
+      {
+        "name": "WxLogo",
+        "desc": ""
+      },
+      {
+        "name": "WxLicence",
+        "desc": ""
+      },
+      {
+        "name": "AliPayIdentity",
+        "desc": ""
+      },
+      {
+        "name": "AliPayBookIdentity",
+        "desc": ""
+      },
+      {
+        "name": "FreePaymentLmt",
+        "desc": ""
+      },
+      {
+        "name": "CreditLmt_SK",
+        "desc": ""
+      },
+      {
+        "name": "RealFinaceSysChk",
+        "desc": ""
+      },
+      {
+        "name": "RealAllowLoginFinSys",
+        "desc": ""
+      },
+      {
+        "name": "PayWay",
+        "desc": ""
+      },
+      {
+        "name": "CooperationAgreement",
+        "desc": ""
+      },
+      {
+        "name": "CmpAddr2",
+        "desc": ""
+      },
+      {
+        "name": "ContractNumber",
+        "desc": ""
+      },
+      {
+        "name": "Remark2",
+        "desc": ""
+      },
+      {
+        "name": "AnyPrice",
+        "desc": ""
+      },
+      {
+        "name": "Location",
+        "desc": ""
+      },
+      {
+        "name": "RoomType",
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "23",
+    "name": "基础数据-类型2",
+    "field_count": 17,
+    "record_count": "4",
+    "api": "/Item/GetItemByTypeID/ResMng.ItemList",
+    "page": "基础数据",
+    "files": "et_data/items_2.csv",
+    "fields": [
+      {
+        "name": "ItemID",
+        "desc": "基础数据ID"
+      },
+      {
+        "name": "ItemTypeID",
+        "desc": "项目类型ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "ItemName",
+        "desc": "项目名称"
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "ItemValue",
+        "desc": "项目值"
+      }
+    ]
+  },
+  {
+    "id": "24",
+    "name": "基础数据-类型3",
+    "field_count": 17,
+    "record_count": "2",
+    "api": "/Item/GetItemByTypeID/ResMng.ItemList",
+    "page": "基础数据",
+    "files": "et_data/items_3.csv",
+    "fields": [
+      {
+        "name": "ItemID",
+        "desc": "基础数据ID"
+      },
+      {
+        "name": "ItemTypeID",
+        "desc": "项目类型ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "ItemName",
+        "desc": "项目名称"
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "ItemValue",
+        "desc": "项目值"
+      }
+    ]
+  },
+  {
+    "id": "25",
+    "name": "基础数据-类型5",
+    "field_count": 17,
+    "record_count": "3",
+    "api": "/Item/GetItemByTypeID/ResMng.ItemList",
+    "page": "基础数据",
+    "files": "et_data/items_5.csv",
+    "fields": [
+      {
+        "name": "ItemID",
+        "desc": "基础数据ID"
+      },
+      {
+        "name": "ItemTypeID",
+        "desc": "项目类型ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "ItemName",
+        "desc": "项目名称"
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "ItemValue",
+        "desc": "项目值"
+      }
+    ]
+  },
+  {
+    "id": "26",
+    "name": "基础数据-职务",
+    "field_count": 17,
+    "record_count": "15",
+    "api": "/Item/GetItemByTypeID/ResMng.ItemList",
+    "page": "基础数据",
+    "files": "et_data/items_11.csv",
+    "fields": [
+      {
+        "name": "ItemID",
+        "desc": "基础数据ID"
+      },
+      {
+        "name": "ItemTypeID",
+        "desc": "项目类型ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "ItemName",
+        "desc": "项目名称"
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "ItemValue",
+        "desc": "项目值"
+      }
+    ]
+  },
+  {
+    "id": "27",
+    "name": "基础数据-业务类型",
+    "field_count": 17,
+    "record_count": "5",
+    "api": "/Item/GetItemByTypeID/ResMng.ItemList",
+    "page": "基础数据",
+    "files": "et_data/items_57.csv",
+    "fields": [
+      {
+        "name": "ItemID",
+        "desc": "基础数据ID"
+      },
+      {
+        "name": "ItemTypeID",
+        "desc": "项目类型ID"
+      },
+      {
+        "name": "HelpCode",
+        "desc": "助记码"
+      },
+      {
+        "name": "ItemName",
+        "desc": "项目名称"
+      },
+      {
+        "name": "Brief",
+        "desc": "摘要"
+      },
+      {
+        "name": "PowerArea",
+        "desc": ""
+      },
+      {
+        "name": "OrderNum",
+        "desc": "排序号"
+      },
+      {
+        "name": "OpUserID",
+        "desc": "操作员ID"
+      },
+      {
+        "name": "OpUserName",
+        "desc": "操作员姓名"
+      },
+      {
+        "name": "OpDptID",
+        "desc": "部门ID"
+      },
+      {
+        "name": "OpDptName",
+        "desc": "部门名称"
+      },
+      {
+        "name": "OpCmpID",
+        "desc": "公司ID"
+      },
+      {
+        "name": "OpCmpName",
+        "desc": "公司名称"
+      },
+      {
+        "name": "OpDate",
+        "desc": "操作时间"
+      },
+      {
+        "name": "UseChk",
+        "desc": "启用状态"
+      },
+      {
+        "name": "CWCode",
+        "desc": ""
+      },
+      {
+        "name": "ItemValue",
+        "desc": "项目值"
+      }
+    ]
+  }
+]

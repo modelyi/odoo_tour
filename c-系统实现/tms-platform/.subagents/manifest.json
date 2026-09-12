@@ -1,0 +1,258 @@
+{
+  "version": "2.0",
+  "description": "TMS 项目 subagent 角色配置清单",
+  "roles": {
+    "product_manager": {
+      "name": "产品经理",
+      "file": "product_manager.md",
+      "scope": [
+        "产品愿景和战略规划",
+        "产品路线图制定",
+        "需求优先级排序(P0/P1/P2/P3)",
+        "利益相关者沟通",
+        "迭代计划和里程碑管理",
+        "竞品分析和市场洞察",
+        "产品指标定义和跟踪",
+        "协调 tour_ba 和 finance_ba"
+      ],
+      "workdir": "/home/adai/tms/b-蓝图/product",
+      "dependencies": [],
+      "outputs": [
+        "产品路线图",
+        "需求优先级矩阵",
+        "迭代计划",
+        "项目进度报告",
+        "利益相关者沟通记录"
+      ],
+      "domain": "产品管理",
+      "authority": {
+        "can_decide": ["需求优先级", "迭代范围", "发布时间"],
+        "need_negotiate": ["技术架构", "人员配置", "预算"],
+        "need_approve": ["产品愿景变更", "重大功能砍掉"]
+      }
+    },
+    "product_architect": {
+      "name": "产品架构师",
+      "file": "product_architect.md",
+      "scope": [
+        "系统架构设计(Odoo 19)",
+        "模块划分和依赖关系设计",
+        "数据模型设计(PostgreSQL + ORM)",
+        "API 接口设计(小程序、第三方)",
+        "集成架构设计(Nginx、Redis、Docker)",
+        "技术选型和评估",
+        "性能优化和扩展性设计",
+        "技术债务管理",
+        "指导 dev_odoo 的技术实现"
+      ],
+      "workdir": "/home/adai/tms/b-蓝图/architecture",
+      "dependencies": ["product_manager"],
+      "outputs": [
+        "技术架构文档",
+        "模块设计文档",
+        "数据模型设计",
+        "API 接口规范",
+        "代码规范文档",
+        "性能优化方案"
+      ],
+      "domain": "技术架构",
+      "authority": {
+        "can_decide": ["技术选型", "模块划分", "代码规范"],
+        "need_negotiate": ["重大架构变更", "第三方集成"],
+        "need_approve": ["技术栈变更", "基础设施投资"]
+      }
+    },
+    "tour_ba": {
+      "name": "旅行业务分析师",
+      "file": "tour_ba.md",
+      "scope": [
+        "旅行业务需求采集与分析",
+        "用户故事编写",
+        "业务流程图设计",
+        "功能规格说明(Functional Spec)",
+        "数据模型业务定义",
+        "与易途系统对标分析",
+        "验收标准定义"
+      ],
+      "workdir": "/home/adai/tms/b-蓝图",
+      "dependencies": ["product_manager", "product_architect"],
+      "outputs": [
+        "业务需求文档",
+        "用户故事列表",
+        "业务流程图",
+        "功能规格说明",
+        "验收标准"
+      ],
+      "domain": "旅行社核心业务",
+      "modules": [
+        "tour_base",
+        "tour_order",
+        "tour_guide",
+        "tour_vehicle",
+        "tour_shopping",
+        "tour_b2b"
+      ]
+    },
+    "finance_ba": {
+      "name": "财务业务分析师",
+      "file": "finance_ba.md",
+      "scope": [
+        "财务需求采集与分析",
+        "会计科目与核算规则定义",
+        "收付款流程设计",
+        "对账规则与流程设计",
+        "佣金/分成计算规则",
+        "审批流程设计",
+        "财务报表需求定义",
+        "财务合规性审查"
+      ],
+      "workdir": "/home/adai/tms/b-蓝图",
+      "dependencies": ["product_manager", "product_architect"],
+      "outputs": [
+        "财务需求文档",
+        "会计分录规则",
+        "对账流程说明",
+        "佣金计算规则",
+        "财务报表规格"
+      ],
+      "domain": "财务管理",
+      "modules": [
+        "tour_finance",
+        "tour_payment",
+        "tour_reconciliation",
+        "tour_commission",
+        "tour_invoice"
+      ]
+    },
+    "dev_odoo": {
+      "name": "Odoo 开发工程师",
+      "file": "dev_odoo.md",
+      "scope": [
+        "Odoo 模块开发",
+        "Python 业务逻辑",
+        "XML 视图定义",
+        "数据迁移脚本",
+        "单元测试编写"
+      ],
+      "workdir": "/home/adai/tms/c-系统实现/tms-platform/addons",
+      "dependencies": ["product_architect", "tour_ba", "finance_ba"],
+      "outputs": [
+        "Python 代码文件",
+        "XML 视图文件",
+        "数据文件",
+        "单元测试"
+      ]
+    },
+    "devops": {
+      "name": "运维工程师",
+      "file": "devops.md",
+      "scope": [
+        "Docker 容器管理",
+        "Nginx 配置",
+        "SSL 证书",
+        "部署脚本",
+        "监控告警",
+        "备份恢复"
+      ],
+      "workdir": "/home/adai/tms/c-系统实现/tms-platform",
+      "dependencies": ["product_architect"],
+      "outputs": [
+        "docker-compose.yml",
+        "Nginx 配置文件",
+        "部署脚本",
+        "监控配置"
+      ]
+    },
+    "dev_qa": {
+      "name": "开发质量保证",
+      "file": "dev_qa.md",
+      "scope": [
+        "代码审查",
+        "Python 语法检查",
+        "Odoo 规范验证",
+        "安装/升级测试",
+        "数据库完整性验证"
+      ],
+      "workdir": "/home/adai/tms/c-系统实现/tms-platform",
+      "dependencies": ["product_architect", "dev_odoo", "tour_ba", "finance_ba"],
+      "outputs": [
+        "代码审查报告",
+        "测试执行报告",
+        "问题清单"
+      ]
+    },
+    "uat_qa": {
+      "name": "用户验收测试",
+      "file": "uat_qa.md",
+      "scope": [
+        "端到端业务流程验证",
+        "API 接口测试",
+        "数据库验证",
+        "浏览器自动化测试",
+        "用户体验评估"
+      ],
+      "workdir": "/home/adai/tms/c-系统实现/tms-platform",
+      "dependencies": ["product_manager", "tour_ba", "finance_ba", "devops"],
+      "outputs": [
+        "UAT 测试报告",
+        "测试用例执行结果",
+        "改进建议"
+      ]
+    }
+  },
+  "workflow": {
+    "sequence": [
+      "product_manager",
+      "product_architect",
+      "tour_ba",
+      "finance_ba",
+      "dev_odoo",
+      "dev_qa",
+      "devops",
+      "uat_qa"
+    ],
+    "parallel_groups": [
+      ["product_manager"],
+      ["product_architect"],
+      ["tour_ba", "finance_ba"],
+      ["dev_odoo"],
+      ["dev_qa"],
+      ["devops"],
+      ["uat_qa"]
+    ],
+    "description": "产品规划(product_manager) → 技术架构(product_architect) → 业务分析(tour_ba+finance_ba并行) → 开发(dev_odoo) → 代码审查(dev_qa) → 部署(devops) → 验收(uat_qa)"
+  },
+  "current_environment": {
+    "server_ip": "147.93.116.199",
+    "domain": "tms.solepro.cloud",
+    "nginx_config": "/etc/nginx/conf.d/solepro.cloud.conf",
+    "ssl_cert": "/etc/nginx/ssl/solepro.cloud/",
+    "containers": {
+      "tms-odoo": {
+        "image": "odoo:19",
+        "ports": ["127.0.0.1:8070:8069", "127.0.0.1:8073:8072"],
+        "status": "running"
+      },
+      "tms-db": {
+        "image": "postgres:16-alpine",
+        "ports": ["internal:5432"],
+        "status": "running"
+      },
+      "tms-redis": {
+        "image": "redis:7-alpine",
+        "ports": ["internal:6379"],
+        "status": "running"
+      }
+    },
+    "database": {
+      "name": "tms",
+      "user": "odoo",
+      "password": "odoo19dev"
+    }
+  },
+  "data_sources": {
+    "research": "/home/adai/tms/a-调研",
+    "blueprint": "/home/adai/tms/b-蓝图",
+    "implementation": "/home/adai/tms/c-系统实现/tms-platform"
+  }
+}

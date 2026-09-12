@@ -1,0 +1,72 @@
+# TMS Platform - Odoo 19 Development Environment
+# 通过系统 Nginx (tms.solepro.cloud) 访问
+# Odoo 绑定 127.0.0.1:8070 (web) / 8073 (longpolling)
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tms-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo19dev}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - tms-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-odoo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: tms-redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - tms-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  odoo:
+    image: odoo:19
+    container_name: tms-odoo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:-odoo19dev}
+      ADMIN_PASSWD: ${ADMIN_PASSWD:-tms_admin_2026}
+    ports:
+      - "127.0.0.1:8070:8069"
+      - "127.0.0.1:8073:8072"
+    volumes:
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ./addons:/mnt/extra-addons
+      - ./data/odoo:/var/lib/odoo
+    networks:
+      - tms-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/database/list >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+networks:
+  tms-net:
+    name: tms-net
+    driver: bridge

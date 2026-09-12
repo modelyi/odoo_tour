@@ -1,0 +1,43 @@
+# 大数据文件（超过 GitHub 100MB 限制）
+a-调研/易途系统数据.db
+a-调研/et_data/
+
+# 截图（已嵌入 spa.html）
+a-调研/screenshots/
+
+# 包含嵌入图片的大 HTML（6MB+）
+a-调研/spa.html
+
+# Docker 数据卷
+c-系统实现/tms-platform/data/
+
+# 敏感文件
+.env
+*.env
+**/.env
+et_cookies.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+
+# Odoo 运行时
+*.log
+odoo-server.log
+
+# Hermes 缓存
+.hermes/

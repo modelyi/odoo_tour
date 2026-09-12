@@ -1,0 +1,218 @@
+{
+  "采集时间": "2026-09-12 10:44:11",
+  "数据源": "http://et.example.com",
+  "账号": "demo_user",
+  "表单数": 27,
+  "总记录数": 180076,
+  "表单": {
+    "线路产品": {
+      "表名": "line_products",
+      "归属页面": "资源中心>线路模板",
+      "API": "/Line/GetSearchList/ResMng.LineList",
+      "记录数": 212,
+      "字段数": 82
+    },
+    "线路分类": {
+      "表名": "line_types",
+      "归属页面": "资源中心>线路分类",
+      "API": "/LineType/GetSearchList/ResMng.LineTypeList",
+      "记录数": 85,
+      "字段数": 25
+    },
+    "客户档案": {
+      "表名": "customers",
+      "归属页面": "资源中心>客户档案",
+      "API": "/Supplier/GetSearchList/ResMng.SupplierList",
+      "记录数": 1335,
+      "字段数": 117
+    },
+    "地接社档案": {
+      "表名": "ditches",
+      "归属页面": "资源中心>地接社档案",
+      "API": "/Supplier/GetSearchList/ResMng.SupplierList2",
+      "记录数": 194,
+      "字段数": 117
+    },
+    "酒店档案": {
+      "表名": "hotels",
+      "归属页面": "资源中心>酒店档案",
+      "API": "/Supplier/GetSearchList/ResMng.HotelList",
+      "记录数": 886,
+      "字段数": 117
+    },
+    "餐厅档案": {
+      "表名": "meals",
+      "归属页面": "资源中心>餐厅档案",
+      "API": "/Supplier/GetSearchList/ResMng.MealList",
+      "记录数": 240,
+      "字段数": 117
+    },
+    "车辆公司": {
+      "表名": "vehicle_comps",
+      "归属页面": "资源中心>车辆公司",
+      "API": "/Supplier/GetSearchList/ResMng.VehicleList",
+      "记录数": 137,
+      "字段数": 117
+    },
+    "票务公司": {
+      "表名": "tickets",
+      "归属页面": "资源中心>票务公司",
+      "API": "/Supplier/GetSearchList/ResMng.TicketList",
+      "记录数": 9,
+      "字段数": 117
+    },
+    "景区景点": {
+      "表名": "scenics",
+      "归属页面": "资源中心>景区景点",
+      "API": "/Supplier/GetSearchList/ResMng.ScenicList",
+      "记录数": 337,
+      "字段数": 117
+    },
+    "购物店": {
+      "表名": "shops",
+      "归属页面": "资源中心>购物店档案",
+      "API": "/Supplier/GetSearchList/ResMng.ShopList",
+      "记录数": 77,
+      "字段数": 117
+    },
+    "保险公司": {
+      "表名": "insurances",
+      "归属页面": "资源中心>保险公司",
+      "API": "/Supplier/GetSearchList/ResMng.InsuranceList",
+      "记录数": 6,
+      "字段数": 117
+    },
+    "自费公司": {
+      "表名": "self_fees",
+      "归属页面": "资源中心>自费公司",
+      "API": "/Supplier/GetSearchList/ResMng.SelfFeeList",
+      "记录数": 121,
+      "字段数": 117
+    },
+    "导游档案": {
+      "表名": "guides",
+      "归属页面": "资源中心>导游档案",
+      "API": "/Guide/GetSearchList/ResMng.GuideList",
+      "记录数": 2173,
+      "字段数": 64
+    },
+    "车辆档案": {
+      "表名": "vehicles",
+      "归属页面": "资源中心>车辆档案",
+      "API": "/Driver/GetSearchList/ResMng.DriverList",
+      "记录数": 71,
+      "字段数": 49
+    },
+    "团队订单": {
+      "表名": "team_orders",
+      "归属页面": "常规业务>团队订单",
+      "API": "/Plan/SearchPlanAndReg/Plan.List",
+      "记录数": 86925,
+      "字段数": 137
+    },
+    "订单报名": {
+      "表名": "plan_regs",
+      "归属页面": "地接散拼>订单",
+      "API": "/PlanReg/SearchReg/PlanMng.ListRegDSN",
+      "记录数": 86753,
+      "字段数": 77
+    },
+    "收款登记": {
+      "表名": "pay_claims",
+      "归属页面": "收款认领>收款登记",
+      "API": "/PayClaim/SearchPayClaim/PayClaim.List1",
+      "记录数": 51,
+      "字段数": 30
+    },
+    "银行账户": {
+      "表名": "accounts",
+      "归属页面": "财务管理>银行账户管理",
+      "API": "/Account/GetSearchList/ResMng.AccountList",
+      "记录数": 72,
+      "字段数": 23
+    },
+    "结算方式": {
+      "表名": "pay_ways",
+      "归属页面": "基础数据>结算方式",
+      "API": "/Item/SearchPayWayItemList/Item.PayWayItemList",
+      "记录数": 7,
+      "字段数": 6
+    },
+    "部门设置": {
+      "表名": "departments",
+      "归属页面": "系统管理>部门设置",
+      "API": "/Department/GetSearchList/SysMng.DeptList",
+      "记录数": 22,
+      "字段数": 23
+    },
+    "用户管理": {
+      "表名": "users",
+      "归属页面": "系统管理>用户管理",
+      "API": "/User/SearchUserList/SysMng.UserList",
+      "记录数": 327,
+      "字段数": 53
+    },
+    "公司信息": {
+      "表名": "companies",
+      "归属页面": "系统管理>公司信息",
+      "API": "/Company/GetSearchList/SysMng.CmpList",
+      "记录数": 7,
+      "字段数": 117
+    },
+    "基础数据-类型2": {
+      "表名": "items_2",
+      "归属页面": "基础数据",
+      "API": "/Item/GetItemByTypeID/ResMng.ItemList",
+      "记录数": 4,
+      "字段数": 17
+    },
+    "基础数据-类型3": {
+      "表名": "items_3",
+      "归属页面": "基础数据",
+      "API": "/Item/GetItemByTypeID/ResMng.ItemList",
+      "记录数": 2,
+      "字段数": 17
+    },
+    "基础数据-类型5": {
+      "表名": "items_5",
+      "归属页面": "基础数据",
+      "API": "/Item/GetItemByTypeID/ResMng.ItemList",
+      "记录数": 3,
+      "字段数": 17
+    },
+    "基础数据-职务": {
+      "表名": "items_11",
+      "归属页面": "基础数据",
+      "API": "/Item/GetItemByTypeID/ResMng.ItemList",
+      "记录数": 15,
+      "字段数": 17
+    },
+    "基础数据-业务类型": {
+      "表名": "items_57",
+      "归属页面": "基础数据",
+      "API": "/Item/GetItemByTypeID/ResMng.ItemList",
+      "记录数": 5,
+      "字段数": 17
+    }
+  },
+  "未采集": [
+    {
+      "表名": "visas",
+      "中文名": "签证公司",
+      "API": "/Supplier/GetSearchList/ResMng.VisaList",
+      "原因": "接口正常返回 0 条记录（库中确无数据）"
+    },
+    {
+      "表名": "channels",
+      "中文名": "平台商档案",
+      "位置": "/Supplier/List/ResMng.ChannelList?supTypeId=15",
+      "原因": "当前账号无该模块权限（页面返回“未经授权，您无权访问该页”）"
+    },
+    {
+      "表名": "cities",
+      "中文名": "区域维护",
+      "位置": "/City/List/ResMng.CityList",
+      "原因": "页面为空壳，未发起任何数据接口请求"
+    }
+  ]
+}
