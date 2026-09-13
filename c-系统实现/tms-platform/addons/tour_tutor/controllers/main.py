@@ -37,8 +37,14 @@ class TourTutor(http.Controller):
 
     # ---------- 权限守卫 ----------
     def _require_superuser(self):
-        """非超级用户一律拒绝；通过返回 None，否则返回响应。"""
-        if not request.env.user._is_superuser():
+        """非超级用户一律拒绝；通过返回 None，否则返回响应。
+
+        注意：Odoo 19 的 res.users._is_superuser() 仅对技术根用户 uid=1
+        （base.user_root）返回 True，而实际登录的超管是 uid=2（base.user_admin）。
+        菜单按 groups="base.group_system" 控制可见性，故此处用 _is_system()
+        （has_group('base.group_system')）与菜单口径保持一致。
+        """
+        if not request.env.user._is_system():
             return request.not_found()
         return None
 

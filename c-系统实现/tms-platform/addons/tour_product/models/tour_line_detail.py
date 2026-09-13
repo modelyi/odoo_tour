@@ -21,6 +21,7 @@ class TourLineDetail(models.Model):
     hotel = fields.Char('住宿')
     traffic = fields.Char('交通')
     content = fields.Html('行程内容')
+    src_html = fields.Html('原文')
     sequence = fields.Integer('排序', default=10)
 
     @api.depends('day_no', 'title', 'city')
