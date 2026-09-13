@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         共享样式（两个导览页共用）
+    ================================================================ -->
+    <template id="tutor_assets" name="TMS Tutor 页面样式">
+        <style>
+            .tt-wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 64px; }
+            .tt-hero { background: #1f2937; color: #fff; border-radius: 12px; padding: 28px 28px; margin-bottom: 28px; }
+            .tt-hero h1 { color: #fff; margin-bottom: 6px; font-weight: 700; }
+            .tt-hero .tt-sub { color: #9ca3af; font-size: 14px; }
+            .tt-section { margin-bottom: 34px; }
+            .tt-section > h2 { font-size: 20px; font-weight: 700; color: #111827; border-left: 4px solid #2563eb; padding-left: 12px; margin-bottom: 16px; }
+            .tt-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px 18px; background: #fff; height: 100%; }
+            .tt-card h3 { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+            .tt-card .tt-duty { color: #4b5563; font-size: 13px; margin-bottom: 8px; min-height: 38px; }
+            .tt-card .tt-models { font-size: 12px; color: #6b7280; font-family: ui-monospace, Menlo, monospace; margin-bottom: 12px; }
+            .tt-tag { display: inline-block; background: #eef2ff; color: #4338ca; border-radius: 20px; padding: 1px 10px; font-size: 11px; margin: 0 4px 4px 0; }
+            .tt-link { font-size: 13px; }
+            .tt-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+            .tt-step { flex: 1 1 120px; min-width: 120px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 12px; text-align: center; position: relative; }
+            .tt-step .tt-no { width: 24px; height: 24px; line-height: 24px; border-radius: 50%; background: #2563eb; color: #fff; font-weight: 700; font-size: 13px; margin: 0 auto 8px; }
+            .tt-step .tt-name { font-weight: 600; color: #111827; font-size: 14px; }
+            .tt-step .tt-desc { font-size: 11px; color: #6b7280; margin-top: 4px; }
+            .tt-arrow { align-self: center; color: #9ca3af; font-size: 18px; flex: 0 0 auto; }
+            .tt-milestone { display: flex; gap: 12px; margin-bottom: 12px; }
+            .tt-milestone .tt-dot { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-top: 7px; }
+            .tt-milestone .tt-ms-title { font-weight: 600; color: #111827; }
+            .tt-milestone .tt-ms-desc { font-size: 13px; color: #4b5563; }
+
+            /* 角色切换 + 菜单树 */
+            .tt-roles { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+            .tt-role { display: inline-block; padding: 7px 16px; border-radius: 8px; border: 1px solid #d1d5db; color: #374151; text-decoration: none; font-size: 14px; }
+            .tt-role:hover { background: #f3f4f6; }
+            .tt-role.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+            .tt-tree { list-style: none; padding-left: 0; margin: 0; }
+            .tt-tree ul { list-style: none; padding-left: 20px; margin: 0; border-left: 1px dashed #d1d5db; }
+            .tt-tree li { margin: 3px 0; }
+            .tt-menu-link { display: inline-flex; align-items: center; gap: 6px; color: #111827; text-decoration: none; padding: 3px 8px; border-radius: 6px; }
+            .tt-menu-link:hover { background: #eef2ff; color: #2563eb; }
+            .tt-menu-link .tt-name { font-size: 14px; }
+            .tt-menu-link .tt-xmlid { font-size: 11px; color: #9ca3af; font-family: ui-monospace, Menlo, monospace; }
+            .tt-menu-link .tt-g { display: inline-block; background: #f3f4f6; color: #6b7280; border-radius: 10px; padding: 0 8px; font-size: 11px; }
+            .tt-empty { color: #9ca3af; font-style: italic; padding: 12px; }
+        </style>
+    </template>
+
+    <!-- ================================================================
+         页面一：产品导览文档（/tutor）
+    ================================================================ -->
+    <template id="tutor_index" name="TMS 产品导览文档">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">产品导览 · TMS</t>
+            <t t-call="tour_tutor.tutor_assets"/>
+
+            <div class="tt-wrap">
+                <div class="tt-hero">
+                    <h1>旅行社管理系统（TMS）</h1>
+                    <div class="tt-sub">产品展示与项目总结 · 仅超级用户可见 · 技术底座 Odoo 19</div>
+                </div>
+
+                <!-- 1. 产品概览 -->
+                <section class="tt-section">
+                    <h2>产品概览</h2>
+                    <div class="tt-card">
+                        <p style="margin-bottom: 8px;">
+                            <strong>TMS</strong> 是一套面向旅行社业务的垂直管理系统，覆盖
+                            「线路产品 → 订单 → 计调 → 资源 → 收款 → 财务核算 → 分佣 → 报表」
+                            的完整业务闭环，并延伸出官网 B2C 线上销售。
+                        </p>
+                        <p style="margin-bottom: 0;">
+                            技术底座为 <strong>Odoo 19</strong>（Python 3.12 / PostgreSQL 16 / Redis 7 / Docker 部署），
+                            由 9 个 <code>tour_*</code> 模块构成，根菜单统一挂载于「旅行社管理」，
+                            并完成菜单角色化（计调 / 财务 / 销售 / 导游管理四角色 + 经理隐含全部）。
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 2. 功能模块清单 -->
+                <section class="tt-section">
+                    <h2>功能模块清单</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>线路产品 <span class="tt-tag">tour_product</span></h3>
+                                <div class="tt-duty">线路主数据：线路模板 / 行程明细 / 线路分类 / 发团计划 / 基础数据 / 业务类型 / 结算方式</div>
+                                <div class="tt-models">tour.line · tour.line.detail · tour.line.type · tour.departure · tour.base.item · tour.biz.type · tour.pay.way</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['product']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>订单管理 <span class="tt-tag">tour_order</span></h3>
+                                <div class="tt-duty">团队订单 / 报名 / 并团 / 单团变更，订单全生命周期管理</div>
+                                <div class="tt-models">tour.plan · tour.plan.reg · tour.merge · tour.plan.change</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['order']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>计调操作 <span class="tt-tag">tour_operation</span></h3>
+                                <div class="tt-duty">预订安排：计调排团 / 资源预订（核心调度中枢）</div>
+                                <div class="tt-models">tour.booking</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['operation']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>资源管理 <span class="tt-tag">tour_resource</span></h3>
+                                <div class="tt-duty">导游 / 车辆 / 供应商 / 购物协议 档案管理</div>
+                                <div class="tt-models">tour.guide · tour.vehicle · tour.shop.agreement · res.partner</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['resource']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>购物管理 <span class="tt-tag">tour_shopping</span></h3>
+                                <div class="tt-duty">购物记录：进店 / 消费 / 回佣，购物返佣数据源</div>
+                                <div class="tt-models">tour.shop.record</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['shopping']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>财务管理 <span class="tt-tag">tour_accounting</span></h3>
+                                <div class="tt-duty">收款认领 / 对账 / 佣金 / 单团核算 / 团款催收 / 账龄分析，对接 account 复式记账 + 差额征税</div>
+                                <div class="tt-models">tour.payment.claim · tour.reconciliation · tour.commission · tour.plan.account · tour.dunning · account.move</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['finance']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>报表中心 <span class="tt-tag">tour_report</span></h3>
+                                <div class="tt-duty">单团利润 / 导游业绩 / 购物返佣 / 每日收支 四大经营报表</div>
+                                <div class="tt-models">报表模块（无自建业务模型）</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['report']}" target="_blank">进入功能 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>官网销售 <span class="tt-tag">tour_website</span></h3>
+                                <div class="tt-duty">B2C 线路展示 + 散客在线报名（线下付款）</div>
+                                <div class="tt-models">tour.plan.reg · tour.plan.reg.passenger</div>
+                                <a class="tt-link" t-attf-href="#{website_url}" target="_blank">打开官网 →</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="tt-card">
+                                <h3>基础设施 <span class="tt-tag">tour_base</span></h3>
+                                <div class="tt-duty">根菜单 / 字段落盘加密 / 系统配置 / 权限组 / 共享常量</div>
+                                <div class="tt-models">tour.encrypted.field.mixin</div>
+                                <a class="tt-link" t-attf-href="#{menu_links['base']}" target="_blank">进入根菜单 →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. 产品路径 -->
+                <section class="tt-section">
+                    <h2>产品路径（业务主流程）</h2>
+                    <div class="tt-card">
+                        <div class="tt-flow">
+                            <div class="tt-step"><div class="tt-no">1</div><div class="tt-name">接单</div><div class="tt-desc">报名 / 团队订单</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">2</div><div class="tt-name">计调</div><div class="tt-desc">预订安排排团</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">3</div><div class="tt-name">资源安排</div><div class="tt-desc">导游 / 车辆 / 供应商</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">4</div><div class="tt-name">收款</div><div class="tt-desc">收款登记 / 认领</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">5</div><div class="tt-name">财务核算</div><div class="tt-desc">复式记账 / 差额征税</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">6</div><div class="tt-name">分佣</div><div class="tt-desc">购物返佣 / 佣金</div></div>
+                            <div class="tt-arrow">→</div>
+                            <div class="tt-step"><div class="tt-no">7</div><div class="tt-name">报表</div><div class="tt-desc">利润 / 业绩 / 收支</div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. 项目总结 -->
+                <section class="tt-section">
+                    <h2>项目总结（已交付里程碑）</h2>
+                    <div class="tt-card">
+                        <div class="tt-milestone">
+                            <div class="tt-dot"/>
+                            <div>
+                                <div class="tt-ms-title">模块开发</div>
+                                <div class="tt-ms-desc">交付 9 个 tour_* 模块：基础设施 / 线路产品 / 订单管理 / 计调操作 / 资源管理 / 购物管理 / 财务管理 / 报表中心 / 官网销售</div>
+                            </div>
+                        </div>
+                        <div class="tt-milestone">
+                            <div class="tt-dot"/>
+                            <div>
+                                <div class="tt-ms-title">财务对接</div>
+                                <div class="tt-ms-desc">对接 Odoo account 复式记账，支持差额征税（差额开票 / 抵扣），单团核算与总账贯通</div>
+                            </div>
+                        </div>
+                        <div class="tt-milestone">
+                            <div class="tt-dot"/>
+                            <div>
+                                <div class="tt-ms-title">官网 B2C</div>
+                                <div class="tt-ms-desc">官网线路展示 + 散客在线报名（线下付款）闭环，报名数据直接落库团队订单与报名单</div>
+                            </div>
+                        </div>
+                        <div class="tt-milestone">
+                            <div class="tt-dot"/>
+                            <div>
+                                <div class="tt-ms-title">菜单全视角 + 角色化</div>
+                                <div class="tt-ms-desc">根菜单统一视角，4 角色组（计调 / 财务 / 销售 / 导游管理）+ 经理隐含全部，菜单按角色组过滤</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         页面二：角色菜单预览（/tutor/menus）
+    ================================================================ -->
+    <template id="tutor_menus" name="TMS 角色菜单预览">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">角色菜单预览 · TMS</t>
+            <t t-call="tour_tutor.tutor_assets"/>
+
+            <div class="tt-wrap">
+                <div class="tt-hero">
+                    <h1>角色菜单预览</h1>
+                    <div class="tt-sub">按角色查看「旅行社管理」菜单树可见范围（仅超级用户）</div>
+                </div>
+
+                <!-- 角色切换 -->
+                <div class="tt-roles">
+                    <t t-foreach="roles" t-as="r">
+                        <a t-attf-href="/tutor/menus?role=#{r[0]}"
+                           t-attf-class="tt-role #{'active' if r[0] == current_role else ''}"
+                           t-out="r[1]"/>
+                    </t>
+                </div>
+
+                <div class="tt-card">
+                    <p class="text-muted mb-2" style="font-size:13px;">
+                        当前角色：<strong t-out="current_role_label"/> ·
+                        可见菜单节点：<strong t-out="menu_count"/> 个 ·
+                        点击菜单项可跳转对应功能（新标签页打开）
+                    </p>
+
+                    <ul class="tt-tree" t-if="tree">
+                        <t t-foreach="tree" t-as="node">
+                            <t t-call="tour_tutor.menu_node"/>
+                        </t>
+                    </ul>
+                    <div class="tt-empty" t-else="">该角色无可见菜单</div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 递归菜单节点渲染 -->
+    <template id="menu_node" name="TMS 角色菜单预览：菜单节点">
+        <li>
+            <a t-attf-href="#{node['url']}" target="_blank" class="tt-menu-link">
+                <span class="tt-name" t-out="node['name']"/>
+                <span class="tt-xmlid" t-if="node['xmlid']" t-out="node['xmlid']"/>
+                <t t-foreach="node['groups']" t-as="g">
+                    <span class="tt-g" t-out="g"/>
+                </t>
+            </a>
+            <ul t-if="node['children']">
+                <t t-foreach="node['children']" t-as="child">
+                    <t t-call="tour_tutor.menu_node">
+                        <t t-set="node" t-value="child"/>
+                    </t>
+                </t>
+            </ul>
+        </li>
+    </template>
+
+    <!-- ================================================================
+         页面三：待实施功能占位提示（/tutor/pending）
+    ================================================================ -->
+    <template id="tutor_pending" name="TMS 待实施功能提示页">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">功能待实施 · TMS</t>
+            <t t-call="tour_tutor.tutor_assets"/>
+
+            <div class="tt-wrap">
+                <div class="tt-hero">
+                    <h1 t-if="name" t-out="name"/>
+                    <h1 t-else="">待实施功能</h1>
+                    <div class="tt-sub">该功能待实施，敬请期待</div>
+                </div>
+
+                <div class="tt-card" style="text-align:center; padding: 56px 24px;">
+                    <div style="font-size: 40px; margin-bottom: 12px;">🚧</div>
+                    <div style="font-size: 18px; color: #374151; margin-bottom: 10px;">
+                        该功能待实施，敬请期待
+                    </div>
+                    <div style="color: #9ca3af; font-size: 14px; margin-bottom: 20px;">
+                        当前为占位入口，业务逻辑将在后续版本交付。
+                    </div>
+                    <a class="tt-role" href="/web#action=base.open_module_tree">返回后台 →</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

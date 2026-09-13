@@ -5,4 +5,134 @@
         name="旅行社管理"
         web_icon="tour_base,static/description/icon.png"
         sequence="10"/>
+
+    <!-- ================================================================
+         待实施功能：占位菜单 + 占位 act_url（仅超级用户可见，不实现业务逻辑）
+         点击跳 tour_tutor 的 /tutor/pending 提示页（按 ?name= 区分功能名）。
+         注意：act_url 统一挂在 tour_base（菜单所在模块），避免跨模块反向依赖；
+         /tutor/pending 路由本身由 tour_tutor 提供（tour_tutor depends tour_base）。
+    ================================================================ -->
+    <record id="action_tms_pending" model="ir.actions.act_url">
+        <field name="name">待实施功能</field>
+        <field name="url">/tutor/pending?name=待实施功能</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_ticket" model="ir.actions.act_url">
+        <field name="name">票务管理</field>
+        <field name="url">/tutor/pending?name=票务管理</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_b2b" model="ir.actions.act_url">
+        <field name="name">同业分销 B2B</field>
+        <field name="url">/tutor/pending?name=同业分销 B2B</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_miniapp" model="ir.actions.act_url">
+        <field name="name">小程序 API</field>
+        <field name="url">/tutor/pending?name=小程序 API</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_alipay" model="ir.actions.act_url">
+        <field name="name">支付宝费控</field>
+        <field name="url">/tutor/pending?name=支付宝费控</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_oa" model="ir.actions.act_url">
+        <field name="name">办公管理 OA</field>
+        <field name="url">/tutor/pending?name=办公管理 OA</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_visa" model="ir.actions.act_url">
+        <field name="name">签证管理</field>
+        <field name="url">/tutor/pending?name=签证管理</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_platform" model="ir.actions.act_url">
+        <field name="name">平台商管理</field>
+        <field name="url">/tutor/pending?name=平台商管理</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_fleet" model="ir.actions.act_url">
+        <field name="name">车队管理系统</field>
+        <field name="url">/tutor/pending?name=车队管理系统</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_approval" model="ir.actions.act_url">
+        <field name="name">通用审批引擎</field>
+        <field name="url">/tutor/pending?name=通用审批引擎</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_bi" model="ir.actions.act_url">
+        <field name="name">独立 BI</field>
+        <field name="url">/tutor/pending?name=独立 BI</field>
+        <field name="target">self</field>
+    </record>
+
+    <menuitem id="menu_tms_pending"
+        name="待实施功能"
+        parent="menu_tms_root"
+        action="action_tms_pending"
+        sequence="90"
+        groups="base.group_system"/>
+
+    <menuitem id="menu_tms_pending_ticket"
+        name="票务管理（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_ticket"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_b2b"
+        name="同业分销 B2B（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_b2b"
+        sequence="20"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_miniapp"
+        name="小程序 API（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_miniapp"
+        sequence="30"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_alipay"
+        name="支付宝费控（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_alipay"
+        sequence="40"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_oa"
+        name="办公管理 OA（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_oa"
+        sequence="50"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_visa"
+        name="签证管理（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_visa"
+        sequence="60"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_platform"
+        name="平台商管理（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_platform"
+        sequence="70"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_fleet"
+        name="车队管理系统（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_fleet"
+        sequence="80"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_approval"
+        name="通用审批引擎（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_approval"
+        sequence="90"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_pending_bi"
+        name="独立 BI（待实施）"
+        parent="menu_tms_pending"
+        action="action_tms_pending_bi"
+        sequence="100"
+        groups="base.group_system"/>
 </odoo>

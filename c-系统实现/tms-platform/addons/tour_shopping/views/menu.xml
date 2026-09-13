@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_shopping"
         name="购物管理"
         parent="tour_base.menu_tms_root"
-        sequence="35"/>
+        sequence="35"
+        groups="tour_base.group_tour_guide_manager"/>
 
     <menuitem id="menu_tour_shop_record"
         name="购物记录"

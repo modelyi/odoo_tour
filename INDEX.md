@@ -104,6 +104,7 @@ tms/
 | [TDS-系统架构设计.md](b-蓝图/技术设计/TDS-系统架构设计.md) | 17.0 KB | product-architect | 架构图、Docker编排、多租户、升级路径 |
 | [TDS-数据模型设计.md](b-蓝图/技术设计/TDS-数据模型设计.md) | 39.8 KB | product-architect | 8个核心表字段映射、索引、分区方案 |
 | [TDS-模块划分.md](b-蓝图/技术设计/TDS-模块划分.md) | 30.4 KB | product-architect | 14个模块、依赖关系、292人天工作量 |
+| [TDS-缺口补齐方案与分阶段实施计划.md](b-蓝图/技术设计/TDS-缺口补齐方案与分阶段实施计划.md) | 22.6 KB | product-architect | 5类数据补缺 + 6项功能补齐 + 分阶段实施计划 |
 
 ### B5. 项目管理
 

@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_operation"
         name="计调操作"
         parent="tour_base.menu_tms_root"
-        sequence="25"/>
+        sequence="25"
+        groups="tour_base.group_tour_operator"/>
 
     <menuitem id="menu_tour_booking"
         name="预订安排"

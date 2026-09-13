@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_report"
         name="报表中心"
         parent="tour_base.menu_tms_root"
-        sequence="50"/>
+        sequence="50"
+        groups="tour_base.group_tour_finance"/>
 
     <menuitem id="menu_report_plan_profit"
         name="单团利润"

@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_product"
         name="线路产品"
         parent="tour_base.menu_tms_root"
-        sequence="10"/>
+        sequence="10"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_sales"/>
 
     <menuitem id="menu_tour_line"
         name="线路模板"

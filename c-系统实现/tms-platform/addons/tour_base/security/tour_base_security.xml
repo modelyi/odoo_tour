@@ -23,13 +23,49 @@
         <field name="comment">TMS 基础用户角色，可访问旅行社管理各业务模块。</field>
     </record>
 
-    <!-- 旅行社经理：隐含旅行社用户 -->
+    <!-- 计调角色：线路产品 / 订单管理 / 计调操作 / 资源管理 -->
+    <record id="group_tour_operator" model="res.groups">
+        <field name="name">计调</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" ref="res_groups_privilege_tms"/>
+        <field name="implied_ids" eval="[(4, ref('group_tour_user'))]"/>
+        <field name="comment">计调角色，可访问线路产品、订单管理、计调操作、资源管理。</field>
+    </record>
+
+    <!-- 财务角色：订单管理 / 财务管理 / 报表中心 -->
+    <record id="group_tour_finance" model="res.groups">
+        <field name="name">财务</field>
+        <field name="sequence">50</field>
+        <field name="privilege_id" ref="res_groups_privilege_tms"/>
+        <field name="implied_ids" eval="[(4, ref('group_tour_user'))]"/>
+        <field name="comment">财务角色，可访问订单管理、财务管理、报表中心。</field>
+    </record>
+
+    <!-- 销售/门店角色：线路产品 / 订单管理 -->
+    <record id="group_tour_sales" model="res.groups">
+        <field name="name">销售</field>
+        <field name="sequence">60</field>
+        <field name="privilege_id" ref="res_groups_privilege_tms"/>
+        <field name="implied_ids" eval="[(4, ref('group_tour_user'))]"/>
+        <field name="comment">销售/门店角色，可访问线路产品、订单管理。</field>
+    </record>
+
+    <!-- 导游管理角色：资源管理 / 购物管理 -->
+    <record id="group_tour_guide_manager" model="res.groups">
+        <field name="name">导游管理</field>
+        <field name="sequence">70</field>
+        <field name="privilege_id" ref="res_groups_privilege_tms"/>
+        <field name="implied_ids" eval="[(4, ref('group_tour_user'))]"/>
+        <field name="comment">导游管理角色，可访问资源管理、购物管理。</field>
+    </record>
+
+    <!-- 旅行社经理：隐含旅行社用户 + 全部业务角色（看全部菜单） -->
     <record id="group_tour_manager" model="res.groups">
         <field name="name">旅行社经理</field>
         <field name="sequence">20</field>
         <field name="privilege_id" ref="res_groups_privilege_tms"/>
-        <field name="implied_ids" eval="[(4, ref('group_tour_user'))]"/>
-        <field name="comment">TMS 管理角色，隐含旅行社用户权限。</field>
+        <field name="implied_ids" eval="[(4, ref('group_tour_user')), (4, ref('group_tour_operator')), (4, ref('group_tour_finance')), (4, ref('group_tour_sales')), (4, ref('group_tour_guide_manager'))]"/>
+        <field name="comment">TMS 管理角色，隐含旅行社用户与全部业务角色权限。</field>
     </record>
 
     <!-- 敏感数据完整值查看组：可查看身份证/卡号等敏感字段的完整值（默认权限组，

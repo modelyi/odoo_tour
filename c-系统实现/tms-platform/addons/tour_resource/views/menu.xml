@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_resource"
         name="资源管理"
         parent="tour_base.menu_tms_root"
-        sequence="30"/>
+        sequence="30"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_guide_manager"/>
 
     <menuitem id="menu_tour_guide"
         name="导游档案"

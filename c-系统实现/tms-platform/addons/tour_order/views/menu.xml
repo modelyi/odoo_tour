@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_order"
         name="订单管理"
         parent="tour_base.menu_tms_root"
-        sequence="20"/>
+        sequence="20"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_finance,tour_base.group_tour_sales"/>
 
     <menuitem id="menu_tour_plan"
         name="团队订单"

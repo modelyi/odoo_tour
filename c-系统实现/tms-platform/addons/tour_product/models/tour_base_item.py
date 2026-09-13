@@ -9,10 +9,10 @@ class TourBaseItem(models.Model):
 
     name = fields.Char('名称', required=True, index=True)
     item_type = fields.Selection([
-        ('type2', '类型2'),
-        ('type3', '类型3'),
-        ('type5', '类型5'),
-        ('duty', '职务'),
+        ('room_type', '房型'),
+        ('meal_type', '团餐'),
+        ('transport', '交通'),
+        ('team_type', '团队类型'),
     ], string='类型', required=True, index=True)
     help_code = fields.Char('助记码', index=True)
     brief = fields.Text('摘要')

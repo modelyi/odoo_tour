@@ -4,7 +4,8 @@
     <menuitem id="menu_tms_finance"
         name="财务管理"
         parent="tour_base.menu_tms_root"
-        sequence="40"/>
+        sequence="40"
+        groups="tour_base.group_tour_finance"/>
 
     <!-- 业务菜单按流程顺序排布，配置菜单放最后（sequence=100） -->
 
