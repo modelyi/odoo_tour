@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tour_dunning_search" model="ir.ui.view">
+        <field name="name">tour.dunning.search</field>
+        <field name="model">tour.dunning</field>
+        <field name="arch" type="xml">
+            <search string="催收台账搜索">
+                <field name="plan_code"/>
+                <field name="plan_id"/>
+                <field name="partner_id"/>
+                <field name="line_id"/>
+                <field name="salesman_id"/>
+                <field name="aging_bucket"/>
+                <separator/>
+                <filter name="group_state" string="催收状态" context="{'group_by':'state'}"/>
+                <filter name="group_bucket" string="账龄区间" context="{'group_by':'aging_bucket'}"/>
+                <filter name="group_salesman" string="责任销售员" context="{'group_by':'salesman_id'}"/>
+                <filter name="state_pending" string="待催收" domain="[('state','=','pending')]"/>
+                <filter name="state_dunning" string="催收中" domain="[('state','=','dunning')]"/>
+                <filter name="state_collected" string="已回款" domain="[('state','=','collected')]"/>
+                <filter name="state_written_off" string="坏账核销" domain="[('state','=','written_off')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tour_dunning" model="ir.actions.act_window">
+        <field name="name">团款催收台账</field>
+        <field name="res_model">tour.dunning</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_dunning_search"/>
+    </record>
+
+    <record id="view_tour_dunning_list" model="ir.ui.view">
+        <field name="name">tour.dunning.list</field>
+        <field name="model">tour.dunning</field>
+        <field name="arch" type="xml">
+            <list string="团款催收台账">
+                <field name="plan_code"/>
+                <field name="partner_id"/>
+                <field name="line_id"/>
+                <field name="salesman_id"/>
+                <field name="overdue_amount" sum="逾期金额合计"/>
+                <field name="aging_bucket"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state=='written_off'"
+                       decoration-success="state=='collected'"
+                       decoration-warning="state=='dunning'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_dunning_form" model="ir.ui.view">
+        <field name="name">tour.dunning.form</field>
+        <field name="model">tour.dunning</field>
+        <field name="arch" type="xml">
+            <form string="团款催收台账">
+                <header>
+                    <button name="action_start_dunning" string="开始催收" type="object" class="btn-primary"
+                        invisible="state != 'pending'"/>
+                    <button name="action_collected" string="已回款" type="object"
+                        invisible="state != 'dunning'"/>
+                    <button name="action_write_off" string="坏账核销" type="object"
+                        invisible="state != 'dunning'" confirm="确认坏账核销？将触发坏账计提口径，不可轻易撤销。"/>
+                    <button name="action_reset" string="回退待催收" type="object"
+                        invisible="state == 'pending'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,dunning,collected,written_off"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="plan_code"/>
+                        <h1><field name="plan_code"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="partner_id"/>
+                            <field name="line_id"/>
+                        </group>
+                        <group>
+                            <field name="salesman_id"/>
+                            <field name="overdue_amount"/>
+                            <field name="aging_bucket"/>
+                        </group>
+                    </group>
+                    <group string="催收动作留痕（不可篡改）">
+                        <field name="dunning_action_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="action_type"/>
+                                <field name="operator_id"/>
+                                <field name="action_date"/>
+                                <field name="note"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

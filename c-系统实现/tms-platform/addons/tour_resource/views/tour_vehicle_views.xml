@@ -82,7 +82,7 @@
                             <field name="mobile"/>
                             <field name="tel"/>
                             <field name="id_num_masked"/>
-                            <field name="id_num" groups="tour_accounting.group_tour_accounting_treasurer"/>
+                            <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
                             <field name="zip_code"/>
                             <field name="addr"/>
                             <field name="supplier_id"/>
@@ -112,7 +112,7 @@
                                 <field name="loan_rate"/>
                                 <field name="opening_bank"/>
                                 <field name="bank_account_masked"/>
-                                <field name="bank_account" groups="tour_accounting.group_tour_accounting_treasurer"/>
+                                <field name="bank_account" groups="tour_base.group_tour_sensitive_data"/>
                             </group>
                         </page>
                         <page string="审核与归属">

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 根菜单：旅行社管理（所有 tour_* 业务模块菜单统一挂载于此） -->
+    <menuitem id="menu_tms_root"
+        name="旅行社管理"
+        web_icon="tour_base,static/description/icon.png"
+        sequence="10"/>
+</odoo>

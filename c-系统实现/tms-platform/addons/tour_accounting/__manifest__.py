@@ -45,7 +45,7 @@
     'maintainer': 'SolePro',
     'website': "https://tms.solepro.cloud",
     'depends': ['account', 'sale', 'account_check_printing', 'analytic',
-                'tour_budget', 'contacts', 'tour_product', 'tour_resource', 'tour_order'],
+                'tour_budget', 'contacts', 'tour_base', 'tour_product', 'tour_resource', 'tour_order'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
@@ -114,6 +114,7 @@
         'report/res_partner_templates.xml',
         'report/followup_report_templates.xml',
         'report/bulk_payment_report_templates.xml',
+        'report/tour_invoice_template.xml',
         'views/account_recurring_payments_view.xml',
         'views/account_move_line_views.xml',
         'views/account_bank_statement_views.xml',
@@ -136,8 +137,10 @@
         'views/tour_payment_claim_views.xml',
         'views/tour_reconciliation_views.xml',
         'views/tour_commission_views.xml',
+        'views/tour_dunning_views.xml',
         'views/res_config_settings_tour_vat_views.xml',
         'views/finance_menu.xml',
+        'views/tour_invoice_views.xml',
     ],
     'external_dependencies': {
             'python': ['openpyxl', 'ofxparse', 'qifparse', 'xlsxwriter']

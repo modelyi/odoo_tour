@@ -71,3 +71,10 @@ access_tour_reconciliation_line_user,tour.reconciliation.line.user,model_tour_re
 access_tour_reconciliation_line_manager,tour.reconciliation.line.manager,model_tour_reconciliation_line,base.group_system,1,1,1,1
 access_tour_commission_user,tour.commission.user,model_tour_commission,base.group_user,1,1,1,0
 access_tour_commission_manager,tour.commission.manager,model_tour_commission,base.group_system,1,1,1,1
+access_tour_invoice_deduct_line,tour.invoice.deduct.line,model_tour_invoice_deduct_line,account.group_account_user,1,1,1,1
+access_tour_payment_claim_line_user,tour.payment.claim.line.user,model_tour_payment_claim_line,base.group_user,1,1,1,0
+access_tour_payment_claim_line_manager,tour.payment.claim.line.manager,model_tour_payment_claim_line,base.group_system,1,1,1,1
+access_tour_dunning_user,tour.dunning.user,model_tour_dunning,base.group_user,1,1,1,0
+access_tour_dunning_manager,tour.dunning.manager,model_tour_dunning,base.group_system,1,1,1,1
+access_tour_dunning_action_user,tour.dunning.action.user,model_tour_dunning_action,base.group_user,1,1,1,0
+access_tour_dunning_action_manager,tour.dunning.action.manager,model_tour_dunning_action,base.group_system,1,1,1,1

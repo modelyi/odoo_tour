@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 系统设置（res.config.settings）扩展：旅行社管理配置区块 -->
+        <record id="res_config_settings_view_form_tour_base" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.tour_base</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="TMS" id="tms" string="旅行社管理" name="tms"
+                         groups="tour_base.group_tour_manager">
+                        <block title="旅行社管理" id="tms_general_settings">
+                            <setting string="默认币种"
+                                     help="业务模块未显式指定币种时的系统级默认币种">
+                                <field name="tms_default_currency_id"/>
+                            </setting>
+                            <setting string="默认付款条件"
+                                     help="默认付款条件 XML ID（由财务模块解析，避免反向依赖 account）">
+                                <field name="tms_default_payment_term"/>
+                            </setting>
+                            <setting string="导游默认分成比例(%)"
+                                     help="导游分成/佣金默认比例（百分比），业务模块在未指定时兜底">
+                                <field name="tms_guide_default_commission_rate"/>
+                            </setting>
+                            <setting string="敏感数据查看组"
+                                     help="可查看敏感字段完整值（身份证/卡号等）的权限组，默认 tour_base.group_tour_sensitive_data">
+                                <field name="tms_sensitive_data_group_id"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -16,7 +16,7 @@
     'author': 'SolePro',
     'website': 'https://tms.solepro.cloud',
     'license': 'LGPL-3',
-    'depends': ['base', 'mail', 'contacts', 'hr', 'tour_product'],
+    'depends': ['base', 'mail', 'contacts', 'hr', 'tour_base', 'tour_product'],
     'data': [
         'security/ir.model.access.csv',
         'views/tour_guide_views.xml',

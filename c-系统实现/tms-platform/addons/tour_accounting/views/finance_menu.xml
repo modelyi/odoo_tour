@@ -3,7 +3,7 @@
     <!-- 财务管理顶级菜单（挂在 tour_product 的「旅行社管理」根菜单下） -->
     <menuitem id="menu_tms_finance"
         name="财务管理"
-        parent="tour_product.menu_tms_root"
+        parent="tour_base.menu_tms_root"
         sequence="40"/>
 
     <menuitem id="menu_tour_bank_account"
@@ -41,4 +41,16 @@
         parent="menu_tms_finance"
         action="action_tour_commission"
         sequence="60"/>
+
+    <menuitem id="menu_tour_dunning"
+        name="团款催收台账"
+        parent="menu_tms_finance"
+        action="action_tour_dunning"
+        sequence="70"/>
+
+    <menuitem id="menu_tour_plan_account_aging"
+        name="团款应收账龄分析"
+        parent="menu_tms_finance"
+        action="action_tour_plan_account_aging"
+        sequence="80"/>
 </odoo>

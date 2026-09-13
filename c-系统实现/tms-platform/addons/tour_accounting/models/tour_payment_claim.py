@@ -139,7 +139,8 @@ class TourPaymentClaim(models.Model):
     def _generate_receipt_move(self):
         """生成收款凭证 account.move：借资金科目 / 贷预收账款；手续费另记。
 
-        [TDS §5.2] 先收后认领裸收款，直接生成 move_type='entry' 收款凭证。
+        [TDS §5.2] 先收后认领裸收款 → move_type='entry' 收款凭证（贷 2203.01 预收）。
+        [BS-12 §6.2 闭环] 认领明细关联发票 → 贷 1122.01 应收并自动核销（Odoo 原生 reconcile）。
         """
         self.ensure_one()
         channel = self.pay_channel_id
@@ -148,16 +149,18 @@ class TourPaymentClaim(models.Model):
         fund_acc = channel._get_fund_account()
         journal = channel._get_receipt_journal()
 
-        # 预收科目：2203.01 团款，找不到回退 2203
-        prepay_acc = self.env['account.account'].search(
-            [('code', '=', self.ACCOUNT_PREPAY_TOUR)], limit=1)
-        if not prepay_acc:
-            prepay_acc = self._tour_get_account(self.ACCOUNT_PREPAY)
-
         analytic = self._plan_analytic_distribution(self.plan_id)
         partner_id = self.supplier_id.id if self.supplier_id else None
         narration = '%s / %s / 收款' % (
             self.plan_code or '-', self.supplier_id.name if self.supplier_id else '未关联客户')
+
+        # === Phase 3 闭环：认领明细关联发票 → 贷应收核销；未关联部分仍贷预收 ===
+        reconcile_lines = self.claim_line_ids.filtered(
+            lambda l: l.invoice_id and l.amount > 0)
+        reconcile_total = sum(reconcile_lines.mapped('amount'))
+        prepay_remain = round((self.pay_money or 0.0) - reconcile_total, 2)
+        if prepay_remain < 0:
+            raise ValidationError('收款认领明细金额合计不能超过收款金额')
 
         lines = [{
             'account_id': fund_acc.id,
@@ -165,13 +168,37 @@ class TourPaymentClaim(models.Model):
             'debit': self.pay_money,
             'analytic': analytic,
             'name': '收款 %s' % self.name,
-        }, {
-            'account_id': prepay_acc.id,
-            'partner_id': partner_id,
-            'credit': self.pay_money,
-            'analytic': analytic,
-            'name': '预收团款 %s' % self.name,
         }]
+
+        # 贷应收：逐发票核销（用发票自身的应收科目，保证同科目可原生 reconcile）
+        for cl in reconcile_lines:
+            inv = cl.invoice_id
+            rec_acc = self._invoice_receivable_account(inv)
+            inv_partner = inv.partner_id.id if inv.partner_id else partner_id
+            lines.append({
+                'account_id': rec_acc.id,
+                'partner_id': inv_partner,
+                'credit': cl.amount,
+                'analytic': analytic,
+                'compliance_ref': 'cas22_settle',
+                'name': '核销应收 %s%s' % (
+                    (inv.name or inv.ref or ''), (' / ' + cl.name if cl.name else '')),
+            })
+
+        # 贷预收：未关联发票的余额
+        if prepay_remain > 0:
+            prepay_acc = self.env['account.account'].search(
+                [('code', '=', self.ACCOUNT_PREPAY_TOUR)], limit=1)
+            if not prepay_acc:
+                prepay_acc = self._tour_get_account(self.ACCOUNT_PREPAY)
+            lines.append({
+                'account_id': prepay_acc.id,
+                'partner_id': partner_id,
+                'credit': prepay_remain,
+                'analytic': analytic,
+                'name': '预收团款 %s' % self.name,
+            })
+
         if self.trans_fee > 0:
             fee_acc = self._tour_get_account(self.ACCOUNT_FINANCE_EXPENSE)
             lines.append({
@@ -187,11 +214,70 @@ class TourPaymentClaim(models.Model):
                 'name': '收款手续费 %s' % self.name,
             })
 
+        compliance = 'cas22_settle' if reconcile_lines else 'cas14_advance'
         move = self._tour_make_move(
             journal, self.pay_date, self.name, lines,
-            compliance_ref='cas14_advance', narration=narration)
+            compliance_ref=compliance, narration=narration)
         move.action_post()
+
+        # Phase 3：核销发票应收（Odoo 原生 reconcile）
+        if reconcile_lines:
+            self._reconcile_claim_invoices(move)
         return move.id
+
+    def _invoice_receivable_account(self, invoice):
+        """发票的应收科目：取 asset_receivable 行科目；无则回退 1122.01 团款应收。"""
+        rec_line = invoice.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable')
+        if rec_line:
+            return rec_line[0].account_id
+        return self._tour_get_account(self.ACCOUNT_RECEIVABLE_TOUR)
+
+    def _reconcile_claim_invoices(self, move):
+        """把收款凭证的贷应收行与关联发票的借应收行核销（Odoo 原生 reconcile）。
+
+        按 partner + 团（analytic）+ 金额匹配，同科目分组核销 [BS-12 §6.2]。
+        """
+        credit_lines = move.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable'
+            and not l.reconciled and l.amount_residual < 0)
+        if not credit_lines:
+            return
+        invoices = self.claim_line_ids.filtered(lambda l: l.invoice_id).mapped('invoice_id')
+        for acc in credit_lines.mapped('account_id'):
+            for partner in credit_lines.mapped('partner_id'):
+                credits = credit_lines.filtered(
+                    lambda l: l.account_id.id == acc.id and l.partner_id.id == partner.id)
+                debits = invoices.mapped('line_ids').filtered(
+                    lambda l: l.account_id.id == acc.id and l.partner_id.id == partner.id
+                    and not l.reconciled and l.amount_residual > 0)
+                if debits and credits:
+                    (debits | credits).reconcile()
+        # 闭环联动：应收结清后团催收记录自动「已回款」[BS-12 §5.4]
+        self._update_dunning_after_reconcile()
+
+    def _plan_receivable_open(self, plan):
+        """该团 1122.01 未核销借方余额（>0 表示仍有客户欠款）。"""
+        if not plan or not plan.analytic_account_id:
+            return 0.0
+        acc = self.env['account.account'].search(
+            [('code', '=', self.ACCOUNT_RECEIVABLE_TOUR)], limit=1)
+        if not acc:
+            return 0.0
+        lines = self._plan_open_move_lines(plan, account_ids=[acc.id], reconciled=False)
+        return sum(l.amount_residual for l in lines if l.amount_residual > 0)
+
+    def _update_dunning_after_reconcile(self):
+        """核销后：团应收（1122.01 未核销借方）结清时，催收记录自动「已回款」。"""
+        plans = self.mapped('plan_id') | self.claim_line_ids.mapped('invoice_id.tour_plan_id')
+        for plan in plans.filtered(lambda p: p):
+            if self._plan_receivable_open(plan) > 0:
+                continue
+            dunnings = self.env['tour.dunning'].search([
+                ('plan_id', '=', plan.id),
+                ('state', 'in', ('pending', 'dunning')),
+            ])
+            dunnings.write({'state': 'collected'})
 
     def action_settle(self):
         """平账：已审核 → 已平账"""

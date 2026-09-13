@@ -109,6 +109,15 @@
                         <field name="move_id"/>
                         <field name="move_state"/>
                     </group>
+                    <group string="收款认领明细（核销发票）">
+                        <field name="claim_line_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="invoice_id" domain="[('move_type','=','out_invoice')]"/>
+                                <field name="amount"/>
+                                <field name="name"/>
+                            </list>
+                        </field>
+                    </group>
                     <group string="留痕">
                         <field name="company_id"/>
                         <field name="department_id"/>

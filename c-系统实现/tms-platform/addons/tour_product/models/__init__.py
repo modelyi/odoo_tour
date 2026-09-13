@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import field_crypto
-from . import encrypted_field_mixin
 from . import tour_line_type
 from . import tour_line
 from . import tour_departure

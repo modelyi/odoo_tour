@@ -46,6 +46,38 @@ class TourPlanAccount(models.Model):
                            help='← 该团未核销预收（2203.01）残值 [TDS §4.3]')
     invoice_gap = fields.Float('发票缺口', digits=(16, 2), compute='_compute_from_plan',
                                store=True, help='compute ← plan.un_invoice_money 🔴F-03')
+
+    # === 应收账龄（BS-12 §8.4 / §5.1）===
+    receivable_positive = fields.Float(
+        '应收余额(客户欠款)', digits=(16, 2), compute='_compute_receivable_split',
+        store=True, help='sum_un_pay > 0 部分，账龄对象 [BS-12 §5.1]')
+    receivable_negative = fields.Float(
+        '溢缴(客户多付)', digits=(16, 2), compute='_compute_receivable_split',
+        store=True, help='sum_un_pay < 0 部分（正数表示溢缴），转预收账款列示 [CAS 37]')
+
+    # 账龄区间余额（compute 自 1122.01 未核销行，date_maturity 到期日）[BS-12 §5.2]
+    aging_0_30 = fields.Float('账龄0-30天', digits=(16, 2),
+                              compute='_compute_receivable_aging',
+                              help='未到期及逾期 ≤30 天的应收（借方余额）')
+    aging_31_90 = fields.Float('账龄31-90天', digits=(16, 2),
+                               compute='_compute_receivable_aging')
+    aging_91_180 = fields.Float('账龄91-180天', digits=(16, 2),
+                                compute='_compute_receivable_aging')
+    aging_181_365 = fields.Float('账龄181-365天', digits=(16, 2),
+                                 compute='_compute_receivable_aging')
+    aging_over_365 = fields.Float('账龄>365天', digits=(16, 2),
+                                  compute='_compute_receivable_aging')
+    overdue_days = fields.Integer('最大逾期天数', compute='_compute_receivable_aging',
+                                  help='该团 1122.01 未核销应收行中最大逾期天数（催收/坏账依据）')
+
+    # === 四维账龄分析维度（BS-12 §5.2：按团/线路/销售员/客户）===
+    line_id = fields.Many2one('tour.line', string='线路', related='plan_id.line_id',
+                              store=True, index=True)
+    sales_name = fields.Char('销售归属', related='plan_id.sales_name',
+                             store=True, index=True)
+    supplier_id = fields.Many2one('res.partner', string='客户', related='plan_id.supplier_id',
+                                  store=True, index=True)
+
     profit = fields.Float('利润', digits=(16, 2), compute='_compute_profit',
                           help='= 收入合计 - 成本合计')
     profit_no_shop = fields.Float('利润(不含购物)', digits=(16, 2), compute='_compute_profit',
@@ -73,6 +105,57 @@ class TourPlanAccount(models.Model):
             p = rec.plan_id
             rec.receivable = p.sum_un_pay if p else 0.0
             rec.invoice_gap = p.un_invoice_money if p else 0.0
+
+    @api.depends('plan_id.sum_un_pay')
+    def _compute_receivable_split(self):
+        """应收正/负分离：sum_un_pay > 0 为账龄对象，< 0 转预收列示 [BS-12 §5.1]。"""
+        for rec in self:
+            v = rec.plan_id.sum_un_pay if rec.plan_id else 0.0
+            rec.receivable_positive = v if v > 0 else 0.0
+            rec.receivable_negative = -v if v < 0 else 0.0
+
+    @api.depends('analytic_account_id')
+    def _compute_receivable_aging(self):
+        """账龄区间余额：compute 自 1122.01 未核销行的 date_maturity（到期日）。
+
+        只计借方余额（amount_residual > 0，客户欠款）；未到期归入 0-30 天。
+        账龄数据源 = 记账真相（account.move.line），与业务快照 receivable_positive 可存在差异
+        （发票未过账时 1122.01 行尚未生成）[BS-12 §5.2]。
+        """
+        buckets = ('aging_0_30', 'aging_31_90', 'aging_91_180',
+                   'aging_181_365', 'aging_over_365')
+        acc = self.env['account.account'].search(
+            [('code', '=', self.ACCOUNT_RECEIVABLE_TOUR)], limit=1)
+        for rec in self:
+            for b in buckets:
+                rec[b] = 0.0
+            rec.overdue_days = 0
+            if not rec.analytic_account_id or not acc:
+                continue
+            today = fields.Date.context_today(rec)
+            lines = self._plan_open_move_lines(
+                rec.plan_id, account_ids=[acc.id], reconciled=False)
+            for ln in lines:
+                residual = ln.amount_residual or 0.0
+                if residual <= 0:
+                    continue  # 只计客户欠款（借方余额）
+                maturity = ln.date_maturity or ln.date
+                days = (today - maturity).days if maturity else 0
+                if days < 0:
+                    days = 0
+                if days > rec.overdue_days:
+                    rec.overdue_days = days
+                if days <= 30:
+                    rec.aging_0_30 += residual
+                elif days <= 90:
+                    rec.aging_31_90 += residual
+                elif days <= 180:
+                    rec.aging_91_180 += residual
+                elif days <= 365:
+                    rec.aging_181_365 += residual
+                else:
+                    rec.aging_over_365 += residual
+
 
     def _compute_from_analytic(self):
         """收入/成本/预收：从 account.analytic.line / move.line 派生（记账真相）。"""

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """验收测试：敏感字段落盘加密"""
-from odoo.addons.tour_product.models import field_crypto
+from odoo.addons.tour_base.models import field_crypto
 
 results = []
 

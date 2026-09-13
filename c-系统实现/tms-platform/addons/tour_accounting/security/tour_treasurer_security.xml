@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 财务出纳权限组：可查看完整银行卡号（最小化访问 [内控-数据安全]） -->
+    <!-- 财务出纳权限组：可查看完整银行卡号（最小化访问 [内控-数据安全]）。
+         隐含 tour_base 的「敏感数据完整值查看组」，使出纳继承敏感字段完整值查看权限，
+         与 tour.encrypted.field.mixin 的默认权限口径保持一致。 -->
     <record id="group_tour_accounting_treasurer" model="res.groups">
         <field name="name">财务出纳（可查看完整卡号）</field>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('tour_base.group_tour_sensitive_data'))]"/>
     </record>
 </odoo>

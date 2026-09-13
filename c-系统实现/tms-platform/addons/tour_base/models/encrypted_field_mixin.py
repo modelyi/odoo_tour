@@ -26,8 +26,9 @@
 行为：
 - create/write：明文 -> 密文落盘（同时同步 HMAC-SHA256 检索散列）；掩码值（****…）
   视为"未修改"忽略，防止把掩码回存覆盖真实值；已是密文的值保持不变。
-- read：出纳组（tour_accounting.group_tour_accounting_treasurer）/ sudo / 管理员 -> 解密完整值；
-  其余用户 -> 掩码（****后4位）。密钥缺失或解密失败 -> 返回密文，绝不泄漏明文。
+- read：完整值查看组（tour_base.group_tour_sensitive_data，可用 config_parameter 覆盖）
+  / sudo / 管理员 -> 解密完整值；其余用户 -> 掩码（****后4位）。
+  密钥缺失或解密失败 -> 返回密文，绝不泄漏明文。
 - export_data：与 read 同一套权限口径（默认掩码，出纳完整）。
 - _search：把敏感字段的精确匹配（= / == / in / != / not in）翻译到 <field>_hash
   等值检索列；模糊匹配（ilike/like）不支持，直接报错（避免静默返回错误结果）。
@@ -42,9 +43,12 @@ from . import field_crypto
 
 _logger = logging.getLogger(__name__)
 
-# 可查看完整敏感值的权限组（XML ID）；解析失败时回退到系统管理员组。
-FULL_ACCESS_GROUP_XMLID = 'tour_accounting.group_tour_accounting_treasurer'
+# 可查看完整敏感值的默认权限组（XML ID）；解析失败时回退到系统管理员组。
+# 默认指向 tour_base 自己的「敏感数据完整值查看组」，不依赖任何业务模块（避免反向依赖）。
+# 可通过 ir.config_parameter 'tms.sensitive_data_group_xmlid' 覆盖（见 res.config.settings）。
+DEFAULT_FULL_ACCESS_GROUP_XMLID = 'tour_base.group_tour_sensitive_data'
 FALLBACK_GROUP_XMLID = 'base.group_system'
+_PARAM_FULL_ACCESS_GROUP = 'tms.sensitive_data_group_xmlid'
 
 # 不支持模糊搜索的操作符（密文无法做 like）
 _FUZZY_OPS = ('ilike', 'like', 'not ilike', 'not like', '=ilike', '=like')
@@ -61,13 +65,26 @@ class EncryptedFieldMixin(models.AbstractModel):
     def _encrypt_key(self):
         return field_crypto.get_key(self.env)
 
+    def _full_access_group_xmlid(self):
+        """当前生效的完整敏感值查看权限组 XML ID。
+
+        优先取 ir.config_parameter 覆盖值（系统设置「敏感数据查看组」），
+        未配置时回退到 tour_base 自带的默认组。
+        """
+        try:
+            xmlid = (self.env['ir.config_parameter'].sudo()
+                     .get_param(_PARAM_FULL_ACCESS_GROUP) or '').strip()
+        except Exception:
+            xmlid = ''
+        return xmlid or DEFAULT_FULL_ACCESS_GROUP_XMLID
+
     def _user_has_full_access(self):
         """当前用户是否可查看完整敏感值。"""
         if self.env.su:
             return True
         user = self.env.user
         try:
-            return user.has_group(FULL_ACCESS_GROUP_XMLID)
+            return user.has_group(self._full_access_group_xmlid())
         except ValueError:
             return user.has_group(FALLBACK_GROUP_XMLID)
 

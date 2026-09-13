@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Root Menu -->
-    <menuitem id="menu_tms_root"
-        name="旅行社管理"
-        web_icon="tour_product,static/description/icon.png"
-        sequence="10"/>
-
-    <!-- Product Menu -->
+    <!-- Product Menu（根菜单 tour_base.menu_tms_root 已在 tour_base 定义） -->
     <menuitem id="menu_tms_product"
         name="线路产品"
-        parent="menu_tms_root"
+        parent="tour_base.menu_tms_root"
         sequence="10"/>
 
     <menuitem id="menu_tour_line"
@@ -33,7 +27,7 @@
     <!-- Base Data Menu -->
     <menuitem id="menu_tms_basedata"
         name="基础数据"
-        parent="menu_tms_root"
+        parent="tour_base.menu_tms_root"
         sequence="20"/>
 
     <menuitem id="menu_tour_pay_way"

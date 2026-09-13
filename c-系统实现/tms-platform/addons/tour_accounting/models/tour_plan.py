@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
 class TourPlan(models.Model):
+    _name = 'tour.plan'
     _inherit = ['tour.plan', 'tour.accounting.mixin']
 
     analytic_account_id = fields.Many2one(
@@ -21,6 +22,27 @@ class TourPlan(models.Model):
         'account.move', string='差额抵减凭证', copy=False, ondelete='restrict',
         index=True, help='差额征税销项税额抵减凭证（借 2221.03/2221.07 / 贷成本）[BS-11 §7.2.2]')
     vat_deduct_move_state = fields.Selection(related='vat_deduct_move_id.state', string='抵减凭证状态')
+
+    # === 开票进度跟踪 [BS-12 §4.3 / §8.3] ===
+    invoice_ids = fields.Many2many(
+        'account.move', 'tour_invoice_plan_rel', 'plan_id', 'move_id',
+        string='关联发票', domain="[('move_type', 'in', ('out_invoice', 'out_refund'))]")
+    invoice_amount_total = fields.Float(
+        '发票已开票金额', digits=(16, 2), compute='_compute_invoice_progress',
+        help='= Σ 已开票 out_invoice 含税金额')
+    invoice_progress = fields.Float(
+        '开票进度(%)', digits=(16, 2), compute='_compute_invoice_progress',
+        help='= invoice_money ÷ (invoice_money + un_invoice_money)')
+
+    @api.depends('invoice_ids', 'invoice_ids.move_type', 'invoice_ids.state',
+                 'invoice_money', 'un_invoice_money')
+    def _compute_invoice_progress(self):
+        for rec in self:
+            rec.invoice_amount_total = sum(rec.invoice_ids.filtered(
+                lambda m: m.move_type == 'out_invoice').mapped('amount_total_signed'))
+            total = (rec.invoice_money or 0.0) + (rec.un_invoice_money or 0.0)
+            rec.invoice_progress = (
+                (rec.invoice_money or 0.0) / total * 100.0) if total else 0.0
 
     def action_confirm(self):
         """草稿 → 待确认 → 已确认；进入 confirmed 时自动创建分析账户 + 核算台账。"""
