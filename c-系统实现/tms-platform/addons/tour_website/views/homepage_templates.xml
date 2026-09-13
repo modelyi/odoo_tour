@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        官网首页（继承 website.homepage，替换默认营销空内容）
+        浅色主题：banner + 热门线路推荐 + 品牌介绍/联系方式
+    -->
+    <template id="homepage_tour" inherit_id="website.homepage" priority="20"
+              name="联洋海螺角旅行社官网首页">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap">
+                <t t-set="hot_lines"
+                   t-value="request.env['tour.line'].sudo().search([('active','=',True),('audit_state','=','approved')], order='sequence, name', limit=6)"/>
+                <t t-set="hot_price_map"
+                   t-value="request.env['tour.line'].sudo().website_price_map(hot_lines)"/>
+
+                <!-- ============ 顶部 Banner ============ -->
+                <section class="tour-hero">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <span class="tour-hero__badge">专业 · 安心 · 品质出行</span>
+                                <h1 class="tour-hero__title">
+                                    联洋海螺角旅行社<br/>
+                                    <em>带你去看更大的世界</em>
+                                </h1>
+                                <p class="tour-hero__subtitle">
+                                    专注品质跟团游与定制出行，覆盖国内与境外热门线路，
+                                    从行程规划到全程服务，让每一次出发都安心无忧。
+                                </p>
+                                <div class="tour-hero__actions">
+                                    <a href="/tours" class="btn btn-primary btn-lg me-2">浏览全部线路</a>
+                                    <a href="/contactus" class="btn btn-outline-secondary btn-lg">联系我们</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ 热门线路推荐 ============ -->
+                <section class="tour-section">
+                    <div class="container">
+                        <h2 class="tour-section__title">热门线路推荐</h2>
+                        <p class="tour-section__lead">精选人气线路，总有一款适合你</p>
+                        <div class="row" t-if="hot_lines">
+                            <t t-foreach="hot_lines" t-as="line">
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <a t-attf-href="/tours/#{line.id}" class="tour-card">
+                                        <div class="tour-card__media">
+                                            <i class="fa fa-map-marker"/>
+                                        </div>
+                                        <div class="tour-card__body">
+                                            <div class="tour-card__title" t-out="line.name"/>
+                                            <div class="tour-card__meta">
+                                                <span><i class="fa fa-clock-o me-1"/><t t-out="line.day_num"/> 天</span>
+                                                <t t-if="line.line_type_id">
+                                                    <span class="tour-tag" t-out="line.line_type_id.name"/>
+                                                </t>
+                                                <t t-if="line.is_abroad">
+                                                    <span class="tour-tag tour-tag--accent">境外</span>
+                                                </t>
+                                            </div>
+                                            <div class="tour-card__foot">
+                                                <t t-if="hot_price_map.get(line.id)">
+                                                    <span class="tour-price">
+                                                        <small>¥</small><t t-out="'%g' % hot_price_map[line.id]"/><small> 起</small>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="tour-price--na">价格电询</span>
+                                                </t>
+                                                <span class="text-primary small">查看详情 <i class="fa fa-angle-right"/></span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="text-center" t-if="hot_lines">
+                            <a href="/tours" class="btn btn-outline-primary">查看全部 <t t-out="len(hot_lines)"/>+ 条线路</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ 品牌介绍 + 联系方式 ============ -->
+                <section class="tour-section tour-section--soft">
+                    <div class="container">
+                        <div class="tour-brand">
+                            <div>
+                                <h2 class="tour-section__title text-start">关于联洋海螺角旅行社</h2>
+                                <p>
+                                    联洋海螺角旅行社深耕旅游行业多年，主营国内跟团游、境外游及企业定制出行。
+                                    我们以专业的行程设计、严格的服务标准和贴心的全程保障，
+                                    为数万旅客带来了美好的旅行体验。选择我们，让旅行更简单、更安心。
+                                </p>
+                                <p>
+                                    从经典线路到私人订制，从散客拼团到企业团建，
+                                    我们始终坚持以客户为中心，用心打磨每一段旅程。
+                                </p>
+                            </div>
+                            <div>
+                                <div class="tour-panel">
+                                    <div class="tour-panel__head">联系我们</div>
+                                    <div class="tour-panel__body py-2">
+                                        <ul class="tour-contact-list">
+                                            <li>
+                                                <i class="fa fa-phone"/>
+                                                <div>
+                                                    <div class="small text-muted">服务热线</div>
+                                                    <a href="tel:13877778888" class="fw-bold text-body">13877778888</a>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-envelope"/>
+                                                <div>
+                                                    <div class="small text-muted">电子邮箱</div>
+                                                    <a href="mailto:info@layaconch.com" class="fw-bold text-body">info@layaconch.com</a>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-map-marker"/>
+                                                <div>
+                                                    <div class="small text-muted">门店地址</div>
+                                                    <span>请咨询客服获取就近门店信息</span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-clock-o"/>
+                                                <div>
+                                                    <div class="small text-muted">服务时间</div>
+                                                    <span>周一至周日 09:00 - 18:00</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+</odoo>

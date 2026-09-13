@@ -140,6 +140,7 @@
         'views/tour_dunning_views.xml',
         'views/res_config_settings_tour_vat_views.xml',
         'views/finance_menu.xml',
+        'views/finance_general_menu.xml',
         'views/tour_invoice_views.xml',
     ],
     'external_dependencies': {

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================= 线路列表 ================= -->
+    <template id="tour_list" name="官网线路列表">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <section class="tour-detail-head">
+                    <div class="container">
+                        <h1 class="tour-detail-title">旅游线路</h1>
+                        <p class="tour-detail-sub mb-0">精选国内与境外品质线路，按分类浏览，随时在线报名</p>
+                    </div>
+                </section>
+
+                <div class="container py-4">
+                    <!-- 筛选栏 -->
+                    <form method="get" action="/tours" class="tour-panel mb-4">
+                        <div class="tour-panel__body">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-5">
+                                    <input type="text" name="keyword" class="form-control"
+                                           placeholder="线路名称 / 助记码" t-att-value="keyword"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <select name="line_type_id" class="form-select">
+                                        <option value="">全部分类</option>
+                                        <t t-foreach="line_types" t-as="ct">
+                                            <option t-att-value="ct.id"
+                                                    t-att-selected="'selected' if str(ct.id) == str(line_type_id) else None">
+                                                <t t-out="ct.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-search me-1"/>搜索
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="row" t-if="lines">
+                        <t t-foreach="lines" t-as="line">
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <a t-attf-href="/tours/#{line.id}" class="tour-card">
+                                    <div class="tour-card__media">
+                                        <i class="fa fa-map-marker"/>
+                                    </div>
+                                    <div class="tour-card__body">
+                                        <div class="tour-card__title" t-out="line.name"/>
+                                        <div class="tour-card__meta">
+                                            <span><i class="fa fa-clock-o me-1"/><t t-out="line.day_num"/> 天</span>
+                                            <t t-if="line.night_num"><span><t t-out="line.night_num"/> 晚</span></t>
+                                            <t t-if="line.send_place or line.end_place">
+                                                <span><i class="fa fa-location-arrow me-1"/><t t-out="line.send_place"/> → <t t-out="line.end_place"/></span>
+                                            </t>
+                                        </div>
+                                        <div class="tour-card__meta mb-3">
+                                            <t t-if="line.line_type_id">
+                                                <span class="tour-tag" t-out="line.line_type_id.name"/>
+                                            </t>
+                                            <t t-if="line.is_abroad">
+                                                <span class="tour-tag tour-tag--accent">境外</span>
+                                            </t>
+                                            <t t-if="line.is_special">
+                                                <span class="tour-tag tour-tag--accent">特色</span>
+                                            </t>
+                                        </div>
+                                        <div class="tour-card__foot">
+                                            <t t-if="price_from.get(line.id)">
+                                                <span class="tour-price">
+                                                    <small>¥</small><t t-out="'%g' % price_from[line.id]"/><small> 起</small>
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="tour-price--na">价格电询</span>
+                                            </t>
+                                            <span class="text-primary small">查看详情 <i class="fa fa-angle-right"/></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="alert alert-secondary text-center py-4" t-else="">
+                        暂无符合条件的上架线路
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================= 线路详情 ================= -->
+    <template id="tour_detail" name="官网线路详情">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <section class="tour-detail-head">
+                    <div class="container">
+                        <h1 class="tour-detail-title" t-out="line.name"/>
+                        <div class="tour-detail-sub">
+                            <span><i class="fa fa-clock-o me-1"/><t t-out="line.day_num"/> 天</span>
+                            <t t-if="line.night_num"><span><t t-out="line.night_num"/> 晚</span></t>
+                            <t t-if="line.send_place or line.end_place">
+                                <span class="mx-2">·</span>
+                                <span><i class="fa fa-location-arrow me-1"/><t t-out="line.send_place"/> → <t t-out="line.end_place"/></span>
+                            </t>
+                            <t t-if="line.send_traffic"><span class="mx-2">·</span><span>去程：<t t-out="line.send_traffic"/></span></t>
+                            <t t-if="line.end_traffic"><span class="mx-2">·</span><span>返程：<t t-out="line.end_traffic"/></span></t>
+                            <t t-if="line.line_type_id">
+                                <span class="mx-2">·</span>
+                                <span class="badge bg-info text-dark" t-out="line.line_type_id.name"/>
+                            </t>
+                            <t t-if="line.is_abroad"><span class="badge bg-warning text-dark">境外</span></t>
+                            <t t-if="line.is_special"><span class="badge bg-danger">特色</span></t>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="container py-4">
+                    <div class="row">
+                        <!-- ============ 左侧主内容 ============ -->
+                        <div class="col-lg-8">
+
+                            <!-- 行程明细 -->
+                            <div class="tour-panel mb-4" t-if="details">
+                                <div class="tour-panel__head"><i class="fa fa-flag me-2"/>行程安排</div>
+                                <div class="tour-panel__body">
+                                    <t t-foreach="details" t-as="det">
+                                        <div class="tour-itinerary-item">
+                                            <div class="fw-bold mb-1">
+                                                第 <t t-out="det.day_no"/> 天
+                                                <t t-if="det.title"> · <t t-out="det.title"/></t>
+                                                <t t-if="det.city"> · <t t-out="det.city"/></t>
+                                            </div>
+                                            <div class="small text-muted mb-2">
+                                                <t t-if="det.traffic"><span class="me-3"><i class="fa fa-bus me-1"/>交通：<t t-out="det.traffic"/></span></t>
+                                                <t t-if="det.hotel"><span><i class="fa fa-bed me-1"/>住宿：<t t-out="det.hotel"/></span></t>
+                                            </div>
+                                            <div t-if="det.content" t-field="det.content"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- 行程安排富文本 -->
+                            <div class="tour-panel mb-4" t-if="line.srv_text and not details">
+                                <div class="tour-panel__head"><i class="fa fa-flag me-2"/>行程安排</div>
+                                <div class="tour-panel__body"><div t-field="line.srv_text"/></div>
+                            </div>
+
+                            <!-- 线路特色 -->
+                            <div class="tour-panel mb-4" t-if="line.feature_rich">
+                                <div class="tour-panel__head"><i class="fa fa-star me-2"/>线路特色</div>
+                                <div class="tour-panel__body"><div t-field="line.feature_rich"/></div>
+                            </div>
+
+                            <!-- 费用说明 -->
+                            <div class="tour-panel mb-4" t-if="line.fee_include or line.fee_exclude">
+                                <div class="tour-panel__head"><i class="fa fa-money me-2"/>费用说明</div>
+                                <div class="tour-panel__body">
+                                    <div class="row">
+                                        <div class="col-md-6" t-if="line.fee_include">
+                                            <h6 class="text-success fw-bold">费用包含</h6>
+                                            <div style="white-space: pre-line" t-out="line.fee_include"/>
+                                        </div>
+                                        <div class="col-md-6" t-if="line.fee_exclude">
+                                            <h6 class="text-danger fw-bold">费用不含</h6>
+                                            <div style="white-space: pre-line" t-out="line.fee_exclude"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 温馨提示 -->
+                            <div class="tour-panel mb-4" t-if="line.warm_hint or line.attentions">
+                                <div class="tour-panel__head"><i class="fa fa-info-circle me-2"/>温馨提示</div>
+                                <div class="tour-panel__body">
+                                    <div t-if="line.warm_hint" style="white-space: pre-line" t-out="line.warm_hint"/>
+                                    <div t-if="line.attentions" style="white-space: pre-line" t-out="line.attentions"/>
+                                </div>
+                            </div>
+
+                            <!-- 自费/购物 -->
+                            <div class="tour-panel mb-4" t-if="line.self_paid_item or line.shopping_info">
+                                <div class="tour-panel__head"><i class="fa fa-shopping-cart me-2"/>自费项目与购物</div>
+                                <div class="tour-panel__body">
+                                    <div t-if="line.self_paid_item" style="white-space: pre-line" t-out="line.self_paid_item"/>
+                                    <div t-if="line.shopping_info" style="white-space: pre-line" t-out="line.shopping_info"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============ 右侧班期选择 ============ -->
+                        <div class="col-lg-4">
+                            <div class="tour-panel mb-4">
+                                <div class="tour-panel__head"><i class="fa fa-calendar me-2"/>班期选择</div>
+                                <div class="tour-panel__body">
+                                    <t t-if="departures">
+                                        <t t-foreach="departures" t-as="dep">
+                                            <div class="tour-departure-row">
+                                                <div>
+                                                    <div class="fw-bold" t-out="dep.start_date"/>
+                                                    <t t-if="dep.end_date"><span class="text-muted small"> 返 <t t-out="dep.end_date"/></span></t>
+                                                </div>
+                                                <div>
+                                                    <span class="tour-seats" t-if="dep.remain_seats &gt; 0">
+                                                        余 <t t-out="dep.remain_seats"/> 位
+                                                    </span>
+                                                    <span class="tour-seats--full" t-else="">已满</span>
+                                                </div>
+                                                <div class="w-100 d-flex align-items-center justify-content-between">
+                                                    <span class="tour-price">
+                                                        <small>¥</small><t t-out="'%g' % (dep.price_adult or line.adult_price or 0.0)"/>
+                                                    </span>
+                                                    <t t-if="dep.remain_seats &gt; 0">
+                                                        <a t-attf-href="/tours/#{line.id}/register?departure_id=#{dep.id}"
+                                                           class="btn btn-sm btn-primary">去报名</a>
+                                                    </t>
+                                                    <span t-else="" class="text-muted small">不可选</span>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                    <div class="alert alert-secondary mb-0" t-else="">
+                                        暂无已发布的可报名班期，请联系客服咨询。
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 报名引导 -->
+                            <div class="tour-panel mb-4">
+                                <div class="tour-panel__head"><i class="fa fa-headphones me-2"/>预订咨询</div>
+                                <div class="tour-panel__body text-center py-3">
+                                    <p class="text-muted mb-2">对线路有疑问？马上联系我们</p>
+                                    <a href="tel:13877778888" class="btn btn-outline-primary w-100 mb-2">
+                                        <i class="fa fa-phone me-1"/>13877778888
+                                    </a>
+                                    <a href="mailto:info@layaconch.com" class="text-decoration-none small">info@layaconch.com</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================= 在线报名表单 ================= -->
+    <template id="tour_register" name="在线报名">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container py-4">
+                    <h1>在线报名</h1>
+                    <h5 class="text-muted" t-out="line.name"/>
+
+                    <div class="alert alert-danger" t-if="error" t-out="error"/>
+
+                    <t t-if="departure">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <p class="mb-1">出发日期：<b t-out="departure.start_date"/></p>
+                                <p class="mb-1">返程日期：<b t-out="departure.end_date"/></p>
+                                <p class="mb-0">余位：<b t-out="departure.remain_seats"/></p>
+                            </div>
+                        </div>
+
+                        <form method="post" t-attf-action="/tours/#{line.id}/register">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="departure_id" t-att-value="departure.id"/>
+
+                            <h5>联系人信息</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label class="col-form-label">联系人姓名 *</label>
+                                    <input type="text" name="supplier_name" class="form-control" required="1"
+                                           t-att-value="post.get('supplier_name')"/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="col-form-label">联系人手机 *（11 位）</label>
+                                    <input type="tel" name="supplier_user_mobile" class="form-control" required="1"
+                                           maxlength="11" t-att-value="post.get('supplier_user_mobile')"/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="col-form-label">联系人座机</label>
+                                    <input type="text" name="supplier_user_tel" class="form-control"
+                                           t-att-value="post.get('supplier_user_tel')"/>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-3">报名人数（至少 1 类 ≥ 1）</h5>
+                            <div class="form-row">
+                                <t t-foreach="['adult_num','child_num','old_man_num','student_num','baby_num']" t-as="f">
+                                    <div class="form-group col">
+                                        <label class="col-form-label">
+                                            <t t-if="f == 'adult_num'">成人</t>
+                                            <t t-if="f == 'child_num'">儿童</t>
+                                            <t t-if="f == 'old_man_num'">老人</t>
+                                            <t t-if="f == 'student_num'">学生</t>
+                                            <t t-if="f == 'baby_num'">婴儿</t>
+                                        </label>
+                                        <input type="number" min="0" t-att-name="f" class="form-control"
+                                               t-att-value="post.get(f, '0')"/>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <h5 class="mt-3">客人证件（按人数逐条填写，实名/保险必需）</h5>
+                            <p class="text-muted small">每填一位客人一行；证件号加密存储、界面脱敏</p>
+                            <div class="form-row font-weight-bold text-muted small">
+                                <div class="col-3">姓名</div>
+                                <div class="col-3">年龄档</div>
+                                <div class="col-2">证件类型</div>
+                                <div class="col-4">证件号</div>
+                            </div>
+                            <t t-foreach="slots" t-as="i">
+                                <div class="form-row mb-2">
+                                    <div class="col-3">
+                                        <input type="text" t-att-name="'passenger_name_%s' % i" class="form-control"
+                                               placeholder="姓名" t-att-value="post.get('passenger_name_%s' % i)"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <select t-att-name="'passenger_type_%s' % i" class="form-control">
+                                            <option value="adult">成人</option>
+                                            <option value="child">儿童</option>
+                                            <option value="old_man">老人</option>
+                                            <option value="student">学生</option>
+                                            <option value="baby">婴儿</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <select t-att-name="'passenger_id_type_%s' % i" class="form-control">
+                                            <option value="id_card">身份证</option>
+                                            <option value="passport">护照</option>
+                                            <option value="other">其他</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="text" t-att-name="'passenger_id_number_%s' % i" class="form-control"
+                                               placeholder="证件号" t-att-value="post.get('passenger_id_number_%s' % i)"/>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <h5 class="mt-3">其他信息（选填）</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <input type="text" name="guest_occupation" class="form-control" placeholder="职业"
+                                           t-att-value="post.get('guest_occupation')"/>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <input type="text" name="nation" class="form-control" placeholder="民族"
+                                           t-att-value="post.get('nation')"/>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <input type="text" name="province" class="form-control" placeholder="省份"
+                                           t-att-value="post.get('province')"/>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <input type="text" name="city_name" class="form-control" placeholder="城市"
+                                           t-att-value="post.get('city_name')"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="remark" class="form-control" rows="3" placeholder="备注"><t t-out="post.get('remark')"/></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg">提交报名</button>
+                        </form>
+                    </t>
+                    <div class="alert alert-secondary" t-else="">
+                        未指定发团日期，请返回<a t-attf-href="/tours/#{line.id}" class="ml-1">线路详情</a>选择班期。
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================= 报名成功回执 ================= -->
+    <template id="tour_register_success" name="报名回执">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container py-4">
+                    <h1 class="text-success">报名提交成功</h1>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="mb-1">报名单号：<b t-out="reg.reg_code"/></p>
+                            <p class="mb-1">线路：<t t-out="reg.plan_id.plan_name"/></p>
+                            <p class="mb-1">出发日期：<t t-out="reg.begin_date"/> · 返回日期：<t t-out="reg.end_date"/></p>
+                            <p class="mb-1">客人数：<t t-out="reg.guest_count"/> 人</p>
+                            <p class="mb-1">联系人：<t t-out="reg.supplier_user"/>（<t t-out="reg.supplier_user_mobile_masked"/>）</p>
+                            <p class="mb-0 text-danger h5">应付金额：¥<t t-out="'%.2f' % (reg.in_com_quo_sum or 0.0)"/></p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <h5>付款指引</h5>
+                        <p class="mb-1">本单为「线下付款」，请按以下方式付款后由客服确认：</p>
+                        <ul class="mb-2">
+                            <li>银行转账：户名/账号见客服提供的收款账户</li>
+                            <li>到店付款：前往门店凭报名单号付款</li>
+                        </ul>
+                        <p class="mb-0 small">客服电话：请以门店公布为准。报名不代表出行，最终以销售确认为准。</p>
+                    </div>
+                    <a href="/tours" class="btn btn-outline-primary">继续浏览线路</a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

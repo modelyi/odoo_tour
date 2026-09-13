@@ -19,11 +19,12 @@
     vehicles.csv(71)     -> tour.vehicle
     customers/hotels/meals/ditches/scenics/shops/vehicle_comps/tickets/insurances/self_fees -> res.partner（sup_type 区分）
     accounts.csv(72)     -> tour.bank.account
-  第二批（订单样本，验证贯通用）：
-    team_orders.csv      -> tour.plan  （前 100 条有效样本）
-    plan_regs.csv        -> tour.plan.reg（与样本 plan 关联的报名单）
+  第二批（订单/报名/收款全量，流式分批 + 断点可重跑）：
+    team_orders.csv(86,925) -> tour.plan  （LineID=0/未映射行挂兜底线路「未分配线路」）
+    plan_regs.csv(86,753)   -> tour.plan.reg（按 RegID 关联到 plan）
+    pay_claims.csv(51)      -> tour.payment.claim（0 金额收款跳过）
 
-幂等：按自然键 search 后 update/create，可重复执行。
+幂等：按自然键（plan_code/reg_code/claim.name）判定已存在则跳过，可重复执行不重复。
 """
 import csv
 import os
@@ -794,6 +795,423 @@ def import_plan_regs(reg_plan):
 
 
 # ---------------------------------------------------------------------------
+# 第二批（全量）：订单 + 报名 + 收款明细
+# ---------------------------------------------------------------------------
+FULL_PLAN_BATCH = 500
+FULL_REG_BATCH = 1000
+# 迁移期间关闭 mail 追踪/消息，避免 8.6 万条记录生成海量 mail.message 撑爆内存
+MIGRATE_CTX = dict(tracking_disable=True, mail_create_nolog=True, mail_notrack=True)
+
+
+def _gc():
+    """提交并释放 ORM 缓存，防止大规模迁移 OOM。"""
+    env.cr.commit()
+    env.invalidate_all()
+
+
+def iter_rows(fname):
+    """流式读取 CSV，避免 8.6 万行一次性载入内存。"""
+    with open(os.path.join(DATA_DIR, fname), encoding='utf-8-sig', newline='') as fh:
+        for row in csv.DictReader(fh):
+            yield row
+
+
+def _build_plan_code_map():
+    """返回 (first_reg, first_rc)：
+    first_reg: PlanCode -> 首个 RegID（并团重复时用于 PlanCode#RegID）
+    first_rc:  RegCode -> 首个 RegID（仅空 PlanCode 行，用于 RegCode 去重）
+    均为源顺序确定性，保证幂等且与历史已建数据一致。"""
+    first_reg = {}
+    first_rc = {}
+    for r in iter_rows('team_orders.csv'):
+        pc = s(r['PlanCode'])
+        regid = s(r['RegID'])
+        if pc and pc not in first_reg:
+            first_reg[pc] = regid
+        if not pc:
+            rc = s(r['RegCode'])
+            if rc and rc not in first_rc:
+                first_rc[rc] = regid
+    return first_reg, first_rc
+
+
+def _plan_code_for(r, first_reg, first_rc):
+    """确定性唯一团号：首个 PlanCode 用原号，并团重复用 PlanCode#RegID；
+    空 PlanCode 用 RegCode（首个），重复用 RegCode#RegID，兜底 ETP+RegID。"""
+    pc = s(r['PlanCode'])
+    regid = s(r['RegID'])
+    if pc and first_reg.get(pc) == regid:
+        return pc
+    if pc:
+        return '%s#%s' % (pc, regid)
+    rc = s(r['RegCode'])
+    if rc and first_rc.get(rc) == regid:
+        return rc
+    if rc:
+        return '%s#%s' % (rc, regid)
+    return 'ETP%s' % regid  # RegID 源内唯一，保证团号唯一
+
+
+def _plan_vals(r, plan_code, line_id, partner_map):
+    begin = to_date(r['BeginDate'])
+    end = to_date(r['EndDate'])
+    if begin and end and end < begin:
+        begin, end = end, begin  # 源数据日期颠倒，规范化
+    pbegin = to_date(r['PlanBeginDate'])
+    pend = to_date(r['PlanEndDate'])
+    if pbegin and pend and pend < pbegin:
+        pbegin, pend = pend, pbegin
+    return {
+        'plan_code': plan_code,
+        'plan_name': s(r['PlanName']) or plan_code,
+        'line_id': line_id,
+        'contract_no': s(r['ContractNo']),
+        'out_code': s(r['OutCode']),
+        'biz_mode': coerce_selection(r['BizMode'], _BIZ_MODES, '12'),
+        'plan_type': coerce_selection(r['PlanType'], _PLAN_TYPES, '2'),
+        'from_type': coerce_selection(r['FromType'], _FROM_TYPES, '1'),
+        'plan_class': s(r['PlanClass']),
+        'begin_date': begin,
+        'end_date': end,
+        'plan_begin_date': pbegin,
+        'plan_end_date': pend,
+        'main_begin_date': to_date(r['MainBeginDate']),
+        'main_end_date': to_date(r['MainEndDate']),
+        'order_date': to_date(r['OrderDate']),
+        'guest_count': to_int(r['GuestCount'], 0),
+        'adult_num': to_int(r['AdultNum'], 0),
+        'child_num': to_int(r['ChildNum'], 0),
+        'old_man_num': to_int(r['OldManNum'], 0),
+        'baby_num': to_int(r['BabyNum'], 0),
+        'student_num': to_int(r['StudentNum'], 0),
+        'guide_num': to_int(r['GuideNum'], 0),
+        'valid_num': to_int(r['ValidNum'], 0),
+        'sum_adult_num': to_int(r['SumAdultNum'], 0),
+        'sum_child_num': to_int(r['SumChildNum'], 0),
+        'sum_oldman_num': to_int(r['SumOldmanNum'], 0),
+        'sum_baby_num': to_int(r['SumBabyNum'], 0),
+        'sum_guide_num': to_int(r['SumGuideNum'], 0),
+        'sum_student_num': to_int(r['SumStudentNum'], 0),
+        'plan_num': to_int(r['PlanNum'], 0),
+        'supplier_id': partner_map.get(s(r['SupplierID'])),
+        'supplier_name': s(r['SupplierName']),
+        'supplier_user': s(r['SupplierUser']),
+        'supplier_user_mobile': s(r['SupplierUserMobile']),
+        'supplier_user_tel': s(r['SupplierUserTel']),
+        'supplier_user_weixin': s(r['SupplierUserWeiXin']),
+        'supplier_user_address': s(r['SupplierUserAddress']),
+        'supplier_user_fax': s(r['SupplierUserFax']),
+        'guest_contact': s(r['GuestContact']),
+        'guest_occupation': s(r['GuestOccupation']),
+        'nation': s(r['Nation']),
+        'province': s(r['Province']),
+        'city_name': s(r['CityName']),
+        'receive_place': s(r['ReceivePlace']),
+        'receive_traffic': s(r['ReceiveTraffic']),
+        'receive_tag': s(r['ReceiveTag']),
+        'left_place': s(r['LeftPlace']),
+        'left_traffic': s(r['LeftTraffic']),
+        'actual_shuttle_time': s(r['ActualShuttleTime']),
+        'out_state': s(r['OutState']),
+        'in_state': s(r['InState']),
+        'is_received_guest': to_bool(r['IsReceivedGuest']),
+        'is_d_safe': to_bool(r['IsDSafe']),
+        'is_send_hotel_dpt': to_bool(r['IsSendHotelDpt']),
+        'gather_chk': to_bool(r['GatherChk']),
+        'hotel_star': s(r['HotelStar']),
+        'hotel_day_num': to_int(r['HotelDayNum'], 0),
+        'hotel_room_single': to_int(r['HotelRoom_Single'], 0),
+        'hotel_room_standard': to_int(r['HotelRoom_Standard'], 0),
+        'hotel_room_triangle': to_int(r['HotelRoom_Triangle'], 0),
+        'hotel_room_accompany': to_int(r['HotelRoom_Accompany'], 0),
+        'hotel_room_additional': to_int(r['HotelRoom_Additional'], 0),
+        'in_com_quo_sum': to_float(r['InCom_QuoSum']),
+        'out_price_quo_sum': to_float(r['outPrice_QuoSum']),
+        'pre_price_quo_sum': to_float(r['PrePrice_QuoSum']),
+        'sum_pay_normal': to_float(r['SumPay_Normal']),
+        'sum_pay': to_float(r['SumPay']),
+        'sum_un_pay': to_float(r['SumUnPay']),
+        'sum_money_return': to_float(r['SumMoney_Return']),
+        'sum_pay_return': to_float(r['SumPay_Return']),
+        'sum_money_delegate': to_float(r['SumMoney_Delegate']),
+        'sum_pay_delegate': to_float(r['SumPay_Delegate']),
+        'in_sum': to_float(r['InSum']),
+        'out_sum': to_float(r['OutSum']),
+        'profit': to_float(r['Profit']),
+        'in_sum_no_shop': to_float(r['InSum_NoShop']),
+        'out_sum_no_shop': to_float(r['OutSum_NoShop']),
+        'profit_no_shop': to_float(r['Profit_NoShop']),
+        'invoice_money': to_float(r['InvoiceMoney']),
+        'un_invoice_money': to_float(r['UnInvoiceMoney']),
+        'sys_service_fee': to_float(r['SysServiceFee']),
+        'currency': s(r['Currency']),
+        'exchange_rate': to_float(r['ExchangeRate'], 1.0),
+        'sales_name': s(r['SalesName']),
+        'channel_id': s(r['ChannelID']),
+        'channel_name': s(r['ChannelName']),
+        'verify_user': s(r['VerifyUser']),
+        'verify_brief': s(r['VerifyBrief']),
+        'verify_user_cmp': s(r['VerifyUser_Cmp']),
+        'update_user': s(r['UpdateUser']),
+        'state': map_state(r['State']),
+        'audit_chk': to_bool(r['AuditChk']),
+        'audit_chk0': to_bool(r['AuditChk0']),
+        'verify_chk': to_bool(r['VerifyChk']),
+        'verify_date': to_date(r['VerifyDate']),
+        'op_state_chk': to_bool(r['OpStateChk']),
+        'zts_confirm_chk': to_bool(r['ZTSConfirmChk']),
+        'reg_verification_chk': to_bool(r['RegVerificationChk']),
+        'is_contract': to_bool(r['IsContract']),
+        'guide_contact': s(r['GuideContact']),
+        'remark': s(r['Remark']),
+        'plan_remark': s(r['PlanRemark']),
+        'plan_other_remark': s(r['PlanOtherRemark']),
+        'special_explain': s(r['SpecialExplain']),
+    }
+
+
+def _ensure_fallback_line():
+    """为源数据 LineID=0/未映射的订单提供兜底线路，保证全量迁移。"""
+    M = env['tour.line']
+    rec = M.with_context(active_test=False).search([('code', '=', 'ET-FALLBACK')], limit=1)
+    if rec:
+        return rec.id
+    lt = env['tour.line.type'].search([], limit=1)
+    if not lt:
+        raise RuntimeError('无线路分类，无法创建兜底线路')
+    rec = M.create({
+        'name': '未分配线路',
+        'code': 'ET-FALLBACK',
+        'line_type_id': lt.id,
+        'day_num': 1,
+    })
+    return rec.id
+
+
+def import_plans_full(line_map, partner_map, fallback_line_id=None):
+    """team_orders 全量 -> tour.plan（流式分批，幂等）。返回 {RegID: plan_id}。"""
+    PlanM = env['tour.plan']
+    first_reg, first_rc = _build_plan_code_map()
+    existing = {rec['plan_code']: rec['id']
+                for rec in PlanM.search_read([], ['plan_code', 'id'])}
+    reg_plan = {}
+    created = updated = skipped = 0
+    create_buf = []   # (vals, regid)
+    update_buf = []   # (plan_id, vals)
+
+    def flush():
+        nonlocal created, updated
+        if create_buf:
+            recs = PlanM.with_context(**MIGRATE_CTX).create([c[0] for c in create_buf])
+            for rec, c in zip(recs, create_buf):
+                reg_plan[c[1]] = rec.id
+                existing[c[0]['plan_code']] = rec.id
+            created += len(create_buf)
+            create_buf.clear()
+        if update_buf:
+            for pid, vals in update_buf:
+                PlanM.with_context(**MIGRATE_CTX).browse(pid).write(vals)
+            updated += len(update_buf)
+            update_buf.clear()
+        _gc()
+
+    for r in iter_rows('team_orders.csv'):
+        line_id = line_map.get(s(r['LineID'])) or fallback_line_id
+        begin = to_date(r['BeginDate'])
+        end = to_date(r['EndDate'])
+        if not line_id or not begin or not end:
+            skipped += 1
+            continue
+        plan_code = _plan_code_for(r, first_reg, first_rc)
+        vals = _plan_vals(r, plan_code, line_id, partner_map)
+        regid = s(r['RegID'])
+        if plan_code in existing:
+            reg_plan[regid] = existing[plan_code]  # 幂等：已存在跳过，仅记录映射
+        else:
+            create_buf.append((vals, regid))
+        if len(create_buf) >= FULL_PLAN_BATCH:
+            flush()
+    flush()
+    print('[plan] created=%d updated=%d skipped=%d total=%d' % (
+        created, updated, skipped, created + updated))
+    return reg_plan
+
+
+def _build_reg_code_map():
+    """RegCode -> 出现次数（源顺序），用于确定性生成唯一报名单号。"""
+    counts = {}
+    for r in iter_rows('plan_regs.csv'):
+        rc = s(r['RegCode'])
+        if rc:
+            counts[rc] = counts.get(rc, 0) + 1
+    return counts
+
+
+def _reg_vals(r, plan_id, reg_code):
+    begin = to_date(r['BeginDate'])
+    end = to_date(r['EndDate'])
+    if begin and end and end < begin:
+        begin, end = end, begin  # 源数据日期颠倒，规范化
+    return {
+        'reg_code': reg_code,
+        'plan_id': plan_id,
+        'first_plan_id': plan_id,  # 全量简化：首发计划 = 所属计划
+        'contract_no': s(r['ContractNo']),
+        'out_code': s(r['OutCode']),
+        'biz_mode': coerce_selection(r['BizMode'], _BIZ_MODES, '12'),
+        'plan_type': coerce_selection(r['PlanType'], _PLAN_TYPES, '2'),
+        'from_type': coerce_selection(r['FromType'], _FROM_TYPES, '1'),
+        'plan_class': s(r['PlanClass']),
+        'begin_date': begin,
+        'end_date': end,
+        'order_date': to_date(r['OrderDate']),
+        'hotel_day_num': to_int(r['HotelDayNum'], 0),
+        'guest_count': to_int(r['GuestCount'], 0),
+        'adult_num': to_int(r['AdultNum'], 0),
+        'child_num': to_int(r['ChildNum'], 0),
+        'old_man_num': to_int(r['OldManNum'], 0),
+        'baby_num': to_int(r['BabyNum'], 0),
+        'student_num': to_int(r['StudentNum'], 0),
+        'guide_num': to_int(r['GuideNum'], 0),
+        'supplier_name': s(r['SupplierName']),
+        'supplier_user': s(r['SupplierUser']),
+        'supplier_user_mobile': s(r['SupplierUserMobile']),
+        'supplier_user_tel': s(r['SupplierUserTel']),
+        'supplier_user_fax': s(r['SupplierUserFax']),
+        'guest_occupation': s(r['GuestOccupation']),
+        'nation': s(r['Nation']),
+        'province': s(r['Province']),
+        'city_name': s(r['CityName']),
+        'receive_place': s(r['ReceivePlace']),
+        'receive_traffic': s(r['ReceiveTraffic']),
+        'receive_tag': s(r['ReceiveTag']),
+        'left_place': s(r['LeftPlace']),
+        'left_traffic': s(r['LeftTraffic']),
+        'actual_shuttle_time': s(r['ActualShuttleTime']),
+        'out_state': s(r['OutState']),
+        'in_state': s(r['InState']),
+        'gather_chk': to_bool(r['GatherChk']),
+        'hotel_star': s(r['HotelStar']),
+        'hotel_room_single': to_int(r['HotelRoom_Single'], 0),
+        'hotel_room_standard': to_int(r['HotelRoom_Standard'], 0),
+        'hotel_room_triangle': to_int(r['HotelRoom_Triangle'], 0),
+        'hotel_room_accompany': to_int(r['HotelRoom_Accompany'], 0),
+        'hotel_room_additional': to_int(r['HotelRoom_Additional'], 0),
+        'in_com_quo_sum': to_float(r['InCom_QuoSum']),
+        'out_price_quo_sum': to_float(r['outPrice_QuoSum']),
+        'pre_price_quo_sum': to_float(r['PrePrice_QuoSum']),
+        'pre_cost_quo_sum': to_float(r['PreCost_QuoSum']),
+        'sum_pay_normal': to_float(r['SumPay_Normal']),
+        'sum_un_pay': to_float(r['SumUnPay']),
+        'sum_money_delegate': to_float(r['SumMoney_Delegate']),
+        'sum_pay_delegate': to_float(r['SumPay_Delegate']),
+        'sum_money_return': to_float(r['SumMoney_Return']),
+        'sum_pay_return': to_float(r['SumPay_Return']),
+        'audit_chk': to_bool(r['AuditChk']),
+        'audit_chk0': to_bool(r['AuditChk0']),
+        'verify_chk': to_bool(r['VerifyChk']),
+        'verify_date': to_date(r['VerifyDate']),
+        'reg_verification_chk': to_bool(r['RegVerificationChk']),
+        'sales_name': s(r['SalesName']),
+        'update_user': s(r['UpdateUser']),
+        'remark': s(r['Remark']),
+    }
+
+
+def import_plan_regs_full(reg_plan):
+    """plan_regs 全量 -> tour.plan.reg（流式分批，幂等）。"""
+    RegM = env['tour.plan.reg']
+    reg_counts = _build_reg_code_map()
+    existing = {r['reg_code'] for r in RegM.search_read([], ['reg_code'])}
+    created = updated = skipped = 0
+    create_buf = []
+    update_buf = []   # (reg_id, vals)
+
+    def flush():
+        nonlocal created, updated
+        if create_buf:
+            RegM.with_context(**MIGRATE_CTX).create(create_buf)
+            created += len(create_buf)
+            create_buf.clear()
+        if update_buf:
+            for rid, vals in update_buf:
+                RegM.with_context(**MIGRATE_CTX).browse(rid).write(vals)
+            updated += len(update_buf)
+            update_buf.clear()
+        _gc()
+
+    for r in iter_rows('plan_regs.csv'):
+        rid = s(r['RegID'])
+        plan_id = reg_plan.get(rid)
+        if not plan_id:
+            skipped += 1
+            continue
+        rc = s(r['RegCode'])
+        if rc and reg_counts.get(rc, 0) == 1:
+            reg_code = rc
+        else:
+            reg_code = ('%s#%s' % (rc, rid)) if rc else ('ETR%s' % rid)
+        vals = _reg_vals(r, plan_id, reg_code)
+        if reg_code in existing:
+            pass  # 幂等：已存在跳过
+        else:
+            create_buf.append(vals)
+            existing.add(reg_code)
+        if len(create_buf) >= FULL_REG_BATCH:
+            flush()
+    flush()
+    print('[plan.reg] created=%d updated=%d skipped=%d' % (created, updated, skipped))
+
+
+def import_pay_claims(partner_map):
+    """pay_claims.csv（51 条）-> tour.payment.claim。"""
+    ClaimM = env['tour.payment.claim']
+    channel_map = {c.channel_type: c.id for c in env['tour.pay.channel'].search([])}
+    pay_type_map = {'银行转账': 'bank_transfer', '微信': 'wechat',
+                    '支付宝': 'alipay', '现金': 'cash', '其他': 'other'}
+    default_bank = env['tour.bank.account'].search([], limit=1)
+    rows = read_rows('pay_claims.csv')
+    created = updated = skipped = 0
+    for r in rows:
+        pay_money = to_float(r['PayMoney'], 0.0)
+        if pay_money <= 0:
+            skipped += 1  # 源数据存在 0 金额收款，跳过（模型约束 pay_money>0）
+            continue
+        channel_type = pay_type_map.get(s(r['PayType']), 'bank_transfer')
+        channel_id = channel_map.get(channel_type)
+        acc_id = None
+        if channel_type in ('bank_transfer', 'wechat', 'alipay') and default_bank:
+            acc_id = default_bank.id
+        name = 'SK-%s' % s(r['PayClaimID'])
+        vals = {
+            'name': name,
+            'supplier_id': partner_map.get(s(r['SupplierID'])),
+            'pay_date': to_date(r['PayDate']),
+            'pay_money': pay_money,
+            'use_money': to_float(r['UseMoney'], 0.0),
+            'pay_channel_id': channel_id,
+            'account_id': acc_id,
+            'bank_name_pay': s(r['BankName_Pay']),
+            'account_name_pay': s(r['AccountName_Pay']),
+            'account_no_pay': s(r['AccountNo_Pay']),
+            'brief': s(r['Brief']),
+            'tax_code': s(r['TaxCode']),
+            'trans_fee_rate': to_float(r['TransFeeRate'], 0.0),
+            'trans_fee': to_float(r['TransFee'], 0.0),
+            'claim_state': coerce_selection(r['ClaimState'], {'0', '1', '3'}, '0'),
+        }
+        rec = ClaimM.search([('name', '=', name)], limit=1)
+        if rec:
+            rec.write(vals)
+            updated += 1
+        else:
+            ClaimM.create(vals)
+            created += 1
+    env.cr.commit()
+    print('[payment.claim] created=%d updated=%d skipped=%d' % (created, updated, skipped))
+
+
+# ---------------------------------------------------------------------------
 # 主流程
 # ---------------------------------------------------------------------------
 
@@ -814,15 +1232,16 @@ def main():
     line_map = import_lines(line_type_map)
     env.cr.commit()
 
-    print('========== 第二批：订单样本 ==========')
-    reg_plan = import_plan_sample(line_map, partner_map)
-    env.cr.commit()
-    import_plan_regs(reg_plan)
-    env.cr.commit()
+    print('========== 第二批：订单+报名（全量） ==========')
+    fallback_line_id = _ensure_fallback_line()
+    reg_plan = import_plans_full(line_map, partner_map, fallback_line_id)
+    import_plan_regs_full(reg_plan)
+    import_pay_claims(partner_map)
 
     print('========== 迁移结果汇总 ==========')
     for m in ['tour.line.type', 'tour.line', 'tour.pay.way', 'tour.guide',
-              'tour.vehicle', 'tour.bank.account', 'tour.plan', 'tour.plan.reg']:
+              'tour.vehicle', 'tour.bank.account', 'tour.plan', 'tour.plan.reg',
+              'tour.payment.claim']:
         print('  %-20s = %d' % (m, env[m].search_count([])))
     # 供应商按 sup_type 计数
     for st in ['customer', 'ditch', 'hotel', 'meal', 'scenic', 'shop',
