@@ -125,10 +125,13 @@ class TourPaymentClaim(models.Model):
             rec.claim_state = '1'
 
     def action_audit(self):
-        """会计审核：待审核 → 已审核，并生成收款凭证（幂等，move_id 判断）。"""
+        """会计审核：待审核 → 已审核，并生成收款凭证（幂等，move_id 判断）。
+
+        状态守卫：非「待审核」优雅跳过（重复调用不抛错、不重复生成凭证）[UAT P3]。
+        """
         for rec in self:
             if rec.claim_state != '1':
-                raise ValidationError('仅「待审核」收款可审核')
+                continue
             if not rec.move_id:
                 rec.move_id = rec._generate_receipt_move()
             rec.claim_state = '2'

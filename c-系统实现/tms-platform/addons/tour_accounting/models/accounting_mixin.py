@@ -198,18 +198,22 @@ class TourAccountingMixin(models.AbstractModel):
     def _plan_cost_vat_split(self, plan):
         """返回 (cost_deductible, cost_non_deductible)：按 tour_vat_deductible 从分析行归集（含税口径，正数）。
 
-        可扣除 = 科目.tour_vat_deductible=True 的成本借方；不可扣除 = False [BS-11 §8.2]。
+        只汇总成本借方（发生方向）：Odoo 19 分析行借方为负、贷方为正，
+        差额征税抵减凭证的贷方行（贷 6401.0N 冲减成本）不能再计入可扣除基数，
+        否则申报口径重复计算 [BS-11 §8.2 / UAT P1]。
         """
         deductible = non_deductible = 0.0
         for ln in self._plan_analytic_lines(plan):
             acc = ln.general_account_id or (ln.move_line_id.account_id if ln.move_line_id else False)
             if not acc or acc.account_type not in ('expense', 'expense_direct_cost', 'expense_depreciation'):
                 continue
-            amt = abs(ln.amount or 0.0)
+            amt = ln.amount or 0.0
+            if amt >= 0:
+                continue  # 贷方/冲减行（如抵减凭证贷成本），不计入可扣除基数
             if acc.tour_vat_deductible:
-                deductible += amt
+                deductible += -amt
             else:
-                non_deductible += amt
+                non_deductible += -amt
         return deductible, non_deductible
 
     def _plan_deductible_breakdown(self, plan):
@@ -221,7 +225,10 @@ class TourAccountingMixin(models.AbstractModel):
                 continue
             if acc.account_type not in ('expense', 'expense_direct_cost', 'expense_depreciation'):
                 continue
-            breakdown[acc.id] = breakdown.get(acc.id, 0.0) + abs(ln.amount or 0.0)
+            amt = ln.amount or 0.0
+            if amt >= 0:
+                continue  # 只汇总借方（成本发生方向），贷方冲减行不计入
+            breakdown[acc.id] = breakdown.get(acc.id, 0.0) + (-amt)
         return breakdown
 
     def _tour_make_move(self, journal, date, ref, lines, move_type='entry',

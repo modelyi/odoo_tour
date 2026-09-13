@@ -160,6 +160,7 @@ class TourCommission(models.Model):
         }, {
             'account_id': tax_acc.id,
             'credit': tax,
+            'analytic': analytic,
             'compliance_ref': 'iit_labor',
             'name': '代扣个人所得税 %s' % self.name,
         }]
@@ -211,6 +212,7 @@ class TourCommission(models.Model):
         payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_GUIDE)
         bank_acc = self._tour_get_account(self.ACCOUNT_BANK)
         journal = self._get_payment_journal()
+        analytic = self._plan_analytic_distribution(self.plan_id)
         partner_id = self.guide_id.partner_id.id if self.guide_id and self.guide_id.partner_id else None
         narration = '%s / %s / 发放导游分成' % (
             self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
@@ -219,11 +221,13 @@ class TourCommission(models.Model):
             'account_id': payable_acc.id,
             'partner_id': partner_id,
             'debit': net_pay,
+            'analytic': analytic,
             'compliance_ref': 'cas37',
             'name': '支付导游分成 %s' % self.name,
         }, {
             'account_id': bank_acc.id,
             'credit': net_pay,
+            'analytic': analytic,
             'compliance_ref': 'pay_settle',
             'name': '支付导游分成 %s' % self.name,
         }]
