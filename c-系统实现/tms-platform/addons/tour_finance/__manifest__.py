@@ -24,7 +24,7 @@
     'website': 'https://tms.solepro.cloud',
     'license': 'LGPL-3',
     'depends': ['base', 'mail', 'account', 'analytic',
-                'tour_base', 'tour_resource', 'tour_order'],
+                'tour_product', 'tour_resource', 'tour_order'],
     'data': [
         'security/tour_finance_security.xml',
         'security/ir.model.access.csv',

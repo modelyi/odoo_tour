@@ -44,19 +44,19 @@
 ## 常用命令
 ```bash
 # 语法检查
-docker exec tms-odoo python3 -m py_compile /mnt/extra-addons/tour_base/__manifest__.py
-docker exec tms-odoo python3 -m py_compile /mnt/extra-addons/tour_base/models/__init__.py
+docker exec tms-odoo python3 -m py_compile /mnt/extra-addons/tour_product/__manifest__.py
+docker exec tms-odoo python3 -m py_compile /mnt/extra-addons/tour_product/models/__init__.py
 
 # XML 语法检查
 docker exec tms-odoo python3 -c "
 import xml.etree.ElementTree as ET
-ET.parse('/mnt/extra-addons/tour_base/views/menu.xml')
+ET.parse('/mnt/extra-addons/tour_product/views/menu.xml')
 print('XML OK')
 "
 
 # 模块安装测试
 docker stop tms-odoo
-docker run --rm --network tms-net -v $(pwd)/addons:/mnt/extra-addons -v $(pwd)/config/odoo.conf:/etc/odoo/odoo.conf:ro odoo:19 odoo -d tms_test -i tour_base --stop-after-init --log-level=test
+docker run --rm --network tms-net -v $(pwd)/addons:/mnt/extra-addons -v $(pwd)/config/odoo.conf:/etc/odoo/odoo.conf:ro odoo:19 odoo -d tms_test -i tour_product --stop-after-init --log-level=test
 docker start tms-odoo
 
 # 数据库完整性

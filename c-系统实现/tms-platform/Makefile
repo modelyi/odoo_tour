@@ -32,11 +32,11 @@ db-shell:
 
 # Install custom module
 install:
-	docker exec tms-odoo odoo -d tms -i tour_base --stop-after-init --config /etc/odoo/odoo.conf
+	docker exec tms-odoo odoo -d tms -i tour_product --stop-after-init --config /etc/odoo/odoo.conf
 
 # Update custom module
 update:
-	docker exec tms-odoo odoo -d tms -u tour_base --stop-after-init --config /etc/odoo/odoo.conf
+	docker exec tms-odoo odoo -d tms -u tour_product --stop-after-init --config /etc/odoo/odoo.conf
 
 # Restart odoo to reload code (dev mode)
 reload:

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_meal_view_tree" model="ir.ui.view">
+        <field name="name">tour.meal.view.tree</field>
+        <field name="model">tour.meal</field>
+        <field name="arch" type="xml">
+            <list string="Meals" editable="bottom">
+                <field name="name"/>
+                <field name="meal_type"/>
+                <field name="restaurant_name"/>
+                <field name="price" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="is_vegetarian" widget="boolean_toggle"/>
+                <field name="is_vegan" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="tour_meal_view_form" model="ir.ui.view">
+        <field name="name">tour.meal.view.form</field>
+        <field name="model">tour.meal</field>
+        <field name="arch" type="xml">
+            <form string="Meal">
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Meal Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="meal_type"/>
+                            <field name="restaurant_name"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="price" widget="monetary"/>
+                            <field name="product_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Dietary Options">
+                        <group>
+                            <field name="is_vegetarian"/>
+                            <field name="is_vegan"/>
+                            <field name="is_gluten_free"/>
+                        </group>
+                        <group>
+                            <field name="is_halal"/>
+                            <field name="is_kosher"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" widget="html"/>
+                        </page>
+                        <page string="Menu">
+                            <field name="menu" placeholder="Menu details..."/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_tour_meal" model="ir.actions.act_window">
+        <field name="name">Meals</field>
+        <field name="res_model">tour.meal</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+</odoo>
+

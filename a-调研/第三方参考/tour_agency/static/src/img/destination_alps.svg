@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="alps_sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4FC3F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#81D4FA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#alps_sky)"/>
+  
+  <!-- Clouds -->
+  <ellipse cx="400" cy="180" rx="150" ry="50" fill="white" opacity="0.8"/>
+  <ellipse cx="480" cy="190" rx="130" ry="45" fill="white" opacity="0.8"/>
+  <ellipse cx="1400" cy="220" rx="170" ry="55" fill="white" opacity="0.7"/>
+  <ellipse cx="1500" cy="230" rx="140" ry="50" fill="white" opacity="0.7"/>
+  
+  <!-- Distant mountains -->
+  <polygon points="0,500 400,250 800,500" fill="#B0BEC5" opacity="0.7"/>
+  <polygon points="700,500 1200,200 1700,500" fill="#90A4AE" opacity="0.7"/>
+  
+  <!-- Main mountain peaks -->
+  <polygon points="300,700 700,200 1100,700" fill="#78909C"/>
+  <polygon points="800,700 1200,150 1600,700" fill="#607D8B"/>
+  
+  <!-- Snow caps -->
+  <polygon points="650,300 700,200 750,300" fill="#ECEFF1"/>
+  <polygon points="600,380 700,250 800,380" fill="#F5F5F5"/>
+  <polygon points="1150,250 1200,150 1250,250" fill="#ECEFF1"/>
+  <polygon points="1100,340 1200,200 1300,340" fill="#F5F5F5"/>
+  
+  <!-- Valley -->
+  <ellipse cx="960" cy="800" rx="800" ry="100" fill="#66BB6A" opacity="0.8"/>
+  <ellipse cx="960" cy="850" rx="700" ry="80" fill="#4CAF50" opacity="0.7"/>
+  
+  <!-- Pine forest -->
+  <g opacity="0.85">
+    <!-- Tree 1 -->
+    <g transform="translate(400, 780)">
+      <polygon points="0,-60 -20,0 20,0" fill="#2E7D32"/>
+      <polygon points="0,-90 -15,-35 15,-35" fill="#388E3C"/>
+      <rect x="-4" y="0" width="8" height="20" fill="#5D4037"/>
+    </g>
+    <!-- Tree 2 -->
+    <g transform="translate(500, 790)">
+      <polygon points="0,-55 -18,0 18,0" fill="#2E7D32"/>
+      <polygon points="0,-85 -14,-32 14,-32" fill="#388E3C"/>
+      <rect x="-4" y="0" width="8" height="18" fill="#5D4037"/>
+    </g>
+    <!-- Tree 3 -->
+    <g transform="translate(1450, 785)">
+      <polygon points="0,-58 -19,0 19,0" fill="#2E7D32"/>
+      <polygon points="0,-88 -15,-34 15,-34" fill="#388E3C"/>
+      <rect x="-4" y="0" width="8" height="19" fill="#5D4037"/>
+    </g>
+    <!-- Tree 4 -->
+    <g transform="translate(1550, 795)">
+      <polygon points="0,-52 -17,0 17,0" fill="#2E7D32"/>
+      <polygon points="0,-80 -13,-30 13,-30" fill="#388E3C"/>
+      <rect x="-4" y="0" width="8" height="17" fill="#5D4037"/>
+    </g>
+  </g>
+  
+  <!-- Chalet/cabin -->
+  <g transform="translate(800, 830)">
+    <rect x="0" y="0" width="100" height="70" fill="#8D6E63"/>
+    <polygon points="0,0 50,-30 100,0" fill="#A0522D"/>
+    <rect x="20" y="20" width="25" height="35" fill="#5D4037"/>
+    <rect x="60" y="25" width="20" height="20" fill="#81C784"/>
+  </g>
+</svg>

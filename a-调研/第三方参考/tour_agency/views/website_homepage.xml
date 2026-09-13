@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Homepage Template -->
+    <template id="homepage" name="Tour Agency Homepage">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                
+                <!-- Hero Section -->
+                <section class="s_cover parallax s_parallax_is_fixed pt96 pb96 o_colored_level" data-scroll-background-ratio="1" data-name="Cover" style="background-image: url('/tour_agency/static/src/img/hero-bg.jpg'); background-position: 50% 0;">
+                    <span class="s_parallax_bg oe_img_bg o_bg_img_center" style="background-image: url('/tour_agency/static/src/img/hero-bg.jpg'); background-position: 50% 0; transform: translateY(0px);"></span>
+                    <div class="o_we_bg_filter bg-black-50"></div>
+                    <div class="container">
+                        <div class="row s_nb_column_fixed">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <h1 class="display-1 text-white fw-bold" data-name="Hero Title">
+                                    <i class="fa fa-globe me-3"></i>Discover the World
+                                </h1>
+                                <h3 class="text-white-50 mb-4">Your Journey Begins Here</h3>
+                                <p class="lead text-white mb-5">
+                                    Experience unforgettable adventures with our expertly curated tour packages. 
+                                    From tropical beaches to mountain peaks, we've got your perfect getaway.
+                                </p>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                    <a href="/tours" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                                        <i class="fa fa-search me-2"></i>Browse Tours
+                                    </a>
+                                    <a href="/tour/inquiry" class="btn btn-outline-light btn-lg rounded-pill px-5">
+                                        <i class="fa fa-envelope me-2"></i>Get Quote
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Features Section -->
+                <section class="s_features pt64 pb64 bg-light" data-name="Features">
+                    <div class="container">
+                        <div class="row mb-5">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <h2 class="display-4 fw-bold mb-3">Why Choose Us?</h2>
+                                <p class="lead text-muted">We make your travel dreams come true</p>
+                            </div>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-shield-alt fa-3x text-primary"></i>
+                                    </div>
+                                    <h4 class="fw-bold">Best Price Guarantee</h4>
+                                    <p class="text-muted">Competitive prices with no hidden fees</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-users fa-3x text-success"></i>
+                                    </div>
+                                    <h4 class="fw-bold">Expert Guides</h4>
+                                    <p class="text-muted">Professional and experienced tour guides</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-clock fa-3x text-warning"></i>
+                                    </div>
+                                    <h4 class="fw-bold">24/7 Support</h4>
+                                    <p class="text-muted">Round-the-clock customer assistance</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-star fa-3x text-danger"></i>
+                                    </div>
+                                    <h4 class="fw-bold">Top Rated</h4>
+                                    <p class="text-muted">5-star reviews from happy travelers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Featured Tours Section -->
+                <section class="s_tours pt64 pb64" data-name="Featured Tours">
+                    <div class="container">
+                        <div class="row mb-5">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <h2 class="display-4 fw-bold mb-3">Featured Destinations</h2>
+                                <p class="lead text-muted">Handpicked tours just for you</p>
+                            </div>
+                        </div>
+                        <t t-set="featured_packages" t-value="request.env['tour.package'].sudo().search([('is_featured', '=', True), ('state', '=', 'published')], limit=3)"/>
+                        <t t-if="not featured_packages">
+                            <!-- Fallback: show any published packages if no featured ones -->
+                            <t t-set="featured_packages" t-value="request.env['tour.package'].sudo().search([('state', '=', 'published')], limit=3)"/>
+                        </t>
+                        <div class="row g-4">
+                            <t t-if="featured_packages">
+                                <t t-foreach="featured_packages" t-as="package">
+                                    <div class="col-lg-4 col-md-6">
+                                        <t t-call="tour_agency.tour_package_card"/>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <!-- Show sample cards if no packages at all -->
+                                <div class="col-12 text-center py-5">
+                                    <i class="fa fa-compass fa-5x text-muted mb-4"></i>
+                                    <h3 class="text-muted">Tours Coming Soon!</h3>
+                                    <p class="lead text-muted">We're preparing amazing tour packages for you.</p>
+                                    <a href="/tours" class="btn btn-primary btn-lg">Explore Tours</a>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-12 text-center">
+                                <a href="/tours" class="btn btn-primary btn-lg rounded-pill px-5">
+                                    <i class="fa fa-th me-2"></i>View All Tours
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Stats Section -->
+                <section class="s_stats pt64 pb64 bg-primary text-white" data-name="Stats">
+                    <div class="container">
+                        <div class="row text-center g-4">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stat-item">
+                                    <i class="fa fa-users fa-3x mb-3 opacity-75"></i>
+                                    <h2 class="display-4 fw-bold mb-0">10K+</h2>
+                                    <p class="lead mb-0">Happy Travelers</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stat-item">
+                                    <i class="fa fa-map-marked-alt fa-3x mb-3 opacity-75"></i>
+                                    <h2 class="display-4 fw-bold mb-0">50+</h2>
+                                    <p class="lead mb-0">Destinations</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stat-item">
+                                    <i class="fa fa-award fa-3x mb-3 opacity-75"></i>
+                                    <h2 class="display-4 fw-bold mb-0">15</h2>
+                                    <p class="lead mb-0">Years Experience</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stat-item">
+                                    <i class="fa fa-star fa-3x mb-3 opacity-75"></i>
+                                    <h2 class="display-4 fw-bold mb-0">4.9</h2>
+                                    <p class="lead mb-0">Average Rating</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Testimonials Section -->
+                <section class="s_testimonials pt64 pb64 bg-light" data-name="Testimonials">
+                    <div class="container">
+                        <div class="row mb-5">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <h2 class="display-4 fw-bold mb-3">What Our Travelers Say</h2>
+                                <p class="lead text-muted">Real experiences from real travelers</p>
+                            </div>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100 p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                    </div>
+                                    <p class="mb-4">"Amazing experience! The Bali tour was perfectly organized and our guide was fantastic. Highly recommend!"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-0 fw-bold">Sarah Johnson</h6>
+                                            <small class="text-muted">Bali Paradise Tour</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100 p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                    </div>
+                                    <p class="mb-4">"The African Safari exceeded all expectations. Saw the Big Five and the accommodations were luxurious!"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-0 fw-bold">Michael Chen</h6>
+                                            <small class="text-muted">Safari Adventure</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100 p-4">
+                                    <div class="mb-3">
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                        <i class="fa fa-star text-warning"></i>
+                                    </div>
+                                    <p class="mb-4">"Paris was magical! Every detail was taken care of. Best anniversary trip ever!"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-0 fw-bold">Emma Williams</h6>
+                                            <small class="text-muted">Romantic Paris</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- CTA Section -->
+                <section class="s_cta pt64 pb64 bg-gradient text-white" data-name="CTA" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <h2 class="display-4 fw-bold mb-4">Ready to Start Your Adventure?</h2>
+                                <p class="lead mb-5">Book now and get 10% off your first tour package!</p>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                    <a href="/tours" class="btn btn-light btn-lg rounded-pill px-5 shadow">
+                                        <i class="fa fa-compass me-2"></i>Explore Tours
+                                    </a>
+                                    <a href="/contactus" class="btn btn-outline-light btn-lg rounded-pill px-5">
+                                        <i class="fa fa-phone me-2"></i>Contact Us
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+            </div>
+        </t>
+    </template>
+    
+    <!-- Register Homepage as website page -->
+    <record id="website_page_homepage" model="website.page">
+        <field name="name">Tour Agency Home</field>
+        <field name="website_published">True</field>
+        <field name="url">/</field>
+        <field name="view_id" ref="homepage"/>
+    </record>
+    
+</odoo>
+

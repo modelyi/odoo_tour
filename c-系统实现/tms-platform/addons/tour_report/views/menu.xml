@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 报表中心顶级菜单（挂在 tour_base 的「旅行社管理」根菜单下） -->
+    <!-- 报表中心顶级菜单（挂在 tour_product 的「旅行社管理」根菜单下） -->
     <menuitem id="menu_tms_report"
         name="报表中心"
-        parent="tour_base.menu_tms_root"
+        parent="tour_product.menu_tms_root"
         sequence="50"/>
 
     <menuitem id="menu_report_plan_profit"

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="maldives_sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A8FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4FC3F7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="maldives_water" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#26C6DA;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00ACC1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0097A7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#maldives_sky)"/>
+  
+  <!-- Clouds -->
+  <ellipse cx="300" cy="150" rx="120" ry="40" fill="white" opacity="0.7"/>
+  <ellipse cx="350" cy="160" rx="100" ry="35" fill="white" opacity="0.7"/>
+  <ellipse cx="1500" cy="200" rx="140" ry="45" fill="white" opacity="0.6"/>
+  
+  <!-- Ocean -->
+  <rect y="400" width="1920" height="680" fill="url(#maldives_water)"/>
+  
+  <!-- Coral reef shadows -->
+  <ellipse cx="400" cy="600" rx="200" ry="100" fill="#1976D2" opacity="0.3"/>
+  <ellipse cx="1200" cy="700" rx="250" ry="120" fill="#1565C0" opacity="0.25"/>
+  
+  <!-- Island -->
+  <ellipse cx="960" cy="750" rx="350" ry="100" fill="#F5DEB3"/>
+  <ellipse cx="960" cy="720" rx="300" ry="60" fill="#F4E4C1"/>
+  
+  <!-- Palm trees on island -->
+  <g transform="translate(800, 680)">
+    <line x1="0" y1="0" x2="-8" y2="120" stroke="#8B4513" stroke-width="10"/>
+    <ellipse cx="-12" cy="-15" rx="45" ry="30" fill="#2ECC71" opacity="0.9"/>
+    <ellipse cx="8" cy="-20" rx="40" ry="28" fill="#27AE60" opacity="0.9"/>
+  </g>
+  
+  <g transform="translate(1100, 690)">
+    <line x1="0" y1="0" x2="10" y2="110" stroke="#8B4513" stroke-width="9"/>
+    <ellipse cx="12" cy="-12" rx="42" ry="28" fill="#2ECC71" opacity="0.9"/>
+  </g>
+  
+  <!-- Overwater bungalows -->
+  <g transform="translate(500, 550)">
+    <!-- Walkway -->
+    <rect x="0" y="50" width="400" height="8" fill="#8D6E63" opacity="0.8"/>
+    <!-- Bungalow 1 -->
+    <rect x="20" y="10" width="80" height="60" fill="#BCAAA4"/>
+    <polygon points="20,10 60,0 100,10" fill="#795548"/>
+    <!-- Bungalow 2 -->
+    <rect x="150" y="15" width="75" height="55" fill="#A1887F"/>
+    <polygon points="150,15 187,5 225,15" fill="#6D4C41"/>
+    <!-- Bungalow 3 -->
+    <rect x="280" y="12" width="70" height="58" fill="#BCAAA4"/>
+    <polygon points="280,12 315,2 350,12" fill="#795548"/>
+  </g>
+</svg>

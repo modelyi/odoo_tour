@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Simplified Configuration - No complex inheritance -->
+    <!-- Settings are accessible through Settings > General Settings > Tours & Travel section -->
+    <!-- or through the Configuration menu in Tours & Travel app -->
+    
+    <!-- The fields in res_config_settings.py will automatically appear in Settings > General Settings -->
+    
+</odoo>

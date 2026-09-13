@@ -6,8 +6,11 @@ from odoo.exceptions import ValidationError
 class TourGuide(models.Model):
     _name = 'tour.guide'
     _description = '导游档案'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'tour.encrypted.field.mixin']
     _order = 'name, guide_code'
+
+    # 敏感字段（AES-256-GCM 落盘加密 + 掩码展示 + 等值检索散列）
+    _encrypted_fields = {'id_num': True, 'account_no': True}
 
     # === 基本信息 ===
     name = fields.Char('导游姓名', required=True, index=True, tracking=True)
@@ -23,8 +26,12 @@ class TourGuide(models.Model):
     nation = fields.Char('民族')
     born_place = fields.Char('出生地')
     edu = fields.Char('学历')
-    id_num = fields.Char('身份证号', index=True,
-                         help='🔴 敏感字段：需加密存储（AES-256-GCM/SM4），界面掩码。审核通过时必填')
+    id_num = fields.Char('身份证号',
+                         help='🔴 敏感字段：已 AES-256-GCM 加密存储，界面掩码。审核通过时必填')
+    id_num_hash = fields.Char('身份证号检索散列', index=True, copy=False,
+                              help='HMAC-SHA256 等值检索辅助列（不存明文），用于精确匹配搜索')
+    id_num_masked = fields.Char('身份证号掩码', compute='_compute_masked_fields',
+                                help='界面/报表/日志/导出默认显示 ****后4位')
     tel = fields.Char('固定电话', help='🟡 敏感字段：界面掩码')
     mobile = fields.Char('手机号', help='🟡 敏感字段：界面掩码')
     zip_code = fields.Char('邮编')
@@ -63,7 +70,11 @@ class TourGuide(models.Model):
     # === 结算信息 ===
     account_bank = fields.Char('开户行')
     account_name = fields.Char('结算账户名')
-    account_no = fields.Char('结算银行卡号', help='🔴 敏感字段：需加密存储，界面掩码')
+    account_no = fields.Char('结算银行卡号', help='🔴 敏感字段：已 AES-256-GCM 加密存储，界面掩码')
+    account_no_hash = fields.Char('结算银行卡号检索散列', index=True, copy=False,
+                                  help='HMAC-SHA256 等值检索辅助列（不存明文）')
+    account_no_masked = fields.Char('结算银行卡号掩码', compute='_compute_masked_fields',
+                                    help='界面/报表/日志/导出默认显示 ****后4位')
     loan_rate = fields.Float('借款利率', digits=(5, 2))
     cw_code = fields.Char('财务编码')
 
@@ -89,6 +100,12 @@ class TourGuide(models.Model):
         'unique(guide_code)',
         '导游证号已存在',
     )
+
+    @api.depends('id_num', 'account_no')
+    def _compute_masked_fields(self):
+        for rec in self:
+            rec.id_num_masked = rec._encrypt_mask('id_num')
+            rec.account_no_masked = rec._encrypt_mask('account_no')
 
     @api.constrains('guide_star')
     def _check_guide_star(self):

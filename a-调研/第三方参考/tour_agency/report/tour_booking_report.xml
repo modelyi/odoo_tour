@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Report Action -->
+    <record id="action_report_tour_booking" model="ir.actions.report">
+        <field name="name">Tour Booking</field>
+        <field name="model">tour.booking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_agency.report_tour_booking_document</field>
+        <field name="report_file">tour_agency.report_tour_booking_document</field>
+        <field name="binding_model_id" ref="model_tour_booking"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Booking - %s' % object.name</field>
+    </record>
+    
+    <!-- Report Template -->
+    <template id="report_tour_booking_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <h2 class="text-center mb-4">
+                            <strong>Tour Booking Confirmation</strong>
+                        </h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Booking Reference:</strong>
+                                <p t-field="o.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Booking Date:</strong>
+                                <p t-field="o.booking_date" t-options='{"widget": "date"}'/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Customer:</strong>
+                                <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name", "phone", "email"]}'/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Tour Package:</strong>
+                                <p t-field="o.package_name"/>
+                                <strong>Travel Dates:</strong>
+                                <p>
+                                    <span t-field="o.travel_start_date"/> to <span t-field="o.travel_end_date"/>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <h4>Passenger Details</h4>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Adults:</strong></td>
+                                <td t-field="o.num_adults"/>
+                            </tr>
+                            <tr>
+                                <td><strong>Children:</strong></td>
+                                <td t-field="o.num_children"/>
+                            </tr>
+                            <tr>
+                                <td><strong>Infants:</strong></td>
+                                <td t-field="o.num_infants"/>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Persons:</strong></td>
+                                <td><strong t-field="o.total_persons"/></td>
+                            </tr>
+                        </table>
+                        
+                        <h4 class="mt-4">Pricing</h4>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Subtotal:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.discount_amount">
+                                <td><strong>Discount:</strong></td>
+                                <td class="text-right">
+                                    - <span t-field="o.discount_amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.extra_charges">
+                                <td><strong>Extra Charges:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.extra_charges" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-top">
+                                <td><strong>Total Amount:</strong></td>
+                                <td class="text-right">
+                                    <strong t-field="o.price_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Amount Paid:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_paid" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.amount_due">
+                                <td><strong>Balance Due:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_due" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <t t-if="o.customer_notes or o.special_requirements">
+                            <h4 class="mt-4">Additional Information</h4>
+                            <p t-if="o.customer_notes">
+                                <strong>Notes:</strong><br/>
+                                <span t-field="o.customer_notes"/>
+                            </p>
+                            <p t-if="o.special_requirements">
+                                <strong>Special Requirements:</strong><br/>
+                                <span t-field="o.special_requirements"/>
+                            </p>
+                        </t>
+                        
+                        <div class="mt-5 text-center">
+                            <p><strong>Thank you for choosing our services!</strong></p>
+                            <p class="text-muted">Please bring this confirmation with you on your tour.</p>
+                        </div>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>
+

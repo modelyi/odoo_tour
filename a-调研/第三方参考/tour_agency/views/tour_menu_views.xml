@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Main Menu -->
+    <menuitem id="menu_tour_root"
+        name="Tours &amp; Travel"
+        web_icon="tour_agency,static/description/icon.png"
+        sequence="50"/>
+    
+    <!-- Operations Menu -->
+    <menuitem id="menu_tour_operations"
+        name="Operations"
+        parent="menu_tour_root"
+        sequence="10"/>
+    
+    <menuitem id="menu_tour_booking"
+        name="Bookings"
+        parent="menu_tour_operations"
+        action="action_tour_booking"
+        sequence="10"/>
+    
+    <menuitem id="menu_tour_inquiry"
+        name="Inquiries"
+        parent="menu_tour_operations"
+        action="action_tour_inquiry"
+        sequence="20"/>
+    
+    <menuitem id="menu_tour_expense"
+        name="Expenses"
+        parent="menu_tour_operations"
+        action="action_tour_expense"
+        sequence="30"/>
+    
+    <!-- Packages Menu -->
+    <menuitem id="menu_tour_packages"
+        name="Packages"
+        parent="menu_tour_root"
+        sequence="20"/>
+    
+    <menuitem id="menu_tour_package"
+        name="Tour Packages"
+        parent="menu_tour_packages"
+        action="action_tour_package"
+        sequence="10"/>
+    
+    <menuitem id="menu_tour_itinerary"
+        name="Itineraries"
+        parent="menu_tour_packages"
+        action="action_tour_itinerary"
+        sequence="20"/>
+    
+    <menuitem id="menu_tour_package_category"
+        name="Categories"
+        parent="menu_tour_packages"
+        action="action_tour_package_category"
+        sequence="30"/>
+    
+    <menuitem id="menu_tour_package_tag"
+        name="Tags"
+        parent="menu_tour_packages"
+        action="action_tour_package_tag"
+        sequence="40"/>
+    
+    <!-- Services Menu -->
+    <menuitem id="menu_tour_services"
+        name="Services"
+        parent="menu_tour_root"
+        sequence="30"/>
+    
+    <menuitem id="menu_tour_hotel"
+        name="Hotels"
+        parent="menu_tour_services"
+        action="action_tour_hotel"
+        sequence="10"/>
+    
+    <menuitem id="menu_tour_transportation"
+        name="Transportation"
+        parent="menu_tour_services"
+        action="action_tour_transportation"
+        sequence="20"/>
+    
+    <menuitem id="menu_tour_meal"
+        name="Meals"
+        parent="menu_tour_services"
+        action="action_tour_meal"
+        sequence="30"/>
+    
+    <menuitem id="menu_tour_attraction"
+        name="Attractions"
+        parent="menu_tour_services"
+        action="action_tour_attraction"
+        sequence="40"/>
+    
+    <!-- Configuration Menu -->
+    <!-- Note: Settings are accessible via Settings > General Settings -->
+    <!-- The tour_* fields in res.config.settings will appear there automatically -->
+    
+</odoo>
+

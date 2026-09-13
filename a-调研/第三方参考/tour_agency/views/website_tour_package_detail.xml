@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tour Package Detail Page -->
+    <template id="tour_package_detail_page" name="Tour Package Detail">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/tours">Tours</a></li>
+                        <li class="breadcrumb-item active" t-esc="package.name"/>
+                    </ol>
+                </nav>
+                
+                <div class="row">
+                    <!-- Main Content -->
+                    <div class="col-lg-8">
+                        <!-- Package Header -->
+                        <div class="mb-4">
+                            <h1 class="display-4" t-esc="package.name"/>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fa fa-map-marker text-primary mr-2"/>
+                                <span class="h5 mb-0" t-esc="package.destination"/>
+                                <t t-if="package.category_id">
+                                    <span class="badge badge-secondary ml-3" t-esc="package.category_id.name"/>
+                                </t>
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <i class="fa fa-clock-o mr-1"/>
+                                <span t-esc="package.duration_days"/> Days / <span t-esc="package.duration_nights"/> Nights
+                                <t t-if="package.tag_ids">
+                                    <span class="ml-3">
+                                        <t t-foreach="package.tag_ids" t-as="tag">
+                                            <span class="badge badge-info mr-1" t-esc="tag.name"/>
+                                        </t>
+                                    </span>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Image -->
+                        <div class="mb-4">
+                            <t t-if="package.image_1920">
+                                <img class="img-fluid rounded" t-att-src="image_data_uri(package.image_1024)" t-att-alt="package.name"/>
+                            </t>
+                            <t t-else="">
+                                <img class="img-fluid rounded" src="/tour_agency/static/src/img/default_tour.jpg" alt="Tour Package"/>
+                            </t>
+                        </div>
+                        
+                        <!-- Gallery -->
+                        <t t-if="package.image_ids">
+                            <div class="row mb-4">
+                                <t t-foreach="package.image_ids[:4]" t-as="img">
+                                    <div class="col-3">
+                                        <img class="img-fluid rounded" t-att-src="image_data_uri(img.image_1920)" t-att-alt="img.name or package.name"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        
+                        <!-- Description -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0"><i class="fa fa-info-circle"/> Package Overview</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-raw="package.description"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Itinerary -->
+                        <t t-if="package.itinerary_ids">
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h4 class="mb-0"><i class="fa fa-list"/> Tour Itinerary</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="accordion" id="itineraryAccordion">
+                                        <t t-foreach="package.itinerary_ids" t-as="day">
+                                            <div class="card mb-2">
+                                                <div class="card-header" t-attf-id="heading{{day.id}}">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link" type="button" data-toggle="collapse" 
+                                                                t-attf-data-target="#collapse{{day.id}}" 
+                                                                t-attf-aria-expanded="#{day_index == 0}" 
+                                                                t-attf-aria-controls="collapse{{day.id}}">
+                                                            <strong>Day <t t-esc="day.day_number"/>:</strong> <t t-esc="day.name"/>
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div t-attf-id="collapse{{day.id}}" 
+                                                     t-attf-class="collapse #{' show' if day_index == 0 else ''}" 
+                                                     t-attf-aria-labelledby="heading{{day.id}}" 
+                                                     data-parent="#itineraryAccordion">
+                                                    <div class="card-body">
+                                                        <t t-if="day.location">
+                                                            <p><i class="fa fa-map-marker text-primary"/> <strong>Location:</strong> <t t-esc="day.location"/></p>
+                                                        </t>
+                                                        <t t-if="day.description">
+                                                            <t t-raw="day.description"/>
+                                                        </t>
+                                                        <t t-if="day.activities">
+                                                            <p class="mt-2"><strong>Activities:</strong></p>
+                                                            <p t-esc="day.activities"/>
+                                                        </t>
+                                                        <div class="row mt-3">
+                                                            <t t-if="day.hotel_id">
+                                                                <div class="col-md-6">
+                                                                    <i class="fa fa-bed text-primary"/> <strong>Hotel:</strong> <t t-esc="day.hotel_id.name"/>
+                                                                </div>
+                                                            </t>
+                                                            <t t-if="day.transportation_id">
+                                                                <div class="col-md-6">
+                                                                    <i class="fa fa-bus text-primary"/> <strong>Transport:</strong> <t t-esc="day.transportation_id.name"/>
+                                                                </div>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <!-- Inclusions & Exclusions -->
+                        <div class="row mb-4">
+                            <t t-if="package.inclusion_ids">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-success text-white">
+                                            <h5 class="mb-0"><i class="fa fa-check-circle"/> Inclusions</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled">
+                                                <t t-foreach="package.inclusion_ids" t-as="inclusion">
+                                                    <li class="mb-2">
+                                                        <i t-attf-class="fa {{inclusion.icon or 'fa-check'}} text-success"/> 
+                                                        <t t-esc="inclusion.name"/>
+                                                    </li>
+                                                </t>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="package.exclusion_ids">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-danger text-white">
+                                            <h5 class="mb-0"><i class="fa fa-times-circle"/> Exclusions</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled">
+                                                <t t-foreach="package.exclusion_ids" t-as="exclusion">
+                                                    <li class="mb-2">
+                                                        <i t-attf-class="fa {{exclusion.icon or 'fa-times'}} text-danger"/> 
+                                                        <t t-esc="exclusion.name"/>
+                                                    </li>
+                                                </t>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        
+                        <!-- Terms and Conditions -->
+                        <t t-if="package.terms_conditions or package.cancellation_policy">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fa fa-file-text-o"/> Terms &amp; Conditions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <t t-if="package.terms_conditions">
+                                        <t t-raw="package.terms_conditions"/>
+                                    </t>
+                                    <t t-if="package.cancellation_policy">
+                                        <hr/>
+                                        <h6>Cancellation Policy</h6>
+                                        <t t-raw="package.cancellation_policy"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Price Card -->
+                        <div class="card mb-4 sticky-top" style="top: 20px;">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <h2 class="text-primary mb-0">
+                                        <t t-esc="package.currency_id.symbol"/>
+                                        <t t-esc="'{:,.2f}'.format(package.base_price)"/>
+                                    </h2>
+                                    <t t-if="package.price_type == 'per_person'">
+                                        <small class="text-muted">per person</small>
+                                    </t>
+                                </div>
+                                
+                                <t t-if="package.price_type == 'per_person' and (package.adult_price or package.child_price or package.infant_price)">
+                                    <div class="mb-3 small">
+                                        <t t-if="package.adult_price">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Adult:</span>
+                                                <span class="font-weight-bold">
+                                                    <t t-esc="package.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(package.adult_price)"/>
+                                                </span>
+                                            </div>
+                                        </t>
+                                        <t t-if="package.child_price">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Child:</span>
+                                                <span class="font-weight-bold">
+                                                    <t t-esc="package.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(package.child_price)"/>
+                                                </span>
+                                            </div>
+                                        </t>
+                                        <t t-if="package.infant_price">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Infant:</span>
+                                                <span class="font-weight-bold">
+                                                    <t t-esc="package.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(package.infant_price)"/>
+                                                </span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                
+                                <hr/>
+                                
+                                <div class="mb-3">
+                                    <i class="fa fa-clock-o"/> <span t-esc="package.duration_days"/> Days / <span t-esc="package.duration_nights"/> Nights
+                                </div>
+                                
+                                <t t-if="package.min_persons or package.max_persons">
+                                    <div class="mb-3">
+                                        <i class="fa fa-users"/> 
+                                        <t t-if="package.min_persons and package.max_persons">
+                                            Min: <t t-esc="package.min_persons"/> - Max: <t t-esc="package.max_persons"/> persons
+                                        </t>
+                                        <t t-elif="package.min_persons">
+                                            Min: <t t-esc="package.min_persons"/> persons
+                                        </t>
+                                        <t t-elif="package.max_persons">
+                                            Max: <t t-esc="package.max_persons"/> persons
+                                        </t>
+                                    </div>
+                                </t>
+                                
+                                <div class="d-grid gap-2">
+                                    <a t-if="request.env.user._is_public()" href="/web/login" class="btn btn-primary btn-lg btn-block">
+                                        <i class="fa fa-calendar-check-o"/> Book Now
+                                    </a>
+                                    <a t-else="" t-attf-href="/tour/booking/{{package.id}}" class="btn btn-primary btn-lg btn-block">
+                                        <i class="fa fa-calendar-check-o"/> Book Now
+                                    </a>
+                                    <a t-attf-href="/tour/inquiry?package_id={{package.id}}" class="btn btn-outline-primary btn-block">
+                                        <i class="fa fa-envelope"/> Send Inquiry
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Card -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fa fa-phone"/> Need Help?</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-2">Have questions? Contact us!</p>
+                                <p class="mb-1"><i class="fa fa-envelope"/> <t t-esc="package.company_id.email or 'info@yourcompany.com'"/></p>
+                                <p class="mb-0"><i class="fa fa-phone"/> <t t-esc="package.company_id.phone or '+1234567890'"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Packages -->
+                <t t-if="related_packages">
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h2 class="mb-4">Related Packages</h2>
+                        </div>
+                        <t t-foreach="related_packages" t-as="package">
+                            <t t-call="tour_agency.tour_package_card"/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    
+</odoo>
+

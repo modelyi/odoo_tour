@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#grad2)"/>
+  <g transform="translate(400,300)">
+    <circle cx="0" cy="0" r="80" fill="white" opacity="0.3"/>
+    <path d="M -30,-20 L 0,-50 L 30,-20 L 30,30 L -30,30 Z" fill="white" opacity="0.5"/>
+    <rect x="-40" y="30" width="80" height="20" fill="white" opacity="0.5"/>
+  </g>
+  <text x="400" y="500" font-family="Arial, sans-serif" font-size="40" fill="white" text-anchor="middle">
+    Tour Package
+  </text>
+</svg>

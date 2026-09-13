@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_attraction_view_tree" model="ir.ui.view">
+        <field name="name">tour.attraction.view.tree</field>
+        <field name="model">tour.attraction</field>
+        <field name="arch" type="xml">
+            <list string="Attractions">
+                <field name="name"/>
+                <field name="attraction_type"/>
+                <field name="city"/>
+                <field name="country_id"/>
+                <field name="entry_fee" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="rating"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="tour_attraction_view_form" model="ir.ui.view">
+        <field name="name">tour.attraction.view.form</field>
+        <field name="model">tour.attraction</field>
+        <field name="arch" type="xml">
+            <form string="Attraction">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Attraction Name"/></h1>
+                        <div class="o_row">
+                            <field name="attraction_type"/>
+                            <field name="rating" widget="float"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Location">
+                            <field name="city"/>
+                            <field name="state_id"/>
+                            <field name="country_id"/>
+                            <field name="address"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                        <group string="Details">
+                            <field name="opening_time" widget="float_time"/>
+                            <field name="closing_time" widget="float_time"/>
+                            <field name="opening_days"/>
+                            <field name="recommended_duration"/>
+                            <field name="currency_id"/>
+                            <field name="entry_fee" widget="monetary"/>
+                            <field name="product_id"/>
+                        </group>
+                    </group>
+                    <group string="Contact">
+                        <field name="phone" widget="phone"/>
+                        <field name="email" widget="email"/>
+                        <field name="website" widget="url"/>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" widget="html"/>
+                        </page>
+                        <page string="Highlights">
+                            <field name="highlights" placeholder="Key highlights and features..."/>
+                        </page>
+                        <page string="Tips">
+                            <field name="tips" placeholder="Visitor tips and recommendations..."/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_tour_attraction" model="ir.actions.act_window">
+        <field name="name">Attractions</field>
+        <field name="res_model">tour.attraction</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+</odoo>
+

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_hotel_view_tree" model="ir.ui.view">
+        <field name="name">tour.hotel.view.tree</field>
+        <field name="model">tour.hotel</field>
+        <field name="arch" type="xml">
+            <list string="Hotels">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="location"/>
+                <field name="star_rating"/>
+                <field name="hotel_type"/>
+                <field name="rating"/>
+                <field name="price_per_night" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="tour_hotel_view_form" model="ir.ui.view">
+        <field name="name">tour.hotel.view.form</field>
+        <field name="model">tour.hotel</field>
+        <field name="arch" type="xml">
+            <form string="Hotel">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Hotel Name"/>
+                        </h1>
+                        <div class="o_row">
+                            <field name="code" readonly="1"/>
+                            <field name="hotel_type"/>
+                            <field name="star_rating"/>
+                            <field name="rating" widget="float" options="{'precision': 1}"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Location">
+                            <field name="location" placeholder="e.g., Paris, France"/>
+                            <field name="address" placeholder="Full street address"/>
+                        </group>
+                        <group string="Check-in/Check-out">
+                            <field name="check_in_time" widget="float_time"/>
+                            <field name="check_out_time" widget="float_time"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Contact Information">
+                            <field name="partner_id"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="website" widget="url"/>
+                        </group>
+                        <group string="Address Details">
+                            <field name="street"/>
+                            <field name="street2"/>
+                            <field name="city"/>
+                            <field name="state_id"/>
+                            <field name="zip"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Pricing">
+                            <field name="currency_id"/>
+                            <field name="price_per_night" widget="monetary"/>
+                            <field name="product_id"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" widget="html" placeholder="Hotel description..."/>
+                        </page>
+                        <page string="Room Types" name="room_types">
+                            <field name="room_type_ids" context="{'default_hotel_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="capacity"/>
+                                    <field name="price_per_night" widget="monetary"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Amenities" name="amenities">
+                            <field name="amenity_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <record id="tour_hotel_view_kanban" model="ir.ui.view">
+        <field name="name">tour.hotel.view.kanban</field>
+        <field name="model">tour.hotel</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="location"/>
+                <field name="star_rating"/>
+                <field name="hotel_type"/>
+                <field name="rating"/>
+                <field name="image_512"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('tour.hotel', 'image_512', record.id.raw_value)" alt="Hotel"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                <div><i class="fa fa-map-marker"/> <field name="location"/></div>
+                                <div t-if="record.star_rating.raw_value"><i class="fa fa-star"/> <field name="star_rating"/> Star</div>
+                                <div><field name="hotel_type"/></div>
+                                <div t-if="record.rating.raw_value"><i class="fa fa-star-half-o"/> Rating: <field name="rating"/></div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <record id="action_tour_hotel" model="ir.actions.act_window">
+        <field name="name">Hotels</field>
+        <field name="res_model">tour.hotel</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+    
+</odoo>
+

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Inquiry Acknowledgment Email -->
+        <record id="email_template_inquiry_acknowledgment" model="mail.template">
+            <field name="name">Tour Inquiry - Acknowledgment</field>
+            <field name="model_id" ref="model_tour_inquiry"/>
+            <field name="subject">Thank You for Your Tour Inquiry - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #0066cc; color: white; padding: 20px; text-align: center;">
+        <h1>Thank You for Your Inquiry!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>Thank you for your interest in our tour packages! We have received your inquiry and our team will get back to you shortly.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #0066cc;">
+            <h3 style="margin-top: 0;">Inquiry Details:</h3>
+            <p><strong>Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name or 'Not specified'"/></p>
+            <p><strong>Travel Date:</strong> <t t-out="object.preferred_date or 'Not specified'"/></p>
+            <p><strong>Total Persons:</strong> <t t-out="object.total_persons or 0"/></p>
+            <p><strong>Estimated Price:</strong> <t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.estimated_price or 0)"/></p>
+        </div>
+        
+        <p>One of our travel consultants will review your inquiry and contact you within 24 hours with more details and a customized quotation.</p>
+        
+        <p>If you have any urgent questions, please don't hesitate to contact us.</p>
+        
+        <p>Best regards,<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Inquiry Quotation Email -->
+        <record id="email_template_inquiry_quotation" model="mail.template">
+            <field name="name">Tour Inquiry - Quotation</field>
+            <field name="model_id" ref="model_tour_inquiry"/>
+            <field name="subject">Your Tour Quotation - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+        <h1>Your Tour Quotation is Ready!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>Thank you for your patience! We are pleased to provide you with a quotation for your tour.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h3 style="margin-top: 0;">Quotation Details:</h3>
+            <p><strong>Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name or 'Not specified'"/></p>
+            <p><strong>Travel Date:</strong> <t t-out="object.preferred_date or 'Flexible'"/></p>
+            <p><strong>Total Persons:</strong> <t t-out="object.total_persons or 0"/></p>
+            <p><strong>Quoted Price:</strong> <span style="font-size: 24px; color: #28a745;"><t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.estimated_price or 0)"/></span></p>
+        </div>
+        
+        <p>This quotation is valid for 7 days from the date of this email.</p>
+        
+        <t t-if="object.package_id">
+        <div style="text-align: center; margin: 30px 0;">
+            <a t-attf-href="/tour/booking/{{ object.package_id.slug or object.package_id.id }}" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Book Now</a>
+        </div>
+        </t>
+        
+        <p>If you have any questions or would like to proceed with the booking, please contact us.</p>
+        
+        <p>Best regards,<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Booking Confirmation Email -->
+        <record id="email_template_booking_confirmation" model="mail.template">
+            <field name="name">Tour Booking - Confirmation</field>
+            <field name="model_id" ref="model_tour_booking"/>
+            <field name="subject">Tour Booking Confirmation - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #0066cc; color: white; padding: 20px; text-align: center;">
+        <h1>🎉 Your Tour Booking is Confirmed!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or object.partner_id.name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>Congratulations! Your tour booking has been confirmed. We're excited to have you join us on this amazing journey!</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #0066cc;">
+            <h3 style="margin-top: 0;">Booking Details:</h3>
+            <p><strong>Booking Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name"/></p>
+            <p><strong>Travel Date:</strong> <t t-out="object.travel_start_date"/> to <t t-out="object.travel_end_date"/></p>
+            <p><strong>Passengers:</strong> 
+                <t t-out="object.num_adults"/> Adults
+                <t t-if="object.num_children">, <t t-out="object.num_children"/> Children</t>
+                <t t-if="object.num_infants">, <t t-out="object.num_infants"/> Infants</t>
+            </p>
+            <p><strong>Total Amount:</strong> <span style="font-size: 20px; color: #0066cc;"><t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.price_total or 0)"/></span></p>
+            <p><strong>Payment Status:</strong> <t t-out="(object.payment_status or 'unpaid').replace('_', ' ').title()"/></p>
+        </div>
+        
+        <div style="background-color: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4 style="margin-top: 0; color: #856404;">Important Information:</h4>
+            <ul style="color: #856404;">
+                <li>Please carry this booking confirmation with you</li>
+                <li>Arrive at the meeting point 15 minutes before departure</li>
+                <li>Bring valid ID proof for all passengers</li>
+                <li>Check weather conditions before your trip</li>
+            </ul>
+        </div>
+        
+        <p>You can view your booking details and manage your trip from your customer portal.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a t-attf-href="/my/bookings/{{ object.id }}?access_token={{ object.access_token or '' }}" style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">View Booking</a>
+        </div>
+        
+        <p>If you have any questions, please feel free to contact us.</p>
+        
+        <p>Safe travels!<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Tour Start Notification Email -->
+        <record id="email_template_tour_start" model="mail.template">
+            <field name="name">Tour Booking - Tour Starting</field>
+            <field name="model_id" ref="model_tour_booking"/>
+            <field name="subject">Your Tour Starts Today! - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #17a2b8; color: white; padding: 20px; text-align: center;">
+        <h1>🚀 Your Tour Begins Today!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or object.partner_id.name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>This is a friendly reminder that your tour adventure starts today! We hope you're all packed and ready for an incredible experience.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #17a2b8;">
+            <h3 style="margin-top: 0;">Tour Details:</h3>
+            <p><strong>Booking Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name"/></p>
+            <p><strong>Duration:</strong> <t t-out="object.package_id.duration_days or 0"/> Days / <t t-out="object.package_id.duration_nights or 0"/> Nights</p>
+            <p><strong>Travel Date:</strong> <t t-out="object.travel_start_date"/> to <t t-out="object.travel_end_date"/></p>
+            <p><strong>Passengers:</strong> 
+                <t t-out="object.num_adults"/> Adults
+                <t t-if="object.num_children">, <t t-out="object.num_children"/> Children</t>
+                <t t-if="object.num_infants">, <t t-out="object.num_infants"/> Infants</t>
+            </p>
+        </div>
+        
+        <div style="background-color: #d4edda; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h4 style="margin-top: 0; color: #155724;">Quick Checklist:</h4>
+            <ul style="color: #155724;">
+                <li>✓ Valid ID/Passport for all travelers</li>
+                <li>✓ Comfortable clothing and footwear</li>
+                <li>✓ Camera and chargers</li>
+                <li>✓ Any prescribed medications</li>
+                <li>✓ Booking confirmation document</li>
+            </ul>
+        </div>
+        
+        <p>Have a wonderful journey! Our team is ready to make your experience unforgettable.</p>
+        
+        <p>Safe travels!<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Tour Completion Email -->
+        <record id="email_template_tour_completion" model="mail.template">
+            <field name="name">Tour Booking - Tour Completed</field>
+            <field name="model_id" ref="model_tour_booking"/>
+            <field name="subject">Thank You for Traveling with Us! - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+        <h1>🎊 Thank You for Your Trip!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or object.partner_id.name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>We hope you had an amazing experience on your tour with us! Your journey has come to an end, and we'd love to hear about your adventure.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h3 style="margin-top: 0;">Trip Summary:</h3>
+            <p><strong>Booking Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name"/></p>
+            <p><strong>Destination:</strong> <t t-out="object.package_id.destination or ''"/></p>
+            <p><strong>Travel Date:</strong> <t t-out="object.travel_start_date"/> to <t t-out="object.travel_end_date"/></p>
+            <p><strong>Status:</strong> Completed ✓</p>
+        </div>
+        
+        <div style="background-color: #fff3cd; padding: 15px; margin: 20px 0; text-align: center;">
+            <h4 style="margin-top: 0; color: #856404;">We'd Love Your Feedback!</h4>
+            <p style="color: #856404;">Your feedback helps us improve our services and create better experiences for future travelers.</p>
+            <a href="/contactus" style="background-color: #ffc107; color: #333; padding: 10px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Leave a Review</a>
+        </div>
+        
+        <div style="background-color: #e7f3ff; padding: 15px; margin: 20px 0; text-align: center;">
+            <h4 style="margin-top: 0; color: #0066cc;">Planning Your Next Adventure?</h4>
+            <p style="color: #0066cc;">Explore our other exciting tour packages and get special returning customer discounts!</p>
+            <a href="/tours" style="background-color: #0066cc; color: white; padding: 10px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Browse Tours</a>
+        </div>
+        
+        <p>Thank you for choosing us for your travel needs. We look forward to serving you again!</p>
+        
+        <p>Warm regards,<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Payment Received Email -->
+        <record id="email_template_payment_received" model="mail.template">
+            <field name="name">Tour Booking - Payment Received</field>
+            <field name="model_id" ref="model_tour_booking"/>
+            <field name="subject">Payment Received - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+        <h1>💳 Payment Received!</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or object.partner_id.name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>Thank you! We have successfully received your payment for your tour booking.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h3 style="margin-top: 0;">Payment Details:</h3>
+            <p><strong>Booking Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name"/></p>
+            <p><strong>Total Amount:</strong> <t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.price_total or 0)"/></p>
+            <p><strong>Amount Paid:</strong> <span style="color: #28a745;"><t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.amount_paid or 0)"/></span></p>
+            <p><strong>Amount Due:</strong> <t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.amount_due or 0)"/></p>
+            <p><strong>Payment Status:</strong> <t t-out="(object.payment_status or 'unpaid').replace('_', ' ').title()"/></p>
+        </div>
+        
+        <t t-if="object.amount_due and object.amount_due > 0">
+        <div style="background-color: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <p style="color: #856404; margin: 0;"><strong>Note:</strong> You still have an outstanding balance. Please complete the remaining payment before your travel date.</p>
+        </div>
+        </t>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a t-attf-href="/my/bookings/{{ object.id }}" style="background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">View Booking</a>
+        </div>
+        
+        <p>Thank you for your payment!</p>
+        
+        <p>Best regards,<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+        <!-- Booking Cancellation Email -->
+        <record id="email_template_booking_cancellation" model="mail.template">
+            <field name="name">Tour Booking - Cancellation</field>
+            <field name="model_id" ref="model_tour_booking"/>
+            <field name="subject">Booking Cancelled - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.customer_email }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #dc3545; color: white; padding: 20px; text-align: center;">
+        <h1>Booking Cancelled</h1>
+    </div>
+    <div style="padding: 20px; background-color: #f9f9f9;">
+        <p>Dear <strong><t t-out="object.customer_name or object.partner_id.name or 'Valued Customer'"/></strong>,</p>
+        
+        <p>Your tour booking has been cancelled as requested.</p>
+        
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545;">
+            <h3 style="margin-top: 0;">Cancelled Booking Details:</h3>
+            <p><strong>Booking Reference:</strong> <t t-out="object.name"/></p>
+            <p><strong>Package:</strong> <t t-out="object.package_name or object.package_id.name"/></p>
+            <p><strong>Original Travel Date:</strong> <t t-out="object.travel_start_date"/> to <t t-out="object.travel_end_date"/></p>
+            <p><strong>Status:</strong> Cancelled</p>
+        </div>
+        
+        <t t-if="object.amount_paid and object.amount_paid > 0">
+        <div style="background-color: #d4edda; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h4 style="margin-top: 0; color: #155724;">Refund Information:</h4>
+            <p style="color: #155724;">Amount Paid: <t t-out="object.currency_id.symbol or ''"/> <t t-out="'%.2f' % (object.amount_paid or 0)"/></p>
+            <p style="color: #155724;">Our team will process your refund according to our cancellation policy. Please allow 5-7 business days for the refund to reflect in your account.</p>
+        </div>
+        </t>
+        
+        <div style="background-color: #e7f3ff; padding: 15px; margin: 20px 0; text-align: center;">
+            <h4 style="margin-top: 0; color: #0066cc;">Ready to Plan Another Trip?</h4>
+            <p style="color: #0066cc;">We'd love to help you plan your next adventure!</p>
+            <a href="/tours" style="background-color: #0066cc; color: white; padding: 10px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Browse Tours</a>
+        </div>
+        
+        <p>If you have any questions about the cancellation or refund, please contact us.</p>
+        
+        <p>Best regards,<br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone"><t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email"><t t-out="object.company_id.email"/></t></p>
+    </div>
+    <div style="background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

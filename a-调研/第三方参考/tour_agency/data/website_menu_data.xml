@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Website Menu -->
+        <record id="menu_tour_packages_website" model="website.menu">
+            <field name="name">Tours</field>
+            <field name="url">/tours</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">50</field>
+        </record>
+        
+        <record id="menu_tour_inquiry_website" model="website.menu">
+            <field name="name">Send Inquiry</field>
+            <field name="url">/tour/inquiry</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">51</field>
+        </record>
+        
+    </data>
+</odoo>
+

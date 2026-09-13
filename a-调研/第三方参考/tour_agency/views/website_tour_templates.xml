@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Base Tour Template -->
+    <template id="tour_layout" name="Tour Layout">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <t t-raw="0"/>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Tour Search Widget -->
+    <template id="tour_search_widget" name="Tour Search Widget">
+        <div class="tour_search_widget mb-4">
+            <form action="/tours" method="get" class="form-inline">
+                <div class="input-group w-100">
+                    <input type="text" name="search" class="form-control" placeholder="Search tours by name or destination..." t-att-value="search or ''"/>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-search"/> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </template>
+    
+    <!-- Tour Card -->
+    <template id="tour_package_card" name="Tour Package Card">
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 tour-package-card shadow-sm">
+                <t t-if="package.image_1920">
+                    <img class="card-img-top" t-att-src="image_data_uri(package.image_512)" t-att-alt="package.name" style="height: 250px; object-fit: cover;"/>
+                </t>
+                <t t-else="">
+                    <t t-set="gradients" t-value="[
+                        'linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%)',
+                        'linear-gradient(135deg, #6C5CE7 0%, #FF6B6B 100%)',
+                        'linear-gradient(135deg, #2ECC71 0%, #00B894 100%)',
+                        'linear-gradient(135deg, #00A8FF 0%, #007BFF 100%)',
+                        'linear-gradient(135deg, #FDCB6E 0%, #D980FA 100%)'
+                    ]"/>
+                    <t t-set="gradient_index" t-value="package.id % 5"/>
+                    <div class="card-img-top d-flex align-items-center justify-content-center text-white position-relative" 
+                         t-attf-style="height: 250px; background: {{gradients[gradient_index]}};">
+                        <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2);"></div>
+                        <div class="text-center position-relative">
+                            <i class="fa fa-plane fa-4x mb-3" style="opacity: 0.8;"></i>
+                            <h5 class="fw-bold px-3" t-esc="package.destination or 'Tour Package'" style="opacity: 0.9;"></h5>
+                        </div>
+                    </div>
+                </t>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <a t-attf-href="/tour/package/{{package.id}}" t-esc="package.name"/>
+                    </h5>
+                    <div class="tour-destination mb-2">
+                        <i class="fa fa-map-marker text-primary"/> <span t-esc="package.destination"/>
+                    </div>
+                    <div class="tour-duration mb-2">
+                        <i class="fa fa-clock-o text-primary"/> 
+                        <span t-esc="package.duration_days"/> Days / <span t-esc="package.duration_nights"/> Nights
+                    </div>
+                    <t t-if="package.short_description">
+                        <p class="card-text small text-muted" t-esc="package.short_description[:100] + '...' if len(package.short_description) > 100 else package.short_description"/>
+                    </t>
+                    <div class="mt-auto">
+                        <div class="tour-price mb-2">
+                            <span class="text-primary font-weight-bold h4">
+                                <t t-esc="package.currency_id.symbol"/>
+                                <t t-esc="'{:,.2f}'.format(package.base_price)"/>
+                            </span>
+                            <t t-if="package.price_type == 'per_person'">
+                                <small class="text-muted">/ person</small>
+                            </t>
+                        </div>
+                        <div class="btn-group w-100">
+                            <a t-attf-href="/tour/package/{{package.id}}" class="btn btn-primary btn-sm">
+                                <i class="fa fa-eye"/> View Details
+                            </a>
+                            <a t-attf-href="/tour/inquiry?package_id={{package.id}}" class="btn btn-outline-primary btn-sm">
+                                <i class="fa fa-envelope"/> Inquire
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <t t-if="package.is_featured">
+                    <div class="badge badge-warning position-absolute" style="top: 10px; right: 10px;">
+                        <i class="fa fa-star"/> Featured
+                    </div>
+                </t>
+                <t t-if="package.is_popular">
+                    <div class="badge badge-success position-absolute" style="top: 10px; left: 10px;">
+                        <i class="fa fa-fire"/> Popular
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+    
+</odoo>
+

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="paris_sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C5CE7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A29BFE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E17055;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#paris_sky)"/>
+  
+  <!-- City ground -->
+  <rect y="800" width="1920" height="280" fill="#34495E" opacity="0.7"/>
+  
+  <!-- Eiffel Tower - detailed -->
+  <g transform="translate(960, 300)">
+    <!-- Base level -->
+    <polygon points="-150,500 150,500 80,320 -80,320" fill="#34495E" opacity="0.95"/>
+    <rect x="-100" y="410" width="200" height="15" fill="#E67E22" opacity="0.9"/>
+    
+    <!-- Second level -->
+    <polygon points="-80,320 80,320 40,160 -40,160" fill="#2C3E50" opacity="0.95"/>
+    <rect x="-60" y="240" width="120" height="12" fill="#E67E22" opacity="0.9"/>
+    
+    <!-- Third level -->
+    <polygon points="-40,160 40,160 20,40 -20,40" fill="#34495E" opacity="0.95"/>
+    <rect x="-30" y="100" width="60" height="10" fill="#E67E22" opacity="0.9"/>
+    
+    <!-- Top section -->
+    <polygon points="-20,40 20,40 10,-80 -10,-80" fill="#2C3E50" opacity="0.95"/>
+    
+    <!-- Antenna -->
+    <line x1="0" y1="-80" x2="0" y2="-150" stroke="#E74C3C" stroke-width="4"/>
+    <circle cx="0" cy="-150" r="8" fill="#E74C3C"/>
+    
+    <!-- Cross beams for detail -->
+    <line x1="-100" y1="450" x2="100" y2="450" stroke="#E67E22" stroke-width="3" opacity="0.7"/>
+    <line x1="-60" y1="280" x2="60" y2="280" stroke="#E67E22" stroke-width="2" opacity="0.7"/>
+  </g>
+  
+  <!-- Building silhouettes -->
+  <rect x="150" y="750" width="140" height="330" fill="#2C3E50" opacity="0.7"/>
+  <rect x="350" y="780" width="180" height="300" fill="#34495E" opacity="0.7"/>
+  <rect x="1400" y="770" width="160" height="310" fill="#2C3E50" opacity="0.7"/>
+  <rect x="1620" y="790" width="140" height="290" fill="#34495E" opacity="0.7"/>
+  
+  <!-- Windows on buildings -->
+  <g opacity="0.9" fill="#F39C12">
+    <rect x="170" y="770" width="15" height="20"/>
+    <rect x="200" y="770" width="15" height="20"/>
+    <rect x="170" y="810" width="15" height="20"/>
+    <rect x="1430" y="800" width="15" height="20"/>
+    <rect x="1460" y="800" width="15" height="20"/>
+  </g>
+</svg>

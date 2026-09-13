@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tour Inquiry Tree View -->
+    <record id="tour_inquiry_view_tree" model="ir.ui.view">
+        <field name="name">tour.inquiry.view.tree</field>
+        <field name="model">tour.inquiry</field>
+        <field name="arch" type="xml">
+            <list string="Tour Inquiries" sample="1">
+                <field name="name"/>
+                <field name="inquiry_date"/>
+                <field name="customer_name"/>
+                <field name="customer_email"/>
+                <field name="package_name"/>
+                <field name="preferred_date"/>
+                <field name="total_persons"/>
+                <field name="estimated_price" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" decoration-success="state in ['quoted','converted']" decoration-info="state in ['new','in_progress']" decoration-muted="state=='rejected'"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="priority" widget="priority"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Tour Inquiry Form View -->
+    <record id="tour_inquiry_view_form" model="ir.ui.view">
+        <field name="name">tour.inquiry.view.form</field>
+        <field name="model">tour.inquiry</field>
+        <field name="arch" type="xml">
+            <form string="Tour Inquiry">
+                <header>
+                    <button name="action_in_progress" type="object" string="In Progress" class="oe_highlight" invisible="state != 'new'"/>
+                    <button name="action_quote" type="object" string="Send Quotation" class="oe_highlight" invisible="state not in ['new','in_progress']"/>
+                    <button name="action_create_booking_direct" type="object" string="Create Booking" class="oe_highlight" invisible="state in ['rejected','converted'] or booking_id"/>
+                    <button name="action_convert_to_booking" type="object" string="Convert (Wizard)" invisible="state in ['rejected','converted'] or booking_id"/>
+                    <button name="action_reject" type="object" string="Reject" invisible="state in ['rejected','converted']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,quoted,converted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lead" type="object" class="oe_stat_button" icon="fa-user" invisible="not lead_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">CRM Lead</span>
+                            </div>
+                        </button>
+                        <button name="action_view_booking" type="object" class="oe_stat_button" icon="fa-plane" invisible="not booking_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Booking</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Customer Information">
+                            <field name="partner_id"/>
+                            <field name="customer_name"/>
+                            <field name="customer_email" widget="email"/>
+                            <field name="customer_phone" widget="phone"/>
+                            <field name="customer_mobile" widget="phone"/>
+                        </group>
+                        <group string="Inquiry Details">
+                            <field name="package_id"/>
+                            <field name="package_name" invisible="1"/>
+                            <field name="inquiry_date"/>
+                            <field name="preferred_date"/>
+                            <field name="source"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Passengers">
+                            <field name="num_adults"/>
+                            <field name="num_children"/>
+                            <field name="num_infants"/>
+                            <field name="total_persons"/>
+                        </group>
+                        <group string="Pricing">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="estimated_price" widget="monetary"/>
+                        </group>
+                    </group>
+                    <group string="Assignment">
+                        <field name="user_id" widget="many2one_avatar_user"/>
+                        <field name="team_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <notebook>
+                        <page string="Message" name="message">
+                            <group>
+                                <field name="subject"/>
+                            </group>
+                            <field name="message" placeholder="Customer's inquiry message..."/>
+                            <separator string="Special Requirements"/>
+                            <field name="special_requirements" placeholder="Any special requirements..."/>
+                        </page>
+                        <page string="Internal Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes (not visible to customer)..."/>
+                        </page>
+                        <page string="Related Records" name="related">
+                            <group>
+                                <field name="lead_id"/>
+                                <field name="booking_id"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Tour Inquiry Kanban View -->
+    <record id="tour_inquiry_view_kanban" model="ir.ui.view">
+        <field name="name">tour.inquiry.view.kanban</field>
+        <field name="model">tour.inquiry</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column" sample="1">
+                <field name="name"/>
+                <field name="customer_name"/>
+                <field name="package_name"/>
+                <field name="total_persons"/>
+                <field name="estimated_price"/>
+                <field name="state"/>
+                <field name="priority"/>
+                <field name="user_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                    <div class="o_kanban_record_subtitle">
+                                        <i class="fa fa-user"/> <field name="customer_name"/>
+                                    </div>
+                                </div>
+                                <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle btn" data-toggle="dropdown" href="#" role="button" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                        <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="package_name"/>
+                                <div><i class="fa fa-users"/> <field name="total_persons"/> persons</div>
+                                <div><field name="estimated_price" widget="monetary"/></div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Tour Inquiry Search View -->
+    <record id="tour_inquiry_view_search" model="ir.ui.view">
+        <field name="name">tour.inquiry.view.search</field>
+        <field name="model">tour.inquiry</field>
+        <field name="arch" type="xml">
+            <search string="Search Tour Inquiries">
+                <field name="name"/>
+                <field name="customer_name"/>
+                <field name="customer_email"/>
+                <field name="package_id"/>
+                <field name="user_id"/>
+                <filter string="New" name="new" domain="[('state', '=', 'new')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Quoted" name="quoted" domain="[('state', '=', 'quoted')]"/>
+                <filter string="Converted" name="converted" domain="[('state', '=', 'converted')]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', 'in', ['2','3'])]"/>
+                <separator/>
+                <filter string="My Inquiries" name="my_inquiries" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Inquiry Date" name="inquiry_date" date="inquiry_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Package" name="package" context="{'group_by': 'package_id'}"/>
+                    <filter string="State" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Assigned To" name="user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Source" name="source" context="{'group_by': 'source'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Tour Inquiry Action -->
+    <record id="action_tour_inquiry" model="ir.actions.act_window">
+        <field name="name">Tour Inquiries</field>
+        <field name="res_model">tour.inquiry</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_new': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No inquiries yet!
+            </p>
+            <p>
+                Customer inquiries will appear here when they submit inquiry forms from your website.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

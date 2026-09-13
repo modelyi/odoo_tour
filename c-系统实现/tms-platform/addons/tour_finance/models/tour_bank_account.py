@@ -5,15 +5,20 @@ from odoo import models, fields, api
 class TourBankAccount(models.Model):
     _name = 'tour.bank.account'
     _description = '银行账户'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'tour.encrypted.field.mixin']
     _order = 'company_id, name'
     _rec_name = 'name'
+
+    # 敏感字段（AES-256-GCM 落盘加密 + 掩码展示 + 等值检索散列）
+    _encrypted_fields = {'acc_number': True}
 
     # === 基本 ===
     name = fields.Char('账户名称', required=True, index=True)
     bank_id = fields.Many2one('res.bank', string='开户行', index=True)
-    acc_number = fields.Char('银行卡号', index=True,
-                             help='🔴 敏感字段（易途 BankAccountNo）：加密落盘待接入（TODO：AES-256-GCM/SM4 + KMS），当前明文暂存')
+    acc_number = fields.Char('银行卡号',
+                             help='🔴 敏感字段：已 AES-256-GCM 加密存储（AES-256-GCM + 密钥分离），界面掩码')
+    acc_number_hash = fields.Char('卡号检索散列', index=True, copy=False,
+                                  help='HMAC-SHA256 等值检索辅助列（不存明文），用于精确匹配搜索')
     acc_number_masked = fields.Char('卡号掩码', compute='_compute_acc_number_masked',
                                     help='界面/报表/日志/导出默认显示 ****后4位')
     currency_id = fields.Many2one('res.currency', string='币种',
@@ -39,10 +44,4 @@ class TourBankAccount(models.Model):
     @api.depends('acc_number')
     def _compute_acc_number_masked(self):
         for rec in self:
-            acc = (rec.acc_number or '').strip()
-            if acc and len(acc) >= 4:
-                rec.acc_number_masked = '****' + acc[-4:]
-            elif acc:
-                rec.acc_number_masked = '****'
-            else:
-                rec.acc_number_masked = ''
+            rec.acc_number_masked = rec._encrypt_mask('acc_number')

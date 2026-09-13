@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Report Action -->
+    <record id="action_report_tour_itinerary" model="ir.actions.report">
+        <field name="name">Tour Itinerary</field>
+        <field name="model">tour.package</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_agency.report_tour_itinerary_document</field>
+        <field name="report_file">tour_agency.report_tour_itinerary_document</field>
+        <field name="binding_model_id" ref="model_tour_package"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Itinerary - %s' % object.name</field>
+    </record>
+    
+    <!-- Report Template -->
+    <template id="report_tour_itinerary_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <h2 class="text-center mb-4">
+                            <strong>Tour Itinerary</strong>
+                        </h2>
+                        
+                        <div class="text-center mb-4">
+                            <h3 t-field="o.name"/>
+                            <p class="lead">
+                                <i class="fa fa-map-marker"/> <span t-field="o.destination"/>
+                            </p>
+                            <p>
+                                <strong><span t-field="o.duration_days"/> Days / <span t-field="o.duration_nights"/> Nights</strong>
+                            </p>
+                        </div>
+                        
+                        <t t-if="o.description">
+                            <h4>Overview</h4>
+                            <div t-field="o.description" class="mb-4"/>
+                        </t>
+                        
+                        <h4>Daily Itinerary</h4>
+                        <t t-if="o.itinerary_ids">
+                            <t t-foreach="o.itinerary_ids" t-as="day">
+                                <div class="mb-4">
+                                    <h5 style="background-color: #f0f0f0; padding: 10px; border-left: 4px solid #0066cc;">
+                                        Day <span t-field="day.day_number"/>: <span t-field="day.name"/>
+                                    </h5>
+                                    <div style="padding: 10px;">
+                                        <p t-if="day.location">
+                                            <strong>Location:</strong> <span t-field="day.location"/>
+                                        </p>
+                                        <div t-if="day.description" t-field="day.description"/>
+                                        <p t-if="day.activities">
+                                            <strong>Activities:</strong><br/>
+                                            <span t-field="day.activities"/>
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-6" t-if="day.hotel_id">
+                                                <p><strong>Accommodation:</strong> <span t-field="day.hotel_id.name"/></p>
+                                            </div>
+                                            <div class="col-6" t-if="day.transportation_id">
+                                                <p><strong>Transportation:</strong> <span t-field="day.transportation_id.name"/></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <h5>Inclusions</h5>
+                                <ul t-if="o.inclusion_ids">
+                                    <t t-foreach="o.inclusion_ids" t-as="inclusion">
+                                        <li t-field="inclusion.name"/>
+                                    </t>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <h5>Exclusions</h5>
+                                <ul t-if="o.exclusion_ids">
+                                    <t t-foreach="o.exclusion_ids" t-as="exclusion">
+                                        <li t-field="exclusion.name"/>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>
+

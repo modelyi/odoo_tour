@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_booking_wizard_view_form" model="ir.ui.view">
+        <field name="name">tour.booking.wizard.view.form</field>
+        <field name="model">tour.booking.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Booking">
+                <group>
+                    <group>
+                        <field name="inquiry_id" invisible="1"/>
+                        <field name="package_id"/>
+                        <field name="partner_id"/>
+                    </group>
+                    <group>
+                        <field name="travel_start_date"/>
+                    </group>
+                </group>
+                <group string="Passengers">
+                    <group>
+                        <field name="num_adults"/>
+                        <field name="num_children"/>
+                        <field name="num_infants"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="customer_notes" placeholder="Customer notes..."/>
+                    <field name="special_requirements" placeholder="Special requirements..."/>
+                </group>
+                <footer>
+                    <button string="Create Booking" name="action_create_booking" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>
+

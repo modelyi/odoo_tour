@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tour Packages Listing Page -->
+    <template id="tour_packages_page" name="Tour Packages">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="display-4">Explore Our Tour Packages</h1>
+                        <p class="lead">Discover amazing destinations and unforgettable experiences</p>
+                    </div>
+                </div>
+                
+                <!-- Search Widget -->
+                <t t-call="tour_agency.tour_search_widget"/>
+                
+                <!-- Filters and Sorting -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fa fa-filter"/> Filters
+                            </div>
+                            <div class="card-body">
+                                <!-- Categories -->
+                                <t t-if="categories">
+                                    <h6>Categories</h6>
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <a href="/tours" t-attf-class="#{'' if current_category else 'font-weight-bold'}">
+                                                All Categories
+                                            </a>
+                                        </li>
+                                        <t t-foreach="categories" t-as="category">
+                                            <li>
+                                                <a t-attf-href="/tours?category={{category.id}}" 
+                                                   t-attf-class="#{' font-weight-bold' if current_category == category.id else ''}">
+                                                    <t t-esc="category.name"/>
+                                                </a>
+                                            </li>
+                                        </t>
+                                    </ul>
+                                </t>
+                                
+                                <!-- Tags -->
+                                <t t-if="tags">
+                                    <hr/>
+                                    <h6>Tags</h6>
+                                    <div class="d-flex flex-wrap">
+                                        <t t-foreach="tags" t-as="tag">
+                                            <a t-attf-href="/tours?tag={{tag.id}}" 
+                                               class="badge badge-secondary mr-1 mb-1"
+                                               t-attf-class="badge #{' badge-primary' if current_tag == tag.id else ' badge-secondary'} mr-1 mb-1">
+                                                <t t-esc="tag.name"/>
+                                            </a>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-9">
+                        <!-- Sorting -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p class="text-muted">
+                                    <t t-esc="len(packages)"/> packages found
+                                </p>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <div class="dropdown d-inline">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                        <i class="fa fa-sort"/> Sort By
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" t-attf-href="{{keep('/tours', sort='sequence')}}">Default</a>
+                                        <a class="dropdown-item" t-attf-href="{{keep('/tours', sort='name')}}">Name</a>
+                                        <a class="dropdown-item" t-attf-href="{{keep('/tours', sort='price_low')}}">Price: Low to High</a>
+                                        <a class="dropdown-item" t-attf-href="{{keep('/tours', sort='price_high')}}">Price: High to Low</a>
+                                        <a class="dropdown-item" t-attf-href="{{keep('/tours', sort='popular')}}">Most Popular</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Packages Grid -->
+                        <div class="row">
+                            <t t-if="packages">
+                                <t t-foreach="packages" t-as="package">
+                                    <t t-call="tour_agency.tour_package_card"/>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="col-12 text-center py-5">
+                                    <i class="fa fa-inbox fa-3x text-muted mb-3"/>
+                                    <h4 class="text-muted">No packages found</h4>
+                                    <p class="text-muted">Try adjusting your search or filters</p>
+                                </div>
+                            </t>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <t t-if="pager and len(packages) > 0">
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <t t-call="website.pager"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+                
+                <!-- Featured Packages -->
+                <t t-if="featured_packages and not current_category and not search">
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h2 class="mb-4"><i class="fa fa-star text-warning"/> Featured Packages</h2>
+                        </div>
+                        <t t-foreach="featured_packages" t-as="package">
+                            <t t-call="tour_agency.tour_package_card"/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Tour Packages by Destination -->
+    <template id="tour_packages_by_destination" name="Tour Packages by Destination">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="display-4">Tours to <span t-esc="destination"/></h1>
+                        <p class="lead">Explore amazing packages to this destination</p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <t t-if="packages">
+                        <t t-foreach="packages" t-as="package">
+                            <t t-call="tour_agency.tour_package_card"/>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <div class="col-12 text-center py-5">
+                            <h4 class="text-muted">No packages found for this destination</h4>
+                        </div>
+                    </t>
+                </div>
+                
+                <t t-if="pager">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <t t-call="website.pager"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    
+</odoo>
+

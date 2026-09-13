@@ -42,7 +42,7 @@ TMS 项目产品架构师，负责技术架构设计、模块规划和系统集�
 │  └────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────┐ │
 │  │              自定义模块                         │ │
-│  │  tour_base, tour_order, tour_operation, ...   │ │
+│  │  tour_product, tour_order, tour_operation, ...   │ │
 │  └────────────────────────────────────────────────┘ │
 └───────┬──────────────┬──────────────┬───────────────┘
         │              │              │
@@ -59,7 +59,7 @@ TMS 项目产品架构师，负责技术架构设计、模块规划和系统集�
 
 #### 模块依赖关系
 ```
-tour_base (基础模块)
+tour_product (基础模块)
 ├── tour_order (订单管理)
 │   ├── tour_operation (计调操作)
 │   ├── tour_guide_expense (导游报账)
@@ -81,10 +81,10 @@ tour_base (基础模块)
 
 | 模块 | 职责 | 依赖 | 数据量预估 |
 |------|------|------|-----------|
-| tour_base | 线路产品、分类、基础数据 | base, mail, product | 212 线路、85 分类 |
-| tour_order | 订单、报名、并团 | tour_base | 86,925 订单、86,753 报名 |
+| tour_product | 线路产品、分类、基础数据 | base, mail, product | 212 线路、85 分类 |
+| tour_order | 订单、报名、并团 | tour_product | 86,925 订单、86,753 报名 |
 | tour_operation | 计调操作、预订、派车派导 | tour_order, tour_resource | - |
-| tour_resource | 导游、车辆、供应商 | tour_base | 2,173 导游、71 车辆、12 类供应商 |
+| tour_resource | 导游、车辆、供应商 | tour_product | 2,173 导游、71 车辆、12 类供应商 |
 | tour_shopping | 购物录入、统计 | tour_order | - |
 | tour_commission | 佣金计算、分成 | tour_shopping, tour_finance | - |
 | tour_finance | 收付款、核算 | tour_order | 51 收款、72 银行账户 |

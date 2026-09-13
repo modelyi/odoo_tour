@@ -1,0 +1,334 @@
+/* ====================================== */
+/* Tours & Travel Website Styles */
+/* ====================================== */
+
+/* Hero Section */
+.s_cover.parallax {
+    position: relative;
+    min-height: 600px;
+}
+
+.o_we_bg_filter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Tour Package Card */
+.tour_package_card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.tour_package_card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+.tour_package_card .card-img-top {
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.tour_package_card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+.tour_package_card .card-body {
+    padding: 1.5rem;
+}
+
+.tour_package_card .tour_price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.tour_package_card .tour_duration {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.tour_package_card .tour_destination {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+/* Tags */
+.tour_tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Feature Icons */
+.feature_icon {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    font-size: 2rem;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Stats Section */
+.stat-item i {
+    opacity: 0.8;
+}
+
+.stat-item h2 {
+    font-size: 3.5rem;
+}
+
+/* Tour Detail Page */
+.tour_detail_header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.tour_detail_price {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.tour_detail_info {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 80px;
+}
+
+.tour_itinerary_day {
+    border-left: 3px solid #667eea;
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.tour_itinerary_day::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #667eea;
+}
+
+.tour_itinerary_day h5 {
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* Booking Form */
+.booking_form {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.booking_form .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+}
+
+.booking_form .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.booking_summary {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid #667eea;
+}
+
+/* Search & Filter */
+.tour_search_bar {
+    background: white;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    padding: 1rem 2rem;
+}
+
+.tour_search_bar .form-control {
+    border: none;
+    box-shadow: none;
+}
+
+.tour_search_bar .btn {
+    border-radius: 25px;
+    padding: 0.5rem 2rem;
+}
+
+.tour_filter_sidebar {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+/* Portal */
+.portal_booking_card {
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.portal_booking_card:hover {
+    transform: translateY(-5px);
+}
+
+.portal_booking_status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.status-draft {
+    background: #ffc107;
+    color: #000;
+}
+
+.status-confirmed {
+    background: #28a745;
+    color: white;
+}
+
+.status-in_progress {
+    background: #17a2b8;
+    color: white;
+}
+
+.status-completed {
+    background: #6c757d;
+    color: white;
+}
+
+.status-cancelled {
+    background: #dc3545;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tour_package_card .card-img-top {
+        height: 200px;
+    }
+    
+    .tour_detail_price {
+        font-size: 2rem;
+    }
+    
+    .stat-item h2 {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.btn-gradient:hover {
+    transform: scale(1.05);
+    color: white;
+}
+
+/* Icon Badges */
+.icon-badge {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    font-size: 1.2rem;
+}
+
+.icon-badge-primary {
+    background: #667eea;
+    color: white;
+}
+
+.icon-badge-success {
+    background: #28a745;
+    color: white;
+}
+
+.icon-badge-warning {
+    background: #ffc107;
+    color: #000;
+}
+
+.icon-badge-danger {
+    background: #dc3545;
+    color: white;
+}
+
+/* Loading Placeholder */
+.tour-placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

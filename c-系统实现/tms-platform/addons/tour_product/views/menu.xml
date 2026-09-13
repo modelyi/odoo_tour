@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_tms_root"
+        name="旅行社管理"
+        web_icon="tour_product,static/description/icon.png"
+        sequence="10"/>
+
+    <!-- Product Menu -->
+    <menuitem id="menu_tms_product"
+        name="线路产品"
+        parent="menu_tms_root"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_line"
+        name="线路模板"
+        parent="menu_tms_product"
+        action="action_tour_line"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_line_type"
+        name="线路分类"
+        parent="menu_tms_product"
+        action="action_tour_line_type"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_departure"
+        name="发团计划"
+        parent="menu_tms_product"
+        action="action_tour_departure"
+        sequence="30"/>
+
+    <!-- Base Data Menu -->
+    <menuitem id="menu_tms_basedata"
+        name="基础数据"
+        parent="menu_tms_root"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_pay_way"
+        name="结算方式"
+        parent="menu_tms_basedata"
+        action="action_tour_pay_way"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_biz_type"
+        name="业务类型"
+        parent="menu_tms_basedata"
+        action="action_tour_biz_type"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_base_item"
+        name="通用基础数据"
+        parent="menu_tms_basedata"
+        action="action_tour_base_item"
+        sequence="30"/>
+</odoo>

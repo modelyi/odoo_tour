@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f8f9fa"/>
+  <rect x="20" y="20" width="360" height="120" fill="#667eea" rx="10"/>
+  <rect x="20" y="160" width="170" height="120" fill="#e9ecef" rx="10"/>
+  <rect x="210" y="160" width="170" height="120" fill="#e9ecef" rx="10"/>
+  <text x="200" y="90" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle">
+    Tours
+  </text>
+</svg>

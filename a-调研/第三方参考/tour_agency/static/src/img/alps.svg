@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="sky5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#74B9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A8E6CF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#sky5)"/>
+  <!-- Mountains -->
+  <polygon points="400,600 600,200 800,600" fill="#5D6D7E" opacity="0.8"/>
+  <polygon points="200,650 450,300 700,650" fill="#707B7C" opacity="0.7"/>
+  <polygon points="700,650 900,350 1100,650" fill="#616A6B" opacity="0.7"/>
+  <!-- Snow caps -->
+  <polygon points="550,300 600,200 650,300" fill="#ECF0F1" opacity="0.9"/>
+  <polygon points="400,400 450,300 500,400" fill="#F8F9F9" opacity="0.8"/>
+  <polygon points="850,440 900,350 950,440" fill="#F8F9F9" opacity="0.8"/>
+  <!-- Valley -->
+  <ellipse cx="600" cy="700" rx="400" ry="50" fill="#52BE80" opacity="0.6"/>
+  <!-- Pine trees -->
+  <g transform="translate(300, 620)">
+    <polygon points="0,-40 -15,0 15,0" fill="#27AE60" opacity="0.8"/>
+    <polygon points="0,-60 -12,-25 12,-25" fill="#229954" opacity="0.8"/>
+  </g>
+  <g transform="translate(900, 630)">
+    <polygon points="0,-35 -12,0 12,0" fill="#27AE60" opacity="0.8"/>
+    <polygon points="0,-55 -10,-25 10,-25" fill="#229954" opacity="0.8"/>
+  </g>
+  <!-- Text -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="90" font-weight="bold" fill="white" text-anchor="middle" opacity="0.9">SWISS ALPS</text>
+  <text x="600" y="610" font-family="Arial, sans-serif" font-size="40" fill="white" text-anchor="middle" opacity="0.8">Mountain Majesty</text>
+</svg>

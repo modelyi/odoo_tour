@@ -1,0 +1,38 @@
+/* Tours and Travel Management System - Backend CSS */
+
+/* Tour Package Form */
+.o_tour_package_form .oe_avatar {
+    max-width: 256px;
+    max-height: 256px;
+}
+
+/* Kanban View */
+.o_kanban_view .oe_kanban_global_click {
+    cursor: pointer;
+}
+
+/* Statistics */
+.oe_stat_button {
+    font-size: 12px;
+}
+
+.o_stat_value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Form Highlights */
+.oe_title h1 {
+    font-size: 2rem;
+}
+
+/* Calendar View */
+.o_calendar_view .fc-event {
+    border-radius: 3px;
+}
+
+/* Tree View */
+.o_list_view .o_data_cell {
+    vertical-align: middle;
+}
+

@@ -59,7 +59,7 @@ cat .subagents/manifest.json | jq '.roles'
 ## 当前状态
 
 - **devops**: ✅ 系统部署已完成
-- **dev_odoo**: ⏳ 修复 tour_base 模块安装
+- **dev_odoo**: ⏳ 修复 tour_product 模块安装
 - **dev_qa**: ⏳ 代码质量审查
 - **uat_qa**: ⏳ 端到端验收测试
 

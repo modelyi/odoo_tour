@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================ -->
+        <!-- CATEGORIES -->
+        <!-- ============================================ -->
+        <record id="tour_category_adventure" model="tour.package.category">
+            <field name="name">Adventure Tours</field>
+            <field name="description">Exciting adventure tours for thrill-seekers</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <record id="tour_category_cultural" model="tour.package.category">
+            <field name="name">Cultural Tours</field>
+            <field name="description">Explore rich culture and heritage</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <record id="tour_category_beach" model="tour.package.category">
+            <field name="name">Beach &amp; Relaxation</field>
+            <field name="description">Relax on beautiful beaches</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <record id="tour_category_wildlife" model="tour.package.category">
+            <field name="name">Wildlife Safari</field>
+            <field name="description">Experience amazing wildlife in their natural habitat</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <record id="tour_category_city" model="tour.package.category">
+            <field name="name">City Tours</field>
+            <field name="description">Discover vibrant cities and urban attractions</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <record id="tour_category_cruise" model="tour.package.category">
+            <field name="name">Cruise Tours</field>
+            <field name="description">Luxury cruise experiences</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- TAGS -->
+        <!-- ============================================ -->
+        <record id="tour_tag_family" model="tour.package.tag">
+            <field name="name">Family Friendly</field>
+            <field name="color">5</field>
+        </record>
+        
+        <record id="tour_tag_budget" model="tour.package.tag">
+            <field name="name">Budget</field>
+            <field name="color">2</field>
+        </record>
+        
+        <record id="tour_tag_luxury" model="tour.package.tag">
+            <field name="name">Luxury</field>
+            <field name="color">4</field>
+        </record>
+        
+        <record id="tour_tag_romantic" model="tour.package.tag">
+            <field name="name">Romantic</field>
+            <field name="color">6</field>
+        </record>
+        
+        <record id="tour_tag_group" model="tour.package.tag">
+            <field name="name">Group Tour</field>
+            <field name="color">3</field>
+        </record>
+        
+        <record id="tour_tag_solo" model="tour.package.tag">
+            <field name="name">Solo Travel</field>
+            <field name="color">1</field>
+        </record>
+        
+        <record id="tour_tag_adventure" model="tour.package.tag">
+            <field name="name">Adventure</field>
+            <field name="color">8</field>
+        </record>
+        
+        <record id="tour_tag_food" model="tour.package.tag">
+            <field name="name">Food &amp; Wine</field>
+            <field name="color">7</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- HOTEL AMENITIES -->
+        <!-- ============================================ -->
+        <record id="hotel_amenity_wifi" model="tour.hotel.amenity">
+            <field name="name">Free WiFi</field>
+            <field name="icon">fa-wifi</field>
+        </record>
+        
+        <record id="hotel_amenity_pool" model="tour.hotel.amenity">
+            <field name="name">Swimming Pool</field>
+            <field name="icon">fa-swimming-pool</field>
+        </record>
+        
+        <record id="hotel_amenity_gym" model="tour.hotel.amenity">
+            <field name="name">Fitness Center</field>
+            <field name="icon">fa-dumbbell</field>
+        </record>
+        
+        <record id="hotel_amenity_restaurant" model="tour.hotel.amenity">
+            <field name="name">Restaurant</field>
+            <field name="icon">fa-utensils</field>
+        </record>
+        
+        <record id="hotel_amenity_spa" model="tour.hotel.amenity">
+            <field name="name">Spa &amp; Wellness</field>
+            <field name="icon">fa-spa</field>
+        </record>
+        
+        <record id="hotel_amenity_parking" model="tour.hotel.amenity">
+            <field name="name">Free Parking</field>
+            <field name="icon">fa-parking</field>
+        </record>
+        
+        <record id="hotel_amenity_ac" model="tour.hotel.amenity">
+            <field name="name">Air Conditioning</field>
+            <field name="icon">fa-snowflake</field>
+        </record>
+        
+        <record id="hotel_amenity_bar" model="tour.hotel.amenity">
+            <field name="name">Bar/Lounge</field>
+            <field name="icon">fa-cocktail</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- HOTELS -->
+        <!-- ============================================ -->
+        <record id="hotel_grand_paradise" model="tour.hotel">
+            <field name="name">Grand Paradise Resort</field>
+            <field name="location">Bali, Indonesia</field>
+            <field name="star_rating">5</field>
+            <field name="address">Jalan Pantai Kuta No. 88, Kuta, Bali 80361</field>
+            <field name="phone">+62 361 751234</field>
+            <field name="email">info@grandparadise.com</field>
+            <field name="website">www.grandparadise.com</field>
+            <field name="description">Luxury beachfront resort with world-class amenities and stunning ocean views. Features private beach access, infinity pools, and award-winning restaurants.</field>
+            <field name="amenity_ids" eval="[(6, 0, [ref('hotel_amenity_wifi'), ref('hotel_amenity_pool'), ref('hotel_amenity_spa'), ref('hotel_amenity_restaurant'), ref('hotel_amenity_gym'), ref('hotel_amenity_bar')])]"/>
+            <field name="check_in_time" eval="15.0"/>
+            <field name="check_out_time" eval="12.0"/>
+        </record>
+        
+        <record id="hotel_mountain_view" model="tour.hotel">
+            <field name="name">Mountain View Lodge</field>
+            <field name="location">Swiss Alps, Switzerland</field>
+            <field name="star_rating">4</field>
+            <field name="address">Alpstrasse 42, 3920 Zermatt, Switzerland</field>
+            <field name="phone">+41 27 966 2400</field>
+            <field name="email">reservations@mountainview.ch</field>
+            <field name="website">www.mountainviewlodge.ch</field>
+            <field name="description">Charming alpine lodge with breathtaking mountain views. Perfect for ski enthusiasts and nature lovers.</field>
+            <field name="amenity_ids" eval="[(6, 0, [ref('hotel_amenity_wifi'), ref('hotel_amenity_restaurant'), ref('hotel_amenity_spa'), ref('hotel_amenity_parking'), ref('hotel_amenity_ac')])]"/>
+            <field name="check_in_time" eval="14.0"/>
+            <field name="check_out_time" eval="11.0"/>
+        </record>
+        
+        <record id="hotel_royal_palace" model="tour.hotel">
+            <field name="name">Royal Palace Hotel</field>
+            <field name="location">Paris, France</field>
+            <field name="star_rating">5</field>
+            <field name="address">15 Avenue des Champs-Élysées, 75008 Paris</field>
+            <field name="phone">+33 1 42 56 7890</field>
+            <field name="email">contact@royalpalace.fr</field>
+            <field name="website">www.royalpalaceparis.fr</field>
+            <field name="description">Historic luxury hotel in the heart of Paris. Steps from major attractions, featuring elegant rooms and Michelin-starred dining.</field>
+            <field name="amenity_ids" eval="[(6, 0, [ref('hotel_amenity_wifi'), ref('hotel_amenity_restaurant'), ref('hotel_amenity_gym'), ref('hotel_amenity_spa'), ref('hotel_amenity_bar'), ref('hotel_amenity_ac')])]"/>
+            <field name="check_in_time" eval="15.0"/>
+            <field name="check_out_time" eval="12.0"/>
+        </record>
+        
+        <record id="hotel_safari_camp" model="tour.hotel">
+            <field name="name">Serengeti Safari Camp</field>
+            <field name="location">Serengeti, Tanzania</field>
+            <field name="star_rating">4</field>
+            <field name="address">Serengeti National Park, Tanzania</field>
+            <field name="phone">+255 27 254 8888</field>
+            <field name="email">bookings@serengeticamp.com</field>
+            <field name="website">www.serengeticamp.com</field>
+            <field name="description">Luxury tented camp in the heart of Serengeti. Experience wildlife up close while enjoying 5-star amenities.</field>
+            <field name="amenity_ids" eval="[(6, 0, [ref('hotel_amenity_wifi'), ref('hotel_amenity_restaurant'), ref('hotel_amenity_bar'), ref('hotel_amenity_pool')])]"/>
+            <field name="check_in_time" eval="14.0"/>
+            <field name="check_out_time" eval="10.0"/>
+        </record>
+        
+        <record id="hotel_beach_boutique" model="tour.hotel">
+            <field name="name">Oceanfront Boutique Hotel</field>
+            <field name="location">Maldives</field>
+            <field name="star_rating">5</field>
+            <field name="address">North Malé Atoll, Maldives</field>
+            <field name="phone">+960 664 0000</field>
+            <field name="email">info@oceanfrontmaldives.com</field>
+            <field name="website">www.oceanfrontmaldives.com</field>
+            <field name="description">Exclusive overwater villas with private pools. Ultimate luxury and privacy in paradise.</field>
+            <field name="amenity_ids" eval="[(6, 0, [ref('hotel_amenity_wifi'), ref('hotel_amenity_restaurant'), ref('hotel_amenity_spa'), ref('hotel_amenity_bar'), ref('hotel_amenity_gym'), ref('hotel_amenity_ac')])]"/>
+            <field name="check_in_time" eval="14.0"/>
+            <field name="check_out_time" eval="12.0"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- TRANSPORTATION -->
+        <!-- ============================================ -->
+        <record id="transport_deluxe_coach" model="tour.transportation">
+            <field name="name">Deluxe Air-Conditioned Coach</field>
+            <field name="transport_type">bus</field>
+            <field name="capacity">45</field>
+            <field name="description">Modern luxury coach with reclining seats, WiFi, and entertainment system</field>
+            <field name="cost_per_unit" eval="500.0"/>
+        </record>
+        
+        <record id="transport_private_van" model="tour.transportation">
+            <field name="name">Private Van</field>
+            <field name="transport_type">car</field>
+            <field name="capacity">8</field>
+            <field name="description">Comfortable private van with professional driver</field>
+            <field name="cost_per_unit" eval="150.0"/>
+        </record>
+        
+        <record id="transport_economy_flight" model="tour.transportation">
+            <field name="name">Economy Class Flight</field>
+            <field name="transport_type">flight</field>
+            <field name="capacity">180</field>
+            <field name="description">Round-trip economy class flights with checked baggage</field>
+            <field name="cost_per_unit" eval="450.0"/>
+        </record>
+        
+        <record id="transport_business_flight" model="tour.transportation">
+            <field name="name">Business Class Flight</field>
+            <field name="transport_type">flight</field>
+            <field name="capacity">50</field>
+            <field name="description">Round-trip business class with lounge access and priority boarding</field>
+            <field name="cost_per_unit" eval="1200.0"/>
+        </record>
+        
+        <record id="transport_train_first" model="tour.transportation">
+            <field name="name">First Class Train</field>
+            <field name="transport_type">train</field>
+            <field name="capacity">60</field>
+            <field name="description">First class train service with meals included</field>
+            <field name="cost_per_unit" eval="120.0"/>
+        </record>
+        
+        <record id="transport_cruise_ship" model="tour.transportation">
+            <field name="name">Luxury Cruise Ship</field>
+            <field name="transport_type">cruise</field>
+            <field name="capacity">2000</field>
+            <field name="description">All-inclusive luxury cruise with multiple dining and entertainment options</field>
+            <field name="cost_per_unit" eval="800.0"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- MEALS -->
+        <!-- ============================================ -->
+        <record id="meal_breakfast_buffet" model="tour.meal">
+            <field name="name">International Breakfast Buffet</field>
+            <field name="meal_type">breakfast</field>
+            <field name="description">Full buffet breakfast with continental and local options</field>
+            <field name="cost_per_person" eval="15.0"/>
+            <field name="dietary_options">Vegetarian, Vegan, Gluten-Free options available</field>
+        </record>
+        
+        <record id="meal_lunch_box" model="tour.meal">
+            <field name="name">Packed Lunch Box</field>
+            <field name="meal_type">lunch</field>
+            <field name="description">Convenient lunch box for day trips</field>
+            <field name="cost_per_person" eval="12.0"/>
+            <field name="dietary_options">Various options available</field>
+        </record>
+        
+        <record id="meal_dinner_3course" model="tour.meal">
+            <field name="name">3-Course Dinner</field>
+            <field name="meal_type">dinner</field>
+            <field name="description">Three-course dinner at hotel restaurant</field>
+            <field name="cost_per_person" eval="35.0"/>
+            <field name="dietary_options">Vegetarian, Vegan options available</field>
+        </record>
+        
+        <record id="meal_gourmet_dinner" model="tour.meal">
+            <field name="name">Gourmet Fine Dining</field>
+            <field name="meal_type">dinner</field>
+            <field name="description">Exclusive fine dining experience with wine pairing</field>
+            <field name="cost_per_person" eval="85.0"/>
+            <field name="dietary_options">Custom menus available</field>
+        </record>
+        
+        <record id="meal_local_cuisine" model="tour.meal">
+            <field name="name">Local Cuisine Experience</field>
+            <field name="meal_type">lunch</field>
+            <field name="description">Authentic local food experience at traditional restaurant</field>
+            <field name="cost_per_person" eval="25.0"/>
+            <field name="dietary_options">Traditional and modern options</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- ATTRACTIONS -->
+        <!-- ============================================ -->
+        <record id="attraction_eiffel_tower" model="tour.attraction">
+            <field name="name">Eiffel Tower</field>
+            <field name="location">Paris, France</field>
+            <field name="description">Iconic iron lattice tower and symbol of Paris. Includes skip-the-line tickets and guided tour.</field>
+            <field name="entry_fee" eval="25.0"/>
+            <field name="duration" eval="2.5"/>
+        </record>
+        
+        <record id="attraction_louvre" model="tour.attraction">
+            <field name="name">Louvre Museum</field>
+            <field name="location">Paris, France</field>
+            <field name="description">World's largest art museum. See Mona Lisa, Venus de Milo, and thousands of masterpieces.</field>
+            <field name="entry_fee" eval="17.0"/>
+            <field name="duration" eval="3.0"/>
+        </record>
+        
+        <record id="attraction_bali_temple" model="tour.attraction">
+            <field name="name">Tanah Lot Temple</field>
+            <field name="location">Bali, Indonesia</field>
+            <field name="description">Ancient Hindu shrine perched on a rock formation. Spectacular sunset views.</field>
+            <field name="entry_fee" eval="5.0"/>
+            <field name="duration" eval="1.5"/>
+        </record>
+        
+        <record id="attraction_safari_game_drive" model="tour.attraction">
+            <field name="name">Serengeti Game Drive</field>
+            <field name="location">Serengeti, Tanzania</field>
+            <field name="description">Full-day safari game drive to see the Big Five and witness the Great Migration.</field>
+            <field name="entry_fee" eval="150.0"/>
+            <field name="duration" eval="8.0"/>
+        </record>
+        
+        <record id="attraction_snorkeling" model="tour.attraction">
+            <field name="name">Coral Reef Snorkeling</field>
+            <field name="location">Maldives</field>
+            <field name="description">Guided snorkeling tour to pristine coral reefs. Equipment and instruction included.</field>
+            <field name="entry_fee" eval="45.0"/>
+            <field name="duration" eval="3.0"/>
+        </record>
+        
+        <record id="attraction_mountain_hiking" model="tour.attraction">
+            <field name="name">Alpine Hiking Trail</field>
+            <field name="location">Swiss Alps, Switzerland</field>
+            <field name="description">Guided hiking through spectacular alpine scenery. All levels welcome.</field>
+            <field name="entry_fee" eval="35.0"/>
+            <field name="duration" eval="4.0"/>
+        </record>
+        
+        <record id="attraction_wine_tasting" model="tour.attraction">
+            <field name="name">Vineyard Wine Tasting</field>
+            <field name="location">Bordeaux, France</field>
+            <field name="description">Private wine tasting at prestigious châteaux with sommelier guide.</field>
+            <field name="entry_fee" eval="60.0"/>
+            <field name="duration" eval="2.5"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- TOUR PACKAGES -->
+        <!-- ============================================ -->
+        
+        <!-- Package 1: Bali Paradise -->
+        <record id="package_bali_paradise" model="tour.package">
+            <field name="name">Bali Paradise Escape - 7 Days</field>
+            <field name="code">BALI-001</field>
+            <field name="destination">Bali, Indonesia</field>
+            <field name="category_id" ref="tour_category_beach"/>
+            <field name="description"><![CDATA[
+                <h3>Discover the Magic of Bali</h3>
+                <p>Experience the perfect blend of culture, beaches, and adventure in this 7-day Bali escape. Visit ancient temples, relax on pristine beaches, and immerse yourself in Balinese culture.</p>
+                
+                <h4>Highlights:</h4>
+                <ul>
+                    <li>Stay at luxury 5-star Grand Paradise Resort</li>
+                    <li>Visit iconic Tanah Lot Temple at sunset</li>
+                    <li>Traditional Balinese spa treatment</li>
+                    <li>Rice terrace trekking in Ubud</li>
+                    <li>Beach activities and water sports</li>
+                    <li>Cultural dance performances</li>
+                </ul>
+                
+                <h4>Included:</h4>
+                <ul>
+                    <li>6 nights accommodation</li>
+                    <li>Daily breakfast and 4 dinners</li>
+                    <li>All transfers and transportation</li>
+                    <li>English-speaking guide</li>
+                    <li>Entrance fees to attractions</li>
+                </ul>
+            ]]></field>
+            <field name="duration_days" eval="7"/>
+            <field name="price" eval="1299.0"/>
+            <field name="base_price" eval="1299.0"/>
+            <field name="child_price" eval="899.0"/>
+            <field name="min_participants" eval="2"/>
+            <field name="max_participants" eval="20"/>
+            <field name="start_date" eval="(DateTime.now() + timedelta(days=30)).strftime('%Y-%m-%d')"/>
+            <field name="end_date" eval="(DateTime.now() + timedelta(days=37)).strftime('%Y-%m-%d')"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('tour_tag_family'), ref('tour_tag_romantic'), ref('tour_tag_luxury')])]"/>
+            <field name="hotel_ids" eval="[(6, 0, [ref('hotel_grand_paradise')])]"/>
+            <field name="meal_ids" eval="[(6, 0, [ref('meal_breakfast_buffet'), ref('meal_dinner_3course'), ref('meal_local_cuisine')])]"/>
+            <field name="attraction_ids" eval="[(6, 0, [ref('attraction_bali_temple')])]"/>
+            <field name="is_featured" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="state">published</field>
+        </record>
+        
+        <!-- Package 2: Paris Romance -->
+        <record id="package_paris_romance" model="tour.package">
+            <field name="name">Romantic Paris - 5 Days</field>
+            <field name="code">PARIS-001</field>
+            <field name="destination">Paris, France</field>
+            <field name="category_id" ref="tour_category_city"/>
+            <field name="description"><![CDATA[
+                <h3>Fall in Love with Paris</h3>
+                <p>Experience the romance and elegance of the City of Light. Stay at a luxury hotel, dine at finest restaurants, and explore iconic landmarks.</p>
+                
+                <h4>Highlights:</h4>
+                <ul>
+                    <li>Luxury accommodation at Royal Palace Hotel</li>
+                    <li>Eiffel Tower with champagne at sunset</li>
+                    <li>Private Louvre Museum tour</li>
+                    <li>Seine River dinner cruise</li>
+                    <li>Versailles Palace day trip</li>
+                    <li>Montmartre artists' quarter walk</li>
+                </ul>
+                
+                <h4>Included:</h4>
+                <ul>
+                    <li>4 nights at 5-star hotel</li>
+                    <li>Daily breakfast and 2 romantic dinners</li>
+                    <li>All entrance tickets and tours</li>
+                    <li>Metro passes</li>
+                    <li>Expert local guide</li>
+                </ul>
+            ]]></field>
+            <field name="duration_days" eval="5"/>
+            <field name="price" eval="1899.0"/>
+            <field name="base_price" eval="1899.0"/>
+            <field name="child_price" eval="1299.0"/>
+            <field name="min_participants" eval="2"/>
+            <field name="max_participants" eval="10"/>
+            <field name="start_date" eval="(DateTime.now() + timedelta(days=45)).strftime('%Y-%m-%d')"/>
+            <field name="end_date" eval="(DateTime.now() + timedelta(days=50)).strftime('%Y-%m-%d')"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('tour_tag_romantic'), ref('tour_tag_luxury'), ref('tour_tag_food')])]"/>
+            <field name="hotel_ids" eval="[(6, 0, [ref('hotel_royal_palace')])]"/>
+            <field name="meal_ids" eval="[(6, 0, [ref('meal_breakfast_buffet'), ref('meal_gourmet_dinner')])]"/>
+            <field name="attraction_ids" eval="[(6, 0, [ref('attraction_eiffel_tower'), ref('attraction_louvre')])]"/>
+            <field name="is_featured" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="state">published</field>
+        </record>
+        
+        <!-- Package 3: African Safari -->
+        <record id="package_african_safari" model="tour.package">
+            <field name="name">African Safari Adventure - 10 Days</field>
+            <field name="code">SAFARI-001</field>
+            <field name="destination">Serengeti, Tanzania</field>
+            <field name="category_id" ref="tour_category_wildlife"/>
+            <field name="description"><![CDATA[
+                <h3>The Ultimate Safari Experience</h3>
+                <p>Witness the incredible wildlife of Africa on this unforgettable safari adventure. Experience the Great Migration, see the Big Five, and stay in luxury tented camps.</p>
+                
+                <h4>Highlights:</h4>
+                <ul>
+                    <li>Serengeti National Park game drives</li>
+                    <li>Witness the Great Migration (seasonal)</li>
+                    <li>Ngorongoro Crater exploration</li>
+                    <li>Luxury safari camp accommodation</li>
+                    <li>Expert safari guides</li>
+                    <li>Maasai village cultural visit</li>
+                    <li>Hot air balloon safari (optional)</li>
+                </ul>
+                
+                <h4>Included:</h4>
+                <ul>
+                    <li>9 nights luxury tented camp</li>
+                    <li>All meals and drinks</li>
+                    <li>Daily game drives</li>
+                    <li>4x4 safari vehicle</li>
+                    <li>Professional guide</li>
+                    <li>Park entrance fees</li>
+                </ul>
+            ]]></field>
+            <field name="duration_days" eval="10"/>
+            <field name="price" eval="3499.0"/>
+            <field name="base_price" eval="3499.0"/>
+            <field name="child_price" eval="2499.0"/>
+            <field name="min_participants" eval="4"/>
+            <field name="max_participants" eval="12"/>
+            <field name="start_date" eval="(DateTime.now() + timedelta(days=60)).strftime('%Y-%m-%d')"/>
+            <field name="end_date" eval="(DateTime.now() + timedelta(days=70)).strftime('%Y-%m-%d')"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('tour_tag_adventure'), ref('tour_tag_family'), ref('tour_tag_group')])]"/>
+            <field name="hotel_ids" eval="[(6, 0, [ref('hotel_safari_camp')])]"/>
+            <field name="meal_ids" eval="[(6, 0, [ref('meal_breakfast_buffet'), ref('meal_lunch_box'), ref('meal_dinner_3course')])]"/>
+            <field name="attraction_ids" eval="[(6, 0, [ref('attraction_safari_game_drive')])]"/>
+            <field name="is_featured" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="state">published</field>
+        </record>
+        
+        <!-- Package 4: Maldives Luxury -->
+        <record id="package_maldives_luxury" model="tour.package">
+            <field name="name">Maldives Luxury Retreat - 6 Days</field>
+            <field name="code">MALD-001</field>
+            <field name="destination">Maldives</field>
+            <field name="category_id" ref="tour_category_beach"/>
+            <field name="description"><![CDATA[
+                <h3>Ultimate Tropical Paradise</h3>
+                <p>Escape to your own private paradise in the Maldives. Stay in an overwater villa, enjoy world-class diving, and indulge in spa treatments.</p>
+                
+                <h4>Highlights:</h4>
+                <ul>
+                    <li>Private overwater villa with pool</li>
+                    <li>Direct lagoon access</li>
+                    <li>Snorkeling and diving</li>
+                    <li>Spa and wellness treatments</li>
+                    <li>Private sandbank picnic</li>
+                    <li>Sunset dolphin cruise</li>
+                    <li>Fine dining experiences</li>
+                </ul>
+                
+                <h4>Included:</h4>
+                <ul>
+                    <li>5 nights overwater villa</li>
+                    <li>All-inclusive meals and drinks</li>
+                    <li>Water sports equipment</li>
+                    <li>Spa treatment (1 session)</li>
+                    <li>Airport transfers by speedboat</li>
+                    <li>Welcome amenities</li>
+                </ul>
+            ]]></field>
+            <field name="duration_days" eval="6"/>
+            <field name="price" eval="2799.0"/>
+            <field name="base_price" eval="2799.0"/>
+            <field name="child_price" eval="1999.0"/>
+            <field name="min_participants" eval="2"/>
+            <field name="max_participants" eval="8"/>
+            <field name="start_date" eval="(DateTime.now() + timedelta(days=40)).strftime('%Y-%m-%d')"/>
+            <field name="end_date" eval="(DateTime.now() + timedelta(days=46)).strftime('%Y-%m-%d')"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('tour_tag_luxury'), ref('tour_tag_romantic')])]"/>
+            <field name="hotel_ids" eval="[(6, 0, [ref('hotel_beach_boutique')])]"/>
+            <field name="meal_ids" eval="[(6, 0, [ref('meal_breakfast_buffet'), ref('meal_gourmet_dinner')])]"/>
+            <field name="attraction_ids" eval="[(6, 0, [ref('attraction_snorkeling')])]"/>
+            <field name="is_featured" eval="True"/>
+            <field name="is_published" eval="True"/>
+            <field name="state">published</field>
+        </record>
+        
+        <!-- Package 5: Swiss Alps -->
+        <record id="package_swiss_alps" model="tour.package">
+            <field name="name">Swiss Alps Winter Wonder - 8 Days</field>
+            <field name="code">SWISS-001</field>
+            <field name="destination">Swiss Alps, Switzerland</field>
+            <field name="category_id" ref="tour_category_adventure"/>
+            <field name="description"><![CDATA[
+                <h3>Alpine Adventure Awaits</h3>
+                <p>Experience the beauty of the Swiss Alps with skiing, hiking, and breathtaking mountain scenery. Perfect for adventure lovers and nature enthusiasts.</p>
+                
+                <h4>Highlights:</h4>
+                <ul>
+                    <li>Stay at charming Mountain View Lodge</li>
+                    <li>Ski passes included (winter season)</li>
+                    <li>Jungfraujoch - Top of Europe excursion</li>
+                    <li>Scenic train journeys</li>
+                    <li>Alpine hiking trails</li>
+                    <li>Swiss chocolate factory tour</li>
+                    <li>Traditional fondue dinner</li>
+                </ul>
+                
+                <h4>Included:</h4>
+                <ul>
+                    <li>7 nights alpine lodge</li>
+                    <li>Daily breakfast and 4 dinners</li>
+                    <li>Swiss Travel Pass</li>
+                    <li>All mountain excursions</li>
+                    <li>Professional guide</li>
+                    <li>Equipment rental (if needed)</li>
+                </ul>
+            ]]></field>
+            <field name="duration_days" eval="8"/>
+            <field name="price" eval="2299.0"/>
+            <field name="base_price" eval="2299.0"/>
+            <field name="child_price" eval="1699.0"/>
+            <field name="min_participants" eval="4"/>
+            <field name="max_participants" eval="16"/>
+            <field name="start_date" eval="(DateTime.now() + timedelta(days=90)).strftime('%Y-%m-%d')"/>
+            <field name="end_date" eval="(DateTime.now() + timedelta(days=98)).strftime('%Y-%m-%d')"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('tour_tag_adventure'), ref('tour_tag_family'), ref('tour_tag_group')])]"/>
+            <field name="hotel_ids" eval="[(6, 0, [ref('hotel_mountain_view')])]"/>
+            <field name="meal_ids" eval="[(6, 0, [ref('meal_breakfast_buffet'), ref('meal_dinner_3course')])]"/>
+            <field name="attraction_ids" eval="[(6, 0, [ref('attraction_mountain_hiking')])]"/>
+            <field name="is_featured" eval="False"/>
+            <field name="is_published" eval="True"/>
+            <field name="state">published</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- ITINERARIES -->
+        <!-- ============================================ -->
+        
+        <!-- Bali Itinerary -->
+        <record id="itinerary_bali_day1" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="1"/>
+            <field name="name">Arrival in Bali</field>
+            <field name="description">Welcome to Bali! Upon arrival at Ngurah Rai International Airport, you'll be greeted by your guide and transferred to Grand Paradise Resort. Check-in and enjoy the resort facilities. Evening welcome dinner with tour briefing.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Dinner</field>
+        </record>
+        
+        <record id="itinerary_bali_day2" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="2"/>
+            <field name="name">Ubud Cultural Tour</field>
+            <field name="description">Visit the famous Tegalalang Rice Terraces, explore Ubud Monkey Forest, and witness traditional Balinese dance performance. Lunch at local restaurant. Optional spa treatment in the evening.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Breakfast, Lunch</field>
+        </record>
+        
+        <record id="itinerary_bali_day3" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="3"/>
+            <field name="name">Tanah Lot Temple Sunset</field>
+            <field name="description">Beach day at resort. Afternoon visit to iconic Tanah Lot Temple for spectacular sunset views. Photography opportunities. Return to hotel for dinner.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Breakfast, Dinner</field>
+        </record>
+        
+        <record id="itinerary_bali_day4" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="4"/>
+            <field name="name">Water Sports Adventure</field>
+            <field name="description">Full day of water activities: snorkeling, banana boat, parasailing (optional). Beach lunch at resort. Evening at leisure to explore local markets.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Breakfast, Lunch</field>
+        </record>
+        
+        <record id="itinerary_bali_day5" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="5"/>
+            <field name="name">Volcano &amp; Hot Springs</field>
+            <field name="description">Early morning trip to Mount Batur. Optional sunrise trekking. Visit natural hot springs. Lunch with volcano views. Return to resort for relaxation.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Breakfast, Lunch</field>
+        </record>
+        
+        <record id="itinerary_bali_day6" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="6"/>
+            <field name="name">Free Day at Resort</field>
+            <field name="description">Day at leisure to enjoy resort facilities: pools, spa, beach activities. Optional shopping trip to Seminyak. Farewell dinner at beachfront restaurant.</field>
+            <field name="accommodation">Grand Paradise Resort</field>
+            <field name="meals">Breakfast, Dinner</field>
+        </record>
+        
+        <record id="itinerary_bali_day7" model="tour.itinerary">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="day_number" eval="7"/>
+            <field name="name">Departure</field>
+            <field name="description">Breakfast at hotel. Check-out and transfer to airport for your departure flight. Take home wonderful memories of Bali!</field>
+            <field name="accommodation">N/A</field>
+            <field name="meals">Breakfast</field>
+        </record>
+        
+        <!-- Paris Itinerary -->
+        <record id="itinerary_paris_day1" model="tour.itinerary">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="day_number" eval="1"/>
+            <field name="name">Bonjour Paris!</field>
+            <field name="description">Arrive in Paris and check into Royal Palace Hotel. Afternoon walking tour of Champs-Élysées and Arc de Triomphe. Welcome dinner at traditional French bistro.</field>
+            <field name="accommodation">Royal Palace Hotel</field>
+            <field name="meals">Dinner</field>
+        </record>
+        
+        <record id="itinerary_paris_day2" model="tour.itinerary">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="day_number" eval="2"/>
+            <field name="name">Eiffel Tower &amp; Seine River</field>
+            <field name="description">Morning at Trocadéro Gardens for Eiffel Tower photos. Afternoon Seine River cruise. Evening champagne at Eiffel Tower summit at sunset. Romantic dinner included.</field>
+            <field name="accommodation">Royal Palace Hotel</field>
+            <field name="meals">Breakfast, Dinner</field>
+        </record>
+        
+        <record id="itinerary_paris_day3" model="tour.itinerary">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="day_number" eval="3"/>
+            <field name="name">Louvre &amp; Montmartre</field>
+            <field name="description">Private guided tour of Louvre Museum with skip-the-line access. See Mona Lisa and other masterpieces. Afternoon in Montmartre artists' quarter. Visit Sacré-Cœur Basilica.</field>
+            <field name="accommodation">Royal Palace Hotel</field>
+            <field name="meals">Breakfast</field>
+        </record>
+        
+        <record id="itinerary_paris_day4" model="tour.itinerary">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="day_number" eval="4"/>
+            <field name="name">Versailles Palace</field>
+            <field name="description">Full-day excursion to Palace of Versailles. Explore the magnificent palace, gardens, and Marie Antoinette's estate. Return to Paris for evening at leisure.</field>
+            <field name="accommodation">Royal Palace Hotel</field>
+            <field name="meals">Breakfast</field>
+        </record>
+        
+        <record id="itinerary_paris_day5" model="tour.itinerary">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="day_number" eval="5"/>
+            <field name="name">Au Revoir Paris</field>
+            <field name="description">Morning free for last-minute shopping or museum visits. Lunch at leisure. Transfer to airport for departure. À bientôt!</field>
+            <field name="accommodation">N/A</field>
+            <field name="meals">Breakfast</field>
+        </record>
+        
+        <!-- Safari Itinerary (abbreviated for space) -->
+        <record id="itinerary_safari_day1" model="tour.itinerary">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="day_number" eval="1"/>
+            <field name="name">Arrival in Tanzania</field>
+            <field name="description">Arrive at Kilimanjaro Airport. Transfer to Arusha for overnight stay. Safari briefing and equipment check. Welcome dinner with safari team.</field>
+            <field name="accommodation">Arusha Hotel</field>
+            <field name="meals">Dinner</field>
+        </record>
+        
+        <record id="itinerary_safari_day2" model="tour.itinerary">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="day_number" eval="2"/>
+            <field name="name">Serengeti National Park</field>
+            <field name="description">Depart for Serengeti National Park. Full day game drive en route to camp. First wildlife sightings: lions, elephants, giraffes. Arrive at Serengeti Safari Camp for sunset.</field>
+            <field name="accommodation">Serengeti Safari Camp</field>
+            <field name="meals">Breakfast, Lunch, Dinner</field>
+        </record>
+        
+        <record id="itinerary_safari_day3to8" model="tour.itinerary">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="day_number" eval="3"/>
+            <field name="name">Serengeti Game Drives (Days 3-8)</field>
+            <field name="description">Six full days of morning and afternoon game drives in Serengeti. Witness the Big Five, Great Migration (seasonal), predator hunts, and incredible birdlife. Visit Maasai village. Optional hot air balloon safari. All meals at luxury tented camp.</field>
+            <field name="accommodation">Serengeti Safari Camp</field>
+            <field name="meals">Breakfast, Lunch, Dinner</field>
+        </record>
+        
+        <record id="itinerary_safari_day9" model="tour.itinerary">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="day_number" eval="9"/>
+            <field name="name">Ngorongoro Crater</field>
+            <field name="description">Morning game drive in Serengeti. Afternoon transfer to Ngorongoro Crater. Descend into the crater floor for evening game viewing. This UNESCO World Heritage Site is home to over 25,000 animals.</field>
+            <field name="accommodation">Ngorongoro Lodge</field>
+            <field name="meals">Breakfast, Lunch, Dinner</field>
+        </record>
+        
+        <record id="itinerary_safari_day10" model="tour.itinerary">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="day_number" eval="10"/>
+            <field name="name">Departure</field>
+            <field name="description">Morning at crater rim for spectacular views. Transfer to Arusha and then to airport for departure. Safari memories to last a lifetime!</field>
+            <field name="accommodation">N/A</field>
+            <field name="meals">Breakfast</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- SAMPLE INQUIRIES -->
+        <!-- ============================================ -->
+        <record id="inquiry_1" model="tour.inquiry">
+            <field name="customer_name">John Smith</field>
+            <field name="customer_email">john.smith@example.com</field>
+            <field name="customer_phone">+1-555-123-4567</field>
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="preferred_date" eval="(DateTime.now() + timedelta(days=35)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="2"/>
+            <field name="num_children" eval="1"/>
+            <field name="message">Hi, we're interested in the Bali package for our family. Can you provide more details about child-friendly activities? Also, is there flexibility on dates?</field>
+            <field name="state">new</field>
+        </record>
+        
+        <record id="inquiry_2" model="tour.inquiry">
+            <field name="customer_name">Sarah Johnson</field>
+            <field name="customer_email">sarah.j@example.com</field>
+            <field name="customer_phone">+44-20-7123-4567</field>
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="preferred_date" eval="(DateTime.now() + timedelta(days=50)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="2"/>
+            <field name="num_children" eval="0"/>
+            <field name="message">Looking to book the Paris package for our anniversary. Can you arrange a special dinner or any anniversary surprises?</field>
+            <field name="state">in_progress</field>
+        </record>
+        
+        <record id="inquiry_3" model="tour.inquiry">
+            <field name="customer_name">Michael Brown</field>
+            <field name="customer_email">m.brown@example.com</field>
+            <field name="customer_phone">+1-415-555-8900</field>
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="preferred_date" eval="(DateTime.now() + timedelta(days=65)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="4"/>
+            <field name="num_children" eval="2"/>
+            <field name="message">Family of 6 interested in the African Safari. What's the minimum age for children? Do you have larger vehicle options?</field>
+            <field name="state">converted</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- SAMPLE BOOKINGS -->
+        <!-- ============================================ -->
+        <record id="booking_1" model="tour.booking">
+            <field name="package_id" ref="package_maldives_luxury"/>
+            <field name="partner_id" ref="base.partner_demo"/>
+            <field name="booking_date" eval="(DateTime.now() - timedelta(days=5)).strftime('%Y-%m-%d')"/>
+            <field name="travel_start_date" eval="(DateTime.now() + timedelta(days=45)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="2"/>
+            <field name="num_children" eval="0"/>
+            <field name="special_requirements">Honeymoon package. Please arrange room decoration and special amenities.</field>
+            <field name="state">confirmed</field>
+        </record>
+        
+        <record id="booking_2" model="tour.booking">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="partner_id" ref="base.partner_demo_portal"/>
+            <field name="booking_date" eval="(DateTime.now() - timedelta(days=10)).strftime('%Y-%m-%d')"/>
+            <field name="travel_start_date" eval="(DateTime.now() + timedelta(days=30)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="2"/>
+            <field name="num_children" eval="2"/>
+            <field name="special_requirements">Need vegetarian meal options for all family members.</field>
+            <field name="state">confirmed</field>
+        </record>
+        
+        <record id="booking_3" model="tour.booking">
+            <field name="package_id" ref="package_swiss_alps"/>
+            <field name="partner_id" ref="base.res_partner_2"/>
+            <field name="booking_date" eval="(DateTime.now() - timedelta(days=2)).strftime('%Y-%m-%d')"/>
+            <field name="travel_start_date" eval="(DateTime.now() + timedelta(days=95)).strftime('%Y-%m-%d')"/>
+            <field name="num_adults" eval="4"/>
+            <field name="num_children" eval="0"/>
+            <field name="special_requirements">Group booking for friends. Would like adjoining rooms if possible.</field>
+            <field name="state">draft</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- SAMPLE EXPENSES -->
+        <!-- ============================================ -->
+        <record id="expense_1" model="tour.expense">
+            <field name="package_id" ref="package_bali_paradise"/>
+            <field name="name">Marketing Campaign - Bali Package</field>
+            <field name="expense_type">marketing</field>
+            <field name="amount" eval="1500.0"/>
+            <field name="expense_date" eval="(DateTime.now() - timedelta(days=30)).strftime('%Y-%m-%d')"/>
+            <field name="description">Social media advertising and promotional materials for Bali package</field>
+        </record>
+        
+        <record id="expense_2" model="tour.expense">
+            <field name="package_id" ref="package_african_safari"/>
+            <field name="name">Safari Vehicle Maintenance</field>
+            <field name="expense_type">transportation</field>
+            <field name="amount" eval="850.0"/>
+            <field name="expense_date" eval="(DateTime.now() - timedelta(days=15)).strftime('%Y-%m-%d')"/>
+            <field name="description">Quarterly maintenance and inspection of 4x4 safari vehicles</field>
+        </record>
+        
+        <record id="expense_3" model="tour.expense">
+            <field name="package_id" ref="package_paris_romance"/>
+            <field name="name">Tour Guide Training</field>
+            <field name="expense_type">guide</field>
+            <field name="amount" eval="450.0"/>
+            <field name="expense_date" eval="(DateTime.now() - timedelta(days=20)).strftime('%Y-%m-%d')"/>
+            <field name="description">Advanced training for Paris tour guides - art history and customer service</field>
+        </record>
+        
+    </data>
+</odoo>

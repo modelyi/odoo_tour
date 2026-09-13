@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Sequences -->
+        <record id="seq_tour_package" model="ir.sequence">
+            <field name="name">Tour Package</field>
+            <field name="code">tour.package</field>
+            <field name="prefix">TP</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        
+        <record id="seq_tour_inquiry" model="ir.sequence">
+            <field name="name">Tour Inquiry</field>
+            <field name="code">tour.inquiry</field>
+            <field name="prefix">TI</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        
+        <record id="seq_tour_booking" model="ir.sequence">
+            <field name="name">Tour Booking</field>
+            <field name="code">tour.booking</field>
+            <field name="prefix">TB</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        
+        <record id="seq_tour_hotel" model="ir.sequence">
+            <field name="name">Tour Hotel</field>
+            <field name="code">tour.hotel</field>
+            <field name="prefix">TH</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        
+        <record id="seq_tour_transportation" model="ir.sequence">
+            <field name="name">Tour Transportation</field>
+            <field name="code">tour.transportation</field>
+            <field name="prefix">TT</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        
+        <!-- Product Category for Tour Services -->
+        <record id="product_category_tour" model="product.category">
+            <field name="name">Tour Services</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+        
+        <!-- Default Tour Booking Product -->
+        <record id="product_tour_booking" model="product.product">
+            <field name="name">Tour Package Booking</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">False</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Tour Package Booking Service</field>
+        </record>
+        
+        <!-- Hotel Accommodation Product -->
+        <record id="product_hotel_service" model="product.product">
+            <field name="name">Hotel Accommodation</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Hotel Accommodation Service</field>
+        </record>
+        
+        <!-- Transportation Service Product -->
+        <record id="product_transportation_service" model="product.product">
+            <field name="name">Transportation Service</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Transportation Service</field>
+        </record>
+        
+        <!-- Meal Service Product -->
+        <record id="product_meal_service" model="product.product">
+            <field name="name">Meal Service</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Meal Service</field>
+        </record>
+        
+        <!-- Attraction/Activity Product -->
+        <record id="product_attraction_service" model="product.product">
+            <field name="name">Attraction/Activity</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Attraction or Activity Service</field>
+        </record>
+        
+        <!-- Extra Service Product (for additional charges) -->
+        <record id="product_extra_service" model="product.product">
+            <field name="name">Extra Tour Service</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_tour"/>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Additional Tour Services</field>
+        </record>
+        
+    </data>
+</odoo>
+

@@ -15,7 +15,8 @@
                             <field name="help_code"/>
                             <field name="manager"/>
                             <field name="manager_mobile"/>
-                            <field name="manager_id_code"/>
+                            <field name="manager_id_code_masked"/>
+                            <field name="manager_id_code" groups="tour_finance.group_tour_finance_treasurer"/>
                             <field name="boss_birthday"/>
                         </group>
                         <group>
@@ -88,7 +89,8 @@
                         <group>
                             <field name="bank"/>
                             <field name="account"/>
-                            <field name="account_no"/>
+                            <field name="account_no_masked"/>
+                            <field name="account_no" groups="tour_finance.group_tour_finance_treasurer"/>
                         </group>
                         <group>
                             <field name="res_isolation"/>

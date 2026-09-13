@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tour Booking Page -->
+    <template id="tour_booking_page" name="Tour Booking Page">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="mb-4">Book Your Tour</h1>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><t t-esc="package.name"/></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <t t-if="package.image_512">
+                                            <img class="img-fluid rounded" t-att-src="image_data_uri(package.image_512)" t-att-alt="package.name"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p><i class="fa fa-map-marker"/> <t t-esc="package.destination"/></p>
+                                        <p><i class="fa fa-clock-o"/> <t t-esc="package.duration_days"/> Days / <t t-esc="package.duration_nights"/> Nights</p>
+                                        <p class="h4 text-primary">
+                                            <t t-esc="package.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(package.base_price)"/>
+                                            <t t-if="package.price_type == 'per_person'">
+                                                <small class="text-muted">/ person</small>
+                                            </t>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form action="/tour/booking/submit" method="post" class="js_tour_booking_form" 
+                              t-att-data-package-id="package.id"
+                              t-att-data-price-type="package.price_type"
+                              t-att-data-adult-price="package.adult_price or package.base_price"
+                              t-att-data-child-price="package.child_price or 0"
+                              t-att-data-infant-price="package.infant_price or 0"
+                              t-att-data-currency="package.currency_id.symbol">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="package_id" t-att-value="package.id"/>
+                            
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Travel Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="travel_start_date">Travel Start Date *</label>
+                                        <input type="date" class="form-control" id="travel_start_date" name="travel_start_date" required="required" t-att-value="travel_date"/>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="num_adults">Adults *</label>
+                                                <input type="number" class="form-control js_num_passengers" id="num_adults" name="num_adults" min="1" required="required" t-att-value="num_adults or 1"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="num_children">Children</label>
+                                                <input type="number" class="form-control js_num_passengers" id="num_children" name="num_children" min="0" t-att-value="num_children or 0"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="num_infants">Infants</label>
+                                                <input type="number" class="form-control js_num_passengers" id="num_infants" name="num_infants" min="0" t-att-value="num_infants or 0"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info" role="alert">
+                                        <strong>Total Price:</strong> 
+                                        <span class="js_total_price" t-att-data-currency-symbol="package.currency_id.symbol">
+                                            <t t-esc="package.currency_id.symbol"/>
+                                            <t t-if="package.price_type == 'per_person'">
+                                                <t t-esc="'{:,.2f}'.format(package.adult_price or package.base_price)"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'{:,.2f}'.format(package.base_price)"/>
+                                            </t>
+                                            <small class="text-muted">(calculating...)</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Additional Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="customer_notes">Notes</label>
+                                        <textarea class="form-control" id="customer_notes" name="customer_notes" rows="3" placeholder="Any special requests or notes..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="special_requirements">Special Requirements</label>
+                                        <textarea class="form-control" id="special_requirements" name="special_requirements" rows="3" placeholder="Any special requirements (dietary, medical, accessibility, etc.)..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-check"/> Confirm Booking
+                                </button>
+                                <a t-attf-href="/tour/package/{{package.id}}" class="btn btn-secondary btn-lg">
+                                    <i class="fa fa-arrow-left"/> Back to Package
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Booking Error Page -->
+    <template id="tour_booking_error" name="Booking Error">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="alert alert-danger text-center">
+                            <i class="fa fa-exclamation-triangle fa-3x mb-3"/>
+                            <h2>Booking Error</h2>
+                            <p>Sorry, there was an error processing your booking.</p>
+                            <p class="text-muted"><t t-esc="error"/></p>
+                            <a href="/tours" class="btn btn-primary mt-3">
+                                <i class="fa fa-arrow-left"/> Back to Tours
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Booking Payment Page -->
+    <template id="tour_booking_payment" name="Booking Payment">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0"><i class="fa fa-credit-card"/> Payment for Booking</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5>Booking Details</h5>
+                                        <dl class="row">
+                                            <dt class="col-sm-5">Reference:</dt>
+                                            <dd class="col-sm-7"><t t-esc="booking.name"/></dd>
+                                            
+                                            <dt class="col-sm-5">Package:</dt>
+                                            <dd class="col-sm-7"><t t-esc="booking.package_name"/></dd>
+                                            
+                                            <dt class="col-sm-5">Travel Date:</dt>
+                                            <dd class="col-sm-7"><span t-field="booking.travel_start_date"/></dd>
+                                            
+                                            <dt class="col-sm-5">Persons:</dt>
+                                            <dd class="col-sm-7">
+                                                <t t-esc="booking.num_adults"/> Adults
+                                                <t t-if="booking.num_children">, <t t-esc="booking.num_children"/> Children</t>
+                                                <t t-if="booking.num_infants">, <t t-esc="booking.num_infants"/> Infants</t>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Payment Summary</h5>
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <dl class="row mb-0">
+                                                    <dt class="col-sm-6">Total Amount:</dt>
+                                                    <dd class="col-sm-6 text-end">
+                                                        <span t-field="booking.price_total" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                                    </dd>
+                                                    
+                                                    <dt class="col-sm-6">Amount Paid:</dt>
+                                                    <dd class="col-sm-6 text-end text-success">
+                                                        <span t-field="booking.amount_paid" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                                    </dd>
+                                                    
+                                                    <dt class="col-sm-6 border-top pt-2"><strong>Amount Due:</strong></dt>
+                                                    <dd class="col-sm-6 text-end border-top pt-2">
+                                                        <strong class="text-danger">
+                                                            <span t-field="booking.amount_due" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                                        </strong>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr/>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"/> 
+                                    <strong>Payment Instructions:</strong>
+                                    <p class="mb-0 mt-2">
+                                        Please contact our team to complete your payment. You can reach us at:
+                                    </p>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Email: booking@example.com</li>
+                                        <li>Phone: +1 234 567 8900</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <a t-attf-href="/my/bookings/{{booking.id}}" class="btn btn-primary">
+                                        <i class="fa fa-arrow-left"/> Back to Booking
+                                    </a>
+                                    <a href="/my/bookings" class="btn btn-secondary">
+                                        <i class="fa fa-list"/> All Bookings
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Booking Confirmation Success Page -->
+    <template id="tour_booking_confirmed" name="Booking Confirmed">
+        <t t-call="tour_agency.tour_layout">
+            <div class="container my-5">
+                <div class="row">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white text-center">
+                                <i class="fa fa-check-circle fa-3x mb-2"/>
+                                <h2>Booking Confirmed!</h2>
+                            </div>
+                            <div class="card-body text-center">
+                                <p class="lead">Thank you! Your tour booking has been confirmed.</p>
+                                <p>Booking Reference: <strong><t t-esc="booking.name"/></strong></p>
+                                <p>Package: <strong><t t-esc="booking.package_name"/></strong></p>
+                                <p>Travel Date: <strong><span t-field="booking.travel_start_date"/></strong></p>
+                                <p>Total Amount: <strong><span t-field="booking.price_total" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/></strong></p>
+                                
+                                <hr/>
+                                
+                                <p class="text-muted">
+                                    A confirmation email has been sent to your registered email address.
+                                    You can view your booking details anytime from your account.
+                                </p>
+                                
+                                <div class="mt-4">
+                                    <a t-attf-href="/my/bookings/{{booking.id}}" class="btn btn-primary btn-lg">
+                                        <i class="fa fa-eye"/> View Booking Details
+                                    </a>
+                                    <a href="/tours" class="btn btn-secondary btn-lg">
+                                        <i class="fa fa-search"/> Browse More Tours
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+</odoo>
+

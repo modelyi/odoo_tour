@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_itinerary_view_tree" model="ir.ui.view">
+        <field name="name">tour.itinerary.view.tree</field>
+        <field name="model">tour.itinerary</field>
+        <field name="arch" type="xml">
+            <list string="Tour Itinerary">
+                <field name="day_number"/>
+                <field name="name"/>
+                <field name="package_id"/>
+                <field name="location"/>
+                <field name="hotel_id"/>
+                <field name="transportation_id"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="tour_itinerary_view_form" model="ir.ui.view">
+        <field name="name">tour.itinerary.view.form</field>
+        <field name="model">tour.itinerary</field>
+        <field name="arch" type="xml">
+            <form string="Itinerary Day">
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Day Title"/>
+                        <h1>
+                            <field name="day_number" class="oe_inline" style="width: 5em;"/> - 
+                            <field name="name" class="oe_inline" placeholder="Day title..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="package_id"/>
+                            <field name="location"/>
+                            <field name="start_location"/>
+                            <field name="end_location"/>
+                        </group>
+                        <group>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                            <field name="hotel_id"/>
+                            <field name="transportation_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="meal_ids" widget="many2many_tags"/>
+                        <field name="attraction_ids" widget="many2many_tags"/>
+                    </group>
+                    <separator string="Description"/>
+                    <field name="description" widget="html" placeholder="Detailed description of the day..."/>
+                    <separator string="Activities"/>
+                    <field name="activities" placeholder="List of activities..."/>
+                    <separator string="Notes"/>
+                    <field name="notes" placeholder="Additional notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_tour_itinerary" model="ir.actions.act_window">
+        <field name="name">Tour Itineraries</field>
+        <field name="res_model">tour.itinerary</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+</odoo>
+

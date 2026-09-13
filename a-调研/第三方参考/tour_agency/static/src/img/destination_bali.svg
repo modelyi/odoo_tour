@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bali_sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="bali_sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FFE4B5;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <!-- Sky with sunset gradient -->
+  <rect width="1920" height="1080" fill="url(#bali_sky)"/>
+  
+  <!-- Sun with glow -->
+  <circle cx="1500" cy="280" r="180" fill="url(#bali_sun)"/>
+  <circle cx="1500" cy="280" r="100" fill="#FFF8DC" opacity="0.95"/>
+  
+  <!-- Ocean layers -->
+  <ellipse cx="960" cy="850" rx="1200" ry="200" fill="#4A90E2" opacity="0.8"/>
+  <ellipse cx="960" cy="900" rx="1300" ry="150" fill="#357ABD" opacity="0.7"/>
+  <ellipse cx="960" cy="950" rx="1400" ry="100" fill="#2868A8" opacity="0.6"/>
+  
+  <!-- Beach sand -->
+  <ellipse cx="960" cy="800" rx="1000" ry="120" fill="#F4E4C1" opacity="0.8"/>
+  <ellipse cx="960" cy="850" rx="900" ry="80" fill="#E8D4A8" opacity="0.6"/>
+  
+  <!-- Temple silhouette (Balinese style) -->
+  <g transform="translate(400, 500)" opacity="0.85">
+    <rect x="-60" y="100" width="120" height="200" fill="#5D4E37"/>
+    <polygon points="-80,100 0,20 80,100" fill="#8B7355"/>
+    <rect x="-40" y="130" width="80" height="50" fill="#3E2723"/>
+    <polygon points="-50,130 0,80 50,130" fill="#6D4C41"/>
+  </g>
+  
+  <!-- Palm trees -->
+  <g transform="translate(250, 600)">
+    <line x1="0" y1="0" x2="-15" y2="250" stroke="#6B4423" stroke-width="18"/>
+    <ellipse cx="-20" cy="-30" rx="80" ry="55" fill="#2ECC71" opacity="0.9"/>
+    <ellipse cx="15" cy="-40" rx="70" ry="50" fill="#27AE60" opacity="0.9"/>
+    <ellipse cx="-5" cy="-55" rx="65" ry="45" fill="#229954" opacity="0.85"/>
+  </g>
+  
+  <g transform="translate(1650, 650)">
+    <line x1="0" y1="0" x2="20" y2="220" stroke="#6B4423" stroke-width="16"/>
+    <ellipse cx="25" cy="-25" rx="70" ry="50" fill="#2ECC71" opacity="0.9"/>
+    <ellipse cx="-10" cy="-35" rx="60" ry="45" fill="#27AE60" opacity="0.9"/>
+  </g>
+  
+  <!-- Boat silhouette -->
+  <g transform="translate(700, 820)" opacity="0.6">
+    <path d="M 0,0 L 150,0 L 130,40 L 20,40 Z" fill="#C0392B"/>
+    <line x1="75" y1="0" x2="75" y2="-80" stroke="#34495E" stroke-width="4"/>
+    <polygon points="75,-80 130,-60 75,-40" fill="#ECF0F1"/>
+  </g>
+</svg>

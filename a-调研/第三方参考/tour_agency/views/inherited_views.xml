@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Sale Order Form - Add Tour Booking Button -->
+    <record id="view_order_form_tour_booking" model="ir.ui.view">
+        <field name="name">sale.order.form.tour.booking</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tour_booking" type="object" 
+                        class="oe_stat_button" icon="fa-plane"
+                        invisible="tour_booking_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_booking_count"/></span>
+                        <span class="o_stat_text">Tour Booking</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- CRM Lead Form - Add Tour Inquiry and Booking Buttons -->
+    <record id="crm_lead_view_form_tour" model="ir.ui.view">
+        <field name="name">crm.lead.form.tour</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tour_inquiries" type="object" 
+                        class="oe_stat_button" icon="fa-envelope"
+                        invisible="tour_inquiry_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_inquiry_count"/></span>
+                        <span class="o_stat_text">Tour Inquiries</span>
+                    </div>
+                </button>
+                <button name="action_view_tour_bookings" type="object" 
+                        class="oe_stat_button" icon="fa-plane"
+                        invisible="tour_booking_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_booking_count"/></span>
+                        <span class="o_stat_text">Tour Bookings</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Calendar Event Form - Add Tour Booking Link -->
+    <record id="view_calendar_event_form_tour" model="ir.ui.view">
+        <field name="name">calendar.event.form.tour</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tour_booking" type="object" 
+                        class="oe_stat_button" icon="fa-plane"
+                        invisible="not tour_booking_id">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Tour Booking</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Account Move (Invoice) Form - Add Tour Booking Link -->
+    <record id="view_move_form_tour_booking" model="ir.ui.view">
+        <field name="name">account.move.form.tour.booking</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tour_bookings" type="object" 
+                        class="oe_stat_button" icon="fa-plane"
+                        invisible="tour_booking_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_booking_count"/></span>
+                        <span class="o_stat_text">Tour Bookings</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Account Payment Form - Add Tour Booking Link -->
+    <record id="view_account_payment_form_tour" model="ir.ui.view">
+        <field name="name">account.payment.form.tour</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Tour Booking" invisible="not tour_booking_id">
+                    <field name="tour_booking_id" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Partner Form - Add Tour Stats -->
+    <record id="view_partner_form_tour" model="ir.ui.view">
+        <field name="name">res.partner.form.tour</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tour_bookings" type="object" 
+                        class="oe_stat_button" icon="fa-plane"
+                        invisible="tour_booking_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_booking_count"/></span>
+                        <span class="o_stat_text">Tour Bookings</span>
+                    </div>
+                </button>
+                <button name="action_view_tour_inquiries" type="object" 
+                        class="oe_stat_button" icon="fa-envelope"
+                        invisible="tour_inquiry_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="tour_inquiry_count"/></span>
+                        <span class="o_stat_text">Tour Inquiries</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
+

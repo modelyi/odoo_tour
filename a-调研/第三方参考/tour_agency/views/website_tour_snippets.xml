@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tour Packages Snippet -->
+    <template id="s_tour_packages" name="Tour Packages Snippet">
+        <section class="s_tour_packages py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center mb-4">
+                        <h2>Featured Tour Packages</h2>
+                        <p class="lead">Discover our amazing tour packages</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <t t-set="packages" t-value="request.env['tour.package'].search([('is_featured', '=', True), ('state', '=', 'published')], limit=3)"/>
+                    <t t-foreach="packages" t-as="package">
+                        <t t-call="tour_agency.tour_package_card"/>
+                    </t>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <a href="/tours" class="btn btn-primary btn-lg">View All Tours</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    
+    <!-- Tour Categories Snippet -->
+    <template id="s_tour_categories" name="Tour Categories Snippet">
+        <section class="s_tour_categories py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center mb-4">
+                        <h2>Explore by Category</h2>
+                        <p class="lead">Find tours by your interests</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <t t-set="categories" t-value="request.env['tour.package.category'].search([('active', '=', True)], limit=6)"/>
+                    <t t-foreach="categories" t-as="category">
+                        <div class="col-md-4 col-sm-6 mb-4">
+                            <a t-attf-href="/tour/category/{{category.id}}" class="text-decoration-none">
+                                <div class="card h-100">
+                                    <t t-if="category.image">
+                                        <img class="card-img-top" t-att-src="image_data_uri(category.image)" t-att-alt="category.name"/>
+                                    </t>
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" t-esc="category.name"/>
+                                        <p class="text-muted"><t t-esc="category.package_count"/> packages</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+    
+    <!-- Add snippets to the website builder -->
+    <template id="tour_snippets" inherit_id="website.snippets" name="Tour Snippets">
+        <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+            <t t-snippet="tour_agency.s_tour_packages" string="Tour Packages" group="custom"
+               t-thumbnail="/tour_agency/static/src/img/snippet_tour_packages.png">
+                <keywords>tour, package, travel, vacation</keywords>
+            </t>
+            
+            <t t-snippet="tour_agency.s_tour_categories" string="Tour Categories" group="custom"
+               t-thumbnail="/tour_agency/static/src/img/snippet_tour_categories.png">
+                <keywords>tour, category, travel, explore</keywords>
+            </t>
+        </xpath>
+    </template>
+    
+</odoo>
+

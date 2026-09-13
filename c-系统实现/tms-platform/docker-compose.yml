@@ -52,6 +52,8 @@ services:
       USER: ${POSTGRES_USER:-odoo}
       PASSWORD: ${POSTGRES_PASSWORD:-odoo19dev}
       ADMIN_PASSWD: ${ADMIN_PASSWD:-tms_admin_2026}
+      # 敏感字段落盘加密密钥（32 字节，hex/base64）；密钥本体在 .env，不进入 git
+      TMS_FIELD_ENCRYPT_KEY: ${TMS_FIELD_ENCRYPT_KEY:-}
     ports:
       - "127.0.0.1:8070:8069"
       - "127.0.0.1:8073:8072"

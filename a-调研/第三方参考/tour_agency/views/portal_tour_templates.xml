@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Portal Home: Tour Bookings and Inquiries Menu -->
+    <template id="portal_my_home_menu_tour" name="Portal layout : tour menu entries" inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'booking'" t-attf-class="breadcrumb-item #{'active ' if not booking else ''}">
+                <a t-if="booking" t-attf-href="/my/bookings?{{ keep_query() }}">Tour Bookings</a>
+                <t t-else="">Tour Bookings</t>
+            </li>
+            <li t-if="booking" class="breadcrumb-item active">
+                <t t-out="booking.name"/>
+            </li>
+            <li t-if="page_name == 'inquiry'" t-attf-class="breadcrumb-item #{'active ' if not inquiry else ''}">
+                <a t-if="inquiry" t-attf-href="/my/inquiries?{{ keep_query() }}">Tour Inquiries</a>
+                <t t-else="">Tour Inquiries</t>
+            </li>
+            <li t-if="inquiry" class="breadcrumb-item active">
+                <t t-out="inquiry.name"/>
+            </li>
+        </xpath>
+    </template>
+    
+    <!-- Portal Home: Tour Entries -->
+    <template id="portal_my_home_tour" name="Tour Bookings / Inquiries" customize_show="True" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/tour_agency/static/src/img/tour-icon.svg'"/>
+                <t t-set="title">Tour Bookings</t>
+                <t t-set="url" t-value="'/my/bookings'"/>
+                <t t-set="text">View and manage your tour bookings</t>
+                <t t-set="placeholder_count" t-value="'booking_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/tour_agency/static/src/img/inquiry-icon.svg'"/>
+                <t t-set="title">Tour Inquiries</t>
+                <t t-set="url" t-value="'/my/inquiries'"/>
+                <t t-set="text">View your tour inquiries and responses</t>
+                <t t-set="placeholder_count" t-value="'inquiry_count'"/>
+            </t>
+        </div>
+    </template>
+    
+    <!-- Portal: My Bookings -->
+    <template id="portal_my_bookings" name="My Tour Bookings">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Tour Bookings</t>
+            </t>
+            
+            <t t-if="not bookings">
+                <div class="alert alert-warning text-center" role="alert">
+                    <p class="lead">You don't have any tour bookings yet.</p>
+                    <a href="/tours" class="btn btn-primary">
+                        <i class="fa fa-search"/> Browse Tours
+                    </a>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Package</th>
+                                <th>Travel Date</th>
+                                <th>Persons</th>
+                                <th>Amount</th>
+                                <th>Payment Status</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="bookings" t-as="booking">
+                                <tr>
+                                    <td><span t-esc="booking.name"/></td>
+                                    <td><span t-esc="booking.package_name"/></td>
+                                    <td><span t-field="booking.travel_start_date"/></td>
+                                    <td><span t-esc="booking.total_persons"/></td>
+                                    <td>
+                                        <span t-field="booking.price_total" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge bg-success' if booking.payment_status == 'paid' else 'badge bg-warning' if booking.payment_status == 'partially_paid' else 'badge bg-danger'">
+                                            <t t-esc="booking.payment_status.replace('_', ' ').title()"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge bg-success' if booking.state == 'completed' else 'badge bg-info' if booking.state in ['confirmed','in_progress'] else 'badge bg-secondary'">
+                                            <t t-esc="booking.state.replace('_', ' ').title()"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a t-attf-href="/my/bookings/{{booking.id}}" class="btn btn-sm btn-primary">
+                                            <i class="fa fa-eye"/> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <t t-call="portal.pager"/>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Portal: Booking Detail -->
+    <template id="portal_my_booking_detail" name="My Booking Detail">
+        <t t-call="portal.portal_layout">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="row g-0">
+                        <div class="col-12">
+                            <h5 class="mb-0">
+                                <span t-esc="booking.name"/>
+                                <span t-att-class="'badge ms-2 bg-success' if booking.state == 'completed' else 'badge ms-2 bg-info' if booking.state in ['confirmed','in_progress'] else 'badge ms-2 bg-secondary'">
+                                    <t t-esc="booking.state.replace('_', ' ').title()"/>
+                                </span>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Booking Details</h5>
+                            <dl class="row">
+                                <dt class="col-sm-5">Package:</dt>
+                                <dd class="col-sm-7"><t t-esc="booking.package_name"/></dd>
+                                
+                                <dt class="col-sm-5">Booking Date:</dt>
+                                <dd class="col-sm-7"><span t-field="booking.booking_date" t-options='{"widget": "datetime"}'/></dd>
+                                
+                                <dt class="col-sm-5">Travel Date:</dt>
+                                <dd class="col-sm-7"><span t-field="booking.travel_start_date"/> to <span t-field="booking.travel_end_date"/></dd>
+                                
+                                <dt class="col-sm-5">Total Persons:</dt>
+                                <dd class="col-sm-7">
+                                    <t t-esc="booking.num_adults"/> Adults
+                                    <t t-if="booking.num_children">, <t t-esc="booking.num_children"/> Children</t>
+                                    <t t-if="booking.num_infants">, <t t-esc="booking.num_infants"/> Infants</t>
+                                </dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Payment Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-5">Total Amount:</dt>
+                                <dd class="col-sm-7">
+                                    <strong>
+                                        <span t-field="booking.price_total" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                    </strong>
+                                </dd>
+                                
+                                <dt class="col-sm-5">Amount Paid:</dt>
+                                <dd class="col-sm-7">
+                                    <span t-field="booking.amount_paid" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                </dd>
+                                
+                                <dt class="col-sm-5">Amount Due:</dt>
+                                <dd class="col-sm-7">
+                                    <span t-field="booking.amount_due" t-options='{"widget": "monetary", "display_currency": booking.currency_id}'/>
+                                </dd>
+                                
+                                <dt class="col-sm-5">Payment Status:</dt>
+                                <dd class="col-sm-7">
+                                    <span t-att-class="'badge bg-success' if booking.payment_status == 'paid' else 'badge bg-warning' if booking.payment_status == 'partially_paid' else 'badge bg-danger'">
+                                        <t t-esc="booking.payment_status.replace('_', ' ').title()"/>
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <t t-if="booking.passenger_ids">
+                        <hr/>
+                        <h5>Passengers</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Gender</th>
+                                        <th>Age</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="booking.passenger_ids" t-as="passenger">
+                                        <tr>
+                                            <td><t t-esc="passenger.name"/></td>
+                                            <td><t t-esc="passenger.passenger_type.title()"/></td>
+                                            <td><t t-esc="passenger.gender.title() if passenger.gender else ''"/></td>
+                                            <td><t t-esc="passenger.age"/></td>
+                                            <td><t t-esc="passenger.email"/></td>
+                                            <td><t t-esc="passenger.phone"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    
+                    <t t-if="booking.customer_notes or booking.special_requirements">
+                        <hr/>
+                        <h5>Notes</h5>
+                        <t t-if="booking.customer_notes">
+                            <p><strong>Customer Notes:</strong><br/><t t-esc="booking.customer_notes"/></p>
+                        </t>
+                        <t t-if="booking.special_requirements">
+                            <p><strong>Special Requirements:</strong><br/><t t-esc="booking.special_requirements"/></p>
+                        </t>
+                    </t>
+                    
+                    <hr/>
+                    <div class="text-center">
+                        <t t-if="booking.state == 'draft'">
+                            <form t-attf-action="/tour/booking/{{booking.id}}/confirm" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-check"/> Confirm Booking
+                                </button>
+                            </form>
+                        </t>
+                        <t t-if="booking.state in ['draft', 'confirmed'] and booking.amount_due > 0">
+                            <a t-attf-href="/tour/booking/{{booking.id}}/pay" class="btn btn-warning">
+                                <i class="fa fa-credit-card"/> Pay Now
+                            </a>
+                        </t>
+                        <t t-if="booking.state in ['draft', 'confirmed']">
+                            <form t-attf-action="/tour/booking/{{booking.id}}/cancel" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                    <i class="fa fa-times"/> Cancel Booking
+                                </button>
+                            </form>
+                        </t>
+                        <a t-attf-href="/tour/package/{{booking.package_id.id}}" class="btn btn-primary">
+                            <i class="fa fa-eye"/> View Package
+                        </a>
+                        <a href="/my/bookings" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"/> Back to Bookings
+                        </a>
+                    </div>
+                    
+                    <!-- Success/Error Messages -->
+                    <t t-if="message == 'confirmed'">
+                        <div class="alert alert-success mt-3" role="alert">
+                            <i class="fa fa-check-circle"/> Your booking has been confirmed successfully!
+                        </div>
+                    </t>
+                    <t t-if="message == 'cancelled'">
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <i class="fa fa-info-circle"/> Your booking has been cancelled.
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Portal: My Inquiries -->
+    <template id="portal_my_inquiries" name="My Tour Inquiries">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Tour Inquiries</t>
+            </t>
+            
+            <t t-if="not inquiries">
+                <div class="alert alert-warning text-center" role="alert">
+                    <p class="lead">You don't have any inquiries yet.</p>
+                    <a href="/tour/inquiry" class="btn btn-primary">
+                        <i class="fa fa-envelope"/> Send Inquiry
+                    </a>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Package</th>
+                                <th>Date</th>
+                                <th>Estimated Price</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="inquiries" t-as="inquiry">
+                                <tr>
+                                    <td><span t-esc="inquiry.name"/></td>
+                                    <td><span t-esc="inquiry.package_name"/></td>
+                                    <td><span t-field="inquiry.inquiry_date"/></td>
+                                    <td>
+                                        <span t-field="inquiry.estimated_price" t-options='{"widget": "monetary", "display_currency": inquiry.currency_id}'/>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge bg-success' if inquiry.state in ['quoted','converted'] else 'badge bg-info' if inquiry.state == 'in_progress' else 'badge bg-secondary'">
+                                            <t t-esc="inquiry.state.replace('_', ' ').title()"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a t-attf-href="/my/inquiries/{{inquiry.id}}" class="btn btn-sm btn-primary">
+                                            <i class="fa fa-eye"/> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <t t-call="portal.pager"/>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Portal: Inquiry Detail -->
+    <template id="portal_my_inquiry_detail" name="My Inquiry Detail">
+        <t t-call="portal.portal_layout">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="row g-0">
+                        <div class="col-12">
+                            <h5 class="mb-0">
+                                <span t-esc="inquiry.name"/>
+                                <span t-att-class="'badge ms-2 bg-success' if inquiry.state in ['quoted','converted'] else 'badge ms-2 bg-info' if inquiry.state == 'in_progress' else 'badge ms-2 bg-secondary'">
+                                    <t t-esc="inquiry.state.replace('_', ' ').title()"/>
+                                </span>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Inquiry Details</h5>
+                            <dl class="row">
+                                <dt class="col-sm-5">Package:</dt>
+                                <dd class="col-sm-7"><t t-esc="inquiry.package_name"/></dd>
+                                
+                                <dt class="col-sm-5">Inquiry Date:</dt>
+                                <dd class="col-sm-7"><span t-field="inquiry.inquiry_date" t-options='{"widget": "datetime"}'/></dd>
+                                
+                                <dt class="col-sm-5">Preferred Date:</dt>
+                                <dd class="col-sm-7"><span t-field="inquiry.preferred_date"/></dd>
+                                
+                                <dt class="col-sm-5">Total Persons:</dt>
+                                <dd class="col-sm-7"><t t-esc="inquiry.total_persons"/></dd>
+                                
+                                <dt class="col-sm-5">Estimated Price:</dt>
+                                <dd class="col-sm-7">
+                                    <span t-field="inquiry.estimated_price" t-options='{"widget": "monetary", "display_currency": inquiry.currency_id}'/>
+                                </dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Your Message</h5>
+                            <t t-if="inquiry.subject">
+                                <p><strong>Subject:</strong> <t t-esc="inquiry.subject"/></p>
+                            </t>
+                            <p><t t-esc="inquiry.message"/></p>
+                            <t t-if="inquiry.special_requirements">
+                                <p><strong>Special Requirements:</strong><br/><t t-esc="inquiry.special_requirements"/></p>
+                            </t>
+                        </div>
+                    </div>
+                    
+                    <hr/>
+                    <div class="text-center">
+                        <a t-attf-href="/tour/package/{{inquiry.package_id.id}}" class="btn btn-primary">
+                            <i class="fa fa-eye"/> View Package
+                        </a>
+                        <a href="/my/inquiries" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"/> Back to Inquiries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+</odoo>
+

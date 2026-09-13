@@ -38,7 +38,7 @@ docker logs -f tms-odoo
 docker exec tms-odoo odoo -d tms -u all --stop-after-init
 
 # 安装特定模块
-docker exec tms-odoo odoo -d tms -i tour_base --stop-after-init
+docker exec tms-odoo odoo -d tms -i tour_product --stop-after-init
 
 # 重启 Odoo
 docker restart tms-odoo
@@ -85,7 +85,7 @@ docker exec tms-odoo tail -f /tmp/odoo-server.log
 ```
 tms-platform/
 ├── addons/              # 自定义模块
-│   └── tour_base/      # TMS 基础模块
+│   └── tour_product/      # TMS 产品模块
 ├── config/
 │   └── odoo.conf       # Odoo 配置
 ├── data/               # 持久化数据

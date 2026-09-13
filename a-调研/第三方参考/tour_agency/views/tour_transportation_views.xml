@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="tour_transportation_view_tree" model="ir.ui.view">
+        <field name="name">tour.transportation.view.tree</field>
+        <field name="model">tour.transportation</field>
+        <field name="arch" type="xml">
+            <list string="Transportation">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="transport_type"/>
+                <field name="vehicle_model"/>
+                <field name="capacity"/>
+                <field name="price_per_day" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="tour_transportation_view_form" model="ir.ui.view">
+        <field name="name">tour.transportation.view.form</field>
+        <field name="model">tour.transportation</field>
+        <field name="arch" type="xml">
+            <form string="Transportation">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Transportation Name"/></h1>
+                        <div class="o_row">
+                            <field name="code" readonly="1"/>
+                            <field name="transport_type"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vehicle_model"/>
+                            <field name="vehicle_number"/>
+                            <field name="capacity"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="driver_name"/>
+                            <field name="driver_phone" widget="phone"/>
+                            <field name="driver_license"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Pricing">
+                        <field name="currency_id"/>
+                        <field name="price_per_day" widget="monetary"/>
+                        <field name="price_per_km" widget="monetary"/>
+                        <field name="product_id"/>
+                    </group>
+                    <group string="Amenities">
+                        <group>
+                            <field name="has_ac"/>
+                            <field name="has_wifi"/>
+                        </group>
+                        <group>
+                            <field name="has_tv"/>
+                            <field name="has_restroom"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" widget="html"/>
+                            <separator string="Features"/>
+                            <field name="features" placeholder="List of features..."/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_tour_transportation" model="ir.actions.act_window">
+        <field name="name">Transportation</field>
+        <field name="res_model">tour.transportation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+</odoo>
+

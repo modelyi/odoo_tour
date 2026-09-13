@@ -43,7 +43,7 @@ docker exec -it tms-odoo bash
 - 数据文件放在 `data/` 目录
 
 ## 当前任务
-- [ ] 完成 tour_base 模块安装
+- [ ] 完成 tour_product 模块安装
 - [ ] 开发 tour_order 模块（订单管理）
 - [ ] 开发 tour_guide 模块（导游管理）
 - [ ] 开发 tour_vehicle 模块（车辆管理）

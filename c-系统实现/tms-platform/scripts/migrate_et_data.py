@@ -17,7 +17,7 @@
     pay_ways.csv(7)      -> tour.pay.way
     guides.csv(2173)     -> tour.guide
     vehicles.csv(71)     -> tour.vehicle
-    customers/hotels/meals/ditches/scenics/shops -> res.partner（sup_type 区分）
+    customers/hotels/meals/ditches/scenics/shops/vehicle_comps/tickets/insurances/self_fees -> res.partner（sup_type 区分）
     accounts.csv(72)     -> tour.bank.account
   第二批（订单样本，验证贯通用）：
     team_orders.csv      -> tour.plan  （前 100 条有效样本）
@@ -196,6 +196,10 @@ def import_partners():
         ('meals.csv', 'meal'),
         ('scenics.csv', 'scenic'),
         ('shops.csv', 'shop'),
+        ('vehicle_comps.csv', 'vehicle_comp'),
+        ('tickets.csv', 'ticket'),
+        ('insurances.csv', 'insurance'),
+        ('self_fees.csv', 'self_fee'),
     ]
     total_created = total_updated = 0
     cmp_map = {}
@@ -369,10 +373,22 @@ def import_guides():
     print('[guide] created=%d updated=%d' % (created, updated))
 
 
-def import_vehicles():
+def import_vehicles(partner_map=None):
     M = env['tour.vehicle']
     rows = read_rows('vehicles.csv')
     created = updated = 0
+    # 车队归属：vehicles.SupplierID -> vehicle_comps.CmpID -> res.partner(sup_type=vehicle_comp)
+    # 校验 sup_type 避免映射到其他类型（触发 _check_supplier_sup_type 约束）
+    partner_map = partner_map or {}
+    sup_lookup = {}
+    sup_ids = [s(r['SupplierID']) for r in rows if s(r['SupplierID'])]
+    if sup_ids:
+        pids = [partner_map[sid] for sid in sup_ids if partner_map.get(sid)]
+        if pids:
+            by_id = {p.id: p.sup_type for p in env['res.partner'].browse(pids)}
+            for sid in sup_ids:
+                pid = partner_map.get(sid)
+                sup_lookup[sid] = pid if (pid and by_id.get(pid) == 'vehicle_comp') else False
     # 车牌出现次数（仅源数据）；出现>1次或为空的，用 ETV{DriverID} 生成确定性的唯一码，
     # 保证可重复执行（幂等）且不受 DB 既有记录影响
     lic_counts = {}
@@ -414,6 +430,7 @@ def import_vehicles():
             'opening_bank': s(r['Openingbank']),
             'bank_account': s(r['BankAccount']),
             'supplier_name': s(r['SupplierName']),
+            'supplier_id': sup_lookup.get(s(r['SupplierID'])),
             'power_area': s(r['PowerArea']),
             'cw_code': s(r['CWCode']),
             'active': to_bool(r['UseChk']) if s(r['UseChk']) else True,
@@ -790,7 +807,7 @@ def main():
     env.cr.commit()
     import_guides()
     env.cr.commit()
-    import_vehicles()
+    import_vehicles(partner_map)
     env.cr.commit()
     import_bank_accounts()
     env.cr.commit()
@@ -808,7 +825,8 @@ def main():
               'tour.vehicle', 'tour.bank.account', 'tour.plan', 'tour.plan.reg']:
         print('  %-20s = %d' % (m, env[m].search_count([])))
     # 供应商按 sup_type 计数
-    for st in ['customer', 'ditch', 'hotel', 'meal', 'scenic', 'shop']:
+    for st in ['customer', 'ditch', 'hotel', 'meal', 'scenic', 'shop',
+               'vehicle_comp', 'ticket', 'insurance', 'self_fee']:
         print('  res.partner[%s]    = %d' % (st, env['res.partner'].search_count([('sup_type', '=', st)])))
 
 

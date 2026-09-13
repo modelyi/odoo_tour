@@ -81,7 +81,8 @@
                         <group>
                             <field name="mobile"/>
                             <field name="tel"/>
-                            <field name="id_num"/>
+                            <field name="id_num_masked"/>
+                            <field name="id_num" groups="tour_finance.group_tour_finance_treasurer"/>
                             <field name="zip_code"/>
                             <field name="addr"/>
                             <field name="supplier_id"/>
@@ -110,7 +111,8 @@
                             <group>
                                 <field name="loan_rate"/>
                                 <field name="opening_bank"/>
-                                <field name="bank_account"/>
+                                <field name="bank_account_masked"/>
+                                <field name="bank_account" groups="tour_finance.group_tour_finance_treasurer"/>
                             </group>
                         </page>
                         <page string="审核与归属">
