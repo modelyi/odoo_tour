@@ -30,8 +30,10 @@ class TourAccountingMixin(models.AbstractModel):
     ACCOUNT_TAX_DEDUCT = '2221.03'         # 应交增值税(销项税额抵减/差额扣除) [BS-11 §六]
     ACCOUNT_TAX_SIMPLE = '2221.07'         # 应交增值税(简易计税/小规模) [BS-11 §六]
 
-    # 收入确认模式：总额法（主要责任人 DTO/DSO）vs 净额法（代理人 DT/DSK/DSN/DD）[BS-10 §7.2]
-    REVENUE_GROSS_MODES = ('21', '31')   # 组团团队 DTO / 组团散客 DSO → 总额法
+    # 收入确认模式：总额法（主要责任人）vs 净额法（代理人）[BS-14 §三 权威修正]
+    # 海螺为组团社（主要责任人）：1(DT团队输单)/12(DSK团期计划)/13(DSS散客单组)/14(DSN散客并团)/15(DSN散客并团)
+    # 均全额确认收入；仅 41(DD 代订) 为代理人净额法差价 [BS-14 §3.2]
+    REVENUE_GROSS_MODES = ('1', '12', '13', '14', '15', '21', '31')  # 组团 → 总额法
     REVENUE_DD_MODES = ('41',)           # 代订项目 DD → 净额法（6001.03 代订收入）
 
     def _get_company_currency(self):

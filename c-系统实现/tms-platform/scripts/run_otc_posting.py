@@ -81,7 +81,8 @@ def setup():
 
 
 def revenue_account(cfg, plan):
-    if plan.biz_mode in ('21', '31'):
+    # 与 tour_accounting.models.accounting_mixin.REVENUE_GROSS_MODES 对齐 [BS-14 §5.2.3]
+    if plan.biz_mode in ('1', '12', '13', '14', '15', '21', '31'):
         return cfg['acc_rev_gross']
     if plan.biz_mode == '41':
         return cfg['acc_rev_dd']

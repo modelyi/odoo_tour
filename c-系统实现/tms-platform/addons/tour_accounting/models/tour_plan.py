@@ -95,17 +95,15 @@ class TourPlan(models.Model):
     # === 收入确认（预收 → 收入，Phase 2 无税版）[BS-10 §7.2 / TDS §5.3] ===
 
     def _revenue_amount(self):
-        """收入确认金额：
-        - 总额法（DTO/DSO）：已收预收（2203.01 未核销残值），回退 sum_pay_normal / in_com_quo_sum
-        - 净额法（其余）：差价 = in_sum - out_sum
+        """收入确认金额 [BS-14 §5.2]：
+        - 总额法（组团 1/12/13/14/15/21/31）：全额收入报价 in_com_quo_sum（含税），
+          不再用 _plan_prepay_balance 残值兜底（避免只记已收款部分）[BS-14 §5.2.2]
+        - 净额法（代订 41）：差价 = in_sum - out_sum
         Phase 2 无税；差额征税销项税留 Phase 3。
         """
         self.ensure_one()
         if self.biz_mode in self.REVENUE_GROSS_MODES:
-            amt = self._plan_prepay_balance(self)
-            if amt <= 0:
-                amt = (self.sum_pay_normal or 0.0) or (self.in_com_quo_sum or 0.0)
-            return amt
+            return self.in_com_quo_sum or 0.0
         return (self.in_sum or 0.0) - (self.out_sum or 0.0)
 
     def _revenue_account_and_compliance(self):

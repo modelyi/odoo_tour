@@ -48,7 +48,7 @@ class AccountMoveTourInvoice(models.Model):
 
     # === 团关联（开票口径：按团 / 按客户汇总） ===
     tour_plan_id = fields.Many2one(
-        'tour.plan', string='关联团', help='按团开具口径')
+        'tour.plan', string='关联团', index=True, help='按团开具口径')
     tour_plan_ids = fields.Many2many(
         'tour.plan', 'tour_invoice_plan_rel', 'move_id', 'plan_id',
         string='汇总开票的团', help='按客户汇总口径，多团合并开票')
