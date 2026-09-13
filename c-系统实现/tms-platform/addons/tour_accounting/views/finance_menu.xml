@@ -6,51 +6,67 @@
         parent="tour_base.menu_tms_root"
         sequence="40"/>
 
-    <menuitem id="menu_tour_bank_account"
-        name="银行账户"
-        parent="menu_tms_finance"
-        action="action_tour_bank_account"
-        sequence="10"/>
-
-    <menuitem id="menu_tour_pay_channel"
-        name="支付渠道"
-        parent="menu_tms_finance"
-        action="action_tour_pay_channel"
-        sequence="20"/>
-
-    <menuitem id="menu_tour_plan_account"
-        name="单团核算"
-        parent="menu_tms_finance"
-        action="action_tour_plan_account"
-        sequence="30"/>
+    <!-- 业务菜单按流程顺序排布，配置菜单放最后（sequence=100） -->
 
     <menuitem id="menu_tour_payment_claim"
         name="收款登记/认领"
         parent="menu_tms_finance"
         action="action_tour_payment_claim"
-        sequence="40"/>
+        sequence="10"/>
 
     <menuitem id="menu_tour_reconciliation"
         name="对账"
         parent="menu_tms_finance"
         action="action_tour_reconciliation"
-        sequence="50"/>
+        sequence="20"/>
 
     <menuitem id="menu_tour_commission"
         name="佣金"
         parent="menu_tms_finance"
         action="action_tour_commission"
-        sequence="60"/>
+        sequence="30"/>
+
+    <menuitem id="menu_tour_plan_account"
+        name="单团核算"
+        parent="menu_tms_finance"
+        action="action_tour_plan_account"
+        sequence="40"/>
 
     <menuitem id="menu_tour_dunning"
         name="团款催收台账"
         parent="menu_tms_finance"
         action="action_tour_dunning"
-        sequence="70"/>
+        sequence="50"/>
 
     <menuitem id="menu_tour_plan_account_aging"
         name="团款应收账龄分析"
         parent="menu_tms_finance"
         action="action_tour_plan_account_aging"
-        sequence="80"/>
+        sequence="60"/>
+
+    <!-- 财务会计（通用会计功能）由 finance_general_menu.xml 挂载，sequence=70 -->
+
+    <!-- 财务配置（Odoo 惯例：配置菜单放最后） -->
+    <menuitem id="menu_tms_finance_config"
+        name="配置"
+        parent="menu_tms_finance"
+        sequence="100"/>
+
+    <menuitem id="menu_tour_bank_account"
+        name="银行账户"
+        parent="menu_tms_finance_config"
+        action="action_tour_bank_account"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_pay_channel"
+        name="支付渠道"
+        parent="menu_tms_finance_config"
+        action="action_tour_pay_channel"
+        sequence="20"/>
+
+    <!-- 结算方式（字典，定义在 tour_product）挂到财务配置 -->
+    <record model="ir.ui.menu" id="tour_product.menu_tour_pay_way">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">30</field>
+    </record>
 </odoo>

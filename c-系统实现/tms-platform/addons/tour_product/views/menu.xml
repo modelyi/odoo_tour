@@ -24,27 +24,28 @@
         action="action_tour_departure"
         sequence="30"/>
 
-    <!-- Base Data Menu -->
-    <menuitem id="menu_tms_basedata"
-        name="基础数据"
-        parent="tour_base.menu_tms_root"
-        sequence="20"/>
-
-    <menuitem id="menu_tour_pay_way"
-        name="结算方式"
-        parent="menu_tms_basedata"
-        action="action_tour_pay_way"
-        sequence="10"/>
-
-    <menuitem id="menu_tour_biz_type"
-        name="业务类型"
-        parent="menu_tms_basedata"
-        action="action_tour_biz_type"
-        sequence="20"/>
+    <!-- 线路产品配置（Odoo 惯例：配置菜单放最后） -->
+    <menuitem id="menu_tms_product_config"
+        name="配置"
+        parent="menu_tms_product"
+        sequence="90"/>
 
     <menuitem id="menu_tour_base_item"
         name="通用基础数据"
-        parent="menu_tms_basedata"
+        parent="menu_tms_product_config"
         action="action_tour_base_item"
-        sequence="30"/>
+        sequence="10"/>
+
+    <!--
+        结算方式 / 业务类型：action 定义在 tour_product，parent 由下游模块挂载：
+        - 结算方式 → tour_accounting「财务配置」
+        - 业务类型 → tour_order「订单配置」
+    -->
+    <menuitem id="menu_tour_pay_way"
+        name="结算方式"
+        action="action_tour_pay_way"/>
+
+    <menuitem id="menu_tour_biz_type"
+        name="业务类型"
+        action="action_tour_biz_type"/>
 </odoo>

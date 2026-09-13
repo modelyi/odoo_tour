@@ -29,4 +29,16 @@
         parent="menu_tms_order"
         action="action_tour_plan_change"
         sequence="40"/>
+
+    <!-- 订单配置（Odoo 惯例：配置菜单放最后） -->
+    <menuitem id="menu_tms_order_config"
+        name="配置"
+        parent="menu_tms_order"
+        sequence="90"/>
+
+    <!-- 业务类型（字典，定义在 tour_product）挂到订单配置 -->
+    <record model="ir.ui.menu" id="tour_product.menu_tour_biz_type">
+        <field name="parent_id" ref="menu_tms_order_config"/>
+        <field name="sequence">10</field>
+    </record>
 </odoo>
