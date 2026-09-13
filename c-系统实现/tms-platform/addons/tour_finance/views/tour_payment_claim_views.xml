@@ -46,6 +46,7 @@
                 <field name="pay_channel_id"/>
                 <field name="account_id"/>
                 <field name="claim_state" widget="badge" decoration-success="claim_state=='3'" decoration-info="claim_state=='2'" decoration-warning="claim_state=='1'"/>
+                <field name="move_id" optional="show"/>
             </list>
         </field>
     </record>
@@ -103,6 +104,10 @@
                     </group>
                     <group string="摘要">
                         <field name="brief"/>
+                    </group>
+                    <group string="会计凭证">
+                        <field name="move_id"/>
+                        <field name="move_state"/>
                     </group>
                     <group string="留痕">
                         <field name="company_id"/>

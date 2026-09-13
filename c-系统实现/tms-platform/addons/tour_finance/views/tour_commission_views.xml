@@ -40,7 +40,8 @@
                 <field name="guide_tax"/>
                 <field name="guide_net_pay"/>
                 <field name="company_retain"/>
-                <field name="state" widget="badge" decoration-success="state=='received'" decoration-info="state=='confirmed'" decoration-warning="state=='draft'"/>
+                <field name="state" widget="badge" decoration-success="state in ('received','paid')" decoration-info="state=='confirmed'" decoration-warning="state=='draft'"/>
+                <field name="move_id" optional="show"/>
             </list>
         </field>
     </record>
@@ -55,7 +56,9 @@
                         invisible="state != 'draft'"/>
                     <button name="action_receive" string="收款" type="object"
                         invisible="state != 'confirmed'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,received"/>
+                    <button name="action_pay" string="发放" type="object" class="btn-primary"
+                        invisible="state not in ('confirmed','received')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,received,paid"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -91,6 +94,13 @@
                     <group string="归属">
                         <field name="company_id"/>
                         <field name="department_id"/>
+                    </group>
+                    <group string="会计凭证">
+                        <field name="move_id"/>
+                        <field name="move_state"/>
+                        <field name="pay_move_id"/>
+                        <field name="pay_move_state"/>
+                        <field name="pay_journal_id"/>
                     </group>
                 </sheet>
                 <chatter/>

@@ -55,6 +55,8 @@
                         invisible="state != 'pending'"/>
                     <button name="action_settle" string="结清" type="object" class="btn-primary"
                         invisible="state != 'verified'"/>
+                    <button name="action_post_diff" string="差异落账" type="object"
+                        invisible="diff_move_id or not adjust_amount"/>
                     <field name="state" widget="statusbar" statusbar_visible="pending,verified,settled"/>
                 </header>
                 <sheet>
@@ -74,12 +76,17 @@
                             <field name="aging_days"/>
                         </group>
                     </group>
-                    <group string="金额">
+                    <group string="金额（由凭证行派生）">
                         <field name="total_amount"/>
                         <field name="settled_amount"/>
                         <field name="unsettled_amount"/>
                         <field name="invoice_collected"/>
                         <field name="invoice_gap"/>
+                    </group>
+                    <group string="差异调整（经 account.move 落地）">
+                        <field name="adjust_amount"/>
+                        <field name="diff_move_id"/>
+                        <field name="diff_move_state"/>
                     </group>
                     <group string="核对与确认（对账人 ≠ 确认人）">
                         <field name="verify_user_id"/>

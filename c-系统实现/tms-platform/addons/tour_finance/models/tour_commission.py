@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class TourCommission(models.Model):
     _name = 'tour.commission'
     _description = '佣金（含个税代扣）'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'tour.accounting.mixin']
     _order = 'id desc'
 
     name = fields.Char('佣金编号', required=True, copy=False, default='新建')
@@ -56,12 +57,27 @@ class TourCommission(models.Model):
         ('draft', '待确认'),
         ('confirmed', '已确认'),
         ('received', '已收款'),
+        ('paid', '已发放'),
     ], string='状态', default='draft', required=True, index=True)
     confirm_uid = fields.Many2one('res.users', string='确认人')
     confirm_date = fields.Datetime('确认时间')
+    pay_uid = fields.Many2one('res.users', string='发放人')
+    pay_date = fields.Datetime('发放时间')
     company_id = fields.Many2one('res.company', string='所属公司',
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
+
+    # === 会计凭证回链 ===
+    move_id = fields.Many2one('account.move', string='计提凭证', copy=False,
+                              ondelete='restrict', index=True,
+                              help='确认时生成的计提凭证（借导服成本/贷应付导游+代扣个税）')
+    move_state = fields.Selection(related='move_id.state', string='凭证状态')
+    pay_move_id = fields.Many2one('account.move', string='发放凭证', copy=False,
+                                  ondelete='restrict', index=True,
+                                  help='发放时生成的付款凭证（借应付导游/贷资金）[Phase 2 深化]')
+    pay_move_state = fields.Selection(related='pay_move_id.state', string='发放凭证状态')
+    pay_journal_id = fields.Many2one('account.journal', string='付款日记账',
+                                     help='发放导游分成落账日记账；留空按银行存款日记账（bank）路由')
 
     @api.depends('commission_total', 'guide_share_before_tax', 'premium', 'guide_tax_type')
     def _compute_tax(self):
@@ -103,9 +119,117 @@ class TourCommission(models.Model):
                 'confirm_uid': self.env.user.id,
                 'confirm_date': fields.Datetime.now(),
             })
+            if not rec.move_id:
+                rec.move_id = rec._generate_accrual_move()
+
+    def _generate_accrual_move(self):
+        """生成佣金计提凭证 [BS-10 §7.4.2]：
+        借 6401.07 成本—导服费 = 税前分成 + 奖金
+            贷 2241.02 其他应付款—导游分成 = 实发
+            贷 2221.05 应交税费—应交个人所得税 = 代扣个税
+        """
+        self.ensure_one()
+        before_tax = (self.guide_share_before_tax or 0.0) + (self.premium or 0.0)
+        net_pay = self.guide_net_pay or 0.0
+        tax = self.guide_tax or 0.0
+        if before_tax <= 0 and tax <= 0:
+            raise ValidationError('佣金计提金额为 0，无法生成凭证')
+
+        cost_acc = self._tour_get_account(self.ACCOUNT_COST_GUIDE)
+        payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_GUIDE)
+        tax_acc = self._tour_get_account(self.ACCOUNT_TAX_IIT)
+        journal = self._tour_get_journal('general')
+        analytic = self._plan_analytic_distribution(self.plan_id)
+        partner_id = self.guide_id.partner_id.id if self.guide_id and self.guide_id.partner_id else None
+        narration = '%s / %s / 佣金计提' % (
+            self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
+
+        lines = [{
+            'account_id': cost_acc.id,
+            'debit': before_tax,
+            'analytic': analytic,
+            'compliance_ref': 'cas9',
+            'name': '导服成本 %s' % self.name,
+        }, {
+            'account_id': payable_acc.id,
+            'partner_id': partner_id,
+            'credit': net_pay,
+            'analytic': analytic,
+            'compliance_ref': 'cas9',
+            'name': '应付导游分成 %s' % self.name,
+        }, {
+            'account_id': tax_acc.id,
+            'credit': tax,
+            'compliance_ref': 'iit_labor',
+            'name': '代扣个人所得税 %s' % self.name,
+        }]
+
+        move = self._tour_make_move(
+            journal, fields.Date.context_today(self), self.name, lines,
+            compliance_ref='cas9', narration=narration)
+        move.action_post()
+        return move.id
 
     def action_receive(self):
         for rec in self:
             if rec.state != 'confirmed':
                 continue
             rec.state = 'received'
+
+    def action_pay(self):
+        """发放导游分成（税后实发）→ 生成付款凭证，幂等（pay_move_id 判断）。
+
+        借 2241.02 其他应付款—导游分成 = guide_net_pay（只付实发净额，个税已计提）
+            贷 1002 银行存款 = guide_net_pay
+        [BS-10 §7.4.3 / TDS §5.5]
+        """
+        for rec in self:
+            if rec.pay_move_id:
+                continue  # 已发放，幂等
+            if rec.state not in ('confirmed', 'received'):
+                raise ValidationError('仅「已确认/已收款」佣金可发放')
+            rec.pay_move_id = rec._generate_payment_move()
+            rec.write({
+                'state': 'paid',
+                'pay_uid': self.env.user.id,
+                'pay_date': fields.Datetime.now(),
+            })
+
+    def _get_payment_journal(self):
+        self.ensure_one()
+        if self.pay_journal_id:
+            return self.pay_journal_id
+        return self._tour_get_journal('bank')
+
+    def _generate_payment_move(self):
+        """生成导游分成发放付款凭证 [BS-10 §7.4.3]。"""
+        self.ensure_one()
+        net_pay = self.guide_net_pay or 0.0
+        if net_pay <= 0:
+            raise ValidationError('导游实发金额为 0，无法生成发放凭证')
+
+        payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_GUIDE)
+        bank_acc = self._tour_get_account(self.ACCOUNT_BANK)
+        journal = self._get_payment_journal()
+        partner_id = self.guide_id.partner_id.id if self.guide_id and self.guide_id.partner_id else None
+        narration = '%s / %s / 发放导游分成' % (
+            self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
+
+        lines = [{
+            'account_id': payable_acc.id,
+            'partner_id': partner_id,
+            'debit': net_pay,
+            'compliance_ref': 'cas37',
+            'name': '支付导游分成 %s' % self.name,
+        }, {
+            'account_id': bank_acc.id,
+            'credit': net_pay,
+            'compliance_ref': 'pay_settle',
+            'name': '支付导游分成 %s' % self.name,
+        }]
+
+        move = self._tour_make_move(
+            journal, fields.Date.context_today(self), self.name, lines,
+            compliance_ref='cas37', narration=narration)
+        move.action_post()
+        return move.id

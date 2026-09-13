@@ -87,6 +87,14 @@
                                 <field name="cost_non_deductible"/>
                             </group>
                         </page>
+                        <page string="增值税">
+                            <group>
+                                <field name="vat_deductible_total"/>
+                                <field name="vat_deduct_amount"/>
+                                <field name="vat_output_amount"/>
+                                <field name="vat_payable"/>
+                            </group>
+                        </page>
                         <page string="应收/预收/发票">
                             <group>
                                 <field name="receivable"/>

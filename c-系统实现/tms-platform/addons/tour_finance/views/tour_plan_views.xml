@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- tour.plan 表单扩展：收入确认按钮 + 差额抵减按钮 + 凭证回链 [Phase 2+3] -->
+    <record id="view_tour_plan_form_finance" model="ir.ui.view">
+        <field name="name">tour.plan.form.finance</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_form"/>
+        <field name="arch" type="xml">
+            <button name="action_archive" position="before">
+                <button name="action_recognize_revenue" string="确认收入" type="object"
+                    invisible="state not in ('in_progress','completed') or income_move_id"
+                    help="预收转收入（借预收/贷收入不含税/贷销项税）[BS-11 §7.1]"/>
+                <button name="action_generate_vat_deduction" string="差额抵减" type="object"
+                    invisible="vat_deduct_move_id"
+                    help="生成差额征税销项税额抵减凭证（借 2221.03/2221.07 / 贷成本）[BS-11 §7.2.2]"/>
+            </button>
+            <field name="state" position="after">
+                <field name="income_move_id" string="收入凭证"
+                    invisible="not income_move_id"/>
+                <field name="vat_deduct_move_id" string="抵减凭证"
+                    invisible="not vat_deduct_move_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>
