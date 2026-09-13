@@ -127,6 +127,7 @@
         # === 旅行社财务（合并自 tour_finance）===
         'data/account_account_tour.xml',
         'data/tour_payment_claim_sequence.xml',
+        'data/tour_pay_request_sequence.xml',
         'data/tour_commission_sequence.xml',
         'data/tour_reconciliation_sequence.xml',
         'data/tour_pay_channel_data.xml',
@@ -142,6 +143,7 @@
         'views/finance_menu.xml',
         'views/finance_general_menu.xml',
         'views/tour_invoice_views.xml',
+        'views/tour_pay_request_views.xml',
     ],
     'external_dependencies': {
             'python': ['openpyxl', 'ofxparse', 'qifparse', 'xlsxwriter']

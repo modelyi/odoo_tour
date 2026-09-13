@@ -88,3 +88,14 @@ class ResConfigSettingsTourVat(models.TransientModel):
     tour_diff_tax_enabled = fields.Boolean(
         related='company_id.tour_diff_tax_enabled', readonly=False,
         string='启用差额征税')
+
+    # === P2P 请款分级审批阈值（related 到 res.company，真实落点）[TDS §2.3] ===
+    tour_pr_free_limit = fields.Float(
+        related='company_id.tour_pr_free_limit', readonly=False,
+        string='请款免审上限')
+    tour_pr_approve_limit_l1 = fields.Float(
+        related='company_id.tour_pr_approve_limit_l1', readonly=False,
+        string='一级审批上限')
+    tour_pr_approve_limit_l2 = fields.Float(
+        related='company_id.tour_pr_approve_limit_l2', readonly=False,
+        string='二级审批上限')

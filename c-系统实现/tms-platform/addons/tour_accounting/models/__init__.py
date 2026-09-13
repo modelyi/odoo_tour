@@ -56,3 +56,4 @@ from . import tour_reconciliation
 from . import tour_commission
 from . import tour_invoice
 from . import tour_dunning
+from . import tour_pay_request

@@ -49,7 +49,7 @@ class TourTutor(http.Controller):
         return None
 
     # ---------- 产品导览文档 ----------
-    @http.route('/tutor', type='http', auth='user')
+    @http.route('/tutor', type='http', auth='user', website=True)
     def tutor_index(self, **kw):
         denied = self._require_superuser()
         if denied:
@@ -60,7 +60,7 @@ class TourTutor(http.Controller):
         })
 
     # ---------- 角色菜单预览 ----------
-    @http.route('/tutor/menus', type='http', auth='user')
+    @http.route('/tutor/menus', type='http', auth='user', website=True)
     def tutor_menus(self, **kw):
         denied = self._require_superuser()
         if denied:
@@ -78,7 +78,7 @@ class TourTutor(http.Controller):
         })
 
     # ---------- 待实施功能占位页（10 个虚菜单 + 顶级菜单统一跳转至此）----------
-    @http.route('/tutor/pending', type='http', auth='user')
+    @http.route('/tutor/pending', type='http', auth='user', website=True)
     def tutor_pending(self, **kw):
         denied = self._require_superuser()
         if denied:

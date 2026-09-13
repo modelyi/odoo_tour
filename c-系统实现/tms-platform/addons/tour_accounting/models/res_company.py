@@ -142,3 +142,11 @@ class ResCompanyTourVat(models.Model):
     tour_diff_tax_enabled = fields.Boolean('启用差额征税', default=True,
         help='[财税2016-36号] 选择差额征税后 36 个月不得变更；'
              '关闭则走全额计税，不生成销项税额抵减分录')
+
+    # === P2P 请款分级审批阈值 [TDS §2.3 / BS-06 §4.2] ===
+    tour_pr_free_limit = fields.Float('请款免审上限', default=1000.0, digits=(16, 2),
+        help='金额 ≤ 该值免审（默认 1000）')
+    tour_pr_approve_limit_l1 = fields.Float('一级审批上限', default=50000.0, digits=(16, 2),
+        help='金额 ≤ 该值走一级审批（默认 5 万）')
+    tour_pr_approve_limit_l2 = fields.Float('二级审批上限', default=200000.0, digits=(16, 2),
+        help='金额 ≤ 该值走二级审批（默认 20 万）；超过走三级双签')

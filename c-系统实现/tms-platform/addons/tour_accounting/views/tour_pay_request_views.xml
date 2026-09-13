@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 请款单（采购付款审批）列表视图 [TDS §2.3] -->
+    <record id="view_tour_pay_request_list" model="ir.ui.view">
+        <field name="name">tour.pay.request.list</field>
+        <field name="model">tour.pay.request</field>
+        <field name="arch" type="xml">
+            <list string="请款单" create="1" delete="1">
+                <field name="name"/>
+                <field name="plan_code"/>
+                <field name="supplier_id"/>
+                <field name="amount" widget="monetary" sum="总请款金额"/>
+                <field name="cost_type"/>
+                <field name="audit_level"/>
+                <field name="state" widget="badge" decoration-success="state=='paid'" decoration-info="state=='approved'" decoration-warning="state=='draft'" decoration-danger="state=='rejected'"/>
+                <field name="bill_id" optional="hide"/>
+                <field name="payment_id" optional="hide"/>
+                <field name="apply_date"/>
+                <field name="applicant_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 请款单表单视图 -->
+    <record id="view_tour_pay_request_form" model="ir.ui.view">
+        <field name="name">tour.pay.request.form</field>
+        <field name="model">tour.pay.request</field>
+        <field name="arch" type="xml">
+            <form string="请款单">
+                <header>
+                    <button name="action_approve" string="审批通过" type="object"
+                            class="btn-primary"/>
+                    <button name="action_reject" string="驳回" type="object"/>
+                    <button name="action_pay" string="标记已付款" type="object"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="plan_id"/>
+                            <field name="supplier_id"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="cost_type"/>
+                            <field name="cost_account_id"/>
+                            <field name="reason"/>
+                        </group>
+                        <group>
+                            <field name="audit_level"/>
+                            <field name="applicant_id"/>
+                            <field name="approver_id"/>
+                            <field name="approve_date"/>
+                            <field name="apply_date"/>
+                            <field name="bill_id"/>
+                            <field name="payment_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tour_pay_request" model="ir.actions.act_window">
+        <field name="name">请款单</field>
+        <field name="res_model">tour.pay.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_tour_pay_request_list"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">采购付款请款单（P2P）</p>
+            <p>由 tour.plan 成本（out_sum）生成供应商应付账单后，走分级审批 → 付款 → 核销。</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_tour_pay_request"
+        name="请款单"
+        parent="menu_tms_finance"
+        action="action_tour_pay_request"
+        sequence="15"/>
+</odoo>

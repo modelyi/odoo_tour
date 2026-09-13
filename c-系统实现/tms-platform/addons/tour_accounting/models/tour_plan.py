@@ -23,6 +23,12 @@ class TourPlan(models.Model):
         index=True, help='差额征税销项税额抵减凭证（借 2221.03/2221.07 / 贷成本）[BS-11 §7.2.2]')
     vat_deduct_move_state = fields.Selection(related='vat_deduct_move_id.state', string='抵减凭证状态')
 
+    # === 成本侧 P2P 回链 [TDS §2.3] ===
+    cost_bill_id = fields.Many2one(
+        'account.move', string='成本应付账单', copy=False, ondelete='restrict',
+        index=True, help='P2P：out_sum 生成的供应商应付账单 vendor bill（借 6401 / 贷 2202）')
+    cost_bill_state = fields.Selection(related='cost_bill_id.state', string='成本账单状态')
+
     # === 开票进度跟踪 [BS-12 §4.3 / §8.3] ===
     invoice_ids = fields.Many2many(
         'account.move', 'tour_invoice_plan_rel', 'plan_id', 'move_id',
