@@ -42,7 +42,7 @@ check('管理员 read() 看到完整值', admin_read == '6222021234567890123', a
 
 # 构造普通内部用户（有访问权、无出纳组）与出纳用户（在出纳组）
 group_user = env.ref('base.group_user')
-treasurer_group = env.ref('tour_finance.group_tour_finance_treasurer')
+treasurer_group = env.ref('tour_accounting.group_tour_accounting_treasurer')
 normal_user = env['res.users'].create({
     'name': '测试普通用户',
     'login': 'test_enc_normal@example.com',

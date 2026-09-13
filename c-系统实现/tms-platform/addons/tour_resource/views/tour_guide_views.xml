@@ -86,7 +86,7 @@
                             <field name="mobile"/>
                             <field name="tel"/>
                             <field name="id_num_masked"/>
-                            <field name="id_num" groups="tour_finance.group_tour_finance_treasurer"/>
+                            <field name="id_num" groups="tour_accounting.group_tour_accounting_treasurer"/>
                             <field name="zip_code"/>
                             <field name="addr"/>
                             <field name="partner_id"/>
@@ -137,7 +137,7 @@
                                     <field name="account_bank"/>
                                     <field name="account_name"/>
                                     <field name="account_no_masked"/>
-                                    <field name="account_no" groups="tour_finance.group_tour_finance_treasurer"/>
+                                    <field name="account_no" groups="tour_accounting.group_tour_accounting_treasurer"/>
                                 </group>
                                 <group>
                                     <field name="loan_rate"/>

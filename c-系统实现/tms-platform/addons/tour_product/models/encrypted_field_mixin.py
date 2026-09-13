@@ -26,7 +26,7 @@
 行为：
 - create/write：明文 -> 密文落盘（同时同步 HMAC-SHA256 检索散列）；掩码值（****…）
   视为"未修改"忽略，防止把掩码回存覆盖真实值；已是密文的值保持不变。
-- read：出纳组（tour_finance.group_tour_finance_treasurer）/ sudo / 管理员 -> 解密完整值；
+- read：出纳组（tour_accounting.group_tour_accounting_treasurer）/ sudo / 管理员 -> 解密完整值；
   其余用户 -> 掩码（****后4位）。密钥缺失或解密失败 -> 返回密文，绝不泄漏明文。
 - export_data：与 read 同一套权限口径（默认掩码，出纳完整）。
 - _search：把敏感字段的精确匹配（= / == / in / != / not in）翻译到 <field>_hash
@@ -43,7 +43,7 @@ from . import field_crypto
 _logger = logging.getLogger(__name__)
 
 # 可查看完整敏感值的权限组（XML ID）；解析失败时回退到系统管理员组。
-FULL_ACCESS_GROUP_XMLID = 'tour_finance.group_tour_finance_treasurer'
+FULL_ACCESS_GROUP_XMLID = 'tour_accounting.group_tour_accounting_treasurer'
 FALLBACK_GROUP_XMLID = 'base.group_system'
 
 # 不支持模糊搜索的操作符（密文无法做 like）

@@ -68,3 +68,13 @@ class AccountCommonJournalReport(models.TransientModel):
         amount_currency value"""
         data['form'].update({'amount_currency': self.amount_currency})
         return data
+
+
+class AccountAccount(models.Model):
+    """差额征税可扣除标记（合并自 tour_finance）[财税2016-36号]"""
+    _inherit = 'account.account'
+
+    tour_vat_deductible = fields.Boolean(
+        '差额征税可扣除', default=False,
+        help='[财税2016-36号] 旅游服务差额征税：住宿/餐饮/交通/门票/地接/签证费可扣除；'
+             '导服/保险/自费/购物不可扣除')

@@ -56,3 +56,19 @@ access_account_recurring_entries_line,access.account.recurring.entries.line,mode
 access_generate_recurring_entries,generate.recurring.entries.user,model_account_recurring_payments,account.group_account_user,1,1,1,1
 
 access_import_bank_statement_user,access.import.bank.statement.user,model_import_bank_statement,base.group_user,1,1,1,1
+
+# === 旅行社财务（合并自 tour_finance）===
+access_tour_bank_account_user,tour.bank.account.user,model_tour_bank_account,base.group_user,1,1,1,0
+access_tour_bank_account_manager,tour.bank.account.manager,model_tour_bank_account,base.group_system,1,1,1,1
+access_tour_pay_channel_user,tour.pay.channel.user,model_tour_pay_channel,base.group_user,1,1,1,0
+access_tour_pay_channel_manager,tour.pay.channel.manager,model_tour_pay_channel,base.group_system,1,1,1,1
+access_tour_plan_account_user,tour.plan.account.user,model_tour_plan_account,base.group_user,1,1,1,0
+access_tour_plan_account_manager,tour.plan.account.manager,model_tour_plan_account,base.group_system,1,1,1,1
+access_tour_payment_claim_user,tour.payment.claim.user,model_tour_payment_claim,base.group_user,1,1,1,0
+access_tour_payment_claim_manager,tour.payment.claim.manager,model_tour_payment_claim,base.group_system,1,1,1,1
+access_tour_reconciliation_user,tour.reconciliation.user,model_tour_reconciliation,base.group_user,1,1,1,0
+access_tour_reconciliation_manager,tour.reconciliation.manager,model_tour_reconciliation,base.group_system,1,1,1,1
+access_tour_reconciliation_line_user,tour.reconciliation.line.user,model_tour_reconciliation_line,base.group_user,1,1,1,0
+access_tour_reconciliation_line_manager,tour.reconciliation.line.manager,model_tour_reconciliation_line,base.group_system,1,1,1,1
+access_tour_commission_user,tour.commission.user,model_tour_commission,base.group_user,1,1,1,0
+access_tour_commission_manager,tour.commission.manager,model_tour_commission,base.group_system,1,1,1,1
