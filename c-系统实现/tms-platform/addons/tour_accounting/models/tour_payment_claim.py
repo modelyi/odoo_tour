@@ -26,8 +26,9 @@ class TourPaymentClaim(models.Model):
                                  store=True, help='= pay_money - use_money，强制 compute 不可手工改')
 
     # === 账户与认领 ===
-    account_id = fields.Many2one('tour.bank.account', string='收款账户', index=True,
-                                 help='允许为「未指定/待匹配」')
+    account_id = fields.Many2one('account.journal', string='收款账户', index=True,
+                                 domain=[('type', '=', 'bank')],
+                                 help='收款银行日记账（account.journal type=bank）；允许为空（待匹配）')
     plan_id = fields.Many2one('tour.plan', string='认领到团', index=True,
                               help='收款认领关联团队；待认领时为空')
     plan_code = fields.Char('团号', related='plan_id.plan_code', store=True)

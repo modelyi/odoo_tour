@@ -289,7 +289,6 @@ class EncryptedFieldMixin(models.AbstractModel):
             env['tour.guide'].encrypt_existing_plaintext()
             env['tour.vehicle'].encrypt_existing_plaintext()
             env['res.partner'].encrypt_existing_plaintext()
-            env['tour.bank.account'].encrypt_existing_plaintext()
         """
         key = self._encrypt_key()
         if not key:

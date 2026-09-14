@@ -1,0 +1,14 @@
+id,create_uid,create_date,write_date,write_uid,res_id,noupdate,name,module,model
+53270,,2026-09-13 02:29:25.807847,2026-09-13 02:29:25.807847,,10573,f,field_tour_bank_account__activity_calendar_event_id,calendar,ir.model.fields
+42956,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,2031,f,selection__tour_bank_account__activity_state__overdue,mail,ir.model.fields.selection
+42957,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,2032,f,selection__tour_bank_account__activity_state__today,mail,ir.model.fields.selection
+42958,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,2033,f,selection__tour_bank_account__activity_state__planned,mail,ir.model.fields.selection
+42959,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,2034,f,selection__tour_bank_account__activity_exception_decoration__warning,mail,ir.model.fields.selection
+42960,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,2035,f,selection__tour_bank_account__activity_exception_decoration__danger,mail,ir.model.fields.selection
+43023,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,256,f,model_inherit__tour_bank_account__mail_thread,portal,ir.model.inherit
+43024,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,256,f,model_inherit__tour_bank_account__mail_thread,sms,ir.model.inherit
+43025,,2026-09-12 17:35:42.059565,2026-09-12 17:35:42.059565,,256,f,model_inherit__tour_bank_account__mail_thread,snailmail,ir.model.inherit
+54676,,2026-09-13 02:29:25.807847,2026-09-13 02:29:25.807847,,257,f,model_inherit__tour_bank_account__mail_activity_mixin,calendar,ir.model.inherit
+243774,,2026-09-14 02:48:36.758539,2026-09-14 02:48:36.758539,,256,f,model_inherit__tour_bank_account__mail_thread,mass_mailing,ir.model.inherit
+84736,,2026-09-13 03:05:19.403404,2026-09-13 03:05:19.403404,,15132,f,field_tour_bank_account__rating_ids,rating,ir.model.fields
+86695,,2026-09-13 03:05:19.403404,2026-09-13 03:05:19.403404,,256,f,model_inherit__tour_bank_account__mail_thread,rating,ir.model.inherit

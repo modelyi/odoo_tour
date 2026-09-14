@@ -76,13 +76,6 @@
         groups="tour_base.group_tour_finance"
         sequence="100"/>
 
-    <menuitem id="menu_tour_bank_account"
-        name="银行账户"
-        parent="menu_tms_finance_config"
-        action="action_tour_bank_account"
-        groups="tour_base.group_tour_finance"
-        sequence="10"/>
-
     <menuitem id="menu_tour_pay_channel"
         name="支付渠道"
         parent="menu_tms_finance_config"

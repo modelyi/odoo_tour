@@ -57,8 +57,6 @@ access_generate_recurring_entries,generate.recurring.entries.user,model_account_
 
 access_import_bank_statement_user,access.import.bank.statement.user,model_import_bank_statement,base.group_user,1,1,1,1
 
-access_tour_bank_account_user,tour.bank.account.user,model_tour_bank_account,base.group_user,1,1,1,0
-access_tour_bank_account_manager,tour.bank.account.manager,model_tour_bank_account,base.group_system,1,1,1,1
 access_tour_pay_channel_user,tour.pay.channel.user,model_tour_pay_channel,base.group_user,1,1,1,0
 access_tour_pay_channel_manager,tour.pay.channel.manager,model_tour_pay_channel,base.group_system,1,1,1,1
 access_tour_plan_account_user,tour.plan.account.user,model_tour_plan_account,base.group_user,1,1,1,0

@@ -136,7 +136,6 @@
         'data/tour_pay_channel_data.xml',
         'data/tour_guide_loan_sequence.xml',
         'data/tour_guide_loan_cron.xml',
-        'views/tour_bank_account_views.xml',
         'views/tour_pay_channel_views.xml',
         'views/tour_plan_views.xml',
         'views/tour_plan_account_views.xml',
