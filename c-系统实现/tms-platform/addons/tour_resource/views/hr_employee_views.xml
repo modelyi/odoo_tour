@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- hr.employee 表单：用工类型（劳动关系）字段 -->
+    <record id="view_hr_employee_form_inherit_tour" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.tour.resource</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='work_information']//field[@name='job_title']" position="after">
+                <field name="employment_type"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

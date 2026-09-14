@@ -78,7 +78,7 @@
     </record>
     <record id="tour_account_122101" model="account.account">
         <field name="code">1221.01</field>
-        <field name="name">其他应收款—导游借款</field>
+        <field name="name">其他应收款—员工借款</field>
         <field name="account_type">asset_receivable</field>
         <field name="reconcile">True</field>
     </record>

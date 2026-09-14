@@ -29,7 +29,8 @@ class TourAccountingMixin(models.AbstractModel):
     ACCOUNT_TAX_OUTPUT = '2221.01'         # 应交增值税(销项) — 一般纳税人销项税额 [BS-11 §六]
     ACCOUNT_TAX_DEDUCT = '2221.03'         # 应交增值税(销项税额抵减/差额扣除) [BS-11 §六]
     ACCOUNT_TAX_SIMPLE = '2221.07'         # 应交增值税(简易计税/小规模) [BS-11 §六]
-    ACCOUNT_GUIDE_LOAN = '1221.01'         # 其他应收款—导游借款 [TDS §2.2]
+    ACCOUNT_EMPLOYEE_LOAN = '1221.01'      # 其他应收款—员工借款（全员共用，人维度用 partner+analytic 区分）[BS-15 §2.2]
+    ACCOUNT_PAYABLE_EMPLOYEE = '2241.06'   # 其他应付款—员工代付（纯报销两段式贷方）[BS-15 §3]
     ACCOUNT_PAYABLE_SUP = '2202'           # 应付账款（供应商，报账补款兜底）[TDS §2.2]
 
     # 收入确认模式：总额法（主要责任人）vs 净额法（代理人）[BS-14 §三 权威修正]
@@ -44,12 +45,31 @@ class TourAccountingMixin(models.AbstractModel):
         'meal': '6401.03',      # 餐费
         'ticket': '6401.05',    # 门票费
         'hotel': '6401.02',     # 房费 → 住宿费
+        'visa': '6401.06',      # 签证费 [BS-15 §4.1]
         'guide': '6401.07',     # 导服费
         'other': '6401.11',     # 其他
     }
 
     def _get_company_currency(self):
         return self.env.company.currency_id
+
+    def _tour_partner_id(self):
+        """凭证往来方（partner）：员工维度优先，回退导游维度。
+
+        三层建模后，借款/报销/佣金的「谁在借/报/拿钱」按 hr.employee 挂账，
+        往来方取 employee.work_contact_id；未挂员工（存量/兼容）回退 guide.partner_id。
+        hr.employee 在 Odoo 19 走 public/private 双档案，非 HR 角色的财务/员工读取
+        work_contact_id 会被私密字段校验拦截，故用 sudo 读取公开联系人（仅取 partner 关联）。
+        """
+        if 'employee_id' in self._fields and self.employee_id:
+            partner = self.employee_id.sudo().work_contact_id
+            if partner:
+                return partner.id
+        if 'guide_id' in self._fields and self.guide_id:
+            partner = self.guide_id.partner_id
+            if partner:
+                return partner.id
+        return None
 
     def _tour_get_account(self, code):
         """按科目编码查 account.account（code_store 反查，不写死 id）。"""

@@ -67,6 +67,13 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_view_employee" type="object"
+                            class="oe_stat_button" icon="fa-id-badge"
+                            help="查看/创建该导游的员工档案（劳动关系）">
+                            <div class="o_stat_info">
+                                <field name="employee_id" widget="statinfo" string="员工档案"/>
+                            </div>
+                        </button>
                         <button name="action_view_loans" type="object"
                             class="oe_stat_button" icon="fa-money"
                             help="查看该导游的借款单">
@@ -180,6 +187,7 @@
                                 <group>
                                     <field name="company_id"/>
                                     <field name="department_id"/>
+                                    <field name="employee_id"/>
                                     <field name="active"/>
                                 </group>
                             </group>

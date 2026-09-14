@@ -23,6 +23,7 @@
         'views/tour_vehicle_views.xml',
         'views/res_partner_views.xml',
         'views/tour_shop_agreement_views.xml',
+        'views/hr_employee_views.xml',
         'views/menu.xml',
     ],
     'installable': True,

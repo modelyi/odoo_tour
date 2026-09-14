@@ -78,3 +78,16 @@ class AccountAccount(models.Model):
         '差额征税可扣除', default=False,
         help='[财税2016-36号] 旅游服务差额征税：住宿/餐饮/交通/门票/地接/签证费可扣除；'
              '导服/保险/自费/购物不可扣除')
+
+    @api.model
+    def _tour_rename_employee_loan_account(self):
+        """BS-15 §2.2 科目改名：1221.01 其他应收款—导游借款 → 员工借款。
+
+        编码不变、历史余额与冲抵链路不断。幂等：仅当 name 仍为旧值时才写。
+        因 account_account_tour.xml 整体 noupdate=1（存量库 -u 不覆盖），
+        以 data 层 function 触发改名，保证存量库升级也生效。
+        """
+        account = self.env['account.account'].search([('code', '=', '1221.01')], limit=1)
+        if account and account.name != '其他应收款—员工借款':
+            account.name = '其他应收款—员工借款'
+        return True

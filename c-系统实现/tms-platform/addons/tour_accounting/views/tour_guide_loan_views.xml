@@ -8,6 +8,7 @@
             <search string="导游借款搜索">
                 <field name="name"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="plan_id"/>
                 <field name="plan_code"/>
                 <field name="amount"/>
@@ -33,6 +34,7 @@
             <list string="导游借款">
                 <field name="name"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="plan_code"/>
                 <field name="amount"/>
                 <field name="purpose"/>
@@ -54,10 +56,13 @@
             <form string="导游借款单">
                 <header>
                     <button name="action_approve" string="审批" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
                         invisible="state != 'draft'"/>
                     <button name="action_disburse" string="放款" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
                         invisible="state != 'approved'"/>
                     <button name="action_reject" string="退回" type="object"
+                        groups="tour_base.group_tour_finance"
                         invisible="state not in ('draft','approved')"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,approved,disbursed,settled"/>
@@ -69,6 +74,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="employee_id"/>
                             <field name="guide_id"/>
                             <field name="plan_id"/>
                             <field name="plan_code"/>
@@ -126,6 +132,7 @@
             <search string="导游报账搜索">
                 <field name="name"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="plan_id"/>
                 <field name="plan_code"/>
                 <field name="loan_id"/>
@@ -150,6 +157,7 @@
             <list string="导游报账">
                 <field name="name"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="plan_code"/>
                 <field name="loan_id"/>
                 <field name="loan_amount"/>
@@ -170,9 +178,14 @@
             <form string="导游报账单">
                 <header>
                     <button name="action_audit" string="审核" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
                         invisible="state != 'draft'"/>
+                    <button name="action_pay" string="付款" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
+                        invisible="state != 'audited' or loan_id"/>
                     <button name="action_settle" string="结算" type="object" class="btn-primary"
-                        invisible="state != 'audited'"/>
+                        groups="tour_base.group_tour_finance"
+                        invisible="state != 'audited' or not loan_id"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,audited,settled"/>
                 </header>
@@ -183,6 +196,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="employee_id"/>
                             <field name="guide_id"/>
                             <field name="plan_id"/>
                             <field name="plan_code"/>
@@ -211,8 +225,12 @@
                     <group string="会计凭证">
                         <field name="move_id"/>
                         <field name="move_state"/>
+                        <field name="payment_move_id"/>
+                        <field name="payment_move_state"/>
                         <field name="auditor_id"/>
                         <field name="audit_date"/>
+                        <field name="payer_id"/>
+                        <field name="pay_date"/>
                     </group>
                     <group string="归属">
                         <field name="company_id"/>

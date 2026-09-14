@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""导游借款单 [TDS §2.2 / BS-06 §5.3-5.5]。
+"""导游借款单 [TDS §2.2 / BS-06 §5.3-5.5 / BS-15 §2]。
 
 链路：借款申请（待审批）→ 审批（已审批，借款人≠审批人）→ 放款（已放款，
-    借 1221.01 其他应收款—导游借款 / 贷 1002 银行存款）→ 报账冲抵（已冲抵）。
+    借 1221.01 其他应收款—员工借款 / 贷 1002 银行存款）→ 报账冲抵（已冲抵）。
 内控校验：借款≠审批≠放款三方分离（R-27）、放款+30 天报账预警（R-29）、
     有未冲抵借款禁新借（R-30）。
 """
@@ -21,10 +21,17 @@ class TourGuideLoan(models.Model):
                        help='自动流水，如 JK-000123')
 
     # === 业务关联 ===
-    guide_id = fields.Many2one('tour.guide', string='导游', required=True,
+    # 财务人事线：借款人维度挂 hr.employee；guide_id 保留为可空冗余（业务回溯/兼容旧单）
+    employee_id = fields.Many2one('hr.employee', string='借款人（员工）', index=True,
+                                  ondelete='restrict',
+                                  default=lambda self: self.env.user.employee_id.id or False,
+                                  help='借款/报销/佣金统一挂员工维度；凭证往来方取员工的工作联系人；'
+                                       '员工自助默认取当前登录用户的员工档案')
+    guide_id = fields.Many2one('tour.guide', string='导游', required=False,
                                index=True, ondelete='restrict')
-    plan_id = fields.Many2one('tour.plan', string='团队', required=True,
-                              index=True, ondelete='restrict')
+    plan_id = fields.Many2one('tour.plan', string='团队', required=False,
+                              index=True, ondelete='restrict',
+                              help='挂团借款必填；员工备用金/差旅借款可不挂团')
     plan_code = fields.Char('团号', related='plan_id.plan_code', store=True)
 
     # === 借款信息 ===
@@ -80,21 +87,41 @@ class TourGuideLoan(models.Model):
 
     _uniq_loan_name = models.Constraint('unique(name)', '借款单号已存在')
 
+    @api.onchange('guide_id')
+    def _onchange_guide_id(self):
+        if self.guide_id and self.guide_id.employee_id:
+            self.employee_id = self.guide_id.employee_id
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        if self.employee_id and not self.guide_id:
+            guide = self.env['tour.guide'].search(
+                [('employee_id', '=', self.employee_id.id)], limit=1)
+            if guide:
+                self.guide_id = guide
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if not vals.get('name') or vals.get('name') == '新建':
                 vals['name'] = self.env['ir.sequence'].next_by_code('tour.guide.loan') or '新建'
-            # R-30 未冲抵禁新借：有已放款未冲抵借款的导游不可再申请
+            # 员工维度优先；未传时从导游反查
+            employee_id = vals.get('employee_id')
             guide_id = vals.get('guide_id')
-            if guide_id:
+            if not employee_id and guide_id:
+                guide = self.env['tour.guide'].browse(guide_id)
+                if guide.employee_id:
+                    employee_id = guide.employee_id.id
+                    vals['employee_id'] = employee_id
+            # R-30 未冲抵禁新借：有已放款未冲抵借款的员工不可再申请
+            if employee_id:
                 outstanding = self.search([
-                    ('guide_id', '=', guide_id),
+                    ('employee_id', '=', employee_id),
                     ('state', '=', 'disbursed'),
                 ])
                 if outstanding:
                     raise ValidationError(
-                        '导游存在未冲抵借款 %s，须先报账冲抵后方可申请新借款'
+                        '借款人存在未冲抵借款 %s，须先报账冲抵后方可申请新借款'
                         % outstanding[0].name)
         return super().create(vals_list)
 
@@ -168,15 +195,16 @@ class TourGuideLoan(models.Model):
             rec.state = 'draft'
 
     def _generate_disbursement_move(self, date):
-        """放款凭证：借 1221.01 其他应收款—导游借款 / 贷 1002 银行存款。"""
+        """放款凭证：借 1221.01 其他应收款—员工借款 / 贷 1002 银行存款。"""
         self.ensure_one()
-        loan_acc = self._tour_get_account(self.ACCOUNT_GUIDE_LOAN)
+        loan_acc = self._tour_get_account(self.ACCOUNT_EMPLOYEE_LOAN)
         fund_acc = self.account_id or self._tour_get_account(self.ACCOUNT_BANK)
         journal = self._tour_get_journal('bank')
         analytic = self._plan_analytic_distribution(self.plan_id)
-        partner_id = self.guide_id.partner_id.id if self.guide_id.partner_id else None
-        narration = '%s / %s / 借款放款' % (
-            self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
+        partner_id = self._tour_partner_id()
+        borrower = (self.employee_id.name if self.employee_id
+                    else (self.guide_id.name if self.guide_id else '未关联员工'))
+        narration = '%s / %s / 借款放款' % (self.plan_code or '-', borrower)
 
         lines = [{
             'account_id': loan_acc.id,
@@ -184,7 +212,7 @@ class TourGuideLoan(models.Model):
             'debit': self.amount,
             'analytic': analytic,
             'compliance_ref': 'cas22',
-            'name': '导游借款 %s' % self.name,
+            'name': '员工借款 %s' % self.name,
         }, {
             'account_id': fund_acc.id,
             'credit': self.amount,
@@ -216,7 +244,9 @@ class TourGuideLoan(models.Model):
             ('due_date', '<', fields.Date.context_today(self)),
         ])
         for loan in loans:
+            borrower = (loan.employee_id.name if loan.employee_id
+                        else (loan.guide_id.name or '-'))
             loan.message_post(
-                body='⚠️ 借款 %s（导游 %s）已超过报账截止日 %s，请尽快催办报账冲抵。'
-                % (loan.name, loan.guide_id.name or '-', loan.due_date))
+                body='⚠️ 借款 %s（%s）已超过报账截止日 %s，请尽快催办报账冲抵。'
+                % (loan.name, borrower, loan.due_date))
         return loans.ids

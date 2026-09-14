@@ -39,7 +39,7 @@ class TourVehicle(models.Model):
     remark = fields.Text('备注')
 
     # === 车辆证照 ===
-    licence = fields.Char('车牌号', required=True, index=True, copy=False,
+    licence = fields.Char('执照号', required=True, index=True, copy=False,
                           help='全局唯一，同一车牌不可建两条车辆档案')
     licence_date = fields.Date('驾照日期')
     licence_type = fields.Char('驾照类型')

@@ -45,11 +45,13 @@
     'maintainer': 'SolePro',
     'website': "https://tms.solepro.cloud",
     'depends': ['account', 'sale', 'account_check_printing', 'analytic',
-                'tour_budget', 'contacts', 'tour_base', 'tour_product', 'tour_resource', 'tour_order'],
+                'tour_budget', 'contacts', 'tour_base', 'tour_product', 'tour_resource', 'tour_order',
+                'hr_expense'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
         'security/tour_treasurer_security.xml',
+        'security/tour_self_service_rules.xml',
         'data/account_financial_report_data.xml',
         'data/cash_flow_data.xml',
         'data/followup_levels.xml',
@@ -126,6 +128,7 @@
         'wizard/import_bank_statement_views.xml',
         # === 旅行社财务（合并自 tour_finance）===
         'data/account_account_tour.xml',
+        'data/account_account_rename.xml',
         'data/tour_payment_claim_sequence.xml',
         'data/tour_pay_request_sequence.xml',
         'data/tour_commission_sequence.xml',

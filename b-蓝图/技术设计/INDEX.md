@@ -12,6 +12,7 @@
 | TDS-ARCH-002 | [TDS-团管理标准模块承载方案.md](TDS-团管理标准模块承载方案.md) | 初稿 | 团管理如何用 project/CRM/account 承载：分层模块映射、计调 project.task 设计、销售 CRM 设计、自建边界、分阶段改造 |
 | TDS-MOD-001 | [TDS-模块划分.md](TDS-模块划分.md) | 初稿 | 14 自定义模块划分、依赖关系、工作量 |
 | TDS-DATA-001 | [TDS-数据模型设计.md](TDS-数据模型设计.md) | 初稿 | ER 图、模型字段、关系定义 |
+| TDS-DATA-002 | [TDS-导游三层建模方案.md](TDS-导游三层建模方案.md) | 初稿 | 导游三层建模（res.partner←hr.employee←tour.guide）、字段归属、个税分流、迁移 |
 | TDS-FIN-001 | [TDS-财务记账对接.md](TDS-财务记账对接.md) | 初稿 | 财务记账对接、科目表、分录 |
 | TDS-B2C-001 | [TDS-线上销售.md](TDS-线上销售.md) | 初稿 | B2C 线上销售、报名、付款 |
 | TDS-GAP-001 | [TDS-缺口补齐方案与分阶段实施计划.md](TDS-缺口补齐方案与分阶段实施计划.md) | 初稿 | 数据/功能缺口、分阶段实施、范围冻结 |

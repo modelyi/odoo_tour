@@ -16,6 +16,10 @@ class TourCommission(models.Model):
         for vals in vals_list:
             if not vals.get('name') or vals.get('name') == '新建':
                 vals['name'] = self.env['ir.sequence'].next_by_code('tour.commission') or '新建'
+            if not vals.get('employee_id') and vals.get('guide_id'):
+                guide = self.env['tour.guide'].browse(vals['guide_id'])
+                if guide.employee_id:
+                    vals['employee_id'] = guide.employee_id.id
         return super().create(vals_list)
 
     # === 佣金来源 ===
@@ -33,6 +37,10 @@ class TourCommission(models.Model):
                                     help='购物店返佣，属经营收入，不可冲减成本 [增值税暂行条例]')
 
     # === 导游分成 ===
+    # 财务人事线：佣金发放人维度挂 hr.employee；个税类型读员工用工类型
+    employee_id = fields.Many2one('hr.employee', string='导游（员工）', index=True,
+                                  ondelete='restrict',
+                                  help='佣金发放/个税代扣统一挂员工维度；个税类型按用工类型判定')
     guide_id = fields.Many2one('tour.guide', string='导游', index=True)
     guide_share_rate = fields.Float('导游分成比例(%)', digits=(5, 2))
     guide_share_before_tax = fields.Float('导游税前分成', digits=(16, 2))
@@ -43,8 +51,8 @@ class TourCommission(models.Model):
     guide_tax_type = fields.Selection([
         ('labor', '劳务报酬'),
         ('salary', '工资薪金'),
-    ], string='税务类型', default='labor',
-       help='劳务报酬（默认，20%-40% 累进）；工资薪金待后续实现 [CAS 9 / 个税法]')
+    ], string='税务类型', compute='_compute_guide_tax_type', store=True,
+       help='按员工用工类型自动判定：劳动合同→工资薪金；劳务协议/挂靠、临时→劳务报酬 [CAS 9 / 个税法]')
     guide_tax = fields.Float('代扣个税', digits=(16, 2), compute='_compute_tax', store=True,
                              help='劳务报酬预扣个税 [个税法-代扣代缴]')
     guide_net_pay = fields.Float('导游实发', digits=(16, 2), compute='_compute_tax', store=True,
@@ -115,6 +123,26 @@ class TourCommission(models.Model):
             'target': 'current',
         }
 
+    @api.depends('employee_id.employment_type')
+    def _compute_guide_tax_type(self):
+        for rec in self:
+            rec.guide_tax_type = (
+                'salary' if rec.employee_id.employment_type == 'labor_contract'
+                else 'labor')
+
+    @api.onchange('guide_id')
+    def _onchange_guide_id(self):
+        if self.guide_id and self.guide_id.employee_id:
+            self.employee_id = self.guide_id.employee_id
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        if self.employee_id and not self.guide_id:
+            guide = self.env['tour.guide'].search(
+                [('employee_id', '=', self.employee_id.id)], limit=1)
+            if guide:
+                self.guide_id = guide
+
     @api.depends('commission_total', 'guide_share_before_tax', 'premium', 'guide_tax_type')
     def _compute_tax(self):
         for rec in self:
@@ -176,7 +204,7 @@ class TourCommission(models.Model):
         tax_acc = self._tour_get_account(self.ACCOUNT_TAX_IIT)
         journal = self._tour_get_journal('general')
         analytic = self._plan_analytic_distribution(self.plan_id)
-        partner_id = self.guide_id.partner_id.id if self.guide_id and self.guide_id.partner_id else None
+        partner_id = self._tour_partner_id()
         narration = '%s / %s / 佣金计提' % (
             self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
 
@@ -249,7 +277,7 @@ class TourCommission(models.Model):
         bank_acc = self._tour_get_account(self.ACCOUNT_BANK)
         journal = self._get_payment_journal()
         analytic = self._plan_analytic_distribution(self.plan_id)
-        partner_id = self.guide_id.partner_id.id if self.guide_id and self.guide_id.partner_id else None
+        partner_id = self._tour_partner_id()
         narration = '%s / %s / 发放导游分成' % (
             self.plan_code or '-', self.guide_id.name if self.guide_id else '未关联导游')
 

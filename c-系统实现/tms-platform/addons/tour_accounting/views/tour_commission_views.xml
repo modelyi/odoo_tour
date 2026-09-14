@@ -10,6 +10,7 @@
                 <field name="plan_code"/>
                 <field name="shop_id"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="guide_tax_type"/>
                 <separator/>
                 <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
@@ -36,6 +37,7 @@
                 <field name="shop_id"/>
                 <field name="commission_total" sum="佣金总额合计"/>
                 <field name="guide_id"/>
+                <field name="employee_id"/>
                 <field name="guide_share_before_tax"/>
                 <field name="guide_tax"/>
                 <field name="guide_net_pay" sum="实发合计" decoration-danger="state != 'paid'"/>
@@ -158,6 +160,7 @@
                         </group>
                     </group>
                     <group string="导游分成">
+                        <field name="employee_id"/>
                         <field name="guide_id"/>
                         <field name="guide_share_rate"/>
                         <field name="guide_share_before_tax"/>

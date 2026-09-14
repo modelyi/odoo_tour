@@ -12,10 +12,17 @@ class TourGuide(models.Model):
     # 敏感字段（AES-256-GCM 落盘加密 + 掩码展示 + 等值检索散列）
     _encrypted_fields = {'id_num': True, 'account_no': True}
 
+    # === 三层建模：res.partner（身份）← hr.employee（劳动关系）← tour.guide（资质薄层）===
+    # 财务人事线统一挂 employee；业务调度线仍挂 tour.guide（project.task.guide_id 等零改动）
+    employee_id = fields.Many2one('hr.employee', string='员工档案', index=True,
+                                  ondelete='set null',
+                                  help='导游的劳动关系档案（用工类型/部门/在职）；借款/报销/佣金按员工维度挂账；1:1 导游↔员工')
+
     # === 基本信息 ===
     name = fields.Char('导游姓名', required=True, index=True, tracking=True)
     partner_id = fields.Many2one('res.partner', string='关联联系人', index=True,
-                                 help='导游的个人联系人档案，可关联 res.users 统一用户体系')
+                                 related='employee_id.work_contact_id', store=True,
+                                 help='导游的身份联系人（姓名/手机/地址/银行卡），由员工档案自动带出')
     help_code = fields.Char('助记码', index=True, help='姓名拼音首字母自动生成，支持手工覆盖')
     guide_code = fields.Char('导游证号', required=True, index=True, copy=False,
                              help='全局唯一，保存时校验重复')
@@ -105,6 +112,10 @@ class TourGuide(models.Model):
         'unique(guide_code)',
         '导游证号已存在',
     )
+    _uniq_employee_id = models.Constraint(
+        'unique(employee_id)',
+        '该员工已关联其他导游（三层建模 1:1）',
+    )
 
     @api.depends('id_num', 'account_no')
     def _compute_masked_fields(self):
@@ -149,6 +160,29 @@ class TourGuide(models.Model):
         counts = {g['guide_id'][0]: g['guide_id_count'] for g in groups}
         for rec in self:
             rec.real_pay_count = counts.get(rec.id, 0)
+
+    def action_view_employee(self):
+        """跳转员工档案（hr.employee）。"""
+        self.ensure_one()
+        if not self.employee_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': '员工档案',
+                'res_model': 'hr.employee',
+                'view_mode': 'form',
+                'context': {'default_name': self.name,
+                            'default_department_id': self.department_id.id,
+                            'default_company_id': self.company_id.id},
+                'target': 'current',
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '员工档案',
+            'res_model': 'hr.employee',
+            'view_mode': 'form',
+            'res_id': self.employee_id.id,
+            'target': 'current',
+        }
 
     def action_view_loans(self):
         self.ensure_one()
