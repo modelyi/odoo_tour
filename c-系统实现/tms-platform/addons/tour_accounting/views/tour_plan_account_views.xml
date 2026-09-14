@@ -48,9 +48,11 @@
                 <field name="income_total" sum="收入合计"/>
                 <field name="income_commission"/>
                 <field name="cost_total" sum="成本合计"/>
+                <field name="cost_net_total" sum="不含税成本"/>
                 <field name="receivable"/>
-                <field name="profit"/>
+                <field name="profit" sum="毛利(不含税)"/>
                 <field name="profit_no_shop"/>
+                <field name="profit_tax_incl" sum="毛利(含税口径)"/>
                 <field name="state" widget="badge" decoration-success="state=='settled'" decoration-info="state=='accounting'" decoration-muted="state=='archived'"/>
             </list>
         </field>
@@ -126,8 +128,13 @@
                         </page>
                         <page string="利润">
                             <group>
+                                <field name="cost_net_total"/>
                                 <field name="profit"/>
                                 <field name="profit_no_shop"/>
+                                <field name="profit_tax_incl"/>
+                            </group>
+                            <group>
+                                <field name="income_commission"/>
                             </group>
                         </page>
                     </notebook>

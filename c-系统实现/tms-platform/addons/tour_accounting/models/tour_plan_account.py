@@ -83,10 +83,21 @@ class TourPlanAccount(models.Model):
     supplier_id = fields.Many2one('res.partner', string='客户', related='plan_id.supplier_id',
                                   store=True, index=True)
 
-    profit = fields.Float('利润', digits=(16, 2), compute='_compute_profit', store=True,
-                          help='= 收入合计 - 成本合计')
-    profit_no_shop = fields.Float('利润(不含购物)', digits=(16, 2), compute='_compute_profit', store=True,
-                                  help='= 收入(不含购物) - 成本合计')
+    # === 单团毛利口径（BS-19 裁定：差额征税 · 不含税口径）===
+    cost_net_total = fields.Float(
+        '不含税成本', digits=(16, 2), compute='_compute_profit', store=True,
+        help='= 成本合计 ÷(1+r)（r=本企业税率/征收率）；'
+             '公司开关 tour_cost_tax_split=True 时 = 成本合计（记账侧已拆税，不再换算）'
+             '[BS-19 §二 / 财会2016-22号]')
+    profit_tax_incl = fields.Float(
+        '毛利(含税口径)', digits=(16, 2), compute='_compute_profit', store=True,
+        help='= 含税收入(收入合计×(1+r)) − 含税成本(成本合计)；'
+             '业务/源系统核对口径（in_com_quo_sum − out_sum），非权威利润 [BS-19 §一 裁定3]')
+    profit = fields.Float('毛利(不含税)', digits=(16, 2), compute='_compute_profit', store=True,
+                          help='= 不含税收入 − 不含税成本；唯一权威利润口径 [CAS 14/30 / BS-19 §二]')
+    profit_no_shop = fields.Float('毛利(不含税,不含购物)', digits=(16, 2),
+                                  compute='_compute_profit', store=True,
+                                  help='= (不含税收入 − 购物佣金收入) − 不含税成本')
 
     # === 状态/归属 ===
     state = fields.Selection([
@@ -196,11 +207,41 @@ class TourPlanAccount(models.Model):
             rec.vat_output_amount = round((rec.income_total or 0.0) * r, 2)
             rec.vat_payable = round(rec.vat_output_amount - rec.vat_deduct_amount, 2)
 
-    @api.depends('income_total', 'cost_total', 'income_commission')
+    @api.depends('income_total', 'cost_total', 'income_commission',
+                 'company_id.tour_taxpayer_type', 'company_id.tour_vat_rate',
+                 'company_id.tour_vat_levy_rate', 'company_id.tour_cost_tax_split')
     def _compute_profit(self):
+        """单团毛利：差额征税 · 不含税口径，收入/成本同口径相减 [BS-19 §二]。
+
+        - 总额法（组团）：成本按**本企业税率 r** 不含税化 → 与不含税收入配比
+          （财会2016-22号：差额征税按本企业税率、用含税金额统一换算，不分项换算供应商税率）
+        - 净额法（代订 biz_mode 41 / 地接）：代收代付走 2241.01 不进 6401 →
+          cost_total=0 → profit = income_total（差价不含税），同式自动成立，无需特判
+        - profit_tax_incl 为含税管理口径（≠ 权威利润）
+
+        不变量 [BS-19 §一 裁定5]：cost_total 固定为成本分析行净额（含税）。
+        若记账侧已拆成本税（res.company.tour_cost_tax_split=True，差额抵减凭证已回写 6401），
+        则不再换算，避免双重扣减。两状态由该单开关唯一决定，不得叠加。
+
+        取值修正 [BS-19 §2.3]：用 rec.company_id（非 env.company）取税参，
+        保证多主体（各自身份/税率）各自口径正确。
+        """
         for rec in self:
-            rec.profit = rec.income_total - rec.cost_total
-            rec.profit_no_shop = (rec.income_total - rec.income_commission) - rec.cost_total
+            co = rec.company_id or self.env.company
+            _tp, rate_pct, _enabled = self._tour_vat_params(co)
+            rr = (rate_pct or 0.0) / 100.0
+            gross = rec.cost_total or 0.0
+            income = rec.income_total or 0.0
+            if co.tour_cost_tax_split or not rr:
+                cost_net = round(gross, 2)
+            else:
+                cost_net = round(gross / (1 + rr), 2)
+            rec.cost_net_total = cost_net
+            rec.profit = round(income - cost_net, 2)
+            rec.profit_no_shop = round(
+                income - (rec.income_commission or 0.0) - cost_net, 2)
+            inc_gross = income * (1 + rr) if rr else income
+            rec.profit_tax_incl = round(inc_gross - gross, 2)
 
     def action_settle(self):
         for rec in self:

@@ -34,10 +34,12 @@
                 <field name="income_total" type="measure"/>
                 <field name="income_commission" type="measure"/>
                 <field name="cost_total" type="measure"/>
+                <field name="cost_net_total" type="measure"/>
                 <field name="receivable" type="measure"/>
                 <field name="invoice_gap" type="measure"/>
                 <field name="profit" type="measure"/>
                 <field name="profit_no_shop" type="measure"/>
+                <field name="profit_tax_incl" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -49,8 +51,10 @@
             <graph string="单团利润">
                 <field name="plan_id" type="row"/>
                 <field name="profit" type="measure"/>
+                <field name="profit_tax_incl" type="measure"/>
                 <field name="income_total" type="measure"/>
                 <field name="cost_total" type="measure"/>
+                <field name="cost_net_total" type="measure"/>
             </graph>
         </field>
     </record>

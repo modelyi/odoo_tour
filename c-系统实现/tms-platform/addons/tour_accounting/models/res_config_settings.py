@@ -88,6 +88,9 @@ class ResConfigSettingsTourVat(models.TransientModel):
     tour_diff_tax_enabled = fields.Boolean(
         related='company_id.tour_diff_tax_enabled', readonly=False,
         string='启用差额征税')
+    tour_cost_tax_split = fields.Boolean(
+        related='company_id.tour_cost_tax_split', readonly=False,
+        string='成本已在记账侧拆税')
 
     # === P2P 请款分级审批阈值（related 到 res.company，真实落点）[TDS §2.3] ===
     tour_pr_free_limit = fields.Float(

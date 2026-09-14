@@ -204,14 +204,17 @@ class TourAccountingMixin(models.AbstractModel):
 
     # === Phase 3：差额征税增值税（拆税/抵减/纳税人配置）[BS-11] ===
 
-    def _tour_vat_params(self):
+    def _tour_vat_params(self, company=None):
         """返回 (taxpayer_type, rate, enabled)。rate 为百分数（6/3/1），计算税额时 ÷100。
 
         - 一般纳税人 → tour_vat_rate（默认 6%）
         - 小规模纳税人 → tour_vat_levy_rate（默认 3%，优惠期调 1%）
         [BS-11 §10.3]
+
+        :param company: 指定公司（多主体各自身份/税率）；缺省用 env.company。
+                        台账毛利按记录所属公司取参 [BS-19 §2.3 取值修正]。
         """
-        co = self.env.company
+        co = company or self.env.company
         if co.tour_taxpayer_type == 'general':
             rate = co.tour_vat_rate or 0.0
         else:

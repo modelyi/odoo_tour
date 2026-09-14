@@ -143,6 +143,12 @@ class ResCompanyTourVat(models.Model):
         help='[财税2016-36号] 选择差额征税后 36 个月不得变更；'
              '关闭则走全额计税，不生成销项税额抵减分录')
 
+    tour_cost_tax_split = fields.Boolean('成本已在记账侧拆税', default=False,
+        help='防双重扣减开关 [BS-19 §一 裁定5]：'
+             'True=6401 已为不含税净额（差额抵减凭证已回写 6401），'
+             '台账 cost_net_total 不再换算；'
+             'False=6401 含税（成本全额含税入账），台账按本企业税率 r 不含税化。')
+
     # === P2P 请款分级审批阈值 [TDS §2.3 / BS-06 §4.2] ===
     tour_pr_free_limit = fields.Float('请款免审上限', default=1000.0, digits=(16, 2),
         help='金额 ≤ 该值免审（默认 1000）')

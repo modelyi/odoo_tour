@@ -26,6 +26,10 @@
                             help="[财税2016-36号] 选择差额征税后 36 个月不得变更；关闭走全额计税">
                             <field name="tour_diff_tax_enabled"/>
                         </setting>
+                        <setting string="成本已在记账侧拆税"
+                            help="防双重扣减开关 [BS-19 §一 裁定5]：默认关闭（6401 含税，台账按 r 不含税化）；差额抵减凭证回写 6401 后置 True，台账不再换算">
+                            <field name="tour_cost_tax_split"/>
+                        </setting>
                     </block>
                 </app>
             </xpath>
