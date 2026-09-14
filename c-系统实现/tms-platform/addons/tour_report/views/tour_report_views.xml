@@ -10,10 +10,14 @@
                 <field name="plan_id"/>
                 <field name="department_id"/>
                 <field name="biz_mode"/>
+                <field name="report_channel_name"/>
+                <field name="report_from_type"/>
                 <separator/>
                 <filter name="group_plan" string="按团" context="{'group_by':'plan_id'}"/>
                 <filter name="group_department" string="按部门" context="{'group_by':'department_id'}"/>
                 <filter name="group_biz" string="按业务模式" context="{'group_by':'biz_mode'}"/>
+                <filter name="group_channel" string="按销售渠道" context="{'group_by':'report_channel_name'}"/>
+                <filter name="group_source" string="按订单来源" context="{'group_by':'report_from_type'}"/>
             </search>
         </field>
     </record>
@@ -24,6 +28,7 @@
         <field name="arch" type="xml">
             <pivot string="单团利润">
                 <field name="plan_id" type="row"/>
+                <field name="report_channel_name" type="col"/>
                 <field name="department_id" type="col"/>
                 <field name="biz_mode" type="col"/>
                 <field name="income_total" type="measure"/>

@@ -14,6 +14,8 @@ REPORT_TYPES = {
             ('plan_id', '按团'),
             ('department_id', '按部门'),
             ('biz_mode', '按业务模式'),
+            ('report_channel_name', '按销售渠道'),
+            ('report_from_type', '按订单来源'),
         ],
         'search_view': 'tour_report.view_tour_plan_account_report_search',
     },
