@@ -193,6 +193,11 @@ class TourPlan(models.Model):
                                   help='主报名单（仅自由行 51/52 使用，其余恒空）')
     main_reg_code = fields.Char('主报名单号')
 
+    # === 销售溯源（CRM 赢单转团回链，历史团可空，不 backfill） ===
+    lead_id = fields.Many2one('crm.lead', string='销售线索', index=True,
+                              copy=False, ondelete='set null',
+                              help='CRM 赢单转团来源线索（历史团为空，不 backfill）')
+
     # === 导游安排（结构化拆分，禁止内嵌 PII） ===
     guide_contact = fields.Char('导游联系摘要')
     guide_ids = fields.Many2many('tour.guide', 'tour_plan_guide_rel',

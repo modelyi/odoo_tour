@@ -27,7 +27,7 @@ _MODULE_MENUS = [
     ('operation', 'tour_operation.menu_tms_operation'),
     ('resource', 'tour_resource.menu_tms_resource'),
     ('shopping', 'tour_shopping.menu_tms_shopping'),
-    ('finance', 'tour_accounting.menu_tms_finance'),
+    ('finance', 'tour_accounting.menu_tour_finance'),
     ('report', 'tour_report.menu_tms_report'),
     ('base', 'tour_base.menu_tms_root'),
 ]

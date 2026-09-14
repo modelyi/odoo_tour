@@ -1,3 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import tour_booking
+from . import project_task
+from . import project_project
 from . import tour_plan

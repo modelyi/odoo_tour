@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="seq_tour_booking" model="ir.sequence">
-            <field name="name">预订编号</field>
-            <field name="code">tour.booking</field>
-            <field name="prefix">BK-</field>
+        <!-- CRM 转团团号（自动建团用） -->
+        <record id="seq_tour_plan_crm" model="ir.sequence">
+            <field name="name">CRM 转团团号</field>
+            <field name="code">tour.plan.crm</field>
+            <field name="prefix">CRM</field>
             <field name="padding">6</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>

@@ -1,70 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        财务会计（通用会计功能）子菜单
-        =================================
-        把 Odoo 原生 + base_accounting_kit（fork 为 tour_accounting）的通用会计功能菜单
-        统一归入「旅行社管理 → 财务管理 → 财务会计」，使「旅行社管理」成为全视角入口。
+        标准会计菜单归位
+        =================
+        把之前统一塞进「财务会计」子菜单的 Odoo 原生 + base_accounting_kit（fork 为
+        tour_accounting）通用会计功能菜单，归位回 Odoo 标准 accounting(account.menu_finance)
+        的对应分组，使 accounting 成为唯一财务入口。
 
         只改 parent 挂载位置，保留原 action 与菜单 name；sequence 重新排布以保证
         子菜单顺序清晰。原菜单 xmlid 保持不变。
     -->
 
-    <!-- 财务会计子菜单（挂在「财务管理」menu_tms_finance 下） -->
-    <menuitem id="menu_tour_finance_general"
-        name="财务会计"
-        parent="menu_tms_finance"
-        sequence="70"/>
-
-    <!-- 发票（Odoo 原生 account 模块，id=account.menu_action_move_out_invoice_type） -->
+    <!-- 发票（Odoo 原生，归位回「客户」Customers 分组） -->
     <record model="ir.ui.menu" id="account.menu_action_move_out_invoice_type">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
+        <field name="parent_id" ref="account.menu_finance_receivables"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- 财务报表 → 「报表」Reporting 分组 -->
+    <record model="ir.ui.menu" id="account_financial_reports_profit_loss">
+        <field name="parent_id" ref="account.menu_finance_reports"/>
         <field name="sequence">10</field>
     </record>
-
-    <!-- 财务报表 -->
-    <record model="ir.ui.menu" id="account_financial_reports_profit_loss">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
+    <record model="ir.ui.menu" id="_account_financial_reports_balance_sheet">
+        <field name="parent_id" ref="account.menu_finance_reports"/>
         <field name="sequence">20</field>
     </record>
-    <record model="ir.ui.menu" id="_account_financial_reports_balance_sheet">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
+    <record model="ir.ui.menu" id="menu_Balance_report">
+        <field name="parent_id" ref="account.menu_finance_reports"/>
         <field name="sequence">30</field>
     </record>
     <record model="ir.ui.menu" id="menu_account_cash_flow_report">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
+        <field name="parent_id" ref="account.menu_finance_reports"/>
         <field name="sequence">40</field>
     </record>
-    <record model="ir.ui.menu" id="menu_Balance_report">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">50</field>
-    </record>
     <record model="ir.ui.menu" id="menu_aged_trial_balance">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">60</field>
+        <field name="parent_id" ref="account_reports_partner"/>
+        <field name="sequence">2</field>
     </record>
 
-    <!-- 催款 / 定期开票 -->
+    <!-- 催款 → 催款级别进「审查」Review、催款报告进「客户」Customers -->
     <record model="ir.ui.menu" id="account_followup_menu">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">70</field>
+        <field name="parent_id" ref="account.account_audit_menu"/>
+        <field name="sequence">30</field>
     </record>
     <record model="ir.ui.menu" id="customer_statements_menu">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">80</field>
-    </record>
-    <record model="ir.ui.menu" id="menu_account_recurring_invoice">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">90</field>
+        <field name="parent_id" ref="account.menu_finance_receivables"/>
+        <field name="sequence">20</field>
     </record>
 
-    <!-- 资产 -->
+    <!-- 定期开票 / 资产 → 「会计」Accounting 分组 -->
+    <record model="ir.ui.menu" id="menu_account_recurring_invoice">
+        <field name="parent_id" ref="account.menu_finance_entries"/>
+        <field name="sequence">40</field>
+    </record>
     <record model="ir.ui.menu" id="menu_action_account_asset_asset_form">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">100</field>
+        <field name="parent_id" ref="account.menu_finance_entries"/>
+        <field name="sequence">45</field>
     </record>
     <record model="ir.ui.menu" id="menu_action_asset_asset_report">
-        <field name="parent_id" ref="menu_tour_finance_general"/>
-        <field name="sequence">110</field>
+        <field name="parent_id" ref="account.menu_finance_entries"/>
+        <field name="sequence">50</field>
     </record>
 </odoo>

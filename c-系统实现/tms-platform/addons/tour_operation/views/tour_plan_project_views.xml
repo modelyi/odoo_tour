@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- tour.plan Smart Button：计调任务（project.task）入口 -->
+    <record id="view_tour_plan_form_project" model="ir.ui.view">
+        <field name="name">tour.plan.form.project</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tasks" type="object"
+                    class="oe_stat_button" icon="fa-tasks"
+                    help="查看该团的计调任务（project.task）">
+                    <div class="o_stat_info">
+                        <field name="task_count" widget="statinfo" string="计调任务"/>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

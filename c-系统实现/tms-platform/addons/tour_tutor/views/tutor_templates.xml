@@ -101,7 +101,7 @@
                             <div class="tt-card">
                                 <h3>计调操作 <span class="tt-tag">tour_operation</span></h3>
                                 <div class="tt-duty">预订安排：计调排团 / 资源预订（核心调度中枢）</div>
-                                <div class="tt-models">tour.booking</div>
+                                <div class="tt-models">project.project · project.task</div>
                                 <a class="tt-link" t-attf-href="#{menu_links['operation']}" target="_blank">进入功能 →</a>
                             </div>
                         </div>
