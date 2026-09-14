@@ -29,7 +29,7 @@ class TourVehicle(models.Model):
                                 help='关联司机档案；司机信息（姓名/身份证/手机/结算）统一在司机档案管理')
 
     # === 所属车队 ===
-    supplier_id = fields.Many2one('res.partner', string='所属车队（车辆公司）',
+    supplier_id = fields.Many2one('tour.supplier', string='所属车队（车辆公司）',
                                   index=True, domain=[('sup_type', '=', 'vehicle_comp')])
     supplier_name = fields.Char('车队名称冗余')
     power_area = fields.Char('授权区域')

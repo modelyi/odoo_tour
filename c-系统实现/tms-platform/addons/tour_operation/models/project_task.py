@@ -28,7 +28,7 @@ class ProjectTask(models.Model):
     vehicle_id = fields.Many2one('tour.vehicle', string='车辆', index=True,
                                  domain="[('audit_chk', '=', True)]",
                                  help='resource_type=vehicle 时必填，仅可选已审核车辆')
-    supplier_id = fields.Many2one('res.partner', string='供应商', index=True,
+    supplier_id = fields.Many2one('tour.supplier', string='供应商', index=True,
                                   help='hotel→sup_type=hotel；meal→sup_type=meal；'
                                        'scenic→sup_type=scenic；vehicle→sup_type=vehicle_comp')
     supplier_name = fields.Char('供应商名称', help='供应商名称冗余')

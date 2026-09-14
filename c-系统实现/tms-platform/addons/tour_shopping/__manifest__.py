@@ -10,7 +10,7 @@
         旅行社购物管理模块：
         - 购物记录 (tour.shop.record)：团队在购物店的消费明细
         - 购物返佣是团队利润来源，返佣金额 = 购物金额 × 返佣比例 / 100
-        - 购物店档案复用 res.partner (sup_type=shop)
+        - 购物店档案使用 tour.supplier (sup_type=shop)
         - 购物协议复用 tour.shop.agreement（返佣比例来源）
     """,
     'author': 'SolePro',

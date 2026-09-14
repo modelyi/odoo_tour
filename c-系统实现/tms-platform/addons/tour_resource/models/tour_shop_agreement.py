@@ -9,7 +9,7 @@ class TourShopAgreement(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'begin_date desc, name'
 
-    shop_id = fields.Many2one('res.partner', string='购物店', required=True,
+    shop_id = fields.Many2one('tour.supplier', string='购物店', required=True,
                               index=True, domain=[('sup_type', '=', 'shop')])
     name = fields.Char('协议编号', required=True, index=True)
     shop_type = fields.Char('购物店类型', help='珠宝/特产/玉器等')

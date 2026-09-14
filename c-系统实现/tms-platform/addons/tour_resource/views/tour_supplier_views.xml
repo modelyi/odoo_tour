@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_supplier_search" model="ir.ui.view">
+        <field name="name">tour.supplier.search</field>
+        <field name="model">tour.supplier</field>
+        <field name="arch" type="xml">
+            <search string="供应商搜索">
+                <field name="name"/>
+                <field name="et_cmp_code"/>
+                <field name="help_code"/>
+                <field name="manager"/>
+                <field name="city_name"/>
+                <filter name="active" string="启用" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <filter name="unaudited" string="未审核" domain="[('audit_chk','=',False)]"/>
+                <separator/>
+                <filter name="sup_customer" string="客户" domain="[('sup_type','=','customer')]"/>
+                <filter name="sup_ditch" string="地接社" domain="[('sup_type','=','ditch')]"/>
+                <filter name="sup_hotel" string="酒店" domain="[('sup_type','=','hotel')]"/>
+                <filter name="sup_meal" string="餐厅" domain="[('sup_type','=','meal')]"/>
+                <filter name="sup_vehicle_comp" string="车队" domain="[('sup_type','=','vehicle_comp')]"/>
+                <filter name="sup_ticket" string="票务" domain="[('sup_type','=','ticket')]"/>
+                <filter name="sup_scenic" string="景区" domain="[('sup_type','=','scenic')]"/>
+                <filter name="sup_shop" string="购物店" domain="[('sup_type','=','shop')]"/>
+                <filter name="sup_insurance" string="保险" domain="[('sup_type','=','insurance')]"/>
+                <filter name="sup_self_fee" string="自费" domain="[('sup_type','=','self_fee')]"/>
+                <separator/>
+                <filter name="group_sup_type" string="供应商类型" context="{'group_by':'sup_type'}"/>
+                <filter name="group_level" string="供应商等级" context="{'group_by':'level_id'}"/>
+                <filter name="group_province" string="省" context="{'group_by':'province'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_supplier" model="ir.actions.act_window">
+        <field name="name">供应商</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_supplier_list" model="ir.ui.view">
+        <field name="name">tour.supplier.list</field>
+        <field name="model">tour.supplier</field>
+        <field name="arch" type="xml">
+            <list string="供应商">
+                <field name="name"/>
+                <field name="sup_type"/>
+                <field name="manager"/>
+                <field name="manager_mobile"/>
+                <field name="city_name"/>
+                <field name="grade"/>
+                <field name="credit_lmt"/>
+                <field name="audit_chk"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_supplier_form" model="ir.ui.view">
+        <field name="name">tour.supplier.form</field>
+        <field name="model">tour.supplier</field>
+        <field name="arch" type="xml">
+            <form string="供应商档案">
+                <header>
+                    <button name="action_audit_approve" string="审核通过" type="object"
+                        class="btn-primary" invisible="audit_chk == True"/>
+                    <field name="audit_chk" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="供应商名称"/>
+                        </h1>
+                        <field name="partner_id" placeholder="关联联系人（可搜索）"/>
+                    </div>
+                    <group string="供应商类型与基本信息">
+                        <group>
+                            <field name="sup_type"/>
+                            <field name="et_cmp_code"/>
+                            <field name="help_code"/>
+                            <field name="manager"/>
+                            <field name="manager_mobile"/>
+                            <field name="boss_birthday"/>
+                        </group>
+                        <group>
+                            <field name="grade"/>
+                            <field name="level_id"/>
+                            <field name="level_name"/>
+                            <field name="sort_code"/>
+                            <field name="verify_user"/>
+                            <field name="purchaser"/>
+                            <field name="grant_num"/>
+                            <field name="author_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="合同与开票">
+                            <group string="合同">
+                                <group>
+                                    <field name="contract_no"/>
+                                    <field name="contract_date"/>
+                                    <field name="contract_begin_date"/>
+                                    <field name="contract_end_date"/>
+                                    <field name="is_contract"/>
+                                </group>
+                                <group>
+                                    <field name="cooperation_agreement"/>
+                                </group>
+                            </group>
+                            <group string="开票">
+                                <group>
+                                    <field name="invoice_title"/>
+                                    <field name="tax_payer_no"/>
+                                    <field name="is_invoice"/>
+                                    <field name="invoice_rule"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="等级与信用">
+                            <group>
+                                <group>
+                                    <field name="credit_lmt"/>
+                                    <field name="credit_lmt_type"/>
+                                    <field name="credit_lmt_sk"/>
+                                </group>
+                                <group>
+                                    <field name="charge_period"/>
+                                    <field name="free_payment_lmt"/>
+                                    <field name="pay_way"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="协议价与服务费">
+                            <group>
+                                <group>
+                                    <field name="agr_price"/>
+                                    <field name="any_price"/>
+                                    <field name="service_type"/>
+                                    <field name="service_price"/>
+                                </group>
+                                <group>
+                                    <field name="service_calc_mode"/>
+                                    <field name="service_fee_round_way"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="区域信息">
+                            <group>
+                                <group>
+                                    <field name="province"/>
+                                    <field name="city_name"/>
+                                    <field name="zone"/>
+                                    <field name="county_town"/>
+                                </group>
+                                <group>
+                                    <field name="latitude"/>
+                                    <field name="longtitue"/>
+                                    <field name="location"/>
+                                    <field name="addr2"/>
+                                    <field name="manage_area_set"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="结算信息">
+                            <group>
+                                <group>
+                                    <field name="bank"/>
+                                    <field name="account"/>
+                                </group>
+                                <group>
+                                    <field name="res_isolation"/>
+                                    <field name="isno_repeat"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="审核与备注">
+                            <group>
+                                <group>
+                                    <field name="audit_chk"/>
+                                    <field name="audit_user"/>
+                                    <field name="audit_date"/>
+                                </group>
+                                <group>
+                                    <field name="company_id"/>
+                                    <field name="active"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="audit_brief"/>
+                                <field name="remark"/>
+                                <field name="remark2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

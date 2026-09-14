@@ -26,7 +26,7 @@ class TourCommission(models.Model):
     plan_id = fields.Many2one('tour.plan', string='团队订单', required=True, index=True,
                               ondelete='restrict')
     plan_code = fields.Char('团号', related='plan_id.plan_code', store=True)
-    shop_id = fields.Many2one('res.partner', string='购物店', index=True,
+    shop_id = fields.Many2one('tour.supplier', string='购物店', index=True,
                               domain=[('sup_type', '=', 'shop')])
     shop_name = fields.Char('购物店名称')
     agreement_id = fields.Many2one('tour.shop.agreement', string='购物协议',
