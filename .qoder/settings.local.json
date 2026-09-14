@@ -3,7 +3,9 @@
     "allow": [
       "WebFetch(*)",
       "WebFetch(*)",
-      "WebFetch(*)"
+      "WebFetch(*)",
+      "Bash(find /home/adai/tms/c-系统实现/tms-platform -maxdepth 2 -type f | head -40)",
+      "Bash(find /home/adai/tms/c-系统实现/tms-platform/addons -name \"__manifest__.py\" | head -5)"
     ]
   }
 }
