@@ -21,11 +21,11 @@
                                            placeholder="线路名称 / 助记码" t-att-value="keyword"/>
                                 </div>
                                 <div class="col-md-4">
-                                    <select name="line_type_id" class="form-select">
+                                    <select name="categ_id" class="form-select">
                                         <option value="">全部分类</option>
-                                        <t t-foreach="line_types" t-as="ct">
+                                        <t t-foreach="categories" t-as="ct">
                                             <option t-att-value="ct.id"
-                                                    t-att-selected="'selected' if str(ct.id) == str(line_type_id) else None">
+                                                    t-att-selected="'selected' if str(ct.id) == str(categ_id) else None">
                                                 <t t-out="ct.name"/>
                                             </option>
                                         </t>
@@ -57,8 +57,8 @@
                                             </t>
                                         </div>
                                         <div class="tour-card__meta mb-3">
-                                            <t t-if="line.line_type_id">
-                                                <span class="tour-tag" t-out="line.line_type_id.name"/>
+                                            <t t-if="line.categ_id">
+                                                <span class="tour-tag" t-out="line.categ_id.name"/>
                                             </t>
                                             <t t-if="line.is_abroad">
                                                 <span class="tour-tag tour-tag--accent">境外</span>
@@ -107,9 +107,9 @@
                             </t>
                             <t t-if="line.send_traffic"><span class="mx-2">·</span><span>去程：<t t-out="line.send_traffic"/></span></t>
                             <t t-if="line.end_traffic"><span class="mx-2">·</span><span>返程：<t t-out="line.end_traffic"/></span></t>
-                            <t t-if="line.line_type_id">
+                            <t t-if="line.categ_id">
                                 <span class="mx-2">·</span>
-                                <span class="badge bg-info text-dark" t-out="line.line_type_id.name"/>
+                                <span class="badge bg-info text-dark" t-out="line.categ_id.name"/>
                             </t>
                             <t t-if="line.is_abroad"><span class="badge bg-warning text-dark">境外</span></t>
                             <t t-if="line.is_special"><span class="badge bg-danger">特色</span></t>
@@ -211,7 +211,7 @@
                                                 </div>
                                                 <div class="w-100 d-flex align-items-center justify-content-between">
                                                     <span class="tour-price">
-                                                        <small>¥</small><t t-out="'%g' % (dep.price_adult or line.adult_price or 0.0)"/>
+                                                        <small>¥</small><t t-out="'%g' % (dep.price_adult or line.list_price or 0.0)"/>
                                                     </span>
                                                     <t t-if="dep.remain_seats &gt; 0">
                                                         <a t-attf-href="/tours/#{line.id}/register?departure_id=#{dep.id}"

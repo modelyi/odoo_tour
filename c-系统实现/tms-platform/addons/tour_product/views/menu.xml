@@ -13,10 +13,10 @@
         action="action_tour_line"
         sequence="10"/>
 
-    <menuitem id="menu_tour_line_type"
+    <menuitem id="menu_tour_product_category"
         name="线路分类"
         parent="menu_tms_product"
-        action="action_tour_line_type"
+        action="action_tour_product_category"
         sequence="20"/>
 
     <menuitem id="menu_tour_departure"

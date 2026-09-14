@@ -22,10 +22,10 @@ class TourWebsite(http.Controller):
         TourLine = request.env['tour.line'].sudo()
         domain = [('active', '=', True), ('audit_state', '=', 'approved')]
 
-        line_type_id = kw.get('line_type_id')
-        if line_type_id:
+        categ_id = kw.get('categ_id')
+        if categ_id:
             try:
-                domain.append(('line_type_id', '=', int(line_type_id)))
+                domain.append(('categ_id', '=', int(categ_id)))
             except (TypeError, ValueError):
                 pass
 
@@ -34,15 +34,15 @@ class TourWebsite(http.Controller):
             domain += ['|', ('name', 'ilike', keyword), ('help_code', 'ilike', keyword)]
 
         lines = TourLine.search(domain, order='sequence, name')
-        line_types = request.env['tour.line.type'].sudo().search(
-            [('active', '=', True)], order='sequence, name')
+        categories = request.env['product.category'].sudo().search(
+            [], order='complete_name')
         # 起价 = 该线路已发布且未过期发团计划的最低成人价（无则回退线路成人价；均无显示「价格电询」）
         price_from = TourLine.website_price_map(lines)
         return request.render('tour_website.tour_list', {
             'lines': lines,
-            'line_types': line_types,
+            'categories': categories,
             'keyword': keyword,
-            'line_type_id': line_type_id,
+            'categ_id': categ_id,
             'price_from': price_from,
         })
 

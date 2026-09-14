@@ -52,8 +52,8 @@
                                             <div class="tour-card__title" t-out="line.name"/>
                                             <div class="tour-card__meta">
                                                 <span><i class="fa fa-clock-o me-1"/><t t-out="line.day_num"/> 天</span>
-                                                <t t-if="line.line_type_id">
-                                                    <span class="tour-tag" t-out="line.line_type_id.name"/>
+                                                <t t-if="line.categ_id">
+                                                    <span class="tour-tag" t-out="line.categ_id.name"/>
                                                 </t>
                                                 <t t-if="line.is_abroad">
                                                     <span class="tour-tag tour-tag--accent">境外</span>

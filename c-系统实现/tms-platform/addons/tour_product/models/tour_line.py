@@ -4,20 +4,23 @@ from odoo import models, fields, api
 
 class TourLine(models.Model):
     _name = 'tour.line'
-    _description = '线路产品'
+    _description = '线路产品（委托 product.template）'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    # 委托继承：线路 = 一种 service 产品。表名与 id 不变，下游 FK（tour.plan.line_id 等）不断。
+    # name / default_code / categ_id / list_price / active / is_published 等“产品主档”字段
+    # 由 product.template 承接并自动代理，不在 tour.line 上重复定义。
+    _inherits = {'product.template': 'product_tmpl_id'}
     _order = 'sequence, name'
 
-    # === 基本信息 ===
-    name = fields.Char('线路名称', required=True, tracking=True, index=True)
-    code = fields.Char('线路编号', index=True, copy=False)
+    # === 委托主键（1:1 → product.template） ===
+    product_tmpl_id = fields.Many2one(
+        'product.template', string='产品模板', required=True,
+        index=True, ondelete='cascade')
+
+    # === 旅行社专属字段（保留在 tour.line，电商不直接消费） ===
     help_code = fields.Char('助记码', index=True)
     short_name = fields.Char('简称')
     sequence = fields.Integer('排序', default=10)
-    active = fields.Boolean('启用', default=True, tracking=True)
-
-    # === 分类 ===
-    line_type_id = fields.Many2one('tour.line.type', string='线路分类', required=True, index=True, tracking=True)
 
     # === 行程信息 ===
     day_num = fields.Integer('天数', required=True, default=1)
@@ -31,8 +34,7 @@ class TourLine(models.Model):
     send_traffic = fields.Char('去程交通')
     end_traffic = fields.Char('返程交通')
 
-    # === 价格体系 ===
-    adult_price = fields.Float('成人价', digits='Product Price')
+    # === 价格体系（成人价已委托 product.template.list_price） ===
     child_price = fields.Float('儿童价', digits='Product Price')
     old_man_price = fields.Float('老人价', digits='Product Price')
     student_price = fields.Float('学生价', digits='Product Price')
@@ -113,6 +115,7 @@ class TourLine(models.Model):
             'domain': [('line_id', '=', self.id)],
             'context': {'default_line_id': self.id},
         }
+
     def action_submit(self):
         self.write({'audit_state': 'submitted'})
 

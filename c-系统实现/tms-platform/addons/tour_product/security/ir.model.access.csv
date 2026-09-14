@@ -1,6 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tour_line_type_user,tour.line.type.user,model_tour_line_type,base.group_user,1,0,0,0
-access_tour_line_type_manager,tour.line.type.manager,model_tour_line_type,base.group_system,1,1,1,1
 access_tour_line_user,tour.line.user,model_tour_line,base.group_user,1,1,1,0
 access_tour_line_manager,tour.line.manager,model_tour_line,base.group_system,1,1,1,1
 access_tour_departure_user,tour.departure.user,model_tour_departure,base.group_user,1,0,0,0

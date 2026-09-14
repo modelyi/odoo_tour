@@ -16,3 +16,5 @@
 | TDS-FIN-001 | [TDS-财务记账对接.md](TDS-财务记账对接.md) | 初稿 | 财务记账对接、科目表、分录 |
 | TDS-B2C-001 | [TDS-线上销售.md](TDS-线上销售.md) | 初稿 | B2C 线上销售、报名、付款 |
 | TDS-GAP-001 | [TDS-缺口补齐方案与分阶段实施计划.md](TDS-缺口补齐方案与分阶段实施计划.md) | 初稿 | 数据/功能缺口、分阶段实施、范围冻结 |
+| TDS-DATA-003 | [TDS-基础数据字典设计评估.md](TDS-基础数据字典设计评估.md) | 评估稿 | 基础数据/字典合规评估：万能字典反模式、selection vs M2O、原生复用、company_id |
+| TDS-PROD-001 | [TDS-PROD-001-线路产品product化整体重写方案.md](TDS-PROD-001-线路产品product化整体重写方案.md) | 方案稿 | 线路 product 化：tour.line 委托 product.template（_inherits）、分类迁 product.category、website_sale 电商桥接、迁移与风险 |

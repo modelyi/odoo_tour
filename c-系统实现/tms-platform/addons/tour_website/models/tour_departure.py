@@ -23,7 +23,7 @@ class TourDeparture(models.Model):
         self.ensure_one()
         line = self.line_id
         return {
-            'adult': self.price_adult if self.price_adult else (line.adult_price or 0.0),
+            'adult': self.price_adult if self.price_adult else (line.list_price or 0.0),
             'child': self.price_child if self.price_child else (line.child_price or 0.0),
             'old_man': self.price_old_man if self.price_old_man else (line.old_man_price or 0.0),
             'student': self.price_student if self.price_student else (line.student_price or 0.0),
