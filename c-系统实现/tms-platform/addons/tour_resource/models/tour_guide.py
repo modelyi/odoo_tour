@@ -6,23 +6,21 @@ from odoo.exceptions import ValidationError
 class TourGuide(models.Model):
     _name = 'tour.guide'
     _description = '导游档案'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'tour.encrypted.field.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name, guide_code'
 
-    # 敏感字段（AES-256-GCM 落盘加密 + 掩码展示 + 等值检索散列）
-    _encrypted_fields = {'id_num': True, 'account_no': True}
+    # === 身份底座：res.partner（独立，不依赖 hr.employee）===
+    partner_id = fields.Many2one('res.partner', string='关联联系人', index=True,
+                                 ondelete='set null',
+                                 help='导游的身份联系人；内部导游可关联员工 work_contact，外部导游可关联任意 partner')
 
-    # === 三层建模：res.partner（身份）← hr.employee（劳动关系）← tour.guide（资质薄层）===
-    # 财务人事线统一挂 employee；业务调度线仍挂 tour.guide（project.task.guide_id 等零改动）
+    # === 劳动关系（可选：内部导游挂员工，外部导游不挂）===
     employee_id = fields.Many2one('hr.employee', string='员工档案', index=True,
                                   ondelete='set null',
                                   help='导游的劳动关系档案（用工类型/部门/在职）；借款/报销/佣金按员工维度挂账；1:1 导游↔员工')
 
     # === 基本信息 ===
     name = fields.Char('导游姓名', required=True, index=True, tracking=True)
-    partner_id = fields.Many2one('res.partner', string='关联联系人', index=True,
-                                 related='employee_id.work_contact_id', store=True,
-                                 help='导游的身份联系人（姓名/手机/地址/银行卡），由员工档案自动带出')
     help_code = fields.Char('助记码', index=True, help='姓名拼音首字母自动生成，支持手工覆盖')
     guide_code = fields.Char('导游证号', required=True, index=True, copy=False,
                              help='全局唯一，保存时校验重复')
@@ -33,14 +31,9 @@ class TourGuide(models.Model):
     nation = fields.Char('民族')
     born_place = fields.Char('出生地')
     edu = fields.Char('学历')
-    id_num = fields.Char('身份证号',
-                         help='🔴 敏感字段：已 AES-256-GCM 加密存储，界面掩码。审核通过时必填')
-    id_num_hash = fields.Char('身份证号检索散列', index=True, copy=False,
-                              help='HMAC-SHA256 等值检索辅助列（不存明文），用于精确匹配搜索')
-    id_num_masked = fields.Char('身份证号掩码', compute='_compute_masked_fields',
-                                help='界面/报表/日志/导出默认显示 ****后4位')
-    tel = fields.Char('固定电话', help='🟡 敏感字段：界面掩码')
-    mobile = fields.Char('手机号', help='🟡 敏感字段：界面掩码')
+    id_num = fields.Char('身份证号')
+    tel = fields.Char('固定电话')
+    mobile = fields.Char('手机号')
     zip_code = fields.Char('邮编')
     addr = fields.Char('通讯地址')
     photo = fields.Binary('照片')
@@ -77,11 +70,7 @@ class TourGuide(models.Model):
     # === 结算信息 ===
     account_bank = fields.Char('开户行')
     account_name = fields.Char('结算账户名')
-    account_no = fields.Char('结算银行卡号', help='🔴 敏感字段：已 AES-256-GCM 加密存储，界面掩码')
-    account_no_hash = fields.Char('结算银行卡号检索散列', index=True, copy=False,
-                                  help='HMAC-SHA256 等值检索辅助列（不存明文）')
-    account_no_masked = fields.Char('结算银行卡号掩码', compute='_compute_masked_fields',
-                                    help='界面/报表/日志/导出默认显示 ****后4位')
+    account_no = fields.Char('结算银行卡号')
     loan_rate = fields.Float('借款利率', digits=(5, 2))
     cw_code = fields.Char('财务编码')
 
@@ -116,14 +105,13 @@ class TourGuide(models.Model):
     )
     _uniq_employee_id = models.Constraint(
         'unique(employee_id)',
-        '该员工已关联其他导游（三层建模 1:1）',
+        '该员工已关联其他导游（1:1）',
     )
 
-    @api.depends('id_num', 'account_no')
-    def _compute_masked_fields(self):
-        for rec in self:
-            rec.id_num_masked = rec._encrypt_mask('id_num')
-            rec.account_no_masked = rec._encrypt_mask('account_no')
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id and not self.name:
+            self.name = self.partner_id.name
 
     @api.constrains('guide_star')
     def _check_guide_star(self):

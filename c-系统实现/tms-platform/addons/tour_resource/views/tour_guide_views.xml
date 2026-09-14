@@ -95,6 +95,7 @@
                         <h1>
                             <field name="name" placeholder="导游姓名"/>
                         </h1>
+                        <field name="partner_id" placeholder="关联联系人（可搜索）"/>
                     </div>
                     <group string="基础信息">
                         <group>
@@ -110,11 +111,9 @@
                         <group>
                             <field name="mobile"/>
                             <field name="tel"/>
-                            <field name="id_num_masked"/>
-                            <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
+                            <field name="id_num"/>
                             <field name="zip_code"/>
                             <field name="addr"/>
-                            <field name="partner_id"/>
                             <field name="job_no"/>
                             <field name="guide_account"/>
                         </group>
@@ -161,8 +160,7 @@
                                 <group>
                                     <field name="account_bank"/>
                                     <field name="account_name"/>
-                                    <field name="account_no_masked"/>
-                                    <field name="account_no" groups="tour_base.group_tour_sensitive_data"/>
+                                    <field name="account_no"/>
                                 </group>
                                 <group>
                                     <field name="loan_rate"/>
