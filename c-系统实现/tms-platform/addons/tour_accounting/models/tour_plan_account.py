@@ -21,10 +21,15 @@ class TourPlanAccount(models.Model):
                                 help='决定总额法/净额法')
 
     # === 核算金额（Phase 2：由 account.analytic.line 派生，不再取 plan.* 快照）===
+    analytic_line_ids = fields.One2many(
+        'account.analytic.line', 'account_id',
+        related='analytic_account_id.line_ids', string='分析行',
+        help='承载团分析账户下的分析行；作为收入/成本物化汇总的重算依赖源')
+
     income_total = fields.Float('收入合计', digits=(16, 2), compute='_compute_from_analytic',
-                                help='← analytic.line 收入类科目汇总 [TDS §4.3]')
+                                store=True, help='← analytic.line 收入类科目汇总 [TDS §4.3]')
     cost_total = fields.Float('成本合计', digits=(16, 2), compute='_compute_from_analytic',
-                              help='← analytic.line 成本类科目汇总 [TDS §4.3]')
+                              store=True, help='← analytic.line 成本类科目汇总 [TDS §4.3]')
     income_commission = fields.Float('购物佣金收入', digits=(16, 2),
                                      help='购物佣金收入（经营收入，不可差额扣除）')
     cost_deductible = fields.Float('可扣除成本', digits=(16, 2), compute='_compute_vat_split',
@@ -78,9 +83,9 @@ class TourPlanAccount(models.Model):
     supplier_id = fields.Many2one('res.partner', string='客户', related='plan_id.supplier_id',
                                   store=True, index=True)
 
-    profit = fields.Float('利润', digits=(16, 2), compute='_compute_profit',
+    profit = fields.Float('利润', digits=(16, 2), compute='_compute_profit', store=True,
                           help='= 收入合计 - 成本合计')
-    profit_no_shop = fields.Float('利润(不含购物)', digits=(16, 2), compute='_compute_profit',
+    profit_no_shop = fields.Float('利润(不含购物)', digits=(16, 2), compute='_compute_profit', store=True,
                                   help='= 收入(不含购物) - 成本合计')
 
     # === 状态/归属 ===
@@ -157,6 +162,7 @@ class TourPlanAccount(models.Model):
                     rec.aging_over_365 += residual
 
 
+    @api.depends('analytic_account_id', 'analytic_line_ids.amount')
     def _compute_from_analytic(self):
         """收入/成本/预收：从 account.analytic.line / move.line 派生（记账真相）。"""
         for rec in self:

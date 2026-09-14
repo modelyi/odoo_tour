@@ -177,10 +177,35 @@ class TourPlan(models.Model):
             return self._tour_get_account(self.ACCOUNT_REVENUE_NET_DD), 'cas14_agent'
         return self._tour_get_account(self.ACCOUNT_REVENUE_NET_DT), 'cas14_agent'
 
+    def _existing_revenue_move(self):
+        """该团已在账上的收入确认凭证（posted entry，含 6001.0x 收入行 + 团分析账户）。
+
+        防重复确认收入：批量过账/脚本重跑时，即便 income_move_id 未回链，
+        也能识别出账上已有收入凭证，避免二次确认（幂等兜底）[P0-2]。
+        """
+        self.ensure_one()
+        if not self.analytic_account_id:
+            return self.env['account.move']
+        lines = self.env['account.analytic.line'].search([
+            ('account_id', '=', self.analytic_account_id.id),
+            ('move_line_id', '!=', False),
+        ])
+        for move in lines.mapped('move_line_id.move_id'):
+            if move.state != 'posted' or move.move_type != 'entry':
+                continue
+            if any(l.account_id.account_type in ('income', 'income_other')
+                   for l in move.line_ids):
+                return move
+        return self.env['account.move']
+
     def action_recognize_revenue(self):
         """确认收入（幂等，income_move_id 判断）——借预收 / 贷主营收入，无税。"""
         for rec in self:
             if rec.income_move_id:
+                continue
+            existing = rec._existing_revenue_move()
+            if existing:
+                rec.income_move_id = existing.id
                 continue
             rec.income_move_id = rec._generate_revenue_move()
 
@@ -440,6 +465,10 @@ class TourPlan(models.Model):
             if rec.state != 'completed':
                 continue
             rec._ensure_plan_account()
-            if not rec.income_move_id and rec._revenue_amount() > 0:
-                rec.income_move_id = rec._generate_revenue_move()
+            if not rec.income_move_id:
+                existing = rec._existing_revenue_move()
+                if existing:
+                    rec.income_move_id = existing.id
+                elif rec._revenue_amount() > 0:
+                    rec.income_move_id = rec._generate_revenue_move()
         return res
