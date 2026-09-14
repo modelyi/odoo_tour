@@ -29,6 +29,7 @@ class TourAccountingMixin(models.AbstractModel):
     ACCOUNT_TAX_OUTPUT = '2221.01'         # 应交增值税(销项) — 一般纳税人销项税额 [BS-11 §六]
     ACCOUNT_TAX_DEDUCT = '2221.03'         # 应交增值税(销项税额抵减/差额扣除) [BS-11 §六]
     ACCOUNT_TAX_SIMPLE = '2221.07'         # 应交增值税(简易计税/小规模) [BS-11 §六]
+    ACCOUNT_COST = '6401'                  # 主营业务成本（无分项统一）[TDS §2.3]
     ACCOUNT_EMPLOYEE_LOAN = '1221.01'      # 其他应收款—员工借款（全员共用，人维度用 partner+analytic 区分）[BS-15 §2.2]
     ACCOUNT_PAYABLE_EMPLOYEE = '2241.06'   # 其他应付款—员工代付（纯报销两段式贷方）[BS-15 §3]
     ACCOUNT_PAYABLE_SUP = '2202'           # 应付账款（供应商，报账补款兜底）[TDS §2.2]

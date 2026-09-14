@@ -160,6 +160,9 @@ class TourPlanReg(models.Model):
 
         # 10) 回写余位
         departure.booked_seats += total_people
+
+        # 11) 汇总承载团金额（收入报价/未收款/人数 ← 报名明细）[E2E 闭环]
+        plan._sync_amounts_from_regs()
         return reg
 
     def _validate_passengers(self, passengers):

@@ -190,6 +190,10 @@ class TourPaymentClaim(models.Model):
         fund_acc = channel._get_fund_account()
         journal = channel._get_receipt_journal()
 
+        # 收款早于确认成团时，团尚无分析账户——懒建（幂等），保证收款凭证挂对 analytic
+        # 单团核算可溯源预收 [E2E 闭环 GAP-2]
+        if self.plan_id and not self.plan_id.analytic_account_id:
+            self.plan_id._ensure_analytic_account()
         analytic = self._plan_analytic_distribution(self.plan_id)
         partner_id = self.supplier_id.id if self.supplier_id else None
         narration = '%s / %s / 收款' % (

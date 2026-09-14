@@ -321,6 +321,118 @@ class TourPlan(models.Model):
         move.action_post()
         return move.id
 
+    # === 成本账单生成 + 付款（P2P 模型方法，原仅在 run_ptp_posting.py 脚本内联）[E2E 闭环 GAP-3] ===
+
+    def action_generate_cost_bill(self):
+        """生成成本应付账单（幂等，cost_bill_id 判断）——借 6401 / 贷 2202，挂团分析账户。"""
+        for rec in self:
+            if rec.cost_bill_id:
+                continue
+            rec.cost_bill_id = rec._generate_cost_bill()
+
+    def _generate_cost_bill(self):
+        """生成供应商应付账单 account.move in_invoice [TDS §2.3]：
+        借 6401 主营业务成本（out_sum 含税）/ 贷 2202 应付账款，均挂团分析账户；
+        并同步建请款单 tour.pay.request（分级审批）。
+        """
+        self.ensure_one()
+        amount = round(self.out_sum or 0.0, 2)
+        if amount <= 0:
+            raise ValidationError('团队 %s 无成本（out_sum=0），无法生成成本账单' % (self.plan_code or ''))
+        if not self.supplier_id:
+            raise ValidationError('团队 %s 未关联供应商，无法生成成本账单' % (self.plan_code or ''))
+        if not self.analytic_account_id:
+            self._ensure_analytic_account()
+        analytic = self._plan_analytic_distribution(self)
+        cost_acc = self._tour_get_account(self.ACCOUNT_COST)
+        payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_SUP)
+        journal = self._tour_get_journal('purchase')
+        product = self.env['product.product'].search([], limit=1)
+        move = self.env['account.move'].create({
+            'move_type': 'in_invoice',
+            'partner_id': self.supplier_id.id,
+            'journal_id': journal.id,
+            'invoice_date': self.end_date or fields.Date.context_today(self),
+            'tour_plan_id': self.id,
+            'ref': 'P2P-%s' % (self.plan_code or self.id),
+            'compliance_ref': 'cas1',
+            'invoice_line_ids': [(0, 0, {
+                'product_id': product.id if product else False,
+                'name': '成本 %s' % (self.plan_code or self.id),
+                'quantity': 1.0,
+                'price_unit': amount,
+                'account_id': cost_acc.id,
+                'analytic_distribution': analytic,
+                'tax_ids': [(6, 0, [])],
+            })],
+        })
+        # 应付行强制落 2202 + 挂团分析账户
+        move.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'liability_payable').write({
+                'account_id': payable_acc.id,
+                'analytic_distribution': analytic,
+            })
+        move.action_post()
+        # 同步建请款单（分级审批 state 机）
+        self.env['tour.pay.request'].create({
+            'plan_id': self.id,
+            'supplier_id': self.supplier_id.id,
+            'bill_id': move.id,
+            'amount': amount,
+            'cost_type': 'other',
+            'cost_account_id': cost_acc.id,
+            'reason': '团成本应付 %s' % (self.plan_code or self.id),
+            'apply_date': self.end_date or fields.Date.context_today(self),
+        }).action_approve()
+        return move.id
+
+    def action_pay_cost_bill(self):
+        """付款成本账单（幂等，payment_state 判断）——借 2202 / 贷 1002，核销应付。"""
+        for rec in self:
+            rec._pay_cost_bill()
+
+    def _pay_cost_bill(self):
+        """付款：account.payment outbound（借 2202 / 贷 1002）+ 原生 reconcile 核销账单应付。"""
+        self.ensure_one()
+        bill = self.cost_bill_id
+        if not bill or bill.payment_state == 'paid':
+            return None
+        payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_SUP)
+        bank_acc = self._tour_get_account(self.ACCOUNT_BANK)
+        bank_journal = self._tour_get_journal('bank')
+        if bank_journal.default_account_id.id != bank_acc.id:
+            bank_journal.default_account_id = bank_acc.id
+        pml = self.env['account.payment.method.line'].search(
+            [('payment_type', '=', 'outbound'), ('journal_id', '=', bank_journal.id)], limit=1)
+        if not pml:
+            pml = self.env['account.payment.method.line'].search(
+                [('payment_type', '=', 'outbound')], limit=1)
+        if pml.payment_account_id.id != bank_acc.id:
+            pml.payment_account_id = bank_acc.id
+        pay = self.env['account.payment'].create({
+            'payment_type': 'outbound',
+            'partner_type': 'supplier',
+            'partner_id': bill.partner_id.id,
+            'amount': bill.amount_total,
+            'journal_id': bank_journal.id,
+            'payment_method_line_id': pml.id,
+            'destination_account_id': payable_acc.id,
+            'date': fields.Date.context_today(self),
+        })
+        pay.action_post()
+        p_line = pay.move_id.line_ids.filtered(
+            lambda l: l.account_id.id == payable_acc.id and l.debit > 0 and not l.reconciled)
+        b_lines = bill.line_ids.filtered(
+            lambda l: l.account_id.id == payable_acc.id and not l.reconciled)
+        if p_line and b_lines:
+            (p_line | b_lines).reconcile()
+        pr = self.env['tour.pay.request'].search([('bill_id', '=', bill.id)], limit=1)
+        if pr:
+            pr.payment_id = pay.id
+            if pr.state == 'approved':
+                pr.action_pay()
+        return pay.id
+
     def action_complete(self):
         """出行中 → 已完成：自动建台账 + 幂等确认收入（无金额时静默跳过，不阻断出团完成）。"""
         res = super().action_complete()
