@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ 商品页：线路班期 + 人数表单 ============ -->
+    <template id="tour_product_booking" inherit_id="website_sale.product" name="线路电商班期报名">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="before">
+            <t t-set="tour_line" t-value="product._get_tour_line()"/>
+            <t t-if="tour_line">
+                <t t-set="tour_departures" t-value="tour_line._website_available_departures()"/>
+                <div id="tour_booking_wrap" class="o_wsale_product_details_content_section mb-4">
+                    <h5 class="mb-2">选择发团班期</h5>
+                    <div t-if="request.httprequest.args.get('tour_error')"
+                         class="alert alert-danger" role="alert">
+                        <t t-esc="request.httprequest.args.get('tour_error')"/>
+                    </div>
+                    <form method="post" action="/shop/tour/add"
+                          t-if="tour_departures" class="tour_booking_form">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="product_id"
+                               t-att-value="product_variant.id"/>
+
+                        <div class="mb-3">
+                            <label class="form-label">发团日期</label>
+                            <select name="departure_id" class="form-select" required="required"
+                                    id="tour_departure_select">
+                                <option value="">请选择发团日期</option>
+                                <t t-foreach="tour_departures" t-as="dep">
+                                    <option t-att-value="dep.id"
+                                            t-att-data-prices="dep._price_json()"
+                                            t-att-data-remain="dep.remain_seats">
+                                        <t t-esc="dep.start_date"/>（余位 <t t-esc="dep.remain_seats"/>）
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6 col-md-4">
+                                <label class="form-label">成人</label>
+                                <input type="number" name="adult_num" class="form-control tour_count" value="1" min="0"/>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label">儿童</label>
+                                <input type="number" name="child_num" class="form-control tour_count" value="0" min="0"/>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label">老人</label>
+                                <input type="number" name="old_man_num" class="form-control tour_count" value="0" min="0"/>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label">学生</label>
+                                <input type="number" name="student_num" class="form-control tour_count" value="0" min="0"/>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label">婴儿</label>
+                                <input type="number" name="baby_num" class="form-control tour_count" value="0" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted">预估合计：</span>
+                            <strong id="tour_total_preview" class="text-primary">—</strong>
+                            <small class="text-muted ms-2">（最终以班期实际价格为准）</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa fa-shopping-cart me-2"/>加入购物车报名
+                        </button>
+                    </form>
+                    <div t-else="" class="alert alert-info" role="alert">
+                        该线路暂无可报名的发团班期，请稍后再来或联系客服。
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- 线路产品隐藏标准加购区（班期必选，不能裸加购） -->
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="attributes">
+            <attribute name="t-if">not product._get_tour_line()</attribute>
+        </xpath>
+    </template>
+
+    <!-- ============ 购物车行：显示班期 + 人数档 ============ -->
+    <template id="tour_cart_line_info" inherit_id="website_sale.cart_lines" name="购物车行班期人数">
+        <xpath expr="//t[@t-call='website_sale.cart_line_description_following_lines']" position="after">
+            <div t-if="line.departure_id" class="text-muted small mt-1">
+                班期：<t t-esc="line.departure_id.start_date"/>
+                <t t-if="line.departure_id.remain_seats is not False"> · 余位 <t t-esc="line.departure_id.remain_seats"/></t>
+                <div>
+                    成人 <t t-esc="line.adult_num"/> · 儿童 <t t-esc="line.child_num"/>
+                    · 老人 <t t-esc="line.old_man_num"/> · 学生 <t t-esc="line.student_num"/>
+                    · 婴儿 <t t-esc="line.baby_num"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- ============ 购物车数量：线路行显示人数档（不可步进） ============ -->
+    <template id="tour_cart_line_quantity" inherit_id="website_sale.cart_lines_quantity" name="购物车人数档">
+        <xpath expr="//div[@t-attf-name]" position="attributes">
+            <attribute name="t-if">not line.departure_id</attribute>
+        </xpath>
+        <xpath expr="//div[@t-attf-name]" position="after">
+            <div t-if="line.departure_id" class="text-muted small text-end">
+                成人 <t t-esc="line.adult_num"/> · 儿童 <t t-esc="line.child_num"/><br/>
+                老人 <t t-esc="line.old_man_num"/> · 学生 <t t-esc="line.student_num"/> · 婴儿 <t t-esc="line.baby_num"/>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
