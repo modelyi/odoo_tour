@@ -386,6 +386,11 @@
         <field name="name">成本—购物成本</field>
         <field name="account_type">expense_direct_cost</field>
     </record>
+    <record id="tour_account_640111" model="account.account">
+        <field name="code">6401.11</field>
+        <field name="name">成本—其他</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
     <record id="tour_account_6402" model="account.account">
         <field name="code">6402</field>
         <field name="name">其他业务成本</field>

@@ -88,6 +88,42 @@ class TourPayRequest(models.Model):
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
 
+    # === 界面可视化（smart button 计数） ===
+    bill_count = fields.Integer('账单数', compute='_compute_link_count')
+    payment_count = fields.Integer('付款单数', compute='_compute_link_count')
+
+    @api.depends('bill_id', 'payment_id')
+    def _compute_link_count(self):
+        for rec in self:
+            rec.bill_count = 1 if rec.bill_id else 0
+            rec.payment_count = 1 if rec.payment_id else 0
+
+    def action_view_bill(self):
+        self.ensure_one()
+        if not self.bill_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '应付账单',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.bill_id.id,
+            'target': 'current',
+        }
+
+    def action_view_payment(self):
+        self.ensure_one()
+        if not self.payment_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '付款单',
+            'res_model': 'account.payment',
+            'view_mode': 'form',
+            'res_id': self.payment_id.id,
+            'target': 'current',
+        }
+
     _uniq_pay_request_name = models.Constraint(
         'unique(name)', '请款单号已存在')
 

@@ -464,28 +464,6 @@
             <field name="sequence">3</field>
     </record>
 
-    <!-- ===== 业务类型 tour.biz.type ===== -->
-    <record id="biz_type_1" model="tour.biz.type">
-            <field name="name">团队</field>
-            <field name="help_code">T</field>
-    </record>
-    <record id="biz_type_2" model="tour.biz.type">
-            <field name="name">单订</field>
-            <field name="help_code">DT</field>
-    </record>
-    <record id="biz_type_3" model="tour.biz.type">
-            <field name="name">散客</field>
-            <field name="help_code">S</field>
-    </record>
-    <record id="biz_type_4" model="tour.biz.type">
-            <field name="name">购物</field>
-            <field name="help_code">GW</field>
-    </record>
-    <record id="biz_type_5" model="tour.biz.type">
-            <field name="name">调账</field>
-            <field name="help_code">TZ</field>
-    </record>
-
     <!-- ===== 通用基础数据 tour.base.item ===== -->
     <record id="type2_1" model="tour.base.item">
             <field name="item_type">room_type</field>

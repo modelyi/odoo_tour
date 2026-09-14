@@ -33,6 +33,18 @@
         action="action_tour_plan_account"
         sequence="40"/>
 
+    <menuitem id="menu_tour_guide_loan"
+        name="导游借款"
+        parent="menu_tms_finance"
+        action="action_tour_guide_loan"
+        sequence="45"/>
+
+    <menuitem id="menu_tour_guide_real_pay"
+        name="导游报账"
+        parent="menu_tms_finance"
+        action="action_tour_guide_real_pay"
+        sequence="46"/>
+
     <menuitem id="menu_tour_dunning"
         name="团款催收台账"
         parent="menu_tms_finance"

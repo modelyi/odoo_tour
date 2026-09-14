@@ -57,3 +57,5 @@ from . import tour_commission
 from . import tour_invoice
 from . import tour_dunning
 from . import tour_pay_request
+from . import tour_guide_loan
+from . import tour_guide_real_pay

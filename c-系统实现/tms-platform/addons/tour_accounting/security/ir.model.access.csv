@@ -80,3 +80,9 @@ access_tour_dunning_action_user,tour.dunning.action.user,model_tour_dunning_acti
 access_tour_dunning_action_manager,tour.dunning.action.manager,model_tour_dunning_action,base.group_system,1,1,1,1
 access_tour_pay_request_user,tour.pay.request.user,model_tour_pay_request,base.group_user,1,1,1,0
 access_tour_pay_request_manager,tour.pay.request.manager,model_tour_pay_request,base.group_system,1,1,1,1
+access_tour_guide_loan_user,tour.guide.loan.user,model_tour_guide_loan,base.group_user,1,1,1,0
+access_tour_guide_loan_manager,tour.guide.loan.manager,model_tour_guide_loan,base.group_system,1,1,1,1
+access_tour_guide_real_pay_user,tour.guide.real.pay.user,model_tour_guide_real_pay,base.group_user,1,1,1,0
+access_tour_guide_real_pay_manager,tour.guide.real.pay.manager,model_tour_guide_real_pay,base.group_system,1,1,1,1
+access_tour_guide_expense_line_user,tour.guide.expense.line.user,model_tour_guide_expense_line,base.group_user,1,1,1,0
+access_tour_guide_expense_line_manager,tour.guide.expense.line.manager,model_tour_guide_expense_line,base.group_system,1,1,1,1

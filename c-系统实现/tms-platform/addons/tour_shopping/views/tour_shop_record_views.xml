@@ -41,7 +41,9 @@
                 <field name="shop_date"/>
                 <field name="amount" sum="购物金额合计"/>
                 <field name="commission_rate"/>
-                <field name="commission_amount" sum="返佣金额合计"/>
+                <field name="commission_amount" sum="返佣金额合计"
+                    decoration-success="commission_amount > 0"
+                    decoration-muted="commission_amount == 0"/>
                 <field name="guide_id"/>
             </list>
         </field>
@@ -60,24 +62,26 @@
                             <field name="name" placeholder="购物记录编号"/>
                         </h1>
                     </div>
-                    <group>
+                    <group string="购物信息">
                         <group>
                             <field name="plan_id"/>
                             <field name="plan_code"/>
                             <field name="shop_id"/>
                             <field name="agreement_id"/>
+                            <field name="guide_id"/>
                         </group>
                         <group>
                             <field name="shop_date"/>
-                            <field name="guide_id"/>
                             <field name="company_id"/>
                         </group>
                     </group>
-                    <group string="购物明细">
+                    <group string="消费金额">
+                        <field name="amount"/>
+                    </group>
+                    <group string="返佣">
                         <group>
-                            <field name="amount"/>
                             <field name="commission_rate"/>
-                            <field name="commission_amount"/>
+                            <field name="commission_amount" decoration-success="commission_amount > 0"/>
                         </group>
                     </group>
                     <group string="备注">

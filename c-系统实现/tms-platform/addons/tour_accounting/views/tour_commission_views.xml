@@ -22,7 +22,7 @@
     <record id="action_tour_commission" model="ir.actions.act_window">
         <field name="name">佣金</field>
         <field name="res_model">tour.commission</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_tour_commission_search"/>
     </record>
 
@@ -34,15 +34,79 @@
                 <field name="name"/>
                 <field name="plan_code"/>
                 <field name="shop_id"/>
-                <field name="commission_total"/>
+                <field name="commission_total" sum="佣金总额合计"/>
                 <field name="guide_id"/>
                 <field name="guide_share_before_tax"/>
                 <field name="guide_tax"/>
-                <field name="guide_net_pay"/>
+                <field name="guide_net_pay" sum="实发合计" decoration-danger="state != 'paid'"/>
                 <field name="company_retain"/>
                 <field name="state" widget="badge" decoration-success="state in ('received','paid')" decoration-info="state=='confirmed'" decoration-warning="state=='draft'"/>
                 <field name="move_id" optional="show"/>
             </list>
+        </field>
+    </record>
+
+    <record id="view_tour_commission_kanban" model="ir.ui.view">
+        <field name="name">tour.commission.kanban</field>
+        <field name="model">tour.commission</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state" create="false">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="plan_code"/>
+                <field name="shop_id"/>
+                <field name="guide_id"/>
+                <field name="commission_total"/>
+                <field name="guide_net_pay"/>
+                <field name="move_count"/>
+                <field name="pay_move_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong><field name="name"/></strong>
+                                <field name="state" widget="badge"
+                                    decoration-success="state in ('received','paid')"
+                                    decoration-info="state == 'confirmed'"
+                                    decoration-warning="state == 'draft'"/>
+                            </div>
+                            <div class="text-muted o_kanban_record_subtitle"><field name="shop_id"/></div>
+                            <div class="d-flex justify-content-between mt8">
+                                <span class="text-muted">团号</span>
+                                <field name="plan_code"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">佣金总额</span>
+                                <span class="fw-bold"><field name="commission_total"/></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>导游实发</span>
+                                <field name="guide_net_pay" decoration-danger="state != 'paid'"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>导游</span>
+                                <field name="guide_id"/>
+                            </div>
+                            <footer>
+                                <button name="action_view_move" type="object"
+                                    class="btn btn-link btn-sm oe_stat_button" icon="fa-file-text-o">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_value"><field name="move_count"/></span>
+                                        <span class="o_stat_text">计提凭证</span>
+                                    </div>
+                                </button>
+                                <button name="action_view_pay_move" type="object"
+                                    class="btn btn-link btn-sm oe_stat_button" icon="fa-money">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_value"><field name="pay_move_count"/></span>
+                                        <span class="o_stat_text">发放凭证</span>
+                                    </div>
+                                </button>
+                            </footer>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
@@ -61,6 +125,20 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,received,paid"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="move_count"/></span>
+                                <span class="o_stat_text">计提凭证</span>
+                            </div>
+                        </button>
+                        <button name="action_view_pay_move" type="object" class="oe_stat_button" icon="fa-money">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="pay_move_count"/></span>
+                                <span class="o_stat_text">发放凭证</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="佣金编号"/></h1>

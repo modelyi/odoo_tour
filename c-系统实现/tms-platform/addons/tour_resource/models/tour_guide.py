@@ -96,6 +96,11 @@ class TourGuide(models.Model):
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
 
+    # === 智能按钮计数（跨模块懒加载：tour_resource 先于 tour_accounting 加载，
+    #     故不声明 One2many，改为运行时按 guide_id 反查计数）===
+    loan_count = fields.Integer('借款单数', compute='_compute_loan_count')
+    real_pay_count = fields.Integer('报账单数', compute='_compute_real_pay_count')
+
     _uniq_guide_code = models.Constraint(
         'unique(guide_code)',
         '导游证号已存在',
@@ -124,3 +129,45 @@ class TourGuide(models.Model):
                 'audit_user': self.env.user.name,
                 'audit_date': fields.Datetime.now(),
             })
+
+    def _compute_loan_count(self):
+        if 'tour.guide.loan' not in self.env:
+            self.loan_count = 0
+            return
+        groups = self.env['tour.guide.loan'].read_group(
+            [('guide_id', 'in', self.ids)], ['guide_id'], ['guide_id'])
+        counts = {g['guide_id'][0]: g['guide_id_count'] for g in groups}
+        for rec in self:
+            rec.loan_count = counts.get(rec.id, 0)
+
+    def _compute_real_pay_count(self):
+        if 'tour.guide.real.pay' not in self.env:
+            self.real_pay_count = 0
+            return
+        groups = self.env['tour.guide.real.pay'].read_group(
+            [('guide_id', 'in', self.ids)], ['guide_id'], ['guide_id'])
+        counts = {g['guide_id'][0]: g['guide_id_count'] for g in groups}
+        for rec in self:
+            rec.real_pay_count = counts.get(rec.id, 0)
+
+    def action_view_loans(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '借款单',
+            'res_model': 'tour.guide.loan',
+            'view_mode': 'kanban,list,form',
+            'domain': [('guide_id', '=', self.id)],
+            'context': {'default_guide_id': self.id},
+        }
+
+    def action_view_real_pays(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '报账单',
+            'res_model': 'tour.guide.real.pay',
+            'view_mode': 'kanban,list,form',
+            'domain': [('guide_id', '=', self.id)],
+            'context': {'default_guide_id': self.id},
+        }

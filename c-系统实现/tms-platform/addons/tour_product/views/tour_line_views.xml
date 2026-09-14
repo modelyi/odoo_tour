@@ -19,7 +19,7 @@
     <record id="action_tour_line" model="ir.actions.act_window">
         <field name="name">线路产品</field>
         <field name="res_model">tour.line</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_tour_line_search"/>
         <field name="context">{'search_default_active': 1}</field>
     </record>
@@ -28,6 +28,64 @@
         <field name="name">线路分类</field>
         <field name="res_model">tour.line.type</field>
         <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Kanban View（按线路类型分列） -->
+    <record id="view_tour_line_kanban" model="ir.ui.view">
+        <field name="name">tour.line.kanban</field>
+        <field name="model">tour.line</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="line_type_id" class="o_kanban_mobile"
+                    group_create="false" group_delete="false" group_edit="false">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="line_type_id"/>
+                <field name="day_num"/>
+                <field name="adult_price"/>
+                <field name="audit_state"/>
+                <field name="departure_count"/>
+                <field name="detail_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <field name="name" class="fw-bold text-truncate flex-grow-1"/>
+                            <field name="audit_state" widget="badge"
+                                decoration-info="audit_state == 'draft'"
+                                decoration-warning="audit_state == 'submitted'"
+                                decoration-success="audit_state == 'approved'"
+                                decoration-danger="audit_state == 'rejected'"/>
+                        </div>
+                        <div class="text-muted small">
+                            <field name="code"/>
+                        </div>
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">线路类型</span>
+                                <field name="line_type_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">天数</span>
+                                <field name="day_num"/>
+                            </div>
+                        </div>
+                        <footer class="pt-1 mt-1 border-top d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">起价</span>
+                                <field name="adult_price" widget="monetary"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">发团</span>
+                                <field name="departure_count"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">行程</span>
+                                <field name="detail_count"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
     </record>
 
     <!-- List View -->
@@ -74,9 +132,19 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(tour_product.action_tour_line)d" type="action"
-                            class="oe_stat_button" icon="fa-calendar">
-                            <field name="departure_count" widget="statinfo" string="发团计划"/>
+                        <button name="action_view_departures" type="object"
+                            class="oe_stat_button" icon="fa-calendar"
+                            help="查看该线路的发团计划">
+                            <div class="o_stat_info">
+                                <field name="departure_count" widget="statinfo" string="发团"/>
+                            </div>
+                        </button>
+                        <button name="action_view_details" type="object"
+                            class="oe_stat_button" icon="fa-list-ol"
+                            help="查看该线路的行程明细">
+                            <div class="o_stat_info">
+                                <field name="detail_count" widget="statinfo" string="行程"/>
+                            </div>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -85,7 +153,7 @@
                             <field name="name" placeholder="线路名称"/>
                         </h1>
                     </div>
-                    <group>
+                    <group string="基础信息">
                         <group>
                             <field name="code"/>
                             <field name="help_code"/>
@@ -100,6 +168,11 @@
                             <field name="end_place"/>
                             <field name="send_traffic"/>
                             <field name="end_traffic"/>
+                        </group>
+                        <group string="价格">
+                            <field name="adult_price"/>
+                            <field name="child_price"/>
+                            <field name="old_man_price"/>
                         </group>
                     </group>
                     <notebook>
@@ -120,7 +193,7 @@
                                 <field name="fee_exclude"/>
                             </group>
                         </page>
-                        <page string="行程内容">
+                        <page string="行程/特色">
                             <field name="srv_text" placeholder="行程安排..."/>
                             <field name="details_rich" placeholder="行程详情..."/>
                             <field name="feature_rich" placeholder="线路特色..."/>

@@ -27,7 +27,7 @@
     <record id="action_tour_payment_claim" model="ir.actions.act_window">
         <field name="name">收款登记/认领</field>
         <field name="res_model">tour.payment.claim</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_tour_payment_claim_search"/>
     </record>
 
@@ -42,12 +42,77 @@
                 <field name="plan_code"/>
                 <field name="pay_money" sum="收款合计"/>
                 <field name="use_money"/>
-                <field name="balance_money"/>
+                <field name="balance_money" decoration-danger="balance_money &lt; 0"/>
                 <field name="pay_channel_id"/>
                 <field name="account_id"/>
                 <field name="claim_state" widget="badge" decoration-success="claim_state=='3'" decoration-info="claim_state=='2'" decoration-warning="claim_state=='1'"/>
                 <field name="move_id" optional="show"/>
             </list>
+        </field>
+    </record>
+
+    <record id="view_tour_payment_claim_kanban" model="ir.ui.view">
+        <field name="name">tour.payment.claim.kanban</field>
+        <field name="model">tour.payment.claim</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="claim_state" create="false">
+                <field name="name"/>
+                <field name="claim_state"/>
+                <field name="supplier_id"/>
+                <field name="plan_code"/>
+                <field name="pay_money"/>
+                <field name="balance_money"/>
+                <field name="pay_channel_id"/>
+                <field name="move_count"/>
+                <field name="reconcile_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong><field name="name"/></strong>
+                                <field name="claim_state" widget="badge"
+                                    decoration-success="claim_state == '3'"
+                                    decoration-info="claim_state == '2'"
+                                    decoration-warning="claim_state == '1'"
+                                    decoration-muted="claim_state == '0'"/>
+                            </div>
+                            <div class="text-muted o_kanban_record_subtitle"><field name="supplier_id"/></div>
+                            <div class="d-flex justify-content-between mt8">
+                                <span class="text-muted">团号</span>
+                                <field name="plan_code"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">收款金额</span>
+                                <span class="fw-bold"><field name="pay_money"/></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>余额</span>
+                                <field name="balance_money" decoration-danger="balance_money &lt; 0"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>支付渠道</span>
+                                <field name="pay_channel_id"/>
+                            </div>
+                            <footer>
+                                <button name="action_view_move" type="object"
+                                    class="btn btn-link btn-sm oe_stat_button" icon="fa-file-text-o">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_value"><field name="move_count"/></span>
+                                        <span class="o_stat_text">凭证</span>
+                                    </div>
+                                </button>
+                                <button name="action_view_reconcile" type="object"
+                                    class="btn btn-link btn-sm oe_stat_button" icon="fa-exchange">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_value"><field name="reconcile_count"/></span>
+                                        <span class="o_stat_text">核销</span>
+                                    </div>
+                                </button>
+                            </footer>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
@@ -68,6 +133,20 @@
                     <field name="claim_state" widget="statusbar" statusbar_visible="0,1,2,3"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="move_count"/></span>
+                                <span class="o_stat_text">凭证</span>
+                            </div>
+                        </button>
+                        <button name="action_view_reconcile" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="reconcile_count"/></span>
+                                <span class="o_stat_text">核销</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="收款编号"/></h1>

@@ -71,12 +71,48 @@ class TourLine(models.Model):
 
     # === 统计 ===
     departure_count = fields.Integer('发团计划数', compute='_compute_departure_count')
+    detail_count = fields.Integer('行程明细数', compute='_compute_detail_count')
 
     def _compute_departure_count(self):
+        if not self.ids:
+            return
+        counts = self.env['tour.departure'].read_group(
+            [('line_id', 'in', self.ids)], ['line_id'], ['line_id'])
+        mapped = {c['line_id'][0]: c['line_id_count'] for c in counts if c['line_id']}
         for rec in self:
-            rec.departure_count = 0  # TODO: link departure plans
+            rec.departure_count = mapped.get(rec.id, 0)
+
+    def _compute_detail_count(self):
+        if not self.ids:
+            return
+        counts = self.env['tour.line.detail'].read_group(
+            [('line_id', 'in', self.ids)], ['line_id'], ['line_id'])
+        mapped = {c['line_id'][0]: c['line_id_count'] for c in counts if c['line_id']}
+        for rec in self:
+            rec.detail_count = mapped.get(rec.id, 0)
 
     # === 动作 ===
+    def action_view_departures(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '发团计划',
+            'res_model': 'tour.departure',
+            'view_mode': 'kanban,list,form',
+            'domain': [('line_id', '=', self.id)],
+            'context': {'default_line_id': self.id},
+        }
+
+    def action_view_details(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '行程明细',
+            'res_model': 'tour.line.detail',
+            'view_mode': 'list,form',
+            'domain': [('line_id', '=', self.id)],
+            'context': {'default_line_id': self.id},
+        }
     def action_submit(self):
         self.write({'audit_state': 'submitted'})
 

@@ -66,44 +66,52 @@
                             <field name="name" placeholder="车牌号"/>
                         </h1>
                     </div>
-                    <group>
+                    <group string="车辆信息">
                         <group>
                             <field name="licence"/>
-                            <field name="driver_name"/>
-                            <field name="driver_code"/>
+                            <field name="car_type"/>
+                            <field name="seat_num"/>
+                            <field name="extra_seat"/>
+                            <field name="buy_date"/>
+                            <field name="licence_date"/>
+                            <field name="licence_type"/>
                             <field name="help_code"/>
-                            <field name="sex"/>
-                            <field name="nation"/>
-                            <field name="born_place"/>
-                            <field name="edu"/>
-                            <field name="age"/>
                         </group>
                         <group>
+                            <field name="driver_name"/>
+                            <field name="driver_code"/>
                             <field name="mobile"/>
                             <field name="tel"/>
-                            <field name="id_num_masked"/>
-                            <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
-                            <field name="zip_code"/>
-                            <field name="addr"/>
+                            <field name="sex"/>
+                            <field name="age"/>
+                        </group>
+                    </group>
+                    <group string="归属">
+                        <group>
                             <field name="supplier_id"/>
                             <field name="supplier_name"/>
                             <field name="is_autarky"/>
                         </group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="department_id"/>
+                            <field name="power_area"/>
+                            <field name="cw_code"/>
+                        </group>
                     </group>
                     <notebook>
-                        <page string="车辆证照">
+                        <page string="司机信息">
                             <group>
                                 <group>
-                                    <field name="licence_date"/>
-                                    <field name="licence_type"/>
-                                    <field name="buy_date"/>
-                                    <field name="car_type"/>
+                                    <field name="nation"/>
+                                    <field name="born_place"/>
+                                    <field name="edu"/>
+                                    <field name="zip_code"/>
                                 </group>
                                 <group>
-                                    <field name="seat_num"/>
-                                    <field name="extra_seat"/>
-                                    <field name="power_area"/>
-                                    <field name="cw_code"/>
+                                    <field name="id_num_masked"/>
+                                    <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
+                                    <field name="addr"/>
                                 </group>
                             </group>
                         </page>
@@ -115,22 +123,18 @@
                                 <field name="bank_account" groups="tour_base.group_tour_sensitive_data"/>
                             </group>
                         </page>
-                        <page string="审核与归属">
+                        <page string="审核">
                             <group>
                                 <group>
                                     <field name="audit_chk"/>
                                     <field name="audit_user"/>
                                     <field name="audit_date"/>
-                                </group>
-                                <group>
-                                    <field name="company_id"/>
-                                    <field name="department_id"/>
                                     <field name="active"/>
                                 </group>
-                            </group>
-                            <group>
-                                <field name="audit_brief"/>
-                                <field name="remark"/>
+                                <group>
+                                    <field name="audit_brief"/>
+                                    <field name="remark"/>
+                                </group>
                             </group>
                         </page>
                     </notebook>

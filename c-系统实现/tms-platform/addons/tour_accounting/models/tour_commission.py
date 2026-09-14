@@ -79,6 +79,42 @@ class TourCommission(models.Model):
     pay_journal_id = fields.Many2one('account.journal', string='付款日记账',
                                      help='发放导游分成落账日记账；留空按银行存款日记账（bank）路由')
 
+    # === 界面可视化（smart button 计数） ===
+    move_count = fields.Integer('计提凭证数', compute='_compute_move_count')
+    pay_move_count = fields.Integer('发放凭证数', compute='_compute_move_count')
+
+    @api.depends('move_id', 'pay_move_id')
+    def _compute_move_count(self):
+        for rec in self:
+            rec.move_count = 1 if rec.move_id else 0
+            rec.pay_move_count = 1 if rec.pay_move_id else 0
+
+    def action_view_move(self):
+        self.ensure_one()
+        if not self.move_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '计提凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.move_id.id,
+            'target': 'current',
+        }
+
+    def action_view_pay_move(self):
+        self.ensure_one()
+        if not self.pay_move_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '发放凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.pay_move_id.id,
+            'target': 'current',
+        }
+
     @api.depends('commission_total', 'guide_share_before_tax', 'premium', 'guide_tax_type')
     def _compute_tax(self):
         for rec in self:

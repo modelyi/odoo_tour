@@ -35,7 +35,7 @@
     <record id="action_tour_plan" model="ir.actions.act_window">
         <field name="name">团队订单</field>
         <field name="res_model">tour.plan</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form,activity</field>
         <field name="search_view_id" ref="view_tour_plan_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -59,11 +59,92 @@
                 <field name="begin_date"/>
                 <field name="end_date"/>
                 <field name="guest_count"/>
-                <field name="sum_pay_normal" sum="金额合计"/>
-                <field name="sum_un_pay"/>
+                <field name="sum_pay_normal" sum="已收款合计"/>
+                <field name="sum_un_pay" sum="未收款合计" decoration-danger="sum_un_pay > 0"/>
+                <field name="in_com_quo_sum" sum="收入报价合计"/>
+                <field name="out_sum" sum="成本合计"/>
+                <field name="profit" sum="利润合计"
+                    decoration-success="profit > 0" decoration-danger="profit &lt; 0"/>
                 <field name="sales_name"/>
                 <field name="state" widget="badge" decoration-success="state in ('confirmed','operating','in_progress','completed')" decoration-info="state=='draft'" decoration-danger="state in ('cancelled','void')"/>
             </list>
+        </field>
+    </record>
+
+    <!-- Kanban View（按状态分列） -->
+    <record id="view_tour_plan_kanban" model="ir.ui.view">
+        <field name="name">tour.plan.kanban</field>
+        <field name="model">tour.plan</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile"
+                    group_create="false" group_delete="false" group_edit="false">
+                <field name="plan_name"/>
+                <field name="plan_code"/>
+                <field name="line_id"/>
+                <field name="biz_mode"/>
+                <field name="plan_type"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="guest_count"/>
+                <field name="sum_pay_normal"/>
+                <field name="sum_un_pay"/>
+                <field name="sales_name"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <field name="plan_name" class="fw-bold text-truncate flex-grow-1"/>
+                            <field name="state" widget="badge"
+                                decoration-success="state in ('confirmed','operating','in_progress','completed')"
+                                decoration-info="state=='draft'"
+                                decoration-warning="state=='pending'"
+                                decoration-danger="state in ('cancelled','void','refunded')"/>
+                        </div>
+                        <div class="text-muted small">
+                            <field name="plan_code"/>
+                        </div>
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">线路</span>
+                                <field name="line_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">业务模式</span>
+                                <field name="biz_mode"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">出发日期</span>
+                                <field name="begin_date"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">客人数</span>
+                                <field name="guest_count"/>
+                            </div>
+                        </div>
+                        <footer class="pt-1 mt-1 border-top d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">已收款</span>
+                                <field name="sum_pay_normal"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">未收款</span>
+                                <field name="sum_un_pay" decoration-danger="sum_un_pay > 0"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Activity View（mail.activity.mixin 自带） -->
+    <record id="view_tour_plan_activity" model="ir.ui.view">
+        <field name="name">tour.plan.activity</field>
+        <field name="model">tour.plan</field>
+        <field name="arch" type="xml">
+            <activity string="团队订单">
+                <field name="activity_ids"/>
+            </activity>
         </field>
     </record>
 
@@ -89,6 +170,15 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending,confirmed,operating,in_progress,completed"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_regs" type="object"
+                            class="oe_stat_button" icon="fa-users"
+                            help="查看该团的报名记录">
+                            <div class="o_stat_info">
+                                <field name="reg_count" widget="statinfo" string="报名"/>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="plan_name"/>
                         <h1>
@@ -199,37 +289,52 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="金额">
-                            <group string="报价类">
-                                <field name="in_com_quo_sum"/>
-                                <field name="out_price_quo_sum"/>
-                                <field name="pre_price_quo_sum"/>
+                        <page string="金额" name="amount">
+                            <group string="报价与收款">
+                                <group string="报价类">
+                                    <field name="in_com_quo_sum"/>
+                                    <field name="out_price_quo_sum"/>
+                                    <field name="pre_price_quo_sum"/>
+                                </group>
+                                <group string="收款/未收类">
+                                    <field name="sum_pay_normal"/>
+                                    <field name="sum_pay"/>
+                                    <field name="sum_un_pay" decoration-danger="sum_un_pay > 0"/>
+                                </group>
                             </group>
-                            <group string="收款/未收类">
-                                <field name="sum_pay_normal"/>
-                                <field name="sum_pay"/>
-                                <field name="sum_un_pay"/>
+                            <group string="退款与代收代付">
+                                <group string="退款类">
+                                    <field name="sum_money_return"/>
+                                    <field name="sum_pay_return"/>
+                                </group>
+                                <group string="代收代付类">
+                                    <field name="sum_money_delegate"/>
+                                    <field name="sum_pay_delegate"/>
+                                </group>
                             </group>
-                            <group string="退款类">
-                                <field name="sum_money_return"/>
-                                <field name="sum_pay_return"/>
-                            </group>
-                            <group string="代收代付类">
-                                <field name="sum_money_delegate"/>
-                                <field name="sum_pay_delegate"/>
-                            </group>
-                            <group string="核算类">
+                            <group string="核算类（单团盈亏）">
                                 <field name="in_sum"/>
                                 <field name="out_sum"/>
-                                <field name="profit"/>
+                                <field name="profit"
+                                    decoration-success="profit > 0"
+                                    decoration-danger="profit &lt; 0"
+                                    decoration-muted="profit == 0"/>
                                 <field name="in_sum_no_shop"/>
                                 <field name="out_sum_no_shop"/>
-                                <field name="profit_no_shop"/>
-                                <field name="invoice_money"/>
-                                <field name="un_invoice_money"/>
-                                <field name="sys_service_fee"/>
-                                <field name="currency"/>
-                                <field name="exchange_rate"/>
+                                <field name="profit_no_shop"
+                                    decoration-success="profit_no_shop > 0"
+                                    decoration-danger="profit_no_shop &lt; 0"/>
+                            </group>
+                            <group string="开票与其他">
+                                <group string="开票">
+                                    <field name="invoice_money"/>
+                                    <field name="un_invoice_money"/>
+                                    <field name="sys_service_fee"/>
+                                </group>
+                                <group string="币种">
+                                    <field name="currency"/>
+                                    <field name="exchange_rate"/>
+                                </group>
                             </group>
                         </page>
                         <page string="归属">

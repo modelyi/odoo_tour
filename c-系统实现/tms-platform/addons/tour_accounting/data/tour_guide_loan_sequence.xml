@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_tour_guide_loan" model="ir.sequence">
+            <field name="name">导游借款单号</field>
+            <field name="code">tour.guide.loan</field>
+            <field name="prefix">JK-</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_tour_guide_real_pay" model="ir.sequence">
+            <field name="name">导游报账单号</field>
+            <field name="code">tour.guide.real.pay</field>
+            <field name="prefix">BZ-</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

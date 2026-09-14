@@ -45,6 +45,7 @@
                 <field name="guest_count"/>
                 <field name="in_com_quo_sum" sum="报价合计"/>
                 <field name="sum_pay_normal" sum="收款合计"/>
+                <field name="sum_un_pay" sum="未收款合计" decoration-danger="sum_un_pay > 0"/>
                 <field name="sales_name"/>
                 <field name="audit_chk"/>
             </list>
@@ -152,7 +153,7 @@
                             </group>
                             <group string="收款/未收">
                                 <field name="sum_pay_normal"/>
-                                <field name="sum_un_pay"/>
+                                <field name="sum_un_pay" decoration-danger="sum_un_pay > 0"/>
                             </group>
                             <group string="代收代付">
                                 <field name="sum_money_delegate"/>

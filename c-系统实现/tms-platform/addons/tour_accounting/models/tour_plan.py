@@ -50,6 +50,69 @@ class TourPlan(models.Model):
             rec.invoice_progress = (
                 (rec.invoice_money or 0.0) / total * 100.0) if total else 0.0
 
+    # === Smart Button 计数（发票/收款/核算）[界面改造样板] ===
+    # 反向 One2many：收款认领/核算台账按 plan_id 挂到团
+    claim_ids = fields.One2many('tour.payment.claim', 'plan_id', string='收款认领')
+    account_ids = fields.One2many('tour.plan.account', 'plan_id', string='核算台账')
+    invoice_count = fields.Integer('发票数', compute='_compute_invoice_count')
+    claim_count = fields.Integer('收款数', compute='_compute_claim_count')
+    account_count = fields.Integer('核算数', compute='_compute_account_count')
+
+    @api.depends('invoice_ids')
+    def _compute_invoice_count(self):
+        for rec in self:
+            rec.invoice_count = len(rec.invoice_ids)
+
+    @api.depends('claim_ids')
+    def _compute_claim_count(self):
+        for rec in self:
+            rec.claim_count = len(rec.claim_ids)
+
+    @api.depends('account_ids')
+    def _compute_account_count(self):
+        for rec in self:
+            rec.account_count = len(rec.account_ids)
+
+    def action_view_invoices(self):
+        """Smart button：跳转到该团的发票（out_invoice/out_refund）。"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '发票',
+            'res_model': 'account.move',
+            'view_mode': 'list,form',
+            'domain': [
+                ('move_type', 'in', ('out_invoice', 'out_refund')),
+                '|', ('tour_plan_id', '=', self.id),
+                ('id', 'in', self.invoice_ids.ids),
+            ],
+            'context': {'default_move_type': 'out_invoice'},
+        }
+
+    def action_view_claims(self):
+        """Smart button：跳转到该团的收款认领列表。"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '收款认领',
+            'res_model': 'tour.payment.claim',
+            'view_mode': 'list,form',
+            'domain': [('plan_id', '=', self.id)],
+            'context': {'default_plan_id': self.id},
+        }
+
+    def action_view_account(self):
+        """Smart button：跳转到该团的单团核算台账（1:1）。"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '单团核算',
+            'res_model': 'tour.plan.account',
+            'view_mode': 'list,form',
+            'domain': [('plan_id', '=', self.id)],
+            'context': {'default_plan_id': self.id},
+        }
+
     def action_confirm(self):
         """草稿 → 待确认 → 已确认；进入 confirmed 时自动创建分析账户 + 核算台账。"""
         res = super().action_confirm()

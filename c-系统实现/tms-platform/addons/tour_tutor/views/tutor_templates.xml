@@ -84,8 +84,8 @@
                         <div class="col-md-6 mb-3">
                             <div class="tt-card">
                                 <h3>线路产品 <span class="tt-tag">tour_product</span></h3>
-                                <div class="tt-duty">线路主数据：线路模板 / 行程明细 / 线路分类 / 发团计划 / 基础数据 / 业务类型 / 结算方式</div>
-                                <div class="tt-models">tour.line · tour.line.detail · tour.line.type · tour.departure · tour.base.item · tour.biz.type · tour.pay.way</div>
+                                <div class="tt-duty">线路主数据：线路模板 / 行程明细 / 线路分类 / 发团计划 / 基础数据 / 结算方式</div>
+                                <div class="tt-models">tour.line · tour.line.detail · tour.line.type · tour.departure · tour.base.item · tour.pay.way</div>
                                 <a class="tt-link" t-attf-href="#{menu_links['product']}" target="_blank">进入功能 →</a>
                             </div>
                         </div>

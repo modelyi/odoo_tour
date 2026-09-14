@@ -167,24 +167,28 @@
                             <field name="name"/>
                         </h1>
                     </div>
-                    <group>
+                    <group string="预订信息">
                         <group>
                             <field name="plan_id"/>
                             <field name="plan_code"/>
                             <field name="resource_type"/>
-                            <field name="guide_id" invisible="resource_type != 'guide'"/>
-                            <field name="vehicle_id" invisible="resource_type != 'vehicle'"/>
-                            <field name="supplier_id" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
-                            <field name="supplier_name" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
-                        </group>
-                        <group>
                             <field name="begin_date"/>
                             <field name="end_date"/>
                             <field name="guest_count"/>
+                        </group>
+                        <group>
                             <field name="amount_total"/>
                             <field name="confirm_state" invisible="resource_type not in ('hotel','scenic')"/>
                             <field name="company_id"/>
                             <field name="department_id"/>
+                        </group>
+                    </group>
+                    <group string="资源/供应商">
+                        <group>
+                            <field name="guide_id" invisible="resource_type != 'guide'"/>
+                            <field name="vehicle_id" invisible="resource_type != 'vehicle'"/>
+                            <field name="supplier_id" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
+                            <field name="supplier_name" invisible="resource_type not in ('hotel','meal','scenic','vehicle')"/>
                         </group>
                     </group>
                     <notebook>

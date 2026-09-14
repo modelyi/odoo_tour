@@ -38,15 +38,10 @@
         sequence="10"/>
 
     <!--
-        结算方式 / 业务类型：action 定义在 tour_product，parent 由下游模块挂载：
+        结算方式：action 定义在 tour_product，parent 由下游模块挂载：
         - 结算方式 → tour_accounting「财务配置」
-        - 业务类型 → tour_order「订单配置」
     -->
     <menuitem id="menu_tour_pay_way"
         name="结算方式"
         action="action_tour_pay_way"/>
-
-    <menuitem id="menu_tour_biz_type"
-        name="业务类型"
-        action="action_tour_biz_type"/>
 </odoo>

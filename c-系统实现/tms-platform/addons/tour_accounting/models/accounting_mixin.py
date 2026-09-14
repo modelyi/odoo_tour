@@ -29,12 +29,24 @@ class TourAccountingMixin(models.AbstractModel):
     ACCOUNT_TAX_OUTPUT = '2221.01'         # 应交增值税(销项) — 一般纳税人销项税额 [BS-11 §六]
     ACCOUNT_TAX_DEDUCT = '2221.03'         # 应交增值税(销项税额抵减/差额扣除) [BS-11 §六]
     ACCOUNT_TAX_SIMPLE = '2221.07'         # 应交增值税(简易计税/小规模) [BS-11 §六]
+    ACCOUNT_GUIDE_LOAN = '1221.01'         # 其他应收款—导游借款 [TDS §2.2]
+    ACCOUNT_PAYABLE_SUP = '2202'           # 应付账款（供应商，报账补款兜底）[TDS §2.2]
 
     # 收入确认模式：总额法（主要责任人）vs 净额法（代理人）[BS-14 §三 权威修正]
     # 海螺为组团社（主要责任人）：1(DT团队输单)/12(DSK团期计划)/13(DSS散客单组)/14(DSN散客并团)/15(DSN散客并团)
     # 均全额确认收入；仅 41(DD 代订) 为代理人净额法差价 [BS-14 §3.2]
     REVENUE_GROSS_MODES = ('1', '12', '13', '14', '15', '21', '31')  # 组团 → 总额法
     REVENUE_DD_MODES = ('41',)           # 代订项目 DD → 净额法（6001.03 代订收入）
+
+    # 导游报账 expense_type → 成本科目编码 [BS-06 §5.4 / TDS §2.2]
+    GUIDE_EXPENSE_COST_MAP = {
+        'vehicle': '6401.04',   # 车费 → 交通费
+        'meal': '6401.03',      # 餐费
+        'ticket': '6401.05',    # 门票费
+        'hotel': '6401.02',     # 房费 → 住宿费
+        'guide': '6401.07',     # 导服费
+        'other': '6401.11',     # 其他
+    }
 
     def _get_company_currency(self):
         return self.env.company.currency_id

@@ -205,6 +205,28 @@ class TourPlan(models.Model):
     plan_other_remark = fields.Text('其他备注')
     special_explain = fields.Text('特别说明')
 
+    # === Smart Button 计数（报名）[界面改造样板] ===
+    # One2many 反向关系：报名按 plan_id 挂到团，计数走 len(reg_ids)
+    reg_ids = fields.One2many('tour.plan.reg', 'plan_id', string='报名明细')
+    reg_count = fields.Integer('报名数', compute='_compute_reg_count')
+
+    @api.depends('reg_ids')
+    def _compute_reg_count(self):
+        for rec in self:
+            rec.reg_count = len(rec.reg_ids)
+
+    def action_view_regs(self):
+        """Smart button：跳转到该团的报名列表。"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '报名',
+            'res_model': 'tour.plan.reg',
+            'view_mode': 'list,form',
+            'domain': [('plan_id', '=', self.id)],
+            'context': {'default_plan_id': self.id},
+        }
+
     _uniq_plan_code = models.Constraint(
         'unique(plan_code)',
         '团号已存在',

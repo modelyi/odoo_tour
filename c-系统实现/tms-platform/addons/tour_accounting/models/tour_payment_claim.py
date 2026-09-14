@@ -79,6 +79,47 @@ class TourPaymentClaim(models.Model):
         '收款编号已存在',
     )
 
+    # === 界面可视化（smart button 计数） ===
+    move_count = fields.Integer('凭证数', compute='_compute_move_count')
+    reconcile_count = fields.Integer('核销数', compute='_compute_reconcile_count')
+
+    @api.depends('move_id')
+    def _compute_move_count(self):
+        for rec in self:
+            rec.move_count = 1 if rec.move_id else 0
+
+    @api.depends('claim_line_ids')
+    def _compute_reconcile_count(self):
+        for rec in self:
+            rec.reconcile_count = len(rec.claim_line_ids.filtered(lambda l: l.invoice_id))
+
+    def action_view_move(self):
+        self.ensure_one()
+        if not self.move_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '收款凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.move_id.id,
+            'target': 'current',
+        }
+
+    def action_view_reconcile(self):
+        self.ensure_one()
+        invoices = self.claim_line_ids.filtered(lambda l: l.invoice_id).mapped('invoice_id')
+        if not invoices:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '核销发票',
+            'res_model': 'account.move',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', invoices.ids)],
+            'target': 'current',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:

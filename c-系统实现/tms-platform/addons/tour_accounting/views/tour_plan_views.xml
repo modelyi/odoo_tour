@@ -22,4 +22,36 @@
             </field>
         </field>
     </record>
+
+    <!-- tour.plan Smart Button（发票/收款/核算）[界面改造样板] -->
+    <record id="view_tour_plan_form_smart_buttons" model="ir.ui.view">
+        <field name="name">tour.plan.form.smart.buttons</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_invoices" type="object"
+                    class="oe_stat_button" icon="fa-file-text-o"
+                    help="查看该团关联的发票">
+                    <div class="o_stat_info">
+                        <field name="invoice_count" widget="statinfo" string="发票"/>
+                    </div>
+                </button>
+                <button name="action_view_claims" type="object"
+                    class="oe_stat_button" icon="fa-money"
+                    help="查看该团的收款认领">
+                    <div class="o_stat_info">
+                        <field name="claim_count" widget="statinfo" string="收款"/>
+                    </div>
+                </button>
+                <button name="action_view_account" type="object"
+                    class="oe_stat_button" icon="fa-calculator"
+                    help="查看该团的单团核算台账">
+                    <div class="o_stat_info">
+                        <field name="account_count" widget="statinfo" string="核算"/>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
 </odoo>
