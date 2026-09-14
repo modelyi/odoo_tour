@@ -102,6 +102,8 @@ class TourGuide(models.Model):
     company_id = fields.Many2one('res.company', string='所属公司',
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
+    job_id = fields.Many2one('hr.job', string='职务', index=True,
+                             help='职务（复用原生 hr.job，源易途 items_11 的 15 条职务）')
 
     # === 智能按钮计数（跨模块懒加载：tour_resource 先于 tour_accounting 加载，
     #     故不声明 One2many，改为运行时按 guide_id 反查计数）===

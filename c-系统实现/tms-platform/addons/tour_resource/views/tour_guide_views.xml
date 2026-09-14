@@ -42,6 +42,7 @@
                 <field name="guide_code"/>
                 <field name="mobile"/>
                 <field name="grade"/>
+                <field name="job_id"/>
                 <field name="guide_star"/>
                 <field name="sex"/>
                 <field name="language_name"/>
@@ -187,6 +188,7 @@
                                 <group>
                                     <field name="company_id"/>
                                     <field name="department_id"/>
+                                    <field name="job_id"/>
                                     <field name="employee_id"/>
                                     <field name="active"/>
                                 </group>

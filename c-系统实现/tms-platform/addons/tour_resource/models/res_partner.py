@@ -45,7 +45,15 @@ class TourPartner(models.Model):
     contract_end_date = fields.Date('合同到期日')
 
     # === 等级与信用 ===
-    level_id = fields.Many2one('tour.base.item', string='供应商等级')
+    # 供应商等级原为 M2O('tour.base.item')（万能字典），该字典已删除；
+    # 供应商等级取值固定，改为独立 Selection（评级 A/B/C/D）。
+    level_id = fields.Selection([
+        ('a', 'A 级'),
+        ('b', 'B 级'),
+        ('c', 'C 级'),
+        ('d', 'D 级'),
+    ], string='供应商等级', index=True,
+       help='供应商等级评级（A/B/C/D），固定枚举')
     level_name = fields.Char('等级名称')
     credit_lmt = fields.Float('信用额度', digits=(16, 2))
     credit_lmt_type = fields.Char('信用额度类型')

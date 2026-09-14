@@ -2,6 +2,8 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+from odoo.addons.tour_base.models.constants import BIZ_MODE
+
 
 class TourPlanReg(models.Model):
     _name = 'tour.plan.reg'
@@ -26,23 +28,7 @@ class TourPlanReg(models.Model):
     out_code = fields.Char('外部单号')
 
     # === 业务分类与日期 ===
-    biz_mode = fields.Selection([
-        ('1', '团队输单 (DT)'),
-        ('2', '团队输单 (DT)'),
-        ('12', '团期计划 (DSK)'),
-        ('13', '散客单组 (DSS)'),
-        ('14', '散客并团 (DSN)'),
-        ('15', '散客并团 (DSN)'),
-        ('16', '内部流转'),
-        ('17', '产品计划'),
-        ('18', '关键字并团'),
-        ('21', '组团团队 (DTO)'),
-        ('31', '组团散客 (DSO)'),
-        ('41', '代订项目 (DD)'),
-        ('51', '自由行'),
-        ('52', '自由行'),
-        ('71', '共享协议报名'),
-    ], string='业务模式', required=True, default='12', index=True)
+    biz_mode = fields.Selection(BIZ_MODE, string='业务模式', required=True, default='12', index=True)
     plan_type = fields.Selection([
         ('1', '团队'),
         ('2', '散客/散拼'),

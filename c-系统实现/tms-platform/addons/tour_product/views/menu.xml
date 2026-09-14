@@ -31,17 +31,11 @@
         parent="menu_tms_product"
         sequence="90"/>
 
-    <menuitem id="menu_tour_base_item"
-        name="通用基础数据"
-        parent="menu_tms_product_config"
-        action="action_tour_base_item"
-        sequence="10"/>
-
     <!--
-        结算方式：action 定义在 tour_product，parent 由下游模块挂载：
-        - 结算方式 → tour_accounting「财务配置」
+        收付场景：action 定义在 tour_product，parent 由下游模块挂载：
+        - 收付场景 → tour_accounting「财务配置」
     -->
     <menuitem id="menu_tour_pay_way"
-        name="结算方式"
+        name="收付场景"
         action="action_tour_pay_way"/>
 </odoo>

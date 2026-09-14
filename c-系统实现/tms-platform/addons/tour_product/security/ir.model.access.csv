@@ -7,5 +7,3 @@ access_tour_line_detail_user,tour.line.detail.user,model_tour_line_detail,base.g
 access_tour_line_detail_manager,tour.line.detail.manager,model_tour_line_detail,base.group_system,1,1,1,1
 access_tour_pay_way_user,tour.pay.way.user,model_tour_pay_way,base.group_user,1,0,0,0
 access_tour_pay_way_manager,tour.pay.way.manager,model_tour_pay_way,base.group_system,1,1,1,1
-access_tour_base_item_user,tour.base.item.user,model_tour_base_item,base.group_user,1,0,0,0
-access_tour_base_item_manager,tour.base.item.manager,model_tour_base_item,base.group_system,1,1,1,1

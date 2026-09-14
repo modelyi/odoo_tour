@@ -289,67 +289,13 @@
             <field name="name">签单</field>
             <field name="code">-2</field>
             <field name="sequence">2</field>
+            <field name="is_credit">True</field>
     </record>
     <record id="pay_way_7" model="tour.pay.way">
             <field name="name">导游现收</field>
             <field name="code">3</field>
             <field name="sequence">3</field>
     </record>
-
-    <!-- ===== 通用基础数据 tour.base.item ===== -->
-    <record id="type2_1" model="tour.base.item">
-            <field name="item_type">room_type</field>
-            <field name="name">大床房</field>
-            <field name="help_code">drj</field>
-            <field name="brief">单人间</field>
-    </record>
-    <record id="type2_2" model="tour.base.item">
-            <field name="item_type">room_type</field>
-            <field name="name">双人间</field>
-            <field name="help_code">srj</field>
-            <field name="brief">双人间</field>
-    </record>
-    <record id="type2_3" model="tour.base.item">
-            <field name="item_type">room_type</field>
-            <field name="name">三人间</field>
-            <field name="help_code">SRJ</field>
-            <field name="brief">三人间</field>
-    </record>
-    <record id="type2_4" model="tour.base.item">
-            <field name="item_type">room_type</field>
-            <field name="name">四人间</field>
-            <field name="help_code">s</field>
-            <field name="brief">四人间</field>
-    </record>
-    <record id="type3_1" model="tour.base.item">
-            <field name="item_type">meal_type</field>
-            <field name="name">团餐</field>
-            <field name="help_code">TC</field>
-    </record>
-    <record id="type3_2" model="tour.base.item">
-            <field name="item_type">meal_type</field>
-            <field name="name">自助餐</field>
-            <field name="help_code">ZZC</field>
-    </record>
-    <record id="type5_1" model="tour.base.item">
-            <field name="item_type">transport</field>
-            <field name="name">飞机</field>
-            <field name="help_code">FJ</field>
-            <field name="brief">1</field>
-    </record>
-    <record id="type5_2" model="tour.base.item">
-            <field name="item_type">transport</field>
-            <field name="name">火车</field>
-            <field name="help_code">HC</field>
-            <field name="brief">2</field>
-    </record>
-    <record id="type5_3" model="tour.base.item">
-            <field name="item_type">transport</field>
-            <field name="name">大巴车</field>
-            <field name="help_code">QC</field>
-            <field name="brief">3</field>
-    </record>
-    <!-- 职务（items_11）已改由 hr.job 承载，不再作为 tour.base.item 的 duty 类型 -->
 
     <!-- ===== 线路产品 tour.line（样本）===== -->
     <record id="line_1" model="tour.line">

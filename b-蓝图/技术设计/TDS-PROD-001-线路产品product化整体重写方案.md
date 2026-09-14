@@ -1,11 +1,13 @@
 # TDS-PROD-001 — 线路产品 product 化整体重写方案
 
 > 文档编号：TDS-PROD-001
-> 版本：v1.0（方案稿，不落地代码）
+> 版本：v1.1（P0 已落地）
 > 日期：2026-09-14
-> 状态：待评审
+> 状态：已定稿（P0 模型重写已落地；P1 迁移脚本/P2 电商/P3 支付/P4 回归为待办阶段）
 > 依据：BS-01 线路管理、BS-02 订单管理、TDS-DATA-001 数据模型设计、TDS-B2C-001 线上销售、现有代码 tour_product / tour_order / tour_website / tour_operation / tour_accounting
 > 结论先行：**tour.line 采用委托继承 `_inherits = {'product.template': 'product_tmpl_id'}` 保留自建模型 + 1:1 委托 product.template**；分类改用原生 product.category；发团计划保留自建；电商走 website_sale 生成 sale.order 再桥接 tour.plan.reg。
+>
+> **实施进度**（2026-09-14）：P0 模型重写已落地（tour.line 已改 `_inherits`、tour.line.type 已删、85 条分类已迁 product.category、字段收敛完成）；P1 迁移脚本 `scripts/migrate_line_to_product.py` 已存在；P2 电商桥接、P3 支付对接、P4 回归 UAT 为待办。
 
 ---
 

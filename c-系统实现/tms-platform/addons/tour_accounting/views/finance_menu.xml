@@ -90,7 +90,7 @@
         groups="tour_base.group_tour_finance"
         sequence="20"/>
 
-    <!-- 结算方式（字典，定义在 tour_product）挂到财务配置 -->
+    <!-- 收付场景（字典，定义在 tour_product）挂到财务配置 -->
     <record model="ir.ui.menu" id="tour_product.menu_tour_pay_way">
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="group_ids" eval="[(4, ref('tour_base.group_tour_finance'))]"/>

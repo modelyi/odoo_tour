@@ -148,7 +148,7 @@ class TourPaymentClaim(models.Model):
         """签单（挂账/月结）不产生即时收付，跳过资金账户校验；
         电子渠道（银行转账/微信/支付宝）必须选择收款账户。"""
         for rec in self:
-            if rec.pay_way_id and rec.pay_way_id.pay_type == 'credit':
+            if rec.pay_way_id and rec.pay_way_id.is_credit:
                 continue
             if (rec.pay_channel_id
                     and rec.pay_channel_id.channel_type in ('bank_transfer', 'wechat', 'alipay')
