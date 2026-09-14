@@ -8,8 +8,7 @@
             <search string="车辆搜索">
                 <field name="name"/>
                 <field name="licence"/>
-                <field name="driver_name"/>
-                <field name="mobile"/>
+                <field name="driver_id"/>
                 <field name="supplier_id"/>
                 <filter name="active" string="启用" domain="[('active','=',True)]"/>
                 <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
@@ -40,8 +39,7 @@
             <list string="车辆档案">
                 <field name="name"/>
                 <field name="licence"/>
-                <field name="driver_name"/>
-                <field name="mobile"/>
+                <field name="driver_id"/>
                 <field name="seat_num"/>
                 <field name="extra_seat"/>
                 <field name="car_type"/>
@@ -78,19 +76,14 @@
                             <field name="help_code"/>
                         </group>
                         <group>
-                            <field name="driver_name"/>
-                            <field name="driver_code"/>
-                            <field name="mobile"/>
-                            <field name="tel"/>
-                            <field name="sex"/>
-                            <field name="age"/>
+                            <field name="driver_id"/>
+                            <field name="is_autarky"/>
                         </group>
                     </group>
                     <group string="归属">
                         <group>
                             <field name="supplier_id"/>
                             <field name="supplier_name"/>
-                            <field name="is_autarky"/>
                         </group>
                         <group>
                             <field name="company_id"/>
@@ -100,29 +93,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="司机信息">
-                            <group>
-                                <group>
-                                    <field name="nation"/>
-                                    <field name="born_place"/>
-                                    <field name="edu"/>
-                                    <field name="zip_code"/>
-                                </group>
-                                <group>
-                                    <field name="id_num_masked"/>
-                                    <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
-                                    <field name="addr"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page string="结算信息">
-                            <group>
-                                <field name="loan_rate"/>
-                                <field name="opening_bank"/>
-                                <field name="bank_account_masked"/>
-                                <field name="bank_account" groups="tour_base.group_tour_sensitive_data"/>
-                            </group>
-                        </page>
                         <page string="审核">
                             <group>
                                 <group>

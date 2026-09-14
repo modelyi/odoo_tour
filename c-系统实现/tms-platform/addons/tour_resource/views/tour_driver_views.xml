@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_driver_search" model="ir.ui.view">
+        <field name="name">tour.driver.search</field>
+        <field name="model">tour.driver</field>
+        <field name="arch" type="xml">
+            <search string="司机搜索">
+                <field name="name"/>
+                <field name="driver_code"/>
+                <field name="mobile"/>
+                <field name="licence_type"/>
+                <filter name="active" string="启用" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter name="group_sex" string="性别" context="{'group_by':'sex'}"/>
+                <filter name="group_licence_type" string="准驾车型" context="{'group_by':'licence_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_driver" model="ir.actions.act_window">
+        <field name="name">司机档案</field>
+        <field name="res_model">tour.driver</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_driver_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_driver_list" model="ir.ui.view">
+        <field name="name">tour.driver.list</field>
+        <field name="model">tour.driver</field>
+        <field name="arch" type="xml">
+            <list string="司机档案">
+                <field name="name"/>
+                <field name="driver_code"/>
+                <field name="mobile"/>
+                <field name="licence_type"/>
+                <field name="driver_licence"/>
+                <field name="sex"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_driver_form" model="ir.ui.view">
+        <field name="name">tour.driver.form</field>
+        <field name="model">tour.driver</field>
+        <field name="arch" type="xml">
+            <form string="司机档案">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="司机姓名"/>
+                        </h1>
+                        <field name="partner_id" placeholder="关联联系人（可搜索）"/>
+                    </div>
+                    <group string="基本信息">
+                        <group>
+                            <field name="driver_code"/>
+                            <field name="help_code"/>
+                            <field name="sex"/>
+                            <field name="nation"/>
+                            <field name="born_place"/>
+                            <field name="edu"/>
+                            <field name="age"/>
+                        </group>
+                        <group>
+                            <field name="mobile"/>
+                            <field name="tel"/>
+                            <field name="id_num"/>
+                            <field name="zip_code"/>
+                            <field name="addr"/>
+                        </group>
+                    </group>
+                    <group string="驾驶资质">
+                        <group>
+                            <field name="licence_type"/>
+                            <field name="driver_licence"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="结算信息">
+                            <group>
+                                <group>
+                                    <field name="loan_rate"/>
+                                    <field name="cw_code"/>
+                                </group>
+                                <group>
+                                    <field name="opening_bank"/>
+                                    <field name="bank_account"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="关联档案">
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="guide_id"/>
+                                <field name="company_id"/>
+                                <field name="department_id"/>
+                                <field name="active"/>
+                            </group>
+                        </page>
+                        <page string="备注">
+                            <group>
+                                <field name="remark"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

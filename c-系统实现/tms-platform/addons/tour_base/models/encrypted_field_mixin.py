@@ -286,7 +286,6 @@ class EncryptedFieldMixin(models.AbstractModel):
         """把存量明文加密为密文并同步检索散列（迁移时用，需已配置密钥）。
 
         用法（odoo shell）：
-            env['tour.vehicle'].encrypt_existing_plaintext()
             env['res.partner'].encrypt_existing_plaintext()
         """
         key = self._encrypt_key()

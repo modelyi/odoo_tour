@@ -9,6 +9,7 @@
         ===================
         旅行社资源管理模块：
         - 导游档案 (tour.guide)
+        - 司机档案 (tour.driver)
         - 车辆档案 (tour.vehicle)
         - 供应商扩展 (res.partner + sup_type)
         - 购物协议 (tour.shop.agreement)
@@ -20,6 +21,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/tour_guide_views.xml',
+        'views/tour_driver_views.xml',
         'views/tour_vehicle_views.xml',
         'views/res_partner_views.xml',
         'views/tour_shop_agreement_views.xml',

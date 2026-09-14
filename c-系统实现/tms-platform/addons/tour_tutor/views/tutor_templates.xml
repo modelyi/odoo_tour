@@ -109,7 +109,7 @@
                             <div class="tt-card">
                                 <h3>资源管理 <span class="tt-tag">tour_resource</span></h3>
                                 <div class="tt-duty">导游 / 车辆 / 供应商 / 购物协议 档案管理</div>
-                                <div class="tt-models">tour.guide · tour.vehicle · tour.shop.agreement · res.partner</div>
+                                <div class="tt-models">tour.guide · tour.driver · tour.vehicle · tour.shop.agreement · res.partner</div>
                                 <a class="tt-link" t-attf-href="#{menu_links['resource']}" target="_blank">进入功能 →</a>
                             </div>
                         </div>
