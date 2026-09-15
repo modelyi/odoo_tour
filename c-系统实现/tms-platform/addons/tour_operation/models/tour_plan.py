@@ -11,6 +11,52 @@ class TourPlan(models.Model):
                                  help='1:1 团=项目，计调调度入口（共享 analytic）')
     task_count = fields.Integer('计调任务数', compute='_compute_task_count')
 
+    # === 计调看板统计字段 ===
+    booking_guide_count = fields.Integer('派导', compute='_compute_booking_stats')
+    booking_vehicle_count = fields.Integer('派车', compute='_compute_booking_stats')
+    booking_hotel_count = fields.Integer('订房', compute='_compute_booking_stats')
+    booking_meal_count = fields.Integer('订餐', compute='_compute_booking_stats')
+    booking_scenic_count = fields.Integer('门票', compute='_compute_booking_stats')
+    booking_insurance_count = fields.Integer('保险', compute='_compute_booking_stats')
+    booking_ditch_count = fields.Integer('地接', compute='_compute_booking_stats')
+    booking_completed_count = fields.Integer('已完成', compute='_compute_booking_stats')
+    booking_total_count = fields.Integer('总任务', compute='_compute_booking_stats')
+    booking_progress = fields.Float('完成进度%', compute='_compute_booking_stats')
+
+    @api.depends('project_id')
+    def _compute_booking_stats(self):
+        Task = self.env['project.task']
+        for plan in self:
+            if not plan.project_id:
+                plan.update({
+                    'booking_guide_count': 0, 'booking_vehicle_count': 0,
+                    'booking_hotel_count': 0, 'booking_meal_count': 0,
+                    'booking_scenic_count': 0, 'booking_insurance_count': 0,
+                    'booking_ditch_count': 0, 'booking_completed_count': 0,
+                    'booking_total_count': 0, 'booking_progress': 0.0,
+                })
+                continue
+            tasks = Task.search([('project_id', '=', plan.project_id.id)])
+            guide = tasks.filtered(lambda t: t.resource_type == 'guide')
+            vehicle = tasks.filtered(lambda t: t.resource_type == 'vehicle')
+            hotel = tasks.filtered(lambda t: t.resource_type == 'hotel')
+            meal = tasks.filtered(lambda t: t.resource_type == 'meal')
+            scenic = tasks.filtered(lambda t: t.resource_type == 'scenic')
+            insurance = tasks.filtered(lambda t: t.resource_type == 'insurance')
+            ditch = tasks.filtered(lambda t: t.resource_type == 'ditch')
+            completed = tasks.filtered(lambda t: t.state in ('03_approved', '1_done'))
+            total = len(tasks)
+            plan.booking_guide_count = len(guide)
+            plan.booking_vehicle_count = len(vehicle)
+            plan.booking_hotel_count = len(hotel)
+            plan.booking_meal_count = len(meal)
+            plan.booking_scenic_count = len(scenic)
+            plan.booking_insurance_count = len(insurance)
+            plan.booking_ditch_count = len(ditch)
+            plan.booking_completed_count = len(completed)
+            plan.booking_total_count = total
+            plan.booking_progress = (len(completed) / total * 100) if total else 0.0
+
     @api.depends('project_id')
     def _compute_task_count(self):
         for plan in self:
@@ -66,6 +112,7 @@ class TourPlan(models.Model):
     def _check_booking_before_start(self):
         """出团前置校验：核心资源预订需全部确认，房/门票需二次确认。
         是否阻断由系统参数 tour_operation.require_full_booking 配置（默认阻断）。
+        餐食是否纳入检查由 tour_operation.check_meal_before_start 配置（默认纳入）。
         已改为查 project.task（project_id 关联），状态映射原生 state：
         已确认=03_approved，已完成=1_done，已取消=1_canceled。"""
         self.ensure_one()
@@ -77,9 +124,14 @@ class TourPlan(models.Model):
         ])
         if not tasks:
             return
+        check_meal = self.env['ir.config_parameter'].sudo().get_param(
+            'tour_operation.check_meal_before_start', 'True')
+        resource_types = ('guide', 'vehicle', 'hotel', 'scenic', 'insurance', 'ditch')
+        if check_meal != 'False':
+            resource_types = ('guide', 'vehicle', 'hotel', 'meal', 'scenic', 'insurance', 'ditch')
         problems = []
         rt_label = dict(self.env['project.task']._fields['resource_type'].selection)
-        for rt in ('guide', 'vehicle', 'hotel', 'scenic'):
+        for rt in resource_types:
             for t in tasks.filtered(lambda x: x.resource_type == rt):
                 if t.state not in ('03_approved', '1_done'):
                     problems.append('%s 预订 %s 未确认' % (rt_label.get(rt, rt), t.name))

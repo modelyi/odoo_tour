@@ -45,6 +45,46 @@
         </field>
     </record>
 
+    <!-- 常规旅游团 Action -->
+    <record id="action_tour_plan_regular" model="ir.actions.act_window">
+        <field name="name">常规旅游团</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="search_view_id" ref="view_tour_plan_search"/>
+        <field name="domain">[('plan_category', '=', 'regular')]</field>
+        <field name="context">{'default_plan_category': 'regular'}</field>
+    </record>
+
+    <!-- 散客计划 Action -->
+    <record id="action_tour_plan_fit" model="ir.actions.act_window">
+        <field name="name">散客计划</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="search_view_id" ref="view_tour_plan_search"/>
+        <field name="domain">[('plan_category', '=', 'fit')]</field>
+        <field name="context">{'default_plan_category': 'fit'}</field>
+    </record>
+
+    <!-- 自由行 Action -->
+    <record id="action_tour_plan_independent" model="ir.actions.act_window">
+        <field name="name">自由行</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="search_view_id" ref="view_tour_plan_search"/>
+        <field name="domain">[('plan_category', '=', 'independent')]</field>
+        <field name="context">{'default_plan_category': 'independent'}</field>
+    </record>
+
+    <!-- 代订 Action -->
+    <record id="action_tour_plan_booking" model="ir.actions.act_window">
+        <field name="name">代订</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="search_view_id" ref="view_tour_plan_search"/>
+        <field name="domain">[('plan_category', '=', 'booking')]</field>
+        <field name="context">{'default_plan_category': 'booking'}</field>
+    </record>
+
     <!-- List View -->
     <record id="view_tour_plan_list" model="ir.ui.view">
         <field name="name">tour.plan.list</field>

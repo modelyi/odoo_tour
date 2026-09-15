@@ -7,11 +7,41 @@
         sequence="20"
         groups="tour_base.group_tour_operator,tour_base.group_tour_finance,tour_base.group_tour_sales"/>
 
+    <!-- 团队订单（按分类拆分子菜单） -->
     <menuitem id="menu_tour_plan"
         name="团队订单"
         parent="menu_tms_order"
-        action="action_tour_plan"
         sequence="10"/>
+
+    <menuitem id="menu_tour_plan_regular"
+        name="常规旅游团"
+        parent="menu_tour_plan"
+        action="action_tour_plan_regular"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_plan_fit"
+        name="散客计划"
+        parent="menu_tour_plan"
+        action="action_tour_plan_fit"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_plan_independent"
+        name="自由行"
+        parent="menu_tour_plan"
+        action="action_tour_plan_independent"
+        sequence="30"/>
+
+    <menuitem id="menu_tour_plan_booking"
+        name="代订"
+        parent="menu_tour_plan"
+        action="action_tour_plan_booking"
+        sequence="40"/>
+
+    <menuitem id="menu_tour_plan_all"
+        name="全部订单"
+        parent="menu_tour_plan"
+        action="action_tour_plan"
+        sequence="90"/>
 
     <menuitem id="menu_tour_plan_reg"
         name="报名"

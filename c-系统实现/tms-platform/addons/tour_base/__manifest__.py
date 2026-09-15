@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Base - 旅行社技术基础设施',
-    'version': '19.0.0.1.0',
+    'version': '19.0.0.3.0',
     'category': 'Travel/TMS',
-    'summary': '旅行社管理系统基础设施：根菜单、加密工具、配置、权限组、共享常量',
+    'summary': '旅行社基础设施：根菜单、银行账户、加密工具、配置、权限组、共享常量',
     'description': """
         TMS Base Module
         ================
@@ -23,9 +23,18 @@
     'depends': ['base', 'mail'],
     'data': [
         'security/tour_base_security.xml',
+        'views/tour_dashboard_views.xml',
         'views/menu.xml',
         'views/res_config_settings_views.xml',
+        'views/tour_bank_account_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'tour_base/static/src/scss/tour_dashboard.scss',
+            'tour_base/static/src/xml/tour_dashboard.xml',
+            'tour_base/static/src/js/tour_dashboard.js',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,

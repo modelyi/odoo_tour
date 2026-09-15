@@ -13,12 +13,17 @@ class ProjectTask(models.Model):
     """
     _inherit = 'project.task'
 
+    booking_no = fields.Char('预订编号', readonly=True, copy=False, index=True,
+                             help='自动生成 BK-XXXXXX 格式编号')
+
     resource_type = fields.Selection([
         ('guide', '派导'),
         ('vehicle', '派车'),
         ('hotel', '订房'),
         ('meal', '订餐'),
         ('scenic', '门票'),
+        ('insurance', '保险'),
+        ('ditch', '地接'),
     ], string='资源类型', required=True, index=True, tracking=True)
 
     # === 资源对象 ===
@@ -29,8 +34,9 @@ class ProjectTask(models.Model):
                                  domain="[('audit_chk', '=', True)]",
                                  help='resource_type=vehicle 时必填，仅可选已审核车辆')
     supplier_id = fields.Many2one('tour.supplier', string='供应商', index=True,
-                                  help='hotel→sup_type=hotel；meal→sup_type=meal；'
-                                       'scenic→sup_type=scenic；vehicle→sup_type=vehicle_comp')
+                                  help='hotel→hotel；meal→meal；'
+                                       'scenic→scenic；vehicle→vehicle_comp；'
+                                       'insurance→insurance；ditch→ditch')
     supplier_name = fields.Char('供应商名称', help='供应商名称冗余')
 
     # === 团队回链（project 1:1 tour.plan）===
@@ -94,6 +100,17 @@ class ProjectTask(models.Model):
     child_num = fields.Integer('儿童票数')
     old_man_num = fields.Integer('老人票数')
     student_num = fields.Integer('学生票数')
+    # insurance
+    insurance_type = fields.Char('险种')
+    insured_count = fields.Integer('投保人数')
+    premium_per_person = fields.Float('每人保费', digits=(16, 2))
+    policy_no = fields.Char('保单号')
+    # ditch (地接)
+    ditch_destination = fields.Char('目的地')
+    ditch_contact = fields.Char('地接联系人')
+    ditch_contact_phone = fields.Char('联系人电话')
+    ditch_scope = fields.Text('服务范围')
+    ditch_cost_per_person = fields.Float('人均地接费', digits=(16, 2))
 
     # === 备注 ===
     remark = fields.Text('备注')
@@ -137,7 +154,7 @@ class ProjectTask(models.Model):
                 raise ValidationError('派导预订必须选择导游')
             if rec.resource_type == 'vehicle' and not rec.vehicle_id:
                 raise ValidationError('派车预订必须选择车辆')
-            if rec.resource_type in ('hotel', 'meal', 'scenic') and not rec.supplier_id:
+            if rec.resource_type in ('hotel', 'meal', 'scenic', 'insurance', 'ditch') and not rec.supplier_id:
                 raise ValidationError('该资源类型必须选择供应商')
 
     @api.constrains('resource_type', 'supplier_id')
@@ -147,6 +164,8 @@ class ProjectTask(models.Model):
             'meal': 'meal',
             'scenic': 'scenic',
             'vehicle': 'vehicle_comp',
+            'insurance': 'insurance',
+            'ditch': 'ditch',
         }
         for rec in self:
             if rec.resource_type in sup_map and rec.supplier_id:
@@ -195,6 +214,10 @@ class ProjectTask(models.Model):
         if rt == 'scenic':
             return (vals.get('unit_price') or 0.0) * sum(vals.get(k) or 0 for k in (
                 'adult_num', 'child_num', 'old_man_num', 'student_num'))
+        if rt == 'insurance':
+            return (vals.get('premium_per_person') or 0.0) * (vals.get('insured_count') or 0)
+        if rt == 'ditch':
+            return (vals.get('ditch_cost_per_person') or 0.0) * (vals.get('guest_count') or 0)
         return 0.0
 
     @api.model_create_multi
@@ -202,6 +225,9 @@ class ProjectTask(models.Model):
         for vals in vals_list:
             if 'amount_total' not in vals:
                 vals['amount_total'] = self._calc_amount_from_vals(vals)
+            if not vals.get('booking_no'):
+                vals['booking_no'] = self.env['ir.sequence'].next_by_code(
+                    'tour.operation.booking') or '/'
         records = super().create(vals_list)
         if not self.env.context.get('bypass_conflict_check'):
             records._check_resource_conflict()
@@ -286,6 +312,8 @@ class ProjectTask(models.Model):
             'hotel': 'hotel',
             'meal': 'meal',
             'scenic': 'scenic',
+            'insurance': 'insurance',
+            'ditch': 'ditch',
         }
         domain = [('sup_type', '=', sup_map[self.resource_type])] \
             if self.resource_type in sup_map else []
@@ -300,7 +328,9 @@ class ProjectTask(models.Model):
                   'room_single', 'room_standard', 'room_triangle',
                   'room_accompany', 'room_additional', 'price_per_table',
                   'table_count', 'unit_price', 'adult_num', 'child_num',
-                  'old_man_num', 'student_num', 'date_start', 'date_deadline')
+                  'old_man_num', 'student_num', 'date_start', 'date_deadline',
+                  'premium_per_person', 'insured_count',
+                  'ditch_cost_per_person', 'guest_count')
     def _onchange_compute_amount(self):
         for rec in self:
             rec.amount_total = self._calc_amount_from_vals({
@@ -322,6 +352,10 @@ class ProjectTask(models.Model):
                 'child_num': rec.child_num,
                 'old_man_num': rec.old_man_num,
                 'student_num': rec.student_num,
+                'premium_per_person': rec.premium_per_person,
+                'insured_count': rec.insured_count,
+                'ditch_cost_per_person': rec.ditch_cost_per_person,
+                'guest_count': rec.guest_count,
             })
 
     # === 状态机（映射到原生 state）===

@@ -16,4 +16,12 @@
     <record id="tour_base.group_tour_operator" model="res.groups">
         <field name="implied_ids" eval="[(4, ref('project.group_project_user'))]"/>
     </record>
+
+    <!-- 预订任务记录规则：按公司隔离 -->
+    <record id="rule_project_task_company" model="ir.rule">
+        <field name="name">预订任务：公司隔离</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('tour_base.group_tour_operator'))]"/>
+    </record>
 </odoo>

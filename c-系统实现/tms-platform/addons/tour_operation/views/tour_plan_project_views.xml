@@ -14,6 +14,28 @@
                         <field name="task_count" widget="statinfo" string="计调任务"/>
                     </div>
                 </button>
+                <button name="action_view_tasks" type="object"
+                    class="oe_stat_button" icon="fa-check-circle"
+                    help="预订完成进度">
+                    <div class="o_stat_info">
+                        <field name="booking_progress" widget="statinfo" string="进度%"/>
+                        <field name="booking_completed_count" invisible="1"/>
+                        <field name="booking_total_count" invisible="1"/>
+                    </div>
+                </button>
+            </xpath>
+            <!-- 在表单中添加预订统计字段（隐藏，用于看板） -->
+            <xpath expr="//sheet" position="inside">
+                <group name="booking_stats" string="预订统计" invisible="1">
+                    <field name="booking_guide_count"/>
+                    <field name="booking_vehicle_count"/>
+                    <field name="booking_hotel_count"/>
+                    <field name="booking_meal_count"/>
+                    <field name="booking_scenic_count"/>
+                    <field name="booking_completed_count"/>
+                    <field name="booking_total_count"/>
+                    <field name="booking_progress"/>
+                </group>
             </xpath>
         </field>
     </record>

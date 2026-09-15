@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Operation - 计调操作',
-    'version': '19.0.0.3.0',
+    'version': '19.0.0.6.0',
     'category': 'Travel/TMS',
-    'summary': '旅行社计调操作：基于 project.task 的 5 类资源预订（派导/派车/订房/订餐/门票）',
+    'summary': '旅行社计调操作：7 类资源预订（派导/派车/订房/订餐/门票/保险/地接）+ 计调看板',
     'description': """
         TMS Operation Module
         ====================
@@ -21,8 +21,10 @@
                 'tour_resource', 'tour_order', 'fleet', 'tour_fleet'],
     'data': [
         'security/tour_operation_security.xml',
+        'data/sequence.xml',
         'views/project_task_views.xml',
         'views/tour_plan_project_views.xml',
+        'views/booking_kanban_views.xml',
         'views/menu.xml',
     ],
     'demo': [],

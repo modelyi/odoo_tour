@@ -1,0 +1,110 @@
+.o_tour_dashboard {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .o_dashboard_loading {
+        text-align: center;
+        padding: 60px 0;
+        color: #888;
+
+        p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    }
+
+    .o_dashboard_section {
+        margin-bottom: 30px;
+
+        .o_dashboard_title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #714B67;
+        }
+    }
+
+    .o_dashboard_cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .o_dashboard_card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px 20px;
+        min-width: 120px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            border-color: #714B67;
+        }
+
+        .o_card_count {
+            font-size: 28px;
+            font-weight: 700;
+            color: #714B67;
+            line-height: 1.2;
+        }
+
+        .o_card_label {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .o_card_amount {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        i {
+            color: #714B67;
+            margin-bottom: 8px;
+        }
+    }
+
+    .o_card_tour {
+        border-left: 3px solid #714B67;
+    }
+
+    .o_card_booking {
+        border-left: 3px solid #017E84;
+    }
+
+    .o_card_finance {
+        border-left: 3px solid #F0AD4E;
+    }
+
+    .o_card_nav {
+        min-width: 100px;
+
+        .o_card_label {
+            font-size: 12px;
+        }
+    }
+
+    .o_card_empty {
+        cursor: default;
+        opacity: 0.6;
+
+        &:hover {
+            box-shadow: none;
+            transform: none;
+            border-color: #e0e0e0;
+        }
+    }
+}

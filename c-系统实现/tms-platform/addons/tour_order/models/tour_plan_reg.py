@@ -101,6 +101,11 @@ class TourPlanReg(models.Model):
     sum_pay_return = fields.Float('已退', digits=(16, 2))
 
     # === 状态/归属/备注 ===
+    state = fields.Selection([
+        ('draft', '草稿'),
+        ('confirmed', '已确认'),
+        ('cancelled', '已取消'),
+    ], string='状态', default='draft', required=True, tracking=True, index=True)
     audit_chk = fields.Boolean('审核')
     audit_chk0 = fields.Boolean('初审')
     verify_chk = fields.Boolean('核销')
@@ -123,3 +128,18 @@ class TourPlanReg(models.Model):
         for rec in self:
             if rec.begin_date and rec.end_date and rec.end_date < rec.begin_date:
                 raise ValidationError('返回日期不能早于出发日期')
+
+    def action_confirm(self):
+        for rec in self:
+            if rec.state != 'draft':
+                raise ValidationError('仅草稿状态可确认')
+        self.write({'state': 'confirmed'})
+
+    def action_cancel(self):
+        self.write({'state': 'cancelled'})
+
+    def action_reset_draft(self):
+        for rec in self:
+            if rec.state != 'cancelled':
+                raise ValidationError('仅已取消状态可重置草稿')
+        self.write({'state': 'draft'})
