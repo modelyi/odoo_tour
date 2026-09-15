@@ -34,11 +34,6 @@
         sequence="20"/>
 
     <!-- ==================== 2. 常规业务 ==================== -->
-    <record id="action_tms_pending_local_scatter" model="ir.actions.act_url">
-        <field name="name">地接散拼</field>
-        <field name="url">/tutor/pending?name=地接散拼</field>
-        <field name="target">self</field>
-    </record>
     <record id="action_tms_pending_scatter_group" model="ir.actions.act_url">
         <field name="name">散客单组</field>
         <field name="url">/tutor/pending?name=散客单组</field>
@@ -55,11 +50,10 @@
         action="tour_order.action_tour_plan_regular"
         sequence="10"/>
     <menuitem id="menu_tms_regular_local"
-        name="地接散拼（待实施）"
+        name="地接散拼"
         parent="menu_tms_regular_business"
-        action="action_tms_pending_local_scatter"
-        sequence="20"
-        groups="base.group_system"/>
+        action="tour_order.action_tour_plan_fit"
+        sequence="20"/>
     <menuitem id="menu_tms_regular_booking"
         name="代订项目"
         parent="menu_tms_regular_business"
