@@ -10,14 +10,19 @@
                 <field name="licence"/>
                 <field name="driver_id"/>
                 <field name="supplier_id"/>
+                <searchpanel view_types="kanban,list">
+                    <field name="supplier_id" icon="fa-building" enable_counters="1"/>
+                </searchpanel>
                 <filter name="active" string="启用" domain="[('active','=',True)]"/>
                 <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
                 <separator/>
                 <filter name="autarky" string="自营车辆" domain="[('is_autarky','=',True)]"/>
                 <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
                 <separator/>
-                <filter name="group_car_type" string="车型" context="{'group_by':'car_type'}"/>
-                <filter name="group_supplier" string="所属车队" context="{'group_by':'supplier_id'}"/>
+                <group name="group_by">
+                    <filter name="group_car_type" string="车型" context="{'group_by':'car_type'}"/>
+                    <filter name="group_supplier" string="所属车队" context="{'group_by':'supplier_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -26,9 +31,36 @@
     <record id="action_tour_vehicle" model="ir.actions.act_window">
         <field name="name">车辆档案</field>
         <field name="res_model">tour.vehicle</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_tour_vehicle_search"/>
         <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_tour_vehicle_kanban" model="ir.ui.view">
+        <field name="name">tour.vehicle.kanban</field>
+        <field name="model">tour.vehicle</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="image_128"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <widget name="web_ribbon" title="已归档" bg_color="text-bg-danger" invisible="active"/>
+                        <aside class="o_kanban_aside_full">
+                            <field name="image_128" widget="image" options="{'img_class': 'object-fit-contain'}"/>
+                        </aside>
+                        <main class="ps-2">
+                            <div class="mb-1">
+                                <field name="name" class="mb-0 fw-bold fs-5"/>
+                            </div>
+                            <div><field name="car_type"/></div>
+                            <div><field name="seat_num"/> 座</div>
+                            <div><field name="supplier_id"/></div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
     </record>
 
     <!-- List View -->
@@ -36,17 +68,19 @@
         <field name="name">tour.vehicle.list</field>
         <field name="model">tour.vehicle</field>
         <field name="arch" type="xml">
-            <list string="车辆档案">
+            <list string="车辆档案" sample="1" multi_edit="1">
+                <field name="image_128" widget="image" options="{'size': [24, 24]}" width="30" nolabel="1"/>
                 <field name="name"/>
                 <field name="licence"/>
                 <field name="driver_id"/>
                 <field name="seat_num"/>
-                <field name="extra_seat"/>
+                <field name="extra_seat" optional="hide"/>
                 <field name="car_type"/>
                 <field name="supplier_id"/>
-                <field name="is_autarky"/>
+                <field name="is_autarky" optional="hide"/>
                 <field name="audit_chk"/>
                 <field name="active" column_invisible="1"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
             </list>
         </field>
     </record>
@@ -56,17 +90,31 @@
         <field name="name">tour.vehicle.form</field>
         <field name="model">tour.vehicle</field>
         <field name="arch" type="xml">
-            <form string="车辆档案">
+            <form string="车辆档案" duplicate="false">
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="车牌号"/>
-                        </h1>
+                    <widget name="web_ribbon" title="已归档" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="d-flex flex-column flex-sm-row align-items-center">
+                        <div class="o_avatar ms-2 p-0">
+                            <field name="image_1920" widget="image" options="{'size': [128, 128]}"/>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-7 col-lg-8 px-4">
+                            <div class="oe_title mw-100 ps-0 pe-sm-2">
+                                <h1>
+                                    <field name="name" placeholder="车牌号"/>
+                                </h1>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-car fa-fw me-1 text-primary"/>
+                                    <field name="licence" class="w-100 w-sm-75"/>
+                                </h5>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-user fa-fw me-1 text-primary"/>
+                                    <field name="driver_id" class="w-100 w-sm-75"/>
+                                </h5>
+                            </div>
+                        </div>
                     </div>
                     <group string="车辆信息">
                         <group>
-                            <field name="licence"/>
                             <field name="car_type"/>
                             <field name="seat_num"/>
                             <field name="extra_seat"/>
@@ -76,7 +124,6 @@
                             <field name="help_code"/>
                         </group>
                         <group>
-                            <field name="driver_id"/>
                             <field name="is_autarky"/>
                         </group>
                     </group>
@@ -93,7 +140,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="审核">
+                        <page string="审核" name="audit">
                             <group>
                                 <group>
                                     <field name="audit_chk"/>

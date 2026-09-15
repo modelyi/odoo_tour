@@ -22,6 +22,8 @@ class TourVehicle(models.Model):
     is_autarky = fields.Boolean('是否自营车辆')
     help_code = fields.Char('助记码', index=True)
     remark = fields.Text('备注')
+    image_1920 = fields.Binary('图片')
+    image_128 = fields.Binary('图片 128', related='image_1920')
 
     # === 关联司机 ===
     driver_id = fields.Many2one('tour.driver', string='关联司机', index=True,

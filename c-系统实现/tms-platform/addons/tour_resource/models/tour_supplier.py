@@ -105,6 +105,8 @@ class TourSupplier(models.Model):
     # === 备注 ===
     remark = fields.Text('备注')
     remark2 = fields.Text('备注2')
+    image_1920 = fields.Binary('图片')
+    image_128 = fields.Binary('图片 128', related='image_1920')
 
     # === 授权 ===
     grant_num = fields.Integer('授权数')

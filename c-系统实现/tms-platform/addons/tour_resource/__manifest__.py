@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Resource - 资源管理',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.4.0',
     'category': 'Travel/TMS',
     'summary': '旅行社资源管理：导游、车辆、供应商、购物协议',
     'description': """
