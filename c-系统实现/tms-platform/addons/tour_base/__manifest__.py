@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Base - 旅行社技术基础设施',
-    'version': '19.0.0.3.0',
+    'version': '19.0.0.4.0',
     'category': 'Travel/TMS',
     'summary': '旅行社基础设施：根菜单、银行账户、加密工具、配置、权限组、共享常量',
     'description': """
