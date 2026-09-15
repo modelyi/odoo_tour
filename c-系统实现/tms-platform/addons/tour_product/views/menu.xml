@@ -1,35 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Product Menu（根菜单 tour_base.menu_tms_root 已在 tour_base 定义） -->
-    <menuitem id="menu_tms_product"
-        name="线路产品"
-        parent="tour_base.menu_tms_root"
-        sequence="10"
-        groups="tour_base.group_tour_operator,tour_base.group_tour_sales"/>
-
-    <menuitem id="menu_tour_line"
-        name="线路模板"
-        parent="menu_tms_product"
-        action="action_tour_line"
-        sequence="10"/>
-
-    <menuitem id="menu_tour_product_category"
-        name="线路分类"
-        parent="menu_tms_product"
-        action="action_tour_product_category"
-        sequence="20"/>
-
-    <menuitem id="menu_tour_departure"
-        name="发团计划"
-        parent="menu_tms_product"
-        action="action_tour_departure"
-        sequence="30"/>
-
-    <!-- 线路产品配置（Odoo 惯例：配置菜单放最后） -->
-    <menuitem id="menu_tms_product_config"
-        name="配置"
-        parent="menu_tms_product"
-        sequence="90"/>
+    <!-- 线路产品菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
+    <!-- 本文件仅保留 action 定义供其他模块引用 -->
 
     <!--
         收付场景：action 定义在 tour_product，parent 由下游模块挂载：

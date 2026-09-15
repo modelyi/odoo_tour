@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Product - 旅行社产品管理',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.3.0',
     'category': 'Travel/TMS',
     'summary': '旅行社管理系统产品模块：线路（委托 product.template）、发团计划',
     'description': """

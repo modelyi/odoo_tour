@@ -492,12 +492,12 @@
     <menuitem id="menu_tms_fin_single_in"
         name="单团收款"
         parent="menu_tms_finance"
-        action="tour_accounting.action_pay_request"
+        action="tour_accounting.action_tour_pay_request"
         sequence="10"/>
     <menuitem id="menu_tms_fin_single_out"
         name="单团付款"
         parent="menu_tms_finance"
-        action="tour_accounting.action_payment_claim"
+        action="tour_accounting.action_tour_payment_claim"
         sequence="20"/>
     <menuitem id="menu_tms_fin_batch_in"
         name="批量收款（待实施）"
@@ -590,12 +590,12 @@
     <menuitem id="menu_tms_claim_reg"
         name="收款登记"
         parent="menu_tms_claim"
-        action="tour_accounting.action_payment_claim"
+        action="tour_accounting.action_tour_payment_claim"
         sequence="10"/>
     <menuitem id="menu_tms_claim_confirm"
         name="收款认领"
         parent="menu_tms_claim"
-        action="tour_accounting.action_payment_claim_confirm"
+        action="tour_accounting.action_tour_payment_claim"
         sequence="20"/>
     <menuitem id="menu_tms_claim_audit"
         name="认领审核（待实施）"
@@ -617,6 +617,11 @@
         groups="base.group_system"/>
 
     <!-- ==================== 11. 办公管理 ==================== -->
+    <record id="action_tms_pending_oa" model="ir.actions.act_url">
+        <field name="name">办公费用</field>
+        <field name="url">/tutor/pending?name=办公费用</field>
+        <field name="target">self</field>
+    </record>
     <record id="action_tms_pending_oa_period" model="ir.actions.act_url">
         <field name="name">会计期间明细</field>
         <field name="url">/tutor/pending?name=会计期间明细</field>
@@ -874,12 +879,12 @@
     <menuitem id="menu_tms_res_category"
         name="线路分类"
         parent="menu_tms_resource"
-        action="tour_product.action_product_category"
+        action="tour_product.action_tour_product_category"
         sequence="10"/>
     <menuitem id="menu_tms_res_template"
         name="线路模板"
         parent="menu_tms_resource"
-        action="tour_product.action_product_template"
+        action="tour_product.action_tour_line"
         sequence="20"/>
     <menuitem id="menu_tms_res_customer"
         name="客户档案"
@@ -1020,7 +1025,7 @@
     <menuitem id="menu_tms_shop_agree_rebate"
         name="购物店返佣"
         parent="menu_tms_shop_agreement"
-        action="tour_resource.action_shopping_agreement"
+        action="tour_resource.action_tour_shop_agreement"
         sequence="10"/>
     <menuitem id="menu_tms_shop_agree_driver"
         name="司陪导协议（待实施）"
@@ -1072,7 +1077,7 @@
         name="基础数据"
         parent="menu_tms_root"
         sequence="180"/>
-    <menuitem id="menu_tms_base_data"
+    <menuitem id="menu_tms_base_data_main"
         name="基础数据（待实施）"
         parent="menu_tms_base_data"
         action="action_tms_pending_base_data"
@@ -1120,15 +1125,27 @@
         <field name="target">self</field>
     </record>
 
+    <record id="action_tms_pending_sys_log" model="ir.actions.act_url">
+        <field name="name">操作日志</field>
+        <field name="url">/tutor/pending?name=操作日志</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_sys_pwd" model="ir.actions.act_url">
+        <field name="name">修改密码</field>
+        <field name="url">/tutor/pending?name=修改密码</field>
+        <field name="target">self</field>
+    </record>
+
     <menuitem id="menu_tms_system"
         name="系统管理"
         parent="menu_tms_root"
         sequence="190"/>
     <menuitem id="menu_tms_sys_pwd"
-        name="修改密码"
+        name="修改密码（待实施）"
         parent="menu_tms_system"
-        action="base.action_change_password"
-        sequence="10"/>
+        action="action_tms_pending_sys_pwd"
+        sequence="10"
+        groups="base.group_system"/>
     <menuitem id="menu_tms_sys_company"
         name="公司信息"
         parent="menu_tms_system"
@@ -1170,26 +1187,38 @@
         sequence="80"
         groups="base.group_system"/>
     <menuitem id="menu_tms_sys_log"
-        name="操作日志"
+        name="操作日志（待实施）"
         parent="menu_tms_system"
-        action="base.action_auditlog"
+        action="action_tms_pending_sys_log"
         sequence="90"
         groups="base.group_system"/>
 
     <!-- ==================== 产品导览（TMS 独有） ==================== -->
+    <record id="action_tms_pending_tutor_doc" model="ir.actions.act_url">
+        <field name="name">产品导览文档</field>
+        <field name="url">/tutor/pending?name=产品导览文档</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_tutor_menus" model="ir.actions.act_url">
+        <field name="name">角色菜单预览</field>
+        <field name="url">/tutor/pending?name=角色菜单预览</field>
+        <field name="target">self</field>
+    </record>
+
     <menuitem id="menu_tms_tutor"
         name="产品导览"
         parent="menu_tms_root"
         sequence="200"/>
     <menuitem id="menu_tms_tutor_doc"
-        name="产品导览文档"
+        name="产品导览文档（待实施）"
         parent="menu_tms_tutor"
-        action="tour_tutor.action_tutor_doc"
-        sequence="10"/>
+        action="action_tms_pending_tutor_doc"
+        sequence="10"
+        groups="base.group_system"/>
     <menuitem id="menu_tms_tutor_menu"
-        name="角色菜单预览"
+        name="角色菜单预览（待实施）"
         parent="menu_tms_tutor"
-        action="tour_tutor.action_tutor_menu"
+        action="action_tms_pending_tutor_menus"
         sequence="20"
         groups="base.group_system"/>
 </odoo>

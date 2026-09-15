@@ -1,33 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 报表中心顶级菜单（挂在 tour_product 的「旅行社管理」根菜单下） -->
-    <menuitem id="menu_tms_report"
-        name="报表中心"
-        parent="tour_base.menu_tms_root"
-        sequence="50"
-        groups="tour_base.group_tour_finance"/>
-
-    <menuitem id="menu_report_plan_profit"
-        name="单团利润"
-        parent="menu_tms_report"
-        action="action_report_plan_profit"
-        sequence="10"/>
-
-    <menuitem id="menu_report_guide_performance"
-        name="导游业绩"
-        parent="menu_tms_report"
-        action="action_report_guide_performance"
-        sequence="20"/>
-
-    <menuitem id="menu_report_shop_commission"
-        name="购物返佣"
-        parent="menu_tms_report"
-        action="action_report_shop_commission"
-        sequence="30"/>
-
-    <menuitem id="menu_report_daily_income_expense"
-        name="每日收支"
-        parent="menu_tms_report"
-        action="action_report_daily_income_expense"
-        sequence="40"/>
+    <!-- 报表中心菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
+    <!-- 本文件仅保留 action 定义供其他模块引用 -->
 </odoo>

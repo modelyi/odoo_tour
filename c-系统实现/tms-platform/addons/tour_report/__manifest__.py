@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Report - 报表中心',
-    'version': '19.0.0.1.0',
+    'version': '19.0.0.2.0',
     'category': 'Travel/TMS',
     'summary': '旅行社报表中心：单团利润、导游业绩、购物返佣、每日收支',
     'description': """

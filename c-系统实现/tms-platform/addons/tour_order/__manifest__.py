@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Order - 订单管理',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.3.0',
     'category': 'Travel/TMS',
     'summary': '旅行社订单管理：团队订单、报名、并团、单团变更',
     'description': """

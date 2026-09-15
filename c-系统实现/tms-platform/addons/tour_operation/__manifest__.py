@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Operation - 计调操作',
-    'version': '19.0.0.6.0',
+    'version': '19.0.0.7.0',
     'category': 'Travel/TMS',
     'summary': '旅行社计调操作：7 类资源预订（派导/派车/订房/订餐/门票/保险/地接）+ 计调看板',
     'description': """

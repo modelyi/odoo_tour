@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 计调操作顶级菜单 -->
-    <menuitem id="menu_tms_operation"
-        name="计调操作"
-        parent="tour_base.menu_tms_root"
-        sequence="25"
-        groups="tour_base.group_tour_operator"/>
-
-    <!-- 计调看板 -->
-    <menuitem id="menu_booking_kanban"
-        name="计调看板"
-        parent="menu_tms_operation"
-        action="action_tour_plan_booking_kanban"
-        sequence="5"/>
-
-    <!-- 预订安排（父菜单，容器） -->
-    <menuitem id="menu_booking_root"
-        name="预订安排"
-        parent="menu_tms_operation"
-        sequence="10"/>
+    <!-- 计调操作菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
+    <!-- 本文件仅保留 action 定义供其他模块引用 -->
 
     <!-- 5 类资源专属 Action（带 domain 过滤） -->
     <record id="action_booking_guide" model="ir.actions.act_window">
@@ -83,47 +66,4 @@
         <field name="domain">[('resource_type','=','ditch')]</field>
         <field name="context">{'default_resource_type':'ditch'}</field>
     </record>
-
-    <!-- 预订安排子菜单 -->
-    <menuitem id="menu_booking_guide"
-        name="派导"
-        parent="menu_booking_root"
-        action="action_booking_guide"
-        sequence="10"/>
-
-    <menuitem id="menu_booking_vehicle"
-        name="派车"
-        parent="menu_booking_root"
-        action="action_booking_vehicle"
-        sequence="20"/>
-
-    <menuitem id="menu_booking_hotel"
-        name="订房"
-        parent="menu_booking_root"
-        action="action_booking_hotel"
-        sequence="30"/>
-
-    <menuitem id="menu_booking_meal"
-        name="订餐"
-        parent="menu_booking_root"
-        action="action_booking_meal"
-        sequence="40"/>
-
-    <menuitem id="menu_booking_scenic"
-        name="门票"
-        parent="menu_booking_root"
-        action="action_booking_scenic"
-        sequence="50"/>
-
-    <menuitem id="menu_booking_insurance"
-        name="保险"
-        parent="menu_booking_root"
-        action="action_booking_insurance"
-        sequence="60"/>
-
-    <menuitem id="menu_booking_ditch"
-        name="地接"
-        parent="menu_booking_root"
-        action="action_booking_ditch"
-        sequence="70"/>
 </odoo>
