@@ -5,7 +5,11 @@
       "WebFetch(*)",
       "WebFetch(*)",
       "Bash(find /home/adai/tms/c-系统实现/tms-platform -maxdepth 2 -type f | head -40)",
-      "Bash(find /home/adai/tms/c-系统实现/tms-platform/addons -name \"__manifest__.py\" | head -5)"
+      "Bash(find /home/adai/tms/c-系统实现/tms-platform/addons -name \"__manifest__.py\" | head -5)",
+      "Bash(curl -sI https://tour.solepro.cloud 2>&1 | head -30)",
+      "Bash(docker ps --format \"table {{.Names}}\\\\t{{.Status}}\\\\t{{.Ports}}\" 2>&1 | head -30)",
+      "Bash(find /home/adai -maxdepth 3 -type d -iname \"*frappe*\" 2>/dev/null)",
+      "Read(//home/adai/**)"
     ]
   }
 }
