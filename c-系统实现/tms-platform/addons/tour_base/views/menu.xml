@@ -18,33 +18,20 @@
     </record>
 
     <!-- ==================== 1. 散客计划 ==================== -->
-    <record id="action_tms_pending_group_plan" model="ir.actions.act_url">
-        <field name="name">团期计划</field>
-        <field name="url">/tutor/pending?name=团期计划</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_group_reg" model="ir.actions.act_url">
-        <field name="name">团期报名</field>
-        <field name="url">/tutor/pending?name=团期报名</field>
-        <field name="target">self</field>
-    </record>
-
     <menuitem id="menu_tms_group_plan"
         name="散客计划"
         parent="menu_tms_root"
         sequence="10"/>
     <menuitem id="menu_tms_group_plan_plan"
-        name="团期计划（待实施）"
+        name="团期计划"
         parent="menu_tms_group_plan"
-        action="action_tms_pending_group_plan"
-        sequence="10"
-        groups="base.group_system"/>
+        action="tour_product.action_tour_departure"
+        sequence="10"/>
     <menuitem id="menu_tms_group_plan_reg"
-        name="团期报名（待实施）"
+        name="团期报名"
         parent="menu_tms_group_plan"
-        action="action_tms_pending_group_reg"
-        sequence="20"
-        groups="base.group_system"/>
+        action="tour_order.action_tour_plan_reg"
+        sequence="20"/>
 
     <!-- ==================== 2. 常规业务 ==================== -->
     <record id="action_tms_pending_local_scatter" model="ir.actions.act_url">
