@@ -72,12 +72,12 @@ class TourGuideLoan(models.Model):
     move_state = fields.Selection(related='move_id.state', string='凭证状态')
 
     # === 冲抵跟踪 ===
-    real_pay_ids = fields.One2many('tour.guide.real.pay', 'loan_id', string='报账单')
-    settled_amount = fields.Float('已冲抵金额', digits=(16, 2),
-                                  compute='_compute_settled', store=True)
-    residual = fields.Float('未冲抵余额', digits=(16, 2),
-                            compute='_compute_settled', store=True,
-                            help='= 借款金额 - 已冲抵金额')
+    x_expense_ids = fields.One2many('hr.expense', 'x_loan_id', string='报账费用')
+    settled_amount = fields.Monetary('已冲抵金额', currency_field='currency_id',
+                                     compute='_compute_settled', store=True)
+    residual = fields.Monetary('未冲抵余额', currency_field='currency_id',
+                               compute='_compute_settled', store=True,
+                               help='= 借款金额 - 已冲抵金额')
 
     # === 归属 ===
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
@@ -131,13 +131,13 @@ class TourGuideLoan(models.Model):
             if rec.amount <= 0:
                 raise ValidationError('借款金额必须大于 0')
 
-    @api.depends('real_pay_ids', 'real_pay_ids.state', 'real_pay_ids.total_amount', 'state')
+    @api.depends('x_expense_ids', 'x_expense_ids.state', 'x_expense_ids.total_amount_currency', 'state')
     def _compute_settled(self):
         for rec in self:
-            settled = sum(rec.real_pay_ids.filtered(
-                lambda r: r.state in ('audited', 'settled')).mapped('total_amount'))
+            settled_expenses = rec.x_expense_ids.filtered(
+                lambda e: e.state in ('approved', 'posted', 'in_payment', 'paid'))
+            settled = sum(settled_expenses.mapped('total_amount_currency'))
             rec.settled_amount = settled
-            # 已冲抵后未冲抵余额为 0（退款/补款已在结算凭证中一并核平 1221.01）
             rec.residual = 0.0 if rec.state == 'settled' else round((rec.amount or 0.0) - settled, 2)
 
     @api.depends('state', 'due_date')

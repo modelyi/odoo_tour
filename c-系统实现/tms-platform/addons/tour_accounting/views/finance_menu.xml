@@ -51,9 +51,29 @@
     <menuitem id="menu_tour_guide_real_pay"
         name="导游报账"
         parent="hr_expense.menu_hr_expense_root"
-        action="action_tour_guide_real_pay"
+        action="action_tour_guide_expense"
         groups="-tour_base.group_tour_finance,base.group_user"
         sequence="3"/>
+
+    <!-- 旅行社财务菜单下的借款/报账入口（从 tour_base 迁移至此，避免加载顺序问题）-->
+    <menuitem id="menu_tms_fin_guide_loan"
+        name="导游借款"
+        parent="tour_base.menu_tms_finance"
+        action="action_tour_guide_loan"
+        groups="tour_base.group_tour_finance"
+        sequence="80"/>
+    <menuitem id="menu_tms_fin_guide_single"
+        name="导游单团报账"
+        parent="tour_base.menu_tms_finance"
+        action="action_tour_guide_expense"
+        groups="tour_base.group_tour_finance"
+        sequence="90"/>
+    <menuitem id="menu_tms_fin_guide_batch"
+        name="导游批量报账"
+        parent="tour_base.menu_tms_finance"
+        action="action_tour_guide_expense"
+        groups="tour_base.group_tour_finance"
+        sequence="100"/>
 
     <menuitem id="menu_tour_dunning"
         name="团款催收台账"

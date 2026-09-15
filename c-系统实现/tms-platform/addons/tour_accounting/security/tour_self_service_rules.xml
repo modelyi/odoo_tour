@@ -28,48 +28,4 @@
         <field name="perm_create" eval="True"/>
         <field name="perm_unlink" eval="True"/>
     </record>
-
-    <!-- ============ 报账单 ============ -->
-    <record id="rule_tour_guide_real_pay_self" model="ir.rule">
-        <field name="name">报账单：员工仅见本人</field>
-        <field name="model_id" ref="model_tour_guide_real_pay"/>
-        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
-    <record id="rule_tour_guide_real_pay_finance" model="ir.rule">
-        <field name="name">报账单：财务全权</field>
-        <field name="model_id" ref="model_tour_guide_real_pay"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('tour_base.group_tour_finance'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
-
-    <!-- ============ 报销明细行 ============ -->
-    <record id="rule_tour_guide_expense_line_self" model="ir.rule">
-        <field name="name">报销明细行：员工仅见本人</field>
-        <field name="model_id" ref="model_tour_guide_expense_line"/>
-        <field name="domain_force">[('real_pay_id.employee_id.user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
-    <record id="rule_tour_guide_expense_line_finance" model="ir.rule">
-        <field name="name">报销明细行：财务全权</field>
-        <field name="model_id" ref="model_tour_guide_expense_line"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('tour_base.group_tour_finance'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
 </odoo>

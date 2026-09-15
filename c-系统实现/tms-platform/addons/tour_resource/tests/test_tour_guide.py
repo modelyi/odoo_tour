@@ -119,8 +119,8 @@ class TestTourGuide(BaseCommon):
         guide = self._create_guide()
         self.assertEqual(guide.loan_count, 0)
 
-    def test_real_pay_count_zero_when_no_model(self):
-        """tour.guide.real.pay 模型不存在时计数为 0"""
+    def test_real_pay_count_zero_when_no_expenses(self):
+        """无关联 hr.expense 记录时计数为 0"""
         guide = self._create_guide()
         self.assertEqual(guide.real_pay_count, 0)
 

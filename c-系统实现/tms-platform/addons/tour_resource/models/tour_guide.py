@@ -142,12 +142,12 @@ class TourGuide(models.Model):
             rec.loan_count = counts.get(rec.id, 0)
 
     def _compute_real_pay_count(self):
-        if 'tour.guide.real.pay' not in self.env:
+        if 'hr.expense' not in self.env:
             self.real_pay_count = 0
             return
-        groups = self.env['tour.guide.real.pay'].read_group(
-            [('guide_id', 'in', self.ids)], ['guide_id'], ['guide_id'])
-        counts = {g['guide_id'][0]: g['guide_id_count'] for g in groups}
+        groups = self.env['hr.expense'].read_group(
+            [('x_guide_id', 'in', self.ids)], ['x_guide_id'], ['x_guide_id'])
+        counts = {g['x_guide_id'][0]: g['x_guide_id_count'] for g in groups}
         for rec in self:
             rec.real_pay_count = counts.get(rec.id, 0)
 
@@ -190,8 +190,8 @@ class TourGuide(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'name': '报账单',
-            'res_model': 'tour.guide.real.pay',
-            'view_mode': 'kanban,list,form',
-            'domain': [('guide_id', '=', self.id)],
-            'context': {'default_guide_id': self.id},
+            'res_model': 'hr.expense',
+            'view_mode': 'list,form',
+            'domain': [('x_guide_id', '=', self.id)],
+            'context': {'default_x_guide_id': self.id},
         }

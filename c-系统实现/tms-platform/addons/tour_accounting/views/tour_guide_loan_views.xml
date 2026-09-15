@@ -108,133 +108,16 @@
                         <field name="company_id"/>
                         <field name="department_id"/>
                     </group>
-                    <group string="关联报账单">
-                        <field name="real_pay_ids" readonly="1">
+                    <group string="关联报账费用">
+                        <field name="x_expense_ids" readonly="1">
                             <list>
                                 <field name="name"/>
-                                <field name="total_amount"/>
-                                <field name="balance"/>
+                                <field name="product_id"/>
+                                <field name="total_amount_currency"/>
+                                <field name="x_plan_code"/>
                                 <field name="state"/>
                             </list>
                         </field>
-                    </group>
-                </sheet>
-                <chatter/>
-            </form>
-        </field>
-    </record>
-
-    <!-- ======================= 导游报账单 ======================= -->
-    <record id="view_tour_guide_real_pay_search" model="ir.ui.view">
-        <field name="name">tour.guide.real.pay.search</field>
-        <field name="model">tour.guide.real.pay</field>
-        <field name="arch" type="xml">
-            <search string="导游报账搜索">
-                <field name="name"/>
-                <field name="guide_id"/>
-                <field name="employee_id"/>
-                <field name="plan_id"/>
-                <field name="plan_code"/>
-                <field name="loan_id"/>
-                <separator/>
-                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
-                <filter name="group_guide" string="导游" context="{'group_by':'guide_id'}"/>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_tour_guide_real_pay" model="ir.actions.act_window">
-        <field name="name">导游报账</field>
-        <field name="res_model">tour.guide.real.pay</field>
-        <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="view_tour_guide_real_pay_search"/>
-    </record>
-
-    <record id="view_tour_guide_real_pay_list" model="ir.ui.view">
-        <field name="name">tour.guide.real.pay.list</field>
-        <field name="model">tour.guide.real.pay</field>
-        <field name="arch" type="xml">
-            <list string="导游报账">
-                <field name="name"/>
-                <field name="guide_id"/>
-                <field name="employee_id"/>
-                <field name="plan_code"/>
-                <field name="loan_id"/>
-                <field name="loan_amount"/>
-                <field name="total_amount"/>
-                <field name="balance"/>
-                <field name="state" widget="badge"
-                    decoration-success="state=='settled'" decoration-info="state=='audited'"
-                    decoration-muted="state=='draft'"/>
-                <field name="move_id" optional="show"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="view_tour_guide_real_pay_form" model="ir.ui.view">
-        <field name="name">tour.guide.real.pay.form</field>
-        <field name="model">tour.guide.real.pay</field>
-        <field name="arch" type="xml">
-            <form string="导游报账单">
-                <header>
-                    <button name="action_audit" string="审核" type="object" class="btn-primary"
-                        groups="tour_base.group_tour_finance"
-                        invisible="state != 'draft'"/>
-                    <button name="action_pay" string="付款" type="object" class="btn-primary"
-                        groups="tour_base.group_tour_finance"
-                        invisible="state != 'audited' or loan_id"/>
-                    <button name="action_settle" string="结算" type="object" class="btn-primary"
-                        groups="tour_base.group_tour_finance"
-                        invisible="state != 'audited' or not loan_id"/>
-                    <field name="state" widget="statusbar"
-                        statusbar_visible="draft,audited,settled"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name" placeholder="报账单号"/></h1>
-                    </div>
-                    <group>
-                        <group>
-                            <field name="employee_id"/>
-                            <field name="guide_id"/>
-                            <field name="plan_id"/>
-                            <field name="plan_code"/>
-                            <field name="report_date"/>
-                        </group>
-                        <group>
-                            <field name="loan_id"/>
-                            <field name="loan_amount"/>
-                            <field name="total_amount"/>
-                            <field name="balance"/>
-                        </group>
-                    </group>
-                    <group string="报销明细">
-                        <field name="expense_line_ids" nolabel="1">
-                            <list editable="bottom">
-                                <field name="expense_type"/>
-                                <field name="amount"/>
-                                <field name="supplier_id"/>
-                                <field name="invoice_no"/>
-                                <field name="deductible"/>
-                                <field name="account_id" options="{'no_create': True}"/>
-                                <field name="remark"/>
-                            </list>
-                        </field>
-                    </group>
-                    <group string="会计凭证">
-                        <field name="move_id"/>
-                        <field name="move_state"/>
-                        <field name="payment_move_id"/>
-                        <field name="payment_move_state"/>
-                        <field name="auditor_id"/>
-                        <field name="audit_date"/>
-                        <field name="payer_id"/>
-                        <field name="pay_date"/>
-                    </group>
-                    <group string="归属">
-                        <field name="company_id"/>
-                        <field name="department_id"/>
                     </group>
                 </sheet>
                 <chatter/>

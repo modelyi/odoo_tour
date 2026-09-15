@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 导游费用类别产品（hr.expense 的 product_id）-->
+
+        <record id="product_expense_vehicle" model="product.product">
+            <field name="name">导游-车费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">vehicle</field>
+            <field name="property_account_expense_id" ref="tour_account_640104"/>
+            <field name="default_code">EXP_VEHICLE</field>
+        </record>
+
+        <record id="product_expense_meal" model="product.product">
+            <field name="name">导游-餐费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">meal</field>
+            <field name="property_account_expense_id" ref="tour_account_640103"/>
+            <field name="default_code">EXP_MEAL</field>
+        </record>
+
+        <record id="product_expense_ticket" model="product.product">
+            <field name="name">导游-门票费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">ticket</field>
+            <field name="property_account_expense_id" ref="tour_account_640105"/>
+            <field name="default_code">EXP_TICKET</field>
+        </record>
+
+        <record id="product_expense_hotel" model="product.product">
+            <field name="name">导游-房费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">hotel</field>
+            <field name="property_account_expense_id" ref="tour_account_640102"/>
+            <field name="default_code">EXP_HOTEL</field>
+        </record>
+
+        <record id="product_expense_visa" model="product.product">
+            <field name="name">导游-签证费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">visa</field>
+            <field name="property_account_expense_id" ref="tour_account_640106"/>
+            <field name="default_code">EXP_VISA</field>
+        </record>
+
+        <record id="product_expense_guide" model="product.product">
+            <field name="name">导游-导服费</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">guide</field>
+            <field name="property_account_expense_id" ref="tour_account_640107"/>
+            <field name="default_code">EXP_GUIDE</field>
+        </record>
+
+        <record id="product_expense_other" model="product.product">
+            <field name="name">导游-其他</field>
+            <field name="type">service</field>
+            <field name="sale_ok">False</field>
+            <field name="purchase_ok">True</field>
+            <field name="can_be_expensed">True</field>
+            <field name="x_expense_type">other</field>
+            <field name="property_account_expense_id" ref="tour_account_640111"/>
+            <field name="default_code">EXP_OTHER</field>
+        </record>
+    </data>
+</odoo>
