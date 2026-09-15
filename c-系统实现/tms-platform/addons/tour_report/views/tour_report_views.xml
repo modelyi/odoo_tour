@@ -135,7 +135,7 @@
                 <field name="shop_id" type="row"/>
                 <field name="plan_id" type="col"/>
                 <field name="guide_id" type="col"/>
-                <field name="amount" type="measure"/>
+                <field name="total_amount" type="measure"/>
                 <field name="commission_rate" type="measure"/>
                 <field name="commission_amount" type="measure"/>
             </pivot>
@@ -149,7 +149,7 @@
             <graph string="购物返佣">
                 <field name="shop_id" type="row"/>
                 <field name="commission_amount" type="measure"/>
-                <field name="amount" type="measure"/>
+                <field name="total_amount" type="measure"/>
             </graph>
         </field>
     </record>

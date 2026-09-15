@@ -10,20 +10,27 @@
                 <field name="plan_id"/>
                 <field name="plan_code"/>
                 <field name="shop_id"/>
+                <field name="supplier_name"/>
                 <field name="agreement_id"/>
                 <field name="guide_id"/>
+                <field name="guide_name"/>
                 <field name="shop_date"/>
+                <separator/>
+                <filter name="filter_draft" string="待确认" domain="[('state','=','draft')]"/>
+                <filter name="filter_confirmed" string="已确认" domain="[('state','=','confirmed')]"/>
+                <filter name="filter_cancelled" string="已退单" domain="[('state','=','cancelled')]"/>
                 <separator/>
                 <filter name="group_shop" string="购物店" context="{'group_by':'shop_id'}"/>
                 <filter name="group_guide" string="导游" context="{'group_by':'guide_id'}"/>
                 <filter name="group_date" string="购物日期" context="{'group_by':'shop_date'}"/>
+                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
             </search>
         </field>
     </record>
 
     <!-- Action -->
     <record id="action_tour_shop_record" model="ir.actions.act_window">
-        <field name="name">购物记录</field>
+        <field name="name">购物数据录入</field>
         <field name="res_model">tour.shop.record</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_tour_shop_record_search"/>
@@ -34,17 +41,22 @@
         <field name="name">tour.shop.record.list</field>
         <field name="model">tour.shop.record</field>
         <field name="arch" type="xml">
-            <list string="购物记录">
-                <field name="name"/>
+            <list string="购物数据录入" decoration-muted="state == 'cancelled'">
                 <field name="plan_code"/>
                 <field name="shop_id"/>
                 <field name="shop_date"/>
-                <field name="amount" sum="购物金额合计"/>
+                <field name="guest_count" sum="客人数合计"/>
+                <field name="total_amount" sum="购物金额合计"/>
+                <field name="per_capita" avg="人均购物"/>
                 <field name="commission_rate"/>
                 <field name="commission_amount" sum="返佣金额合计"
                     decoration-success="commission_amount > 0"
                     decoration-muted="commission_amount == 0"/>
                 <field name="guide_id"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'confirmed'"
+                    decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
     </record>
@@ -54,7 +66,17 @@
         <field name="name">tour.shop.record.form</field>
         <field name="model">tour.shop.record</field>
         <field name="arch" type="xml">
-            <form string="购物记录">
+            <form string="购物数据录入">
+                <header>
+                    <button name="action_confirm" type="object" string="确认"
+                        invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_cancel" type="object" string="退单"
+                        invisible="state != 'confirmed'"/>
+                    <button name="action_draft" type="object" string="重置为待确认"
+                        invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,confirmed"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <label for="name"/>
@@ -67,26 +89,44 @@
                             <field name="plan_id"/>
                             <field name="plan_code"/>
                             <field name="shop_id"/>
+                            <field name="supplier_name"/>
                             <field name="agreement_id"/>
                             <field name="guide_id"/>
+                            <field name="guide_name"/>
                         </group>
                         <group>
                             <field name="shop_date"/>
+                            <field name="guest_count"/>
+                            <field name="source"/>
                             <field name="company_id"/>
                         </group>
                     </group>
                     <group string="消费金额">
-                        <field name="amount"/>
-                    </group>
-                    <group string="返佣">
+                        <group>
+                            <field name="total_amount"/>
+                            <field name="per_capita"/>
+                        </group>
                         <group>
                             <field name="commission_rate"/>
-                            <field name="commission_amount" decoration-success="commission_amount > 0"/>
+                            <field name="commission_amount"
+                                decoration-success="commission_amount > 0"/>
                         </group>
                     </group>
-                    <group string="备注">
-                        <field name="remark" nolabel="1"/>
-                    </group>
+                    <notebook>
+                        <page string="商品明细" name="item_lines">
+                            <field name="item_lines">
+                                <list editable="bottom">
+                                    <field name="item_name"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="amount" sum="明细合计"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="备注" name="remark">
+                            <field name="remark" nolabel="1"/>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>

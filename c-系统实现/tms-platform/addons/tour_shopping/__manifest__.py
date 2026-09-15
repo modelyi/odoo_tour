@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Shopping - 购物管理',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.3.0',
     'category': 'Travel/TMS',
     'summary': '旅行社购物管理：团队购物记录',
     'description': """
