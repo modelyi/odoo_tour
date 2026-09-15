@@ -17,6 +17,10 @@
         <field name="target">self</field>
     </record>
 
+    <!-- domain 过滤 action 定义在各自模块中：
+         散客单组 → tour_order.action_tour_plan_dss
+         9 类对账 → tour_accounting.action_recon_* -->
+
     <!-- ==================== 1. 散客计划 ==================== -->
     <menuitem id="menu_tms_group_plan"
         name="散客计划"
@@ -34,12 +38,6 @@
         sequence="20"/>
 
     <!-- ==================== 2. 常规业务 ==================== -->
-    <record id="action_tms_pending_scatter_group" model="ir.actions.act_url">
-        <field name="name">散客单组</field>
-        <field name="url">/tutor/pending?name=散客单组</field>
-        <field name="target">self</field>
-    </record>
-
     <menuitem id="menu_tms_regular_business"
         name="常规业务"
         parent="menu_tms_root"
@@ -60,11 +58,11 @@
         action="tour_order.action_tour_plan_booking"
         sequence="30"/>
     <menuitem id="menu_tms_regular_scatter"
-        name="散客单组（待实施）"
+        name="散客单组"
         parent="menu_tms_regular_business"
-        action="action_tms_pending_scatter_group"
-        sequence="40"
-        groups="base.group_system"/>
+        action="tour_order.action_tour_plan_dss"
+        sequence="40"/>
+    <!-- 散客单组菜单 action 定义在 tour_order 模块 -->
     <menuitem id="menu_tms_regular_query"
         name="订单查询"
         parent="menu_tms_regular_business"
@@ -187,6 +185,11 @@
         parent="menu_tms_shopping"
         action="tour_report.action_report_guide_performance"
         sequence="40"/>
+    <menuitem id="menu_tms_shopping_commission"
+        name="佣金"
+        parent="menu_tms_shopping"
+        action="tour_accounting.action_tour_commission"
+        sequence="45"/>
     <menuitem id="menu_tms_shopping_batch"
         name="购物批量收款（待实施）"
         parent="menu_tms_shopping"
@@ -304,110 +307,56 @@
         groups="base.group_system"/>
 
     <!-- ==================== 8. 往来对帐 ==================== -->
-    <record id="action_tms_pending_recon_team" model="ir.actions.act_url">
-        <field name="name">团款对账</field>
-        <field name="url">/tutor/pending?name=团款对账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_local" model="ir.actions.act_url">
-        <field name="name">地接对账</field>
-        <field name="url">/tutor/pending?name=地接对账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_vehicle" model="ir.actions.act_url">
-        <field name="name">车费对帐</field>
-        <field name="url">/tutor/pending?name=车费对帐</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_ticket" model="ir.actions.act_url">
-        <field name="name">票务对帐</field>
-        <field name="url">/tutor/pending?name=票务对帐</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_insurance" model="ir.actions.act_url">
-        <field name="name">保险对帐</field>
-        <field name="url">/tutor/pending?name=保险对帐</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_meal" model="ir.actions.act_url">
-        <field name="name">餐费对账</field>
-        <field name="url">/tutor/pending?name=餐费对账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_hotel" model="ir.actions.act_url">
-        <field name="name">房费对账</field>
-        <field name="url">/tutor/pending?name=房费对账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_scenic" model="ir.actions.act_url">
-        <field name="name">门票对账</field>
-        <field name="url">/tutor/pending?name=门票对账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_recon_visa" model="ir.actions.act_url">
-        <field name="name">签证对账</field>
-        <field name="url">/tutor/pending?name=签证对账</field>
-        <field name="target">self</field>
-    </record>
-
     <menuitem id="menu_tms_reconciliation"
         name="往来对帐"
         parent="menu_tms_root"
         sequence="80"/>
+    <!-- 对账 action 定义在 tour_accounting 模块 -->
     <menuitem id="menu_tms_recon_team"
-        name="团款对账（待实施）"
+        name="团款对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_team"
-        sequence="10"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_group_tour"
+        sequence="10"/>
     <menuitem id="menu_tms_recon_local"
-        name="地接对账（待实施）"
+        name="地接对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_local"
-        sequence="20"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_ditch"
+        sequence="20"/>
     <menuitem id="menu_tms_recon_vehicle"
-        name="车费对帐（待实施）"
+        name="车费对帐"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_vehicle"
-        sequence="30"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_vehicle"
+        sequence="30"/>
     <menuitem id="menu_tms_recon_ticket"
-        name="票务对帐（待实施）"
+        name="票务对帐"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_ticket"
-        sequence="40"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_ticket"
+        sequence="40"/>
     <menuitem id="menu_tms_recon_insurance"
-        name="保险对帐（待实施）"
+        name="保险对帐"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_insurance"
-        sequence="50"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_insurance"
+        sequence="50"/>
     <menuitem id="menu_tms_recon_meal"
-        name="餐费对账（待实施）"
+        name="餐费对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_meal"
-        sequence="60"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_meal"
+        sequence="60"/>
     <menuitem id="menu_tms_recon_hotel"
-        name="房费对账（待实施）"
+        name="房费对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_hotel"
-        sequence="70"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_hotel"
+        sequence="70"/>
     <menuitem id="menu_tms_recon_scenic"
-        name="门票对账（待实施）"
+        name="门票对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_scenic"
-        sequence="80"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_scenic"
+        sequence="80"/>
     <menuitem id="menu_tms_recon_visa"
-        name="签证对账（待实施）"
+        name="签证对账"
         parent="menu_tms_reconciliation"
-        action="action_tms_pending_recon_visa"
-        sequence="90"
-        groups="base.group_system"/>
+        action="tour_accounting.action_recon_visa"
+        sequence="90"/>
 
     <!-- ==================== 9. 财务管理 ==================== -->
     <record id="action_tms_pending_fin_batch_in" model="ir.actions.act_url">
@@ -435,26 +384,6 @@
         <field name="url">/tutor/pending?name=代收款核销</field>
         <field name="target">self</field>
     </record>
-    <record id="action_tms_pending_fin_guide_loan" model="ir.actions.act_url">
-        <field name="name">导游借款</field>
-        <field name="url">/tutor/pending?name=导游借款</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_fin_guide_single" model="ir.actions.act_url">
-        <field name="name">导游单团报账</field>
-        <field name="url">/tutor/pending?name=导游单团报账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_fin_guide_batch" model="ir.actions.act_url">
-        <field name="name">导游批量报账</field>
-        <field name="url">/tutor/pending?name=导游批量报账</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_fin_bank" model="ir.actions.act_url">
-        <field name="name">银行账户管理</field>
-        <field name="url">/tutor/pending?name=银行账户管理</field>
-        <field name="target">self</field>
-    </record>
     <record id="action_tms_pending_fin_period" model="ir.actions.act_url">
         <field name="name">财务时段汇总</field>
         <field name="url">/tutor/pending?name=财务时段汇总</field>
@@ -480,6 +409,16 @@
         parent="menu_tms_finance"
         action="tour_accounting.action_tour_payment_claim"
         sequence="20"/>
+    <menuitem id="menu_tms_fin_plan_account"
+        name="单团核算"
+        parent="menu_tms_finance"
+        action="tour_accounting.action_tour_plan_account"
+        sequence="25"/>
+    <menuitem id="menu_tms_fin_dunning"
+        name="团款催收"
+        parent="menu_tms_finance"
+        action="tour_accounting.action_tour_dunning"
+        sequence="27"/>
     <menuitem id="menu_tms_fin_batch_in"
         name="批量收款（待实施）"
         parent="menu_tms_finance"
@@ -511,29 +450,25 @@
         sequence="70"
         groups="base.group_system"/>
     <menuitem id="menu_tms_fin_guide_loan"
-        name="导游借款（待实施）"
+        name="导游借款"
         parent="menu_tms_finance"
-        action="action_tms_pending_fin_guide_loan"
-        sequence="80"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_guide_loan"
+        sequence="80"/>
     <menuitem id="menu_tms_fin_guide_single"
-        name="导游单团报账（待实施）"
+        name="导游单团报账"
         parent="menu_tms_finance"
-        action="action_tms_pending_fin_guide_single"
-        sequence="90"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_guide_real_pay"
+        sequence="90"/>
     <menuitem id="menu_tms_fin_guide_batch"
-        name="导游批量报账（待实施）"
+        name="导游批量报账"
         parent="menu_tms_finance"
-        action="action_tms_pending_fin_guide_batch"
-        sequence="100"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_guide_real_pay"
+        sequence="100"/>
     <menuitem id="menu_tms_fin_bank"
-        name="银行账户管理（待实施）"
+        name="银行账户管理"
         parent="menu_tms_finance"
-        action="action_tms_pending_fin_bank"
-        sequence="110"
-        groups="base.group_system"/>
+        action="action_tour_bank_account"
+        sequence="110"/>
     <menuitem id="menu_tms_fin_period"
         name="财务时段汇总（待实施）"
         parent="menu_tms_finance"
@@ -1082,6 +1017,11 @@
         action="action_tms_pending_base_settle"
         sequence="40"
         groups="base.group_system"/>
+    <menuitem id="menu_tms_base_pay_channel"
+        name="支付渠道"
+        parent="menu_tms_base_data"
+        action="tour_accounting.action_tour_pay_channel"
+        sequence="45"/>
     <menuitem id="menu_tms_base_print"
         name="打印账号（待实施）"
         parent="menu_tms_base_data"
@@ -1175,6 +1115,10 @@
         groups="base.group_system"/>
 
     <!-- ==================== 产品导览（TMS 独有） ==================== -->
+    <menuitem id="menu_tms_tutor"
+        name="产品导览"
+        parent="menu_tms_root"
+        sequence="200"/>
     <record id="action_tms_pending_tutor_doc" model="ir.actions.act_url">
         <field name="name">产品导览文档</field>
         <field name="url">/tutor/pending?name=产品导览文档</field>
@@ -1186,10 +1130,6 @@
         <field name="target">self</field>
     </record>
 
-    <menuitem id="menu_tms_tutor"
-        name="产品导览"
-        parent="menu_tms_root"
-        sequence="200"/>
     <menuitem id="menu_tms_tutor_doc"
         name="产品导览文档（待实施）"
         parent="menu_tms_tutor"

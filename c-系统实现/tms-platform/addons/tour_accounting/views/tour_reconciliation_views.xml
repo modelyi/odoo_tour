@@ -27,6 +27,80 @@
         <field name="search_view_id" ref="view_tour_reconciliation_search"/>
     </record>
 
+    <!-- 按 verify_type 过滤的对账 action（供 tour_base 菜单引用） -->
+    <record id="action_recon_group_tour" model="ir.actions.act_window">
+        <field name="name">团款对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'group_tour')]</field>
+        <field name="context">{'default_verify_type': 'group_tour'}</field>
+    </record>
+    <record id="action_recon_ditch" model="ir.actions.act_window">
+        <field name="name">地接对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'ditch')]</field>
+        <field name="context">{'default_verify_type': 'ditch'}</field>
+    </record>
+    <record id="action_recon_vehicle" model="ir.actions.act_window">
+        <field name="name">车费对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'vehicle')]</field>
+        <field name="context">{'default_verify_type': 'vehicle'}</field>
+    </record>
+    <record id="action_recon_ticket" model="ir.actions.act_window">
+        <field name="name">票务对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'ticket')]</field>
+        <field name="context">{'default_verify_type': 'ticket'}</field>
+    </record>
+    <record id="action_recon_insurance" model="ir.actions.act_window">
+        <field name="name">保险对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'insurance')]</field>
+        <field name="context">{'default_verify_type': 'insurance'}</field>
+    </record>
+    <record id="action_recon_meal" model="ir.actions.act_window">
+        <field name="name">餐费对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'meal')]</field>
+        <field name="context">{'default_verify_type': 'meal'}</field>
+    </record>
+    <record id="action_recon_hotel" model="ir.actions.act_window">
+        <field name="name">房费对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'hotel')]</field>
+        <field name="context">{'default_verify_type': 'hotel'}</field>
+    </record>
+    <record id="action_recon_scenic" model="ir.actions.act_window">
+        <field name="name">门票对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'scenic')]</field>
+        <field name="context">{'default_verify_type': 'scenic'}</field>
+    </record>
+    <record id="action_recon_visa" model="ir.actions.act_window">
+        <field name="name">签证对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'visa')]</field>
+        <field name="context">{'default_verify_type': 'visa'}</field>
+    </record>
+
     <record id="view_tour_reconciliation_list" model="ir.ui.view">
         <field name="name">tour.reconciliation.list</field>
         <field name="model">tour.reconciliation</field>

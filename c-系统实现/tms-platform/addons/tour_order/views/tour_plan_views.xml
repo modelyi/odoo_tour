@@ -65,6 +65,16 @@
         <field name="context">{'default_plan_category': 'fit'}</field>
     </record>
 
+    <!-- 散客单组 Action：biz_mode='13' (DSS) -->
+    <record id="action_tour_plan_dss" model="ir.actions.act_window">
+        <field name="name">散客单组</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="search_view_id" ref="view_tour_plan_search"/>
+        <field name="domain">[('biz_mode', '=', '13')]</field>
+        <field name="context">{'default_biz_mode': '13', 'default_plan_category': 'fit'}</field>
+    </record>
+
     <!-- 自由行 Action -->
     <record id="action_tour_plan_independent" model="ir.actions.act_window">
         <field name="name">自由行</field>
