@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Shopping - 购物管理',
-    'version': '19.0.0.3.0',
+    'version': '19.0.0.5.0',
     'category': 'Travel/TMS',
     'summary': '旅行社购物管理：团队购物记录',
     'description': """
@@ -20,6 +20,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/tour_shop_record_views.xml',
+        'views/tour_plan_views.xml',
         'views/menu.xml',
     ],
     'demo': [],

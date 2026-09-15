@@ -54,6 +54,27 @@ class TourShopRecord(models.Model):
         ('app', 'APP录入'),
     ], string='来源', default='system', required=True)
 
+    # === 结算 ===
+    settlement_state = fields.Selection([
+        ('unsettled', '未结算'),
+        ('partial', '部分结算'),
+        ('settled', '已结算'),
+    ], string='结算状态', default='unsettled', required=True, index=True)
+    settlement_date = fields.Date('结算日期')
+    actual_commission = fields.Float('实际返佣', digits=(16, 2),
+        help='实际收到的返佣金额，可能与计算返佣不同')
+
+    # === 审计 ===
+    confirmed_by = fields.Many2one('res.users', string='确认人')
+    confirmed_date = fields.Datetime('确认日期')
+    operator_id = fields.Many2one('res.users', string='录入人',
+        default=lambda self: self.env.user)
+    cancelled_reason = fields.Text('退单原因')
+
+    # === 币种 ===
+    currency_id = fields.Many2one('res.currency', string='币种',
+        default=lambda self: self.env.company.currency_id)
+
     remark = fields.Text('备注')
     company_id = fields.Many2one('res.company', string='所属公司',
                                  default=lambda self: self.env.company)
@@ -116,7 +137,12 @@ class TourShopRecord(models.Model):
                 raise ValidationError('购物日期不能晚于团队返回日期')
 
     def action_confirm(self):
-        self.write({'state': 'confirmed'})
+        for rec in self:
+            rec.write({
+                'state': 'confirmed',
+                'confirmed_by': self.env.user,
+                'confirmed_date': fields.Datetime.now(),
+            })
 
     def action_cancel(self):
         self.write({'state': 'cancelled'})

@@ -1,110 +1,418 @@
+$o-tour-primary: #714B67;
+$o-tour-info: #017E84;
+$o-tour-warning: #F0AD4E;
+$o-tour-success: #28A745;
+$o-tour-danger: #DC3545;
+$o-tour-muted: #6C757D;
+$o-tour-secondary: #888;
+
+$o-color-map: (
+    'primary': $o-tour-primary,
+    'info': $o-tour-info,
+    'warning': $o-tour-warning,
+    'success': $o-tour-success,
+    'danger': $o-tour-danger,
+    'muted': $o-tour-muted,
+    'secondary': $o-tour-secondary,
+);
+
 .o_tour_dashboard {
-    padding: 20px;
-    max-width: 1400px;
+    padding: 24px;
+    max-width: 1440px;
     margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
 
-    .o_dashboard_loading {
-        text-align: center;
-        padding: 60px 0;
-        color: #888;
+.o_dashboard_loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    color: $o-tour-muted;
 
-        p {
-            margin-top: 15px;
-            font-size: 14px;
+    .o_dashboard_spinner {
+        margin-bottom: 16px;
+        color: $o-tour-primary;
+    }
+
+    p {
+        font-size: 14px;
+        margin: 0;
+    }
+}
+
+// KPI Summary Row
+.o_kpi_row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.o_kpi_card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    @each $name, $color in $o-color-map {
+        &[data-color="#{$name}"] .o_kpi_icon {
+            background: rgba($color, 0.1);
+            color: $color;
         }
     }
 
-    .o_dashboard_section {
-        margin-bottom: 30px;
-
-        .o_dashboard_title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #714B67;
-        }
-    }
-
-    .o_dashboard_cards {
+    .o_kpi_icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .o_kpi_content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .o_kpi_value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.2;
+    }
+
+    .o_kpi_amount {
+        font-size: 12px;
+        font-weight: 400;
+        color: $o-tour-muted;
+        margin-left: 4px;
+    }
+
+    .o_kpi_label {
+        font-size: 13px;
+        color: $o-tour-muted;
+        margin-top: 2px;
+    }
+}
+
+// Sections
+.o_dashboard_section {
+    margin-bottom: 28px;
+}
+
+.o_section_header {
+    margin-bottom: 16px;
+}
+
+.o_section_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i {
+        color: $o-tour-primary;
+        font-size: 14px;
+    }
+}
+
+// Tour State Cards
+.o_dashboard_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.o_state_card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    @each $name, $color in $o-color-map {
+        &[data-color="#{$name}"] {
+            .o_state_icon {
+                background: rgba($color, 0.1);
+                color: $color;
+            }
+            &:hover {
+                border-color: rgba($color, 0.3);
+            }
+        }
+    }
+
+    .o_state_icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .o_state_info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .o_state_count {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.2;
+    }
+
+    .o_state_label {
+        font-size: 12px;
+        color: $o-tour-muted;
+    }
+}
+
+// Booking Cards
+.o_booking_card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+    gap: 6px;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+        border-color: rgba($o-tour-info, 0.3);
+
+        .o_booking_icon {
+            background: rgba($o-tour-info, 0.15);
+            color: $o-tour-info;
+        }
+    }
+
+    .o_booking_icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        background: rgba($o-tour-info, 0.08);
+        color: $o-tour-info;
+        transition: all 0.2s ease;
+    }
+
+    .o_booking_count {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .o_booking_label {
+        font-size: 12px;
+        color: $o-tour-muted;
+    }
+}
+
+// Finance Cards
+.o_finance_cards {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.o_finance_card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .o_finance_icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .o_finance_info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .o_finance_count {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.2;
+    }
+
+    .o_finance_label {
+        font-size: 13px;
+        color: $o-tour-muted;
+    }
+
+    .o_finance_amount {
+        font-size: 12px;
+        color: $o-tour-warning;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+}
+
+.o_finance_pay .o_finance_icon {
+    background: rgba($o-tour-warning, 0.1);
+    color: $o-tour-warning;
+}
+
+.o_finance_pay:hover {
+    border-color: rgba($o-tour-warning, 0.3);
+}
+
+.o_finance_claim .o_finance_icon {
+    background: rgba($o-tour-success, 0.1);
+    color: $o-tour-success;
+}
+
+.o_finance_claim:hover {
+    border-color: rgba($o-tour-success, 0.3);
+}
+
+.o_finance_empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 32px;
+    color: $o-tour-muted;
+    cursor: default;
+
+    i {
+        margin-bottom: 8px;
+        opacity: 0.5;
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+    }
+}
+
+// Quick Navigation Cards
+.o_nav_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.o_nav_card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+
+    i {
+        font-size: 24px;
+        color: $o-tour-primary;
+        transition: all 0.2s ease;
+    }
+
+    span {
+        font-size: 13px;
+        color: #444;
+        font-weight: 500;
+    }
+
+    &:hover {
+        background: $o-tour-primary;
+        border-color: $o-tour-primary;
+        box-shadow: 0 4px 12px rgba($o-tour-primary, 0.3);
+        transform: translateY(-2px);
+
+        i, span {
+            color: #fff;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .o_tour_dashboard {
+        padding: 16px;
+    }
+
+    .o_kpi_row {
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
-    .o_dashboard_card {
-        background: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 16px 20px;
-        min-width: 120px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-
-        &:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-            border-color: #714B67;
-        }
-
-        .o_card_count {
-            font-size: 28px;
-            font-weight: 700;
-            color: #714B67;
-            line-height: 1.2;
-        }
-
-        .o_card_label {
-            font-size: 13px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .o_card_amount {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        i {
-            color: #714B67;
-            margin-bottom: 8px;
-        }
+    .o_kpi_card {
+        padding: 16px;
     }
 
-    .o_card_tour {
-        border-left: 3px solid #714B67;
+    .o_kpi_value {
+        font-size: 20px;
     }
 
-    .o_card_booking {
-        border-left: 3px solid #017E84;
+    .o_dashboard_cards {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 
-    .o_card_finance {
-        border-left: 3px solid #F0AD4E;
-    }
-
-    .o_card_nav {
-        min-width: 100px;
-
-        .o_card_label {
-            font-size: 12px;
-        }
-    }
-
-    .o_card_empty {
-        cursor: default;
-        opacity: 0.6;
-
-        &:hover {
-            box-shadow: none;
-            transform: none;
-            border-color: #e0e0e0;
-        }
+    .o_nav_cards {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

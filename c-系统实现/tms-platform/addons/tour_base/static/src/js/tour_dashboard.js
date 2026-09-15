@@ -19,7 +19,7 @@ class TourDashboard extends Component {
                 );
             } catch (e) {
                 console.error("Dashboard data load failed:", e);
-                this.state.data = { tour_states: [], pending_bookings: [], financial_pending: {} };
+                this.state.data = { kpi: [], tour_states: [], pending_bookings: [], financial_pending: { pay_requests: [], claims: [] } };
             }
             this.state.loading = false;
         });

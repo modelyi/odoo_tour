@@ -134,11 +134,6 @@
         sequence="70"/>
 
     <!-- ==================== 5. 购物管理 ==================== -->
-    <record id="action_tms_pending_shop_single" model="ir.actions.act_url">
-        <field name="name">单团购物查询</field>
-        <field name="url">/tutor/pending?name=单团购物查询</field>
-        <field name="target">self</field>
-    </record>
     <record id="action_tms_pending_shop_batch" model="ir.actions.act_url">
         <field name="name">购物批量收款</field>
         <field name="url">/tutor/pending?name=购物批量收款</field>
@@ -175,11 +170,10 @@
         action="tour_shopping.action_tour_shop_record"
         sequence="20"/>
     <menuitem id="menu_tms_shopping_single"
-        name="单团购物查询（待实施）"
+        name="单团购物查询"
         parent="menu_tms_shopping"
-        action="action_tms_pending_shop_single"
-        sequence="30"
-        groups="base.group_system"/>
+        action="tour_shopping.action_tour_shop_single_query"
+        sequence="30"/>
     <menuitem id="menu_tms_shopping_guide_perf"
         name="导游业绩统计"
         parent="menu_tms_shopping"

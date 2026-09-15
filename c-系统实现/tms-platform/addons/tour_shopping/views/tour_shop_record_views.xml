@@ -20,10 +20,14 @@
                 <filter name="filter_confirmed" string="已确认" domain="[('state','=','confirmed')]"/>
                 <filter name="filter_cancelled" string="已退单" domain="[('state','=','cancelled')]"/>
                 <separator/>
+                <filter name="filter_unsettled" string="未结算" domain="[('settlement_state','=','unsettled')]"/>
+                <filter name="filter_settled" string="已结算" domain="[('settlement_state','=','settled')]"/>
+                <separator/>
                 <filter name="group_shop" string="购物店" context="{'group_by':'shop_id'}"/>
                 <filter name="group_guide" string="导游" context="{'group_by':'guide_id'}"/>
                 <filter name="group_date" string="购物日期" context="{'group_by':'shop_date'}"/>
                 <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
+                <filter name="group_settlement" string="结算状态" context="{'group_by':'settlement_state'}"/>
             </search>
         </field>
     </record>
@@ -57,6 +61,10 @@
                     decoration-info="state == 'draft'"
                     decoration-success="state == 'confirmed'"
                     decoration-danger="state == 'cancelled'"/>
+                <field name="settlement_state" widget="badge"
+                    decoration-warning="settlement_state == 'unsettled'"
+                    decoration-success="settlement_state == 'settled'"
+                    decoration-info="settlement_state == 'partial'"/>
             </list>
         </field>
     </record>
@@ -105,12 +113,28 @@
                         <group>
                             <field name="total_amount"/>
                             <field name="per_capita"/>
+                            <field name="currency_id"/>
                         </group>
                         <group>
                             <field name="commission_rate"/>
                             <field name="commission_amount"
                                 decoration-success="commission_amount > 0"/>
+                            <field name="actual_commission"/>
                         </group>
+                    </group>
+                    <group string="结算信息" invisible="state == 'draft'">
+                        <group>
+                            <field name="settlement_state"/>
+                            <field name="settlement_date"/>
+                        </group>
+                        <group>
+                            <field name="confirmed_by"/>
+                            <field name="confirmed_date"/>
+                            <field name="operator_id"/>
+                        </group>
+                    </group>
+                    <group string="退单原因" invisible="state != 'cancelled'">
+                        <field name="cancelled_reason" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="商品明细" name="item_lines">
@@ -130,6 +154,71 @@
                 </sheet>
                 <chatter/>
             </form>
+        </field>
+    </record>
+
+    <!-- ============ 单团购物查询 ============ -->
+    <record id="view_tour_shop_record_single_search" model="ir.ui.view">
+        <field name="name">tour.shop.record.single.search</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <search string="单团购物查询">
+                <field name="shop_id"/>
+                <field name="supplier_name"/>
+                <field name="guide_id"/>
+                <field name="guide_name"/>
+                <field name="shop_date"/>
+                <separator/>
+                <filter name="filter_active" string="有效记录"
+                    domain="[('state','in',('draft','confirmed'))]"/>
+                <filter name="filter_confirmed" string="已确认"
+                    domain="[('state','=','confirmed')]"/>
+                <separator/>
+                <filter name="filter_unsettled" string="未结算"
+                    domain="[('settlement_state','=','unsettled')]"/>
+                <filter name="filter_settled" string="已结算"
+                    domain="[('settlement_state','=','settled')]"/>
+                <separator/>
+                <filter name="group_shop" string="按购物店"
+                    context="{'group_by':'shop_id'}"/>
+                <filter name="group_guide" string="按导游"
+                    context="{'group_by':'guide_id'}"/>
+                <filter name="group_date" string="按日期"
+                    context="{'group_by':'shop_date'}"/>
+                <filter name="group_state" string="按状态"
+                    context="{'group_by':'state'}"/>
+                <filter name="group_settlement" string="按结算状态"
+                    context="{'group_by':'settlement_state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tour_shop_record_single_pivot" model="ir.ui.view">
+        <field name="name">tour.shop.record.single.pivot</field>
+        <field name="model">tour.shop.record</field>
+        <field name="arch" type="xml">
+            <pivot string="单团购物分析">
+                <field name="shop_id" type="row"/>
+                <field name="guide_id" type="col"/>
+                <field name="total_amount" type="measure"/>
+                <field name="commission_rate" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="guest_count" type="measure"/>
+                <field name="per_capita" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_tour_shop_single_query" model="ir.actions.act_window">
+        <field name="name">单团购物查询</field>
+        <field name="res_model">tour.shop.record</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="search_view_id" ref="view_tour_shop_record_single_search"/>
+        <field name="context">{'search_default_group_shop': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                暂无购物记录，从团队订单录入购物数据后即可查看
+            </p>
         </field>
     </record>
 </odoo>
