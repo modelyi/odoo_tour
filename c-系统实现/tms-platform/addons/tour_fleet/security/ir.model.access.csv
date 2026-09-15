@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_driver_user,tour.driver.user,model_tour_driver,base.group_user,1,1,1,0
+access_tour_driver_manager,tour.driver.manager,model_tour_driver,base.group_system,1,1,1,1

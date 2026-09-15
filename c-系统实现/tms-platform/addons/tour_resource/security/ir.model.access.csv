@@ -1,10 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tour_guide_user,tour.guide.user,model_tour_guide,base.group_user,1,1,1,0
 access_tour_guide_manager,tour.guide.manager,model_tour_guide,base.group_system,1,1,1,1
-access_tour_driver_user,tour.driver.user,model_tour_driver,base.group_user,1,1,1,0
-access_tour_driver_manager,tour.driver.manager,model_tour_driver,base.group_system,1,1,1,1
-access_tour_vehicle_user,tour.vehicle.user,model_tour_vehicle,base.group_user,1,1,1,0
-access_tour_vehicle_manager,tour.vehicle.manager,model_tour_vehicle,base.group_system,1,1,1,1
 access_tour_supplier_user,tour.supplier.user,model_tour_supplier,base.group_user,1,1,1,0
 access_tour_supplier_manager,tour.supplier.manager,model_tour_supplier,base.group_system,1,1,1,1
 access_tour_shop_agreement_user,tour.shop.agreement.user,model_tour_shop_agreement,base.group_user,1,1,1,0

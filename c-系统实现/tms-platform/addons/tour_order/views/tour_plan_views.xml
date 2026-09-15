@@ -16,6 +16,7 @@
                 <field name="verify_user"/>
                 <field name="contract_no"/>
                 <separator/>
+                <filter name="group_plan_category" string="计划分类" context="{'group_by':'plan_category'}"/>
                 <filter name="group_biz_mode" string="业务模式" context="{'group_by':'biz_mode'}"/>
                 <filter name="group_plan_type" string="计划类型" context="{'group_by':'plan_type'}"/>
                 <filter name="group_from_type" string="订单来源" context="{'group_by':'from_type'}"/>
@@ -55,6 +56,7 @@
                 <field name="line_id"/>
                 <field name="biz_mode"/>
                 <field name="plan_type"/>
+                <field name="plan_category"/>
                 <field name="supplier_id"/>
                 <field name="begin_date"/>
                 <field name="end_date"/>

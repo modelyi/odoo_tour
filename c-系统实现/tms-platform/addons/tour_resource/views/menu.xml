@@ -13,18 +13,6 @@
         action="action_tour_guide"
         sequence="10"/>
 
-    <menuitem id="menu_tour_driver"
-        name="司机档案"
-        parent="menu_tms_resource"
-        action="action_tour_driver"
-        sequence="15"/>
-
-    <menuitem id="menu_tour_vehicle"
-        name="车辆档案"
-        parent="menu_tms_resource"
-        action="action_tour_vehicle"
-        sequence="20"/>
-
     <menuitem id="menu_tour_supplier"
         name="供应商"
         parent="menu_tms_resource"

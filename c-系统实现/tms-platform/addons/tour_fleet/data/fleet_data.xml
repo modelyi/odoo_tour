@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="vehicle_category_bus_large" model="fleet.vehicle.model.category">
+            <field name="name">大巴（35座以上）</field>
+        </record>
+        <record id="vehicle_category_bus_medium" model="fleet.vehicle.model.category">
+            <field name="name">中巴（19-34座）</field>
+        </record>
+        <record id="vehicle_category_bus_small" model="fleet.vehicle.model.category">
+            <field name="name">小巴（7-18座）</field>
+        </record>
+        <record id="vehicle_category_van" model="fleet.vehicle.model.category">
+            <field name="name">商务车</field>
+        </record>
+        <record id="vehicle_category_car" model="fleet.vehicle.model.category">
+            <field name="name">轿车</field>
+        </record>
+    </data>
+</odoo>

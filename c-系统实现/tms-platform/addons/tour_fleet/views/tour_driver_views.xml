@@ -9,7 +9,6 @@
                 <field name="name"/>
                 <field name="driver_code"/>
                 <field name="mobile"/>
-                <field name="licence_type"/>
                 <filter name="active" string="启用" domain="[('active','=',True)]"/>
                 <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
                 <separator/>

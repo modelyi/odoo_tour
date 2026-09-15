@@ -31,6 +31,14 @@ class TourPlan(models.Model):
         ('7', '变更团'),
     ], string='计划类型', required=True, default='2', index=True,
        help='1 团队 / 2 散客散拼 / 5 代订 / 7 变更团')
+    plan_category = fields.Selection([
+        ('regular', '常规旅游团'),
+        ('fit', '散客计划'),
+        ('independent', '自由行'),
+        ('booking', '代订'),
+        ('other', '其他'),
+    ], string='计划分类', compute='_compute_plan_category', store=True, index=True,
+       help='按业务模式自动归类：常规团(1,2,12,21) / 散客(13,14,15,31) / 自由行(51,52) / 代订(41) / 其他')
     from_type = fields.Selection([
         ('1', '内部'),
         ('5', '同行/组团'),
@@ -200,6 +208,21 @@ class TourPlan(models.Model):
     # One2many 反向关系：报名按 plan_id 挂到团，计数走 len(reg_ids)
     reg_ids = fields.One2many('tour.plan.reg', 'plan_id', string='报名明细')
     reg_count = fields.Integer('报名数', compute='_compute_reg_count')
+
+    @api.depends('biz_mode')
+    def _compute_plan_category(self):
+        for rec in self:
+            mode = rec.biz_mode
+            if mode in ('1', '2', '12', '21'):
+                rec.plan_category = 'regular'
+            elif mode in ('13', '14', '15', '31'):
+                rec.plan_category = 'fit'
+            elif mode in ('51', '52'):
+                rec.plan_category = 'independent'
+            elif mode == '41':
+                rec.plan_category = 'booking'
+            else:
+                rec.plan_category = 'other'
 
     @api.depends('reg_ids')
     def _compute_reg_count(self):

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View: 继承 fleet 原生搜索视图，添加旅行社筛选 -->
+    <record id="fleet_vehicle_view_search_tour" model="ir.ui.view">
+        <field name="name">fleet.vehicle.search.tour</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <field name="licence"/>
+                <field name="tour_driver_id"/>
+                <field name="tour_supplier_id"/>
+                <separator/>
+                <filter name="autarky" string="自营车辆" domain="[('is_autarky','=',True)]"/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <filter name="unaudited" string="未审核" domain="[('audit_chk','=',False)]"/>
+                <separator/>
+                <filter name="group_supplier" string="所属车队" context="{'group_by':'tour_supplier_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- List View: 继承 fleet 原生列表视图，添加旅行社列 -->
+    <record id="fleet_vehicle_view_list_tour" model="ir.ui.view">
+        <field name="name">fleet.vehicle.list.tour</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+        <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute name="sample">1</attribute>
+            </list>
+            <field name="license_plate" position="after">
+                <field name="licence" optional="show"/>
+                <field name="seat_num"/>
+                <field name="extra_seat" optional="hide"/>
+            </field>
+            <field name="driver_id" position="after">
+                <field name="tour_driver_id" optional="show"/>
+            </field>
+            <field name="state_id" position="after">
+                <field name="tour_supplier_id" optional="show"/>
+                <field name="is_autarky" optional="hide"/>
+                <field name="audit_chk"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Form View: 继承 fleet 原生表单视图，添加旅行社分组 -->
+    <record id="fleet_vehicle_view_form_tour" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form.tour</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_audit_approve" string="审核通过" type="object"
+                    class="btn-primary" invisible="audit_chk == True" data-hotkey="g"/>
+                <field name="audit_chk" widget="boolean_toggle"/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <group string="旅行社信息">
+                    <group>
+                        <field name="licence"/>
+                        <field name="seat_num"/>
+                        <field name="extra_seat"/>
+                        <field name="is_autarky"/>
+                        <field name="tour_driver_id"/>
+                        <field name="tour_supplier_id"/>
+                    </group>
+                    <group>
+                        <field name="help_code"/>
+                        <field name="power_area"/>
+                        <field name="cw_code"/>
+                        <field name="licence_date"/>
+                        <field name="licence_type"/>
+                        <field name="department_id"/>
+                    </group>
+                </group>
+                <group string="审核">
+                    <group>
+                        <field name="audit_user"/>
+                        <field name="audit_date"/>
+                    </group>
+                    <group>
+                        <field name="audit_brief"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Kanban View: 继承 fleet 原生看板视图，添加旅行社字段 -->
+    <record id="fleet_vehicle_view_kanban_tour" model="ir.ui.view">
+        <field name="name">fleet.vehicle.kanban.tour</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_kanban"/>
+        <field name="arch" type="xml">
+            <kanban position="inside">
+                <field name="seat_num"/>
+                <field name="tour_supplier_id"/>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action: 覆盖 fleet 原生 action，调整 view_mode -->
+    <record id="fleet.fleet_vehicle_action" model="ir.actions.act_window">
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+</odoo>

@@ -112,22 +112,6 @@ class TestTourSupplier(BaseCommon):
 
     # ---------- 跨模块约束 ----------
 
-    def test_vehicle_supplier_constraint(self):
-        vehicle_comp = self._create_supplier(
-            name='车队A', sup_type='vehicle_comp')
-        hotel = self._create_supplier(name='酒店B', sup_type='hotel')
-
-        vehicle = self.env['tour.vehicle'].create({
-            'name': '云A12345',
-            'licence': 'LIC001',
-            'seat_num': 50,
-            'supplier_id': vehicle_comp.id,
-        })
-        self.assertEqual(vehicle.supplier_id.sup_type, 'vehicle_comp')
-
-        with self.assertRaises(ValidationError):
-            vehicle.supplier_id = hotel.id
-
     def test_shop_agreement_constraint(self):
         shop = self._create_supplier(name='购物店C', sup_type='shop')
         hotel = self._create_supplier(name='酒店D', sup_type='hotel')

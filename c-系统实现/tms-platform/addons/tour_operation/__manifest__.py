@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Operation - 计调操作',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.3.0',
     'category': 'Travel/TMS',
     'summary': '旅行社计调操作：基于 project.task 的 5 类资源预订（派导/派车/订房/订餐/门票）',
     'description': """
@@ -18,7 +18,7 @@
     'website': 'https://tms.solepro.cloud',
     'license': 'LGPL-3',
     'depends': ['base', 'mail', 'project', 'tour_base', 'tour_product',
-                'tour_resource', 'tour_order'],
+                'tour_resource', 'tour_order', 'fleet', 'tour_fleet'],
     'data': [
         'security/tour_operation_security.xml',
         'views/project_task_views.xml',
