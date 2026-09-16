@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tour_driver_user,tour.driver.user,model_tour_driver,base.group_user,1,1,1,0
-access_tour_driver_manager,tour.driver.manager,model_tour_driver,base.group_system,1,1,1,1
+access_tour_driver_operator,tour.driver.operator,model_tour_driver,tour_base.group_tour_operator,1,0,0,0
+access_tour_driver_guide_mgr,tour.driver.guide_mgr,model_tour_driver,tour_base.group_tour_guide_manager,1,1,1,0
+access_tour_driver_manager,tour.driver.manager,model_tour_driver,tour_base.group_tour_manager,1,1,1,1

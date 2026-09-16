@@ -1,5 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tour_shop_record_user,tour.shop.record.user,model_tour_shop_record,base.group_user,1,1,1,0
-access_tour_shop_record_manager,tour.shop.record.manager,model_tour_shop_record,base.group_system,1,1,1,1
-access_tour_shop_record_line_user,tour.shop.record.line.user,model_tour_shop_record_line,base.group_user,1,1,1,0
-access_tour_shop_record_line_manager,tour.shop.record.line.manager,model_tour_shop_record_line,base.group_system,1,1,1,1
+access_tour_shop_record_operator,tour.shop.record.operator,model_tour_shop_record,tour_base.group_tour_operator,1,1,1,0
+access_tour_shop_record_finance,tour.shop.record.finance,model_tour_shop_record,tour_base.group_tour_finance,1,1,0,0
+access_tour_shop_record_manager,tour.shop.record.manager,model_tour_shop_record,tour_base.group_tour_manager,1,1,1,1
+access_tour_shop_record_line_operator,tour.shop.record.line.operator,model_tour_shop_record_line,tour_base.group_tour_operator,1,1,1,0
+access_tour_shop_record_line_finance,tour.shop.record.line.finance,model_tour_shop_record_line,tour_base.group_tour_finance,1,1,0,0
+access_tour_shop_record_line_manager,tour.shop.record.line.manager,model_tour_shop_record_line,tour_base.group_tour_manager,1,1,1,1

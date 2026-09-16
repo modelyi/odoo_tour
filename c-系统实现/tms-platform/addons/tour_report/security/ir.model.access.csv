@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tour_report_wizard,tour.report.wizard.access,model_tour_report_wizard,base.group_user,1,1,1,1
+access_tour_report_wizard,tour.report.wizard.access,model_tour_report_wizard,tour_base.group_tour_user,1,1,1,1

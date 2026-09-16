@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tour_plan_reg_passenger_user,tour.plan.reg.passenger.user,model_tour_plan_reg_passenger,base.group_user,1,1,1,0
-access_tour_plan_reg_passenger_manager,tour.plan.reg.passenger.manager,model_tour_plan_reg_passenger,base.group_system,1,1,1,1
+access_tour_plan_reg_passenger_sales,tour.plan.reg.passenger.sales,model_tour_plan_reg_passenger,tour_base.group_tour_sales,1,1,1,0
+access_tour_plan_reg_passenger_operator,tour.plan.reg.passenger.operator,model_tour_plan_reg_passenger,tour_base.group_tour_operator,1,1,0,0
+access_tour_plan_reg_passenger_manager,tour.plan.reg.passenger.manager,model_tour_plan_reg_passenger,tour_base.group_tour_manager,1,1,1,1

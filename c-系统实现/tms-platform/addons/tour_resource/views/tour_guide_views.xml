@@ -159,7 +159,7 @@
                         </group>
                         <group>
                             <field name="tel"/>
-                            <field name="id_num"/>
+                            <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
                             <field name="zip_code"/>
                             <field name="addr"/>
                             <field name="job_no"/>
@@ -208,7 +208,7 @@
                                 <group>
                                     <field name="account_bank"/>
                                     <field name="account_name"/>
-                                    <field name="account_no"/>
+                                    <field name="account_no" groups="tour_base.group_tour_sensitive_data"/>
                                 </group>
                                 <group>
                                     <field name="loan_rate"/>
