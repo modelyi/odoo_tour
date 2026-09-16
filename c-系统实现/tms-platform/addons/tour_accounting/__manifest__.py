@@ -151,6 +151,7 @@
         'views/res_config_settings_tour_vat_views.xml',
         'views/finance_menu.xml',
         'views/finance_general_menu.xml',
+        'views/accounting_menu_reorg.xml',
         'views/tour_invoice_views.xml',
         'views/tour_pay_request_views.xml',
     ],

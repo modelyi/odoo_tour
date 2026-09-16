@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================
+         重组 Odoo 标准 Accounting 菜单为 5 个二级分类
+         1. 凭证管理  2. 固定资产管理  3. 预算管理  4. 财务报表  5. 统计与分析
+    ================================================================ -->
+
+    <!-- ===== 5 个新的二级菜单 ===== -->
+    <menuitem id="menu_acct_voucher"
+        name="凭证管理"
+        parent="account.menu_finance"
+        sequence="10"/>
+
+    <menuitem id="menu_acct_asset"
+        name="固定资产管理"
+        parent="account.menu_finance"
+        sequence="20"/>
+
+    <menuitem id="menu_acct_budget"
+        name="预算管理"
+        parent="account.menu_finance"
+        sequence="30"/>
+
+    <menuitem id="menu_acct_report"
+        name="财务报表"
+        parent="account.menu_finance"
+        sequence="40"/>
+
+    <menuitem id="menu_acct_analysis"
+        name="统计与分析"
+        parent="account.menu_finance"
+        sequence="50"/>
+
+    <!-- ===== 凭证管理：日记帐/期末/定期/管理 ===== -->
+    <record model="ir.ui.menu" id="account.account_transactions_menu">
+        <field name="parent_id" ref="menu_acct_voucher"/>
+        <field name="sequence">1</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_closing_menu">
+        <field name="parent_id" ref="menu_acct_voucher"/>
+        <field name="sequence">2</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_account_recurring_invoice">
+        <field name="parent_id" ref="menu_acct_voucher"/>
+        <field name="sequence">3</field>
+    </record>
+    <record model="ir.ui.menu" id="management_menu">
+        <field name="parent_id" ref="menu_acct_voucher"/>
+        <field name="sequence">4</field>
+    </record>
+
+    <!-- ===== 固定资产管理 ===== -->
+    <record model="ir.ui.menu" id="menu_action_account_asset_asset_form">
+        <field name="parent_id" ref="menu_acct_asset"/>
+        <field name="sequence">1</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_action_asset_asset_report">
+        <field name="parent_id" ref="menu_acct_asset"/>
+        <field name="sequence">2</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_finance_config_assets">
+        <field name="parent_id" ref="menu_acct_asset"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- ===== 预算管理 ===== -->
+    <record model="ir.ui.menu" id="tour_budget.menu_act_budget_view">
+        <field name="parent_id" ref="menu_acct_budget"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- ===== 财务报表：所有报表子项 ===== -->
+    <record model="ir.ui.menu" id="account.account_reports_legal_statements_menu">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">1</field>
+    </record>
+    <record model="ir.ui.menu" id="account_reports_generic_statements">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">2</field>
+    </record>
+    <record model="ir.ui.menu" id="account_reports_daily_reports">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">3</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_reports_partners_reports_menu">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">10</field>
+    </record>
+    <record model="ir.ui.menu" id="account_reports_partner">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">11</field>
+    </record>
+    <record model="ir.ui.menu" id="account_reports_audit">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">20</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_reports_taxes_and_fiscal_menu">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">30</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_reports_management_menu">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">40</field>
+    </record>
+    <record model="ir.ui.menu" id="account_financial_reports_profit_loss">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">50</field>
+    </record>
+    <record model="ir.ui.menu" id="_account_financial_reports_balance_sheet">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">60</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_Balance_report">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">70</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_account_cash_flow_report">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">80</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_account_fx_revaluation">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">90</field>
+    </record>
+
+    <!-- ===== 统计与分析：Dashboard ===== -->
+    <record model="ir.ui.menu" id="account.menu_board_journal_1">
+        <field name="parent_id" ref="menu_acct_analysis"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- ===== 隐藏旧的空壳菜单（子项已全部迁出） ===== -->
+    <record model="ir.ui.menu" id="account.menu_finance_entries">
+        <field name="active" eval="False"/>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_finance_reports">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
