@@ -1,56 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ================================================================
-         重组 Odoo 标准 Accounting 菜单为 5 个二级分类
-         1. 凭证管理  2. 固定资产管理  3. 预算管理  4. 财务报表  5. 统计与分析
+         重组 Odoo 标准 Accounting 菜单到 TMS 财务管理下
+         1. 凭证管理  2. 固定资产管理  3. 预算管理  4. 财务报表
+         （原"统计与分析"仅含仪表盘，已合并到财务报表）
     ================================================================ -->
 
-    <!-- ===== 5 个新的二级菜单（挂在 TMS 财务管理下） ===== -->
+    <!-- ===== 4 个二级分类（挂在 TMS 财务管理下，seq 130-160） ===== -->
     <menuitem id="menu_acct_voucher"
         name="凭证管理"
         parent="menu_tour_finance"
-        sequence="110"/>
+        sequence="130"/>
 
     <menuitem id="menu_acct_asset"
         name="固定资产管理"
         parent="menu_tour_finance"
-        sequence="120"/>
+        sequence="140"/>
 
     <menuitem id="menu_acct_budget"
         name="预算管理"
         parent="menu_tour_finance"
-        sequence="130"/>
+        sequence="150"/>
 
     <menuitem id="menu_acct_report"
         name="财务报表"
         parent="menu_tour_finance"
-        sequence="140"/>
+        sequence="160"/>
 
-    <menuitem id="menu_acct_analysis"
-        name="统计与分析"
-        parent="menu_tour_finance"
-        sequence="150"/>
-
-    <!-- ===== 凭证管理：日记帐/期末/定期/管理 ===== -->
+    <!-- ===== 凭证管理：日记帐/期末/定期 ===== -->
     <record model="ir.ui.menu" id="account.account_transactions_menu">
+        <field name="name">日记帐</field>
         <field name="parent_id" ref="menu_acct_voucher"/>
         <field name="sequence">1</field>
     </record>
     <record model="ir.ui.menu" id="account.account_closing_menu">
+        <field name="name">期末结账</field>
         <field name="parent_id" ref="menu_acct_voucher"/>
         <field name="sequence">2</field>
     </record>
     <record model="ir.ui.menu" id="menu_account_recurring_invoice">
+        <field name="name">定期发票</field>
         <field name="parent_id" ref="menu_acct_voucher"/>
         <field name="sequence">3</field>
-    </record>
-    <record model="ir.ui.menu" id="management_menu">
-        <field name="parent_id" ref="menu_acct_voucher"/>
-        <field name="sequence">4</field>
     </record>
 
     <!-- ===== 固定资产管理 ===== -->
     <record model="ir.ui.menu" id="menu_action_account_asset_asset_form">
+        <field name="name">资产</field>
         <field name="parent_id" ref="menu_acct_asset"/>
         <field name="sequence">1</field>
     </record>
@@ -65,125 +61,283 @@
 
     <!-- ===== 预算管理 ===== -->
     <record model="ir.ui.menu" id="tour_budget.menu_act_budget_view">
+        <field name="name">预算</field>
         <field name="parent_id" ref="menu_acct_budget"/>
         <field name="sequence">1</field>
     </record>
 
-    <!-- ===== 财务报表：所有报表子项 ===== -->
+    <!-- ===== 财务报表：仪表盘 + 所有报表子项 ===== -->
+    <record model="ir.ui.menu" id="account.menu_board_journal_1">
+        <field name="name">仪表盘</field>
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">5</field>
+    </record>
     <record model="ir.ui.menu" id="account.account_reports_legal_statements_menu">
-        <field name="parent_id" ref="menu_acct_report"/>
-        <field name="sequence">1</field>
-    </record>
-    <record model="ir.ui.menu" id="account_reports_generic_statements">
-        <field name="parent_id" ref="menu_acct_report"/>
-        <field name="sequence">2</field>
-    </record>
-    <record model="ir.ui.menu" id="account_reports_daily_reports">
-        <field name="parent_id" ref="menu_acct_report"/>
-        <field name="sequence">3</field>
-    </record>
-    <record model="ir.ui.menu" id="account.account_reports_partners_reports_menu">
+        <field name="name">法定报表</field>
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">10</field>
     </record>
-    <record model="ir.ui.menu" id="account_reports_partner">
-        <field name="parent_id" ref="menu_acct_report"/>
-        <field name="sequence">11</field>
-    </record>
-    <record model="ir.ui.menu" id="account_reports_audit">
+    <record model="ir.ui.menu" id="account_reports_generic_statements">
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">20</field>
     </record>
-    <record model="ir.ui.menu" id="account.account_reports_taxes_and_fiscal_menu">
+    <record model="ir.ui.menu" id="account_reports_daily_reports">
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">30</field>
     </record>
-    <record model="ir.ui.menu" id="account.account_reports_management_menu">
+    <record model="ir.ui.menu" id="account.account_reports_partners_reports_menu">
+        <field name="name">往来单位</field>
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">40</field>
     </record>
-    <record model="ir.ui.menu" id="account_financial_reports_profit_loss">
+    <record model="ir.ui.menu" id="account_reports_partner">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">41</field>
+    </record>
+    <record model="ir.ui.menu" id="account_reports_audit">
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">50</field>
     </record>
-    <record model="ir.ui.menu" id="_account_financial_reports_balance_sheet">
+    <record model="ir.ui.menu" id="account.account_reports_taxes_and_fiscal_menu">
+        <field name="name">税务与财政</field>
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">60</field>
     </record>
-    <record model="ir.ui.menu" id="menu_Balance_report">
+    <record model="ir.ui.menu" id="account.account_reports_management_menu">
+        <field name="name">管理报表</field>
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">70</field>
     </record>
-    <record model="ir.ui.menu" id="menu_account_cash_flow_report">
+    <record model="ir.ui.menu" id="account_financial_reports_profit_loss">
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">80</field>
     </record>
-    <record model="ir.ui.menu" id="menu_account_fx_revaluation">
+    <record model="ir.ui.menu" id="_account_financial_reports_balance_sheet">
         <field name="parent_id" ref="menu_acct_report"/>
         <field name="sequence">90</field>
     </record>
-
-    <!-- ===== 统计与分析：Dashboard ===== -->
-    <record model="ir.ui.menu" id="account.menu_board_journal_1">
-        <field name="parent_id" ref="menu_acct_analysis"/>
-        <field name="sequence">1</field>
+    <record model="ir.ui.menu" id="menu_Balance_report">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">100</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_account_cash_flow_report">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">110</field>
+    </record>
+    <record model="ir.ui.menu" id="menu_account_fx_revaluation">
+        <field name="parent_id" ref="menu_acct_report"/>
+        <field name="sequence">120</field>
     </record>
 
-    <!-- ===== 隐藏旧的空壳菜单（子项已全部迁出） ===== -->
+    <!-- ===== 隐藏旧的空壳菜单 ===== -->
     <record model="ir.ui.menu" id="account.menu_finance_entries">
         <field name="active" eval="False"/>
     </record>
     <record model="ir.ui.menu" id="account.menu_finance_reports">
         <field name="active" eval="False"/>
     </record>
+    <record model="ir.ui.menu" id="management_menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record model="ir.ui.menu" id="menu_acct_analysis">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- ===== 将 Odoo 原生财务菜单迁入 TMS 财务管理 ===== -->
+    <!-- ===== 将 Odoo 原生财务菜单迁入 TMS 财务管理（seq 100-120） ===== -->
     <record model="ir.ui.menu" id="account.menu_finance_receivables">
+        <field name="name">客户</field>
         <field name="parent_id" ref="menu_tour_finance"/>
-        <field name="sequence">10</field>
+        <field name="sequence">100</field>
     </record>
     <record model="ir.ui.menu" id="account.menu_finance_payables">
+        <field name="name">供应商</field>
         <field name="parent_id" ref="menu_tour_finance"/>
-        <field name="sequence">20</field>
+        <field name="sequence">110</field>
     </record>
     <record model="ir.ui.menu" id="account.account_audit_menu">
+        <field name="name">审查</field>
         <field name="parent_id" ref="menu_tour_finance"/>
-        <field name="sequence">30</field>
-    </record>
-    <record model="ir.ui.menu" id="account.menu_finance_configuration">
-        <field name="parent_id" ref="menu_tour_finance"/>
-        <field name="sequence">200</field>
+        <field name="sequence">120</field>
     </record>
 
     <!-- ===== 隐藏 Odoo 原生 Accounting 根菜单 ===== -->
     <record model="ir.ui.menu" id="account.menu_finance">
         <field name="active" eval="False"/>
     </record>
+    <record model="ir.ui.menu" id="account.menu_finance_configuration">
+        <field name="active" eval="False"/>
+    </record>
 
     <!-- ===== 合并配置菜单：将 Odoo 配置项迁入 TMS 配置 ===== -->
     <record model="ir.ui.menu" id="account.menu_account_config">
+        <field name="name">系统配置</field>
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="sequence">40</field>
     </record>
     <record model="ir.ui.menu" id="account.account_account_menu">
+        <field name="name">会计科目</field>
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="sequence">50</field>
     </record>
     <record model="ir.ui.menu" id="account.account_invoicing_menu">
+        <field name="name">开票设置</field>
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="sequence">60</field>
     </record>
     <record model="ir.ui.menu" id="account.root_payment_menu">
+        <field name="name">支付设置</field>
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="sequence">70</field>
     </record>
     <record model="ir.ui.menu" id="account.menu_analytic_accounting">
+        <field name="name">分析会计</field>
         <field name="parent_id" ref="menu_tms_finance_config"/>
         <field name="sequence">80</field>
     </record>
 
-    <!-- ===== 隐藏 Odoo 原生配置根菜单 ===== -->
-    <record model="ir.ui.menu" id="account.menu_finance_configuration">
-        <field name="active" eval="False"/>
+    <!-- ===== 中文化 Odoo 原生子菜单 ===== -->
+
+    <!-- 客户下 -->
+    <record model="ir.ui.menu" id="account.menu_action_move_out_invoice_type">
+        <field name="name">客户发票</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_move_out_refund_type">
+        <field name="name">贷项通知单</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_payments_receivable">
+        <field name="name">收款</field>
+    </record>
+    <record model="ir.ui.menu" id="account.product_product_menu_sellable">
+        <field name="name">销售产品</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_account_customer">
+        <field name="name">客户列表</field>
+    </record>
+
+    <!-- 供应商下 -->
+    <record model="ir.ui.menu" id="account.menu_action_move_in_invoice_type">
+        <field name="name">供应商账单</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_move_in_refund_type">
+        <field name="name">退款</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_payments_payable">
+        <field name="name">付款</field>
+    </record>
+    <record model="ir.ui.menu" id="hr_expense.menu_hr_expense_account_employee_expenses">
+        <field name="name">员工费用</field>
+    </record>
+    <record model="ir.ui.menu" id="account.product_product_menu_purchasable">
+        <field name="name">采购产品</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_account_supplier">
+        <field name="name">供应商列表</field>
+    </record>
+
+    <!-- 审查下 -->
+    <record model="ir.ui.menu" id="account.account_audit_control_menu">
+        <field name="name">内控</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_logs_menu">
+        <field name="name">日志</field>
+    </record>
+
+    <!-- 管理报表下 -->
+    <record model="ir.ui.menu" id="account.menu_action_account_invoice_report_all">
+        <field name="name">发票分析</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_analytic_reporting">
+        <field name="name">分析报告</field>
+    </record>
+    <record model="ir.ui.menu" id="tour_budget.menu_act_crossovered_budget_lines_view">
+        <field name="name">预算执行</field>
+    </record>
+
+    <!-- 会计科目下 -->
+    <record model="ir.ui.menu" id="account.menu_action_account_form">
+        <field name="name">科目表</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_tax_form">
+        <field name="name">税</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_journal_form">
+        <field name="name">日记帐</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_report_folder">
+        <field name="name">报表</field>
+    </record>
+    <record model="ir.ui.menu" id="tour_budget.menu_budget_post_form">
+        <field name="name">预算科目</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_currency_form">
+        <field name="name">币种</field>
+    </record>
+    <record model="ir.ui.menu" id="tour_accounting.menu_action_account_asset_asset_list_normal_purchase">
+        <field name="name">资产类型</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_fiscal_position_form">
+        <field name="name">财务定位</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_journal_group_list">
+        <field name="name">多帐套</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_tax_group">
+        <field name="name">税组</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_rounding_form_view">
+        <field name="name">现金舍入</field>
+    </record>
+
+    <!-- 开票设置下 -->
+    <record model="ir.ui.menu" id="account.menu_action_payment_term_form">
+        <field name="name">付款条件</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_incoterm_open">
+        <field name="name">贸易术语</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_product_product_categories">
+        <field name="name">产品类别</field>
+    </record>
+
+    <!-- 支付设置下 -->
+    <record model="ir.ui.menu" id="account_payment.payment_provider_menu">
+        <field name="name">支付提供商</field>
+    </record>
+    <record model="ir.ui.menu" id="account_payment.payment_method_menu">
+        <field name="name">支付方式</field>
+    </record>
+    <record model="ir.ui.menu" id="account_payment.payment_token_menu">
+        <field name="name">支付令牌</field>
+    </record>
+    <record model="ir.ui.menu" id="account_payment.payment_transaction_menu">
+        <field name="name">支付交易</field>
+    </record>
+
+    <!-- 分析会计下 -->
+    <record model="ir.ui.menu" id="account.menu_analytic__distribution_model">
+        <field name="name">分析分配模型</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_analytic_def_account">
+        <field name="name">分析科目</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_analytic_plan_menu">
+        <field name="name">分析方案</field>
+    </record>
+
+    <!-- 日记帐/期末/审查下的深层子菜单 -->
+    <record model="ir.ui.menu" id="account.menu_action_move_journal_line_form">
+        <field name="name">日记帐分录</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_analytic_lines_tree">
+        <field name="name">分析明细</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_account_moves_all">
+        <field name="name">分录明细</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_action_secure_entries">
+        <field name="name">安全分录</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_audit_trail_menu">
+        <field name="name">审计追踪</field>
     </record>
 </odoo>

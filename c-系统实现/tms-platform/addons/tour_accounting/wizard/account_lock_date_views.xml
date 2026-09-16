@@ -34,12 +34,12 @@
     </record>
 <!--Menu Lock Dates-->
     <menuitem id="actions_menu"
-              name="Actions"
-              sequence="500"
-              parent="account.menu_finance_entries"
+              name="操作"
+              sequence="10"
+              parent="menu_acct_voucher"
               groups="tour_accounting.group_account_chief"/>
     <menuitem id="menu_lock_dates"
-              name="Lock Dates"
+              name="锁定日期"
               action="account_update_lock_date_act_window"
               parent="tour_accounting.actions_menu"
               groups="tour_accounting.group_account_chief"/>

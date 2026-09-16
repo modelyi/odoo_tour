@@ -156,8 +156,8 @@
 
     <menuitem id="menu_tour_pay_request"
         name="请款单"
-        parent="menu_tour_finance"
+        parent="menu_tms_daily_ops"
         action="action_tour_pay_request"
         groups="tour_base.group_tour_finance"
-        sequence="15"/>
+        sequence="12"/>
 </odoo>

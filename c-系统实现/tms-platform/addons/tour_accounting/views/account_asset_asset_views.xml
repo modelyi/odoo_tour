@@ -264,7 +264,7 @@
     <!--Asset MenuItem-->
     <menuitem parent="account.menu_finance_entries"
               id="management_menu"
-              name="Management"
+              name="管理"
               sequence="101" groups="account.group_account_user"/>
     <menuitem parent="tour_accounting.management_menu"
               id="menu_action_account_asset_asset_form"
@@ -272,7 +272,7 @@
               sequence="101" groups="account.group_account_user"/>
     <!-- Configuration -->
     <menuitem id="menu_finance_config_assets"
-              name="Assets and Revenues"
+              name="资产配置"
               parent="account.menu_finance_configuration"
               sequence="25"/>
 </odoo>

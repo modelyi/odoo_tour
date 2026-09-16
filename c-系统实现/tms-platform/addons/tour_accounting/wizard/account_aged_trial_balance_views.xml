@@ -33,7 +33,7 @@
     </record>
 <!--Menu Aged Partner Balance-->
     <menuitem id="menu_aged_trial_balance"
-              name="Aged Partner Balance"
+              name="往来账龄余额"
               sequence="2"
               action="action_account_aged_balance_view"
               parent="account.menu_finance_reports"/>

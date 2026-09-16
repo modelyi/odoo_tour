@@ -32,7 +32,7 @@
     </record>
 <!--Menu Trial Balance-->
     <menuitem id="menu_Balance_report"
-              name="Trial Balance"
+              name="试算平衡表"
               sequence="7"
               action="action_account_balance_menu"
               parent="tour_accounting.account_reports_audit"/>

@@ -38,6 +38,6 @@
         <field name="target">new</field>
     </record>
 <!--Menu Cash Book-->
-    <menuitem id="account_cash_book_menu" name="Cash Book" action="action_account_cash_book_view"
+    <menuitem id="account_cash_book_menu" name="现金账簿" action="action_account_cash_book_view"
               parent="tour_accounting.account_reports_daily_reports"/>
 </odoo>

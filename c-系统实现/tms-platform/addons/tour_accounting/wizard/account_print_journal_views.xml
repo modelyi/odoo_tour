@@ -24,7 +24,7 @@
     </record>
 <!--Menu Journals Audit-->
     <menuitem id="menu_print_journal"
-              name="Journals Audit"
+              name="日记帐审计"
               sequence="9"
               action="action_account_print_journal_menu"
               parent="tour_accounting.account_reports_audit"

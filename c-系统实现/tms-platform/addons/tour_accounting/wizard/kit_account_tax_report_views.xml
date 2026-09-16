@@ -22,7 +22,7 @@
     </record>
 <!--Menu Tax Report-->
     <menuitem id="menu_tax_report"
-              name="Tax Report"
+              name="税务报表"
               sequence="8"
               action="action_account_tax_report"
               parent="tour_accounting.account_reports_audit"

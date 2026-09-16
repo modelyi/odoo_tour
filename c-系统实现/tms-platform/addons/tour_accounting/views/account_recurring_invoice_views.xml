@@ -142,7 +142,7 @@
     </record>
 
     <menuitem id="menu_account_recurring_invoice"
-              name="Recurring Invoices"
+              name="定期发票"
               parent="account.menu_finance_receivables"
               action="action_account_recurring_invoice"
               sequence="30"/>

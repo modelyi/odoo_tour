@@ -47,7 +47,7 @@
     </record>
 <!--Menu Cash Flow Statement-->
     <menuitem id="menu_account_cash_flow_report"
-              name="Cash Flow Statement"
+              name="现金流量表"
               sequence="5"
               action="action_cash_flow_report"
               parent="tour_accounting.account_reports_generic_statements"/>

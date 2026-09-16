@@ -25,7 +25,7 @@
         <field name="target">new</field>
     </record>
 <!--Menu Partner Ledger-->
-    <menuitem name="Partner Ledger"
+    <menuitem name="往来明细账"
               id="menu_partner_ledger" sequence="1"
               parent="tour_accounting.account_reports_partner"
               action="action_partner_leadger"/>

@@ -41,7 +41,7 @@
     </record>
 
     <menuitem id="menu_account_fx_revaluation"
-              name="Currency Revaluation"
+              name="汇兑重估"
               parent="account.menu_finance_reports"
               action="action_account_fx_revaluation"
               sequence="90"/>

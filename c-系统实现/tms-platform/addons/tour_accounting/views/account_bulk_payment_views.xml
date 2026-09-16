@@ -117,7 +117,7 @@
     </record>
 
     <menuitem id="menu_account_bulk_payment"
-              name="Bulk Payments"
+              name="批量付款"
               parent="account.menu_finance_payables"
               action="action_account_bulk_payment"
               sequence="25"/>

@@ -35,7 +35,7 @@
 <!--Menu General Ledger-->
     <menuitem
             id="menu_general_ledger"
-            name="General Ledger"
+            name="总账"
             sequence="3"
             parent="tour_accounting.account_reports_audit"
             action="action_account_general_ledger_menu"

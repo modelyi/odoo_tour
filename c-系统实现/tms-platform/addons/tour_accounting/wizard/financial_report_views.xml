@@ -54,9 +54,9 @@
     </record>
 <!--Menu Balance Sheet And Profit and Loss-->
      <menuitem id="account_financial_reports_profit_loss" sequence="1"
-              name="Profit and Loss" parent="tour_accounting.account_reports_generic_statements"
+              name="利润表" parent="tour_accounting.account_reports_generic_statements"
               action="action_profit_and_loss_report"/>
     <menuitem id="_account_financial_reports_balance_sheet" sequence="2"
-              name="Balance Sheet" parent="tour_accounting.account_reports_generic_statements"
+              name="资产负债表" parent="tour_accounting.account_reports_generic_statements"
               action="action_balance_sheet_report"/>
 </odoo>
