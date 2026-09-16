@@ -71,15 +71,16 @@
         <field name="model">tour.plan</field>
         <field name="arch" type="xml">
             <search string="审核搜索">
+                <field name="plan_code"/>
+                <field name="plan_name"/>
+                <separator/>
                 <filter name="operation_audit_pending" string="待计调审核" domain="[('operation_audit_state', '=', 'pending')]"/>
                 <filter name="operation_audit_approved" string="计调审核通过" domain="[('operation_audit_state', '=', 'approved')]"/>
                 <filter name="finance_audit_pending" string="待财务审核" domain="[('finance_audit_state', '=', 'pending')]"/>
                 <filter name="finance_audit_approved" string="财务审核通过" domain="[('finance_audit_state', '=', 'approved')]"/>
                 <separator/>
-                <group expand="0" string="分组">
-                    <filter name="group_operation_audit" string="计调审核状态" context="{'group_by': 'operation_audit_state'}"/>
-                    <filter name="group_finance_audit" string="财务审核状态" context="{'group_by': 'finance_audit_state'}"/>
-                </group>
+                <filter name="group_operation_audit" string="计调审核状态" context="{'group_by': 'operation_audit_state'}"/>
+                <filter name="group_finance_audit" string="财务审核状态" context="{'group_by': 'finance_audit_state'}"/>
             </search>
         </field>
     </record>

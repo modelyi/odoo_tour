@@ -3,11 +3,11 @@
     <!-- 报表子菜单（父级由 accounting_menu_reorg.xml 统一管理） -->
     <menuitem id="account_reports_generic_statements" sequence="1"
               name="通用报表"
-              parent="account.menu_finance_reports"/>
+              parent="menu_acct_report"/>
     <menuitem id="account_reports_daily_reports" sequence="2"
-              name="日报表" parent="account.menu_finance_reports"/>
+              name="日报表" parent="menu_acct_report"/>
     <menuitem id="account_reports_partner" sequence="3"
-              name="往来报表" parent="account.menu_finance_reports"/>
+              name="往来报表" parent="menu_acct_report"/>
     <menuitem id="account_reports_audit" sequence="4"
-              name="审计报表" parent="account.menu_finance_reports"/>
+              name="审计报表" parent="menu_acct_report"/>
 </odoo>

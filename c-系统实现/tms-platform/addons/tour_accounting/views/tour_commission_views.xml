@@ -44,6 +44,7 @@
                 <field name="company_retain"/>
                 <field name="state" widget="badge" decoration-success="state in ('received','paid')" decoration-info="state=='confirmed'" decoration-warning="state=='draft'"/>
                 <field name="move_id" optional="show"/>
+                <field name="revenue_move_id" optional="hide"/>
             </list>
         </field>
     </record>
@@ -61,6 +62,7 @@
                 <field name="commission_total"/>
                 <field name="guide_net_pay"/>
                 <field name="move_count"/>
+                <field name="revenue_move_count"/>
                 <field name="pay_move_count"/>
                 <templates>
                     <t t-name="card">
@@ -95,6 +97,13 @@
                                     <div class="o_stat_info">
                                         <span class="o_stat_value"><field name="move_count"/></span>
                                         <span class="o_stat_text">计提凭证</span>
+                                    </div>
+                                </button>
+                                <button name="action_view_revenue_move" type="object"
+                                    class="btn btn-link btn-sm oe_stat_button" icon="fa-handshake-o">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_value"><field name="revenue_move_count"/></span>
+                                        <span class="o_stat_text">收款凭证</span>
                                     </div>
                                 </button>
                                 <button name="action_view_pay_move" type="object"
@@ -132,6 +141,12 @@
                             <div class="o_stat_info">
                                 <span class="o_stat_value"><field name="move_count"/></span>
                                 <span class="o_stat_text">计提凭证</span>
+                            </div>
+                        </button>
+                        <button name="action_view_revenue_move" type="object" class="oe_stat_button" icon="fa-handshake-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="revenue_move_count"/></span>
+                                <span class="o_stat_text">收款凭证</span>
                             </div>
                         </button>
                         <button name="action_view_pay_move" type="object" class="oe_stat_button" icon="fa-money">
@@ -179,6 +194,8 @@
                     <group string="会计凭证">
                         <field name="move_id"/>
                         <field name="move_state"/>
+                        <field name="revenue_move_id"/>
+                        <field name="revenue_move_state"/>
                         <field name="pay_move_id"/>
                         <field name="pay_move_state"/>
                         <field name="pay_journal_id"/>

@@ -61,14 +61,14 @@
         <field name="model">tour.region</field>
         <field name="arch" type="xml">
             <search string="搜索区域">
-                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
-                <field name="region_type"/>
+                <field name="name"/>
+                <field name="code"/>
                 <field name="parent_id"/>
+                <separator/>
                 <filter name="inactive" string="已归档" domain="[('active', '=', False)]"/>
-                <group expand="0" string="分组">
-                    <filter name="group_type" string="区域类型" context="{'group_by': 'region_type'}"/>
-                    <filter name="group_parent" string="上级区域" context="{'group_by': 'parent_id'}"/>
-                </group>
+                <separator/>
+                <filter name="group_type" string="区域类型" context="{'group_by': 'region_type'}"/>
+                <filter name="group_parent" string="上级区域" context="{'group_by': 'parent_id'}"/>
             </search>
         </field>
     </record>

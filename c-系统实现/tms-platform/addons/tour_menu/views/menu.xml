@@ -17,7 +17,7 @@
          各 menuitem 在下方对应章节引用
     ================================================================ -->
 
-    <!-- -- 计调中心占位 (5) -- -->
+    <!-- 计调中心占位 (5) -->
     <record id="action_tms_pending_order_booking" model="ir.actions.act_url">
         <field name="name">订单预订安排</field>
         <field name="url">/tutor/pending?name=订单预订安排</field>
@@ -44,7 +44,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 购物管理占位 (4) -- -->
+    <!--购物管理占位 (4) -->
     <record id="action_tms_pending_shop_batch" model="ir.actions.act_url">
         <field name="name">购物批量收款</field>
         <field name="url">/tutor/pending?name=购物批量收款</field>
@@ -66,7 +66,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 查询统计占位 (3) -- -->
+    <!--查询统计占位 (3) -->
     <record id="action_tms_pending_query_pickup" model="ir.actions.act_url">
         <field name="name">订单接送查询</field>
         <field name="url">/tutor/pending?name=订单接送查询</field>
@@ -83,7 +83,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 数据分析占位 (3) -- -->
+    <!--数据分析占位 (3) -->
     <record id="action_tms_pending_analysis_cost" model="ir.actions.act_url">
         <field name="name">分项成本分析</field>
         <field name="url">/tutor/pending?name=分项成本分析</field>
@@ -100,7 +100,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 协议中心占位 (2) -- -->
+    <!--协议中心占位 (2) -->
     <record id="action_tms_pending_agree_cost" model="ir.actions.act_url">
         <field name="name">成本采购协议</field>
         <field name="url">/tutor/pending?name=成本采购协议</field>
@@ -112,7 +112,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 购物协议占位 (3) -- -->
+    <!--购物协议占位 (3) -->
     <record id="action_tms_pending_shop_agree_driver" model="ir.actions.act_url">
         <field name="name">司陪导协议</field>
         <field name="url">/tutor/pending?name=司陪导协议</field>
@@ -129,7 +129,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 基础数据占位 (3) -- -->
+    <!--基础数据占位 (3) -->
     <record id="action_tms_pending_base_data" model="ir.actions.act_url">
         <field name="name">基础数据</field>
         <field name="url">/tutor/pending?name=基础数据</field>
@@ -146,7 +146,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 系统管理占位 (5) -- -->
+    <!--系统管理占位 (5) -->
     <record id="action_tms_pending_sys_pwd" model="ir.actions.act_url">
         <field name="name">修改密码</field>
         <field name="url">/tutor/pending?name=修改密码</field>
@@ -173,7 +173,7 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 产品导览占位 (2) -- -->
+    <!--产品导览占位 (2) -->
     <record id="action_tms_pending_tutor_doc" model="ir.actions.act_url">
         <field name="name">产品导览文档</field>
         <field name="url">/tutor/pending?name=产品导览文档</field>

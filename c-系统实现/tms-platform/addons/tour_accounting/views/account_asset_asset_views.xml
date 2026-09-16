@@ -261,18 +261,14 @@
         <field name="view_id" ref="account_asset_asset_view_tree"/>
         <field name="domain">[('category_id.type', '=', 'purchase')]</field>
     </record>
-    <!--Asset MenuItem-->
-    <menuitem parent="account.menu_finance_entries"
-              id="management_menu"
-              name="管理"
-              sequence="101" groups="account.group_account_user"/>
-    <menuitem parent="tour_accounting.management_menu"
+    <!--Asset MenuItem（父级由 accounting_menu_reorg.xml 的 menu_acct_asset 统一管理）-->
+    <menuitem parent="menu_acct_asset"
               id="menu_action_account_asset_asset_form"
               action="action_account_asset_asset_form"
               sequence="101" groups="account.group_account_user"/>
     <!-- Configuration -->
     <menuitem id="menu_finance_config_assets"
               name="资产配置"
-              parent="account.menu_finance_configuration"
+              parent="menu_tms_finance_config"
               sequence="25"/>
 </odoo>

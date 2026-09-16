@@ -33,6 +33,7 @@ class TourAccountingMixin(models.AbstractModel):
     ACCOUNT_EMPLOYEE_LOAN = '1221.01'      # 其他应收款—员工借款（全员共用，人维度用 partner+analytic 区分）[BS-15 §2.2]
     ACCOUNT_PAYABLE_EMPLOYEE = '2241.06'   # 其他应付款—员工代付（纯报销两段式贷方）[BS-15 §3]
     ACCOUNT_PAYABLE_SUP = '2202'           # 应付账款（供应商，报账补款兜底）[TDS §2.2]
+    ACCOUNT_REVENUE_COMMISSION = '6050'    # 佣金收入（购物佣金旅行社留存部分）[BS-08]
 
     # 收入确认模式：总额法（主要责任人）vs 净额法（代理人）[BS-14 §三 权威修正]
     # 海螺为组团社（主要责任人）：1(DT团队输单)/12(DSK团期计划)/13(DSS散客单组)/14(DSN散客并团)/15(DSN散客并团)

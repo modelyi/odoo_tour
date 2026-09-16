@@ -80,6 +80,10 @@ class TourCommission(models.Model):
                               ondelete='restrict', index=True,
                               help='确认时生成的计提凭证（借导服成本/贷应付导游+代扣个税）')
     move_state = fields.Selection(related='move_id.state', string='凭证状态')
+    revenue_move_id = fields.Many2one('account.move', string='收款凭证', copy=False,
+                                      ondelete='restrict', index=True,
+                                      help='收款时生成的收入确认凭证（借银行存款/贷佣金收入+应付导游分成）[BS-08]')
+    revenue_move_state = fields.Selection(related='revenue_move_id.state', string='收款凭证状态')
     pay_move_id = fields.Many2one('account.move', string='发放凭证', copy=False,
                                   ondelete='restrict', index=True,
                                   help='发放时生成的付款凭证（借应付导游/贷资金）[Phase 2 深化]')
@@ -89,12 +93,14 @@ class TourCommission(models.Model):
 
     # === 界面可视化（smart button 计数） ===
     move_count = fields.Integer('计提凭证数', compute='_compute_move_count')
+    revenue_move_count = fields.Integer('收款凭证数', compute='_compute_move_count')
     pay_move_count = fields.Integer('发放凭证数', compute='_compute_move_count')
 
-    @api.depends('move_id', 'pay_move_id')
+    @api.depends('move_id', 'revenue_move_id', 'pay_move_id')
     def _compute_move_count(self):
         for rec in self:
             rec.move_count = 1 if rec.move_id else 0
+            rec.revenue_move_count = 1 if rec.revenue_move_id else 0
             rec.pay_move_count = 1 if rec.pay_move_id else 0
 
     def action_view_move(self):
@@ -107,6 +113,19 @@ class TourCommission(models.Model):
             'res_model': 'account.move',
             'view_mode': 'form',
             'res_id': self.move_id.id,
+            'target': 'current',
+        }
+
+    def action_view_revenue_move(self):
+        self.ensure_one()
+        if not self.revenue_move_id:
+            return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '收款凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.revenue_move_id.id,
             'target': 'current',
         }
 
@@ -236,10 +255,63 @@ class TourCommission(models.Model):
         return move.id
 
     def action_receive(self):
+        """购物店返佣到账 → 确认收入（旅行社留存）+ 确认应付导游分成 [BS-08]。
+
+        借 1002 银行存款 = commission_total
+            贷 6050 佣金收入 = company_retain
+            贷 2241.02 其他应付款—导游分成 = guide_share_before_tax + premium
+        """
         for rec in self:
             if rec.state != 'confirmed':
                 continue
+            if not rec.revenue_move_id:
+                rec.revenue_move_id = rec._generate_revenue_move()
             rec.state = 'received'
+
+    def _generate_revenue_move(self):
+        """生成佣金收款收入确认凭证 [BS-08 §3]。"""
+        self.ensure_one()
+        total = self.commission_total or 0.0
+        retain = self.company_retain or 0.0
+        before_tax = (self.guide_share_before_tax or 0.0) + (self.premium or 0.0)
+        if total <= 0:
+            raise ValidationError('佣金总额为 0，无法生成收款凭证')
+
+        bank_acc = self._tour_get_account(self.ACCOUNT_BANK)
+        revenue_acc = self._tour_get_account(self.ACCOUNT_REVENUE_COMMISSION)
+        payable_acc = self._tour_get_account(self.ACCOUNT_PAYABLE_GUIDE)
+        journal = self._tour_get_journal('bank')
+        analytic = self._plan_analytic_distribution(self.plan_id)
+        partner_id = self._tour_partner_id()
+        narration = '%s / %s / 佣金收款确认' % (
+            self.plan_code or '-', self.shop_id.name if self.shop_id else '未关联购物店')
+
+        lines = [{
+            'account_id': bank_acc.id,
+            'debit': total,
+            'analytic': analytic,
+            'compliance_ref': 'cas14',
+            'name': '收到佣金 %s' % self.name,
+        }, {
+            'account_id': revenue_acc.id,
+            'credit': retain,
+            'analytic': analytic,
+            'compliance_ref': 'cas14',
+            'name': '佣金收入（旅行社留存）%s' % self.name,
+        }, {
+            'account_id': payable_acc.id,
+            'partner_id': partner_id,
+            'credit': before_tax,
+            'analytic': analytic,
+            'compliance_ref': 'cas9',
+            'name': '应付导游分成 %s' % self.name,
+        }]
+
+        move = self._tour_make_move(
+            journal, fields.Date.context_today(self), self.name, lines,
+            compliance_ref='cas14', narration=narration)
+        move.action_post()
+        return move.id
 
     def action_pay(self):
         """发放导游分成（税后实发）→ 生成付款凭证，幂等（pay_move_id 判断）。

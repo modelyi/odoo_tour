@@ -42,7 +42,7 @@
 
     <menuitem id="menu_account_fx_revaluation"
               name="汇兑重估"
-              parent="account.menu_finance_reports"
+              parent="menu_acct_report"
               action="action_account_fx_revaluation"
               sequence="90"/>
 </odoo>

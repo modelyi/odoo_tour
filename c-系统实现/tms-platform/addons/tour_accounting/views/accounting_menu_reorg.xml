@@ -129,19 +129,7 @@
         <field name="sequence">120</field>
     </record>
 
-    <!-- ===== 隐藏旧的空壳菜单 ===== -->
-    <record model="ir.ui.menu" id="account.menu_finance_entries">
-        <field name="active" eval="False"/>
-    </record>
-    <record model="ir.ui.menu" id="account.menu_finance_reports">
-        <field name="active" eval="False"/>
-    </record>
-    <record model="ir.ui.menu" id="management_menu">
-        <field name="active" eval="False"/>
-    </record>
-    <record model="ir.ui.menu" id="menu_acct_analysis">
-        <field name="active" eval="False"/>
-    </record>
+    <!-- ===== 隐藏旧的空壳菜单（仅存在于 Odoo EE / 旧版本） ===== -->
 
     <!-- ===== 将 Odoo 原生财务菜单迁入 TMS 财务管理（seq 100-120） ===== -->
     <record model="ir.ui.menu" id="account.menu_finance_receivables">
@@ -160,13 +148,7 @@
         <field name="sequence">120</field>
     </record>
 
-    <!-- ===== 隐藏 Odoo 原生 Accounting 根菜单 ===== -->
-    <record model="ir.ui.menu" id="account.menu_finance">
-        <field name="active" eval="False"/>
-    </record>
-    <record model="ir.ui.menu" id="account.menu_finance_configuration">
-        <field name="active" eval="False"/>
-    </record>
+    <!-- ===== 隐藏 Odoo 原生 Accounting 根菜单（CE 版不存在，仅 EE） ===== -->
 
     <!-- ===== 合并配置菜单：将 Odoo 配置项迁入 TMS 配置 ===== -->
     <record model="ir.ui.menu" id="account.menu_account_config">
