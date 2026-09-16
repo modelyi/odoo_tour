@@ -81,33 +81,32 @@ class AccountAssetDepreciationLine(models.Model):
                                       depreciation_date)
             asset_name = line.asset_id.name + ' (%s/%s)' % (line.sequence, len(line.asset_id.depreciation_line_ids))
             partner = self.env['res.partner']._find_accounting_partner(line.asset_id.partner_id)
+            multi_currency = company_currency != current_currency
             move_line_1 = {
                 'name': asset_name,
                 'account_id': asset_id.account_depreciation_id.id,
-                'debit': 0.0 if float_compare(amount, 0.0,
-                                              precision_digits=prec) > 0 else -amount,
-                'credit': amount if float_compare(amount, 0.0,
-                                                  precision_digits=prec) > 0 else 0.0,
+                'balance': -amount if float_compare(amount, 0.0,
+                                              precision_digits=prec) > 0 else amount,
                 'journal_id': asset_id.journal_id.id,
                 'partner_id': partner.id,
-                'currency_id': company_currency != current_currency and current_currency.id or company_currency.id,
-                'amount_currency': company_currency != current_currency and - 1.0 * line.amount or 0.0,
             }
             move_line_2 = {
                 'name': asset_name,
                 'account_id': asset_id.account_depreciation_expense_id.id,
-                'credit': 0.0 if float_compare(amount, 0.0,
-                                               precision_digits=prec) > 0 else -amount,
-                'debit': amount if float_compare(amount, 0.0,
-                                                 precision_digits=prec) > 0 else 0.0,
+                'balance': amount if float_compare(amount, 0.0,
+                                                 precision_digits=prec) > 0 else -amount,
                 'journal_id': asset_id.journal_id.id,
                 'partner_id': partner.id,
-                'currency_id': company_currency != current_currency and current_currency.id or company_currency.id,
-                'amount_currency': company_currency != current_currency and line.amount or 0.0,
             }
-            # Build a balanced two-line entry directly (no create-then-rewrite
-            # and no "Automatic Balancing Line" removal — that hack is a no-op
-            # for a tax-less JE in v19 and breaks under translation).
+            if multi_currency:
+                move_line_1.update({
+                    'currency_id': current_currency.id,
+                    'amount_currency': -1.0 * line.amount,
+                })
+                move_line_2.update({
+                    'currency_id': current_currency.id,
+                    'amount_currency': line.amount,
+                })
             move = self.env['account.move'].create({
                 'ref': line.asset_id.code,
                 'date': depreciation_date or False,
@@ -145,16 +144,14 @@ class AccountAssetDepreciationLine(models.Model):
         move_line_1 = {
             'name': name,
             'account_id': category_id.account_depreciation_id.id,
-            'debit': 0.0,
-            'credit': amount,
+            'balance': -amount,
             'journal_id': category_id.journal_id.id,
             'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'sale' else False,
         }
         move_line_2 = {
             'name': name,
             'account_id': category_id.account_depreciation_expense_id.id,
-            'credit': 0.0,
-            'debit': amount,
+            'balance': amount,
             'journal_id': category_id.journal_id.id,
             'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'purchase' else False,
         }
