@@ -20,6 +20,10 @@ class TourPaymentClaim(models.Model):
     supplier_id = fields.Many2one('res.partner', string='付款方(客户)', index=True,
                                   help='允许为空（待认领：55% 收款未关联客户）')
     pay_date = fields.Date('收款日期', default=fields.Date.context_today, required=True)
+    x_period_id = fields.Many2one(
+        'tour.account.period', string='会计期间', index=True,
+        compute='_compute_x_period_id', store=True, readonly=False,
+        help='根据收款日期自动获取的会计期间')
     pay_money = fields.Float('收款金额', digits=(16, 2), required=True)
     use_money = fields.Float('已使用金额', digits=(16, 2), default=0.0)
     balance_money = fields.Float('余额', digits=(16, 2), compute='_compute_balance_money',
@@ -137,6 +141,27 @@ class TourPaymentClaim(models.Model):
     def _compute_trans_fee(self):
         for rec in self:
             rec.trans_fee = (rec.pay_money or 0.0) * (rec.trans_fee_rate or 0.0) / 100.0
+
+    @api.depends('pay_date')
+    def _compute_x_period_id(self):
+        """根据收款日期自动计算会计期间"""
+        for rec in self:
+            if rec.pay_date:
+                period = self.env['tour.account.period'].get_period_by_date(
+                    rec.pay_date, rec.company_id)
+                rec.x_period_id = period.id if period else False
+            else:
+                rec.x_period_id = False
+
+    @api.constrains('pay_date', 'x_period_id')
+    def _check_period_open(self):
+        """检查会计期间是否开放"""
+        for rec in self:
+            if rec.pay_date and rec.x_period_id:
+                if rec.x_period_id.state != 'open':
+                    raise ValidationError(
+                        f'会计期间 {rec.x_period_id.name} 已关闭，'
+                        f'无法在 {rec.pay_date} 创建/修改收款登记')
 
     @api.constrains('pay_money')
     def _check_pay_money(self):

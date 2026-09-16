@@ -60,3 +60,5 @@ from . import product_product
 from . import hr_expense
 from . import tour_guide_loan
 from . import batch_expense_wizard
+from . import account_period
+from . import office_expense_report

@@ -82,3 +82,8 @@ access_tour_guide_loan_user,tour.guide.loan.user,model_tour_guide_loan,base.grou
 access_tour_guide_loan_manager,tour.guide.loan.manager,model_tour_guide_loan,base.group_system,1,1,1,1
 access_tour_batch_expense_wizard,tour.batch.expense.wizard,model_tour_batch_expense_wizard,base.group_user,1,1,1,0
 access_tour_batch_expense_line,tour.batch.expense.line,model_tour_batch_expense_line,base.group_user,1,1,1,0
+access_tour_account_period_user,tour.account.period.user,model_tour_account_period,tour_base.group_tour_finance,1,1,1,0
+access_tour_account_period_manager,tour.account.period.manager,model_tour_account_period,base.group_system,1,1,1,1
+access_tour_office_expense_report,tour.office.expense.report,model_tour_office_expense_report,tour_base.group_tour_finance,1,1,1,0
+access_tour_office_expense_report_result,tour.office.expense.report.result,model_tour_office_expense_report_result,tour_base.group_tour_finance,1,1,1,0
+access_tour_office_expense_report_line,tour.office.expense.report.line,model_tour_office_expense_report_line,tour_base.group_tour_finance,1,1,1,0

@@ -73,6 +73,10 @@ class TourReconciliation(models.Model):
     verify_date = fields.Date('对账日期')
     confirm_user_id = fields.Many2one('res.users', string='确认人')
     confirm_date = fields.Date('确认日期')
+    x_period_id = fields.Many2one(
+        'tour.account.period', string='会计期间', index=True,
+        compute='_compute_x_period_id', store=True, readonly=False,
+        help='根据对账期间开始日期自动获取的会计期间')
     remark = fields.Text('备注')
 
     company_id = fields.Many2one('res.company', string='所属公司',
@@ -106,6 +110,27 @@ class TourReconciliation(models.Model):
     def _compute_invoice_gap(self):
         for rec in self:
             rec.invoice_gap = (rec.settled_amount or 0.0) - (rec.invoice_collected or 0.0)
+
+    @api.depends('period_begin')
+    def _compute_x_period_id(self):
+        """根据对账期间开始日期自动计算会计期间"""
+        for rec in self:
+            if rec.period_begin:
+                period = self.env['tour.account.period'].get_period_by_date(
+                    rec.period_begin, rec.company_id)
+                rec.x_period_id = period.id if period else False
+            else:
+                rec.x_period_id = False
+
+    @api.constrains('period_begin', 'x_period_id')
+    def _check_period_open(self):
+        """检查会计期间是否开放"""
+        for rec in self:
+            if rec.period_begin and rec.x_period_id:
+                if rec.x_period_id.state != 'open':
+                    raise ValidationError(
+                        f'会计期间 {rec.x_period_id.name} 已关闭，'
+                        f'无法在 {rec.period_begin} 创建/修改对账单')
 
     @api.constrains('verify_user_id', 'confirm_user_id')
     def _check_separation(self):

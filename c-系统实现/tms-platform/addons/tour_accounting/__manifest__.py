@@ -147,6 +147,7 @@
         'views/tour_guide_loan_views.xml',
         'views/hr_expense_views.xml',
         'views/batch_expense_wizard_views.xml',
+        'views/office_management_views.xml',
         'views/res_config_settings_tour_vat_views.xml',
         'views/finance_menu.xml',
         'views/finance_general_menu.xml',

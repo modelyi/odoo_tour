@@ -46,11 +46,5 @@
         <field name="target">new</field>
     </record>
 
-    <!-- 菜单：挂在财务管理下 -->
-    <menuitem id="menu_tour_batch_expense_wizard"
-        name="导游批量报账（新）"
-        parent="tour_base.menu_tms_finance"
-        action="action_tour_batch_expense_wizard"
-        sequence="105"
-        groups="base.group_user"/>
+    <!-- 菜单已迁移至「费用与借款」顶级菜单，全员自助可见 -->
 </odoo>

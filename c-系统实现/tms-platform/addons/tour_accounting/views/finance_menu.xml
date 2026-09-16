@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 旅行社财务分组菜单：融合进 Odoo 标准 accounting「财务」顶级菜单（account.menu_finance）。
-         sequence=30 置于「报表(20)」之后、「配置(35)」之前。分组菜单 group_ids 不向下继承，
-         故每个业务子菜单逐个设 groups="tour_base.group_tour_finance" 保证仅财务角色可见。 -->
+    <!-- 财务管理：独立顶级应用入口（与业务管理并列）。
+         整合原「业务管理>财务管理」和「会计>旅行社财务」的全部菜单项。
+         仅财务角色可见。 -->
     <menuitem id="menu_tour_finance"
-        name="旅行社财务"
-        parent="account.menu_finance"
-        sequence="30"
+        name="财务管理"
+        web_icon="tour_accounting,static/description/icon.png"
+        sequence="25"
         groups="tour_base.group_tour_finance"/>
 
     <!-- 业务菜单按流程顺序排布，配置菜单放最后（sequence=100） -->
@@ -62,31 +62,11 @@
         groups="-tour_base.group_tour_finance,base.group_user"
         sequence="4"/>
 
-    <!-- 旅行社财务菜单下的借款/报账入口（从 tour_base 迁移至此，避免加载顺序问题）-->
-    <menuitem id="menu_tms_fin_guide_loan"
-        name="借款"
-        parent="tour_base.menu_tms_finance"
-        action="action_tour_guide_loan"
-        groups="tour_base.group_tour_finance"
-        sequence="80"/>
-    <menuitem id="menu_tms_fin_guide_single"
-        name="导游单团报账"
-        parent="tour_base.menu_tms_finance"
-        action="action_tour_guide_expense"
-        groups="tour_base.group_tour_finance"
-        sequence="90"/>
-    <menuitem id="menu_tms_fin_guide_batch"
-        name="导游批量报账"
-        parent="tour_base.menu_tms_finance"
-        action="action_tour_guide_expense"
-        groups="tour_base.group_tour_finance"
-        sequence="100"/>
-    <menuitem id="menu_tms_fin_office_expense"
-        name="办公报账"
-        parent="tour_base.menu_tms_finance"
-        action="action_office_expense"
-        groups="tour_base.group_tour_finance"
-        sequence="110"/>
+    <!-- 借款/报账统一从「费用与借款」顶级菜单（hr_expense.menu_hr_expense_root）进入，
+         全员自助可见；数据层由 record rule 隔离（员工仅见自己，财务全权）[BS-15 §7.6/§7.7]。
+         业务管理 > 财务管理 仅保留单团收付款/核算/催收/银行账户等日常操作入口。 -->
+
+    <!-- 旅行社财务菜单下的配置（会计期间/支付渠道/收付场景） -->
 
     <menuitem id="menu_tour_dunning"
         name="团款催收台账"
@@ -102,12 +82,26 @@
         groups="tour_base.group_tour_finance"
         sequence="60"/>
 
+    <menuitem id="menu_tour_bank_account"
+        name="银行账户管理"
+        parent="menu_tour_finance"
+        action="tour_base.action_tour_bank_account"
+        groups="tour_base.group_tour_finance"
+        sequence="80"/>
+
     <!-- 财务配置（Odoo 惯例：配置菜单放最后） -->
     <menuitem id="menu_tms_finance_config"
         name="配置"
         parent="menu_tour_finance"
         groups="tour_base.group_tour_finance"
         sequence="100"/>
+    
+    <menuitem id="menu_tour_account_period"
+        name="会计期间"
+        parent="menu_tms_finance_config"
+        action="action_tour_account_period"
+        groups="tour_base.group_tour_finance"
+        sequence="10"/>
 
     <menuitem id="menu_tour_pay_channel"
         name="支付渠道"

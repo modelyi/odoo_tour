@@ -64,6 +64,31 @@ class TourGuideLoan(models.Model):
     apply_date = fields.Date('申请日期', default=fields.Date.context_today, required=True)
     loan_date = fields.Date('放款日期')
     due_date = fields.Date('报账截止日', help='= 放款日期 + 30 天')
+    x_period_id = fields.Many2one(
+        'tour.account.period', string='会计期间', index=True,
+        compute='_compute_x_period_id', store=True, readonly=False,
+        help='根据申请日期自动获取的会计期间')
+    
+    @api.depends('apply_date')
+    def _compute_x_period_id(self):
+        """根据申请日期自动计算会计期间"""
+        for loan in self:
+            if loan.apply_date:
+                period = self.env['tour.account.period'].get_period_by_date(
+                    loan.apply_date, loan.company_id)
+                loan.x_period_id = period.id if period else False
+            else:
+                loan.x_period_id = False
+    
+    @api.constrains('apply_date', 'x_period_id')
+    def _check_period_open(self):
+        """检查会计期间是否开放"""
+        for loan in self:
+            if loan.apply_date and loan.x_period_id:
+                if loan.x_period_id.state != 'open':
+                    raise ValidationError(
+                        f'会计期间 {loan.x_period_id.name} 已关闭，'
+                        f'无法在 {loan.apply_date} 创建/修改借款单')
     is_overdue = fields.Boolean('已超期', compute='_compute_is_overdue', store=True,
                                 help='已放款且超过报账截止日未冲抵')
 

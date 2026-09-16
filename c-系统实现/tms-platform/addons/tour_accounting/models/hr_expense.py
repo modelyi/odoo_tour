@@ -35,6 +35,31 @@ class HrExpense(models.Model):
     x_deductible = fields.Boolean(
         '差额征税可扣除', compute='_compute_x_deductible', store=True,
         help='可扣除 = 成本性质(车/餐/门票/房/签证) ∈ 可扣除集 AND 挂团 AND 有发票号')
+    x_period_id = fields.Many2one(
+        'tour.account.period', string='会计期间', index=True,
+        compute='_compute_x_period_id', store=True, readonly=False,
+        help='根据报账日期自动获取的会计期间')
+    
+    @api.depends('date')
+    def _compute_x_period_id(self):
+        """根据报账日期自动计算会计期间"""
+        for expense in self:
+            if expense.date:
+                period = self.env['tour.account.period'].get_period_by_date(
+                    expense.date, expense.company_id)
+                expense.x_period_id = period.id if period else False
+            else:
+                expense.x_period_id = False
+    
+    @api.constrains('date', 'x_period_id')
+    def _check_period_open(self):
+        """检查会计期间是否开放"""
+        for expense in self:
+            if expense.date and expense.x_period_id:
+                if expense.x_period_id.state != 'open':
+                    raise UserError(
+                        f'会计期间 {expense.x_period_id.name} 已关闭，'
+                        f'无法在 {expense.date} 创建/修改报账单')
 
     @api.onchange('x_guide_id')
     def _onchange_x_guide_id(self):
