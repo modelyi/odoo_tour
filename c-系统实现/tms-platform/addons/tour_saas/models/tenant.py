@@ -14,9 +14,7 @@ _logger = logging.getLogger(__name__)
 
 TENANT_MODULES = [
     'tour_saas',
-    'tour_accounting',
-    'tour_operation',
-    'tour_report',
+    'tour_tutor',
 ]
 
 
@@ -51,10 +49,11 @@ class TourSaasTenant(models.Model):
 
     @api.onchange('name')
     def _onchange_name(self):
-        if self.name:
-            slug = re.sub(r'[^a-z0-9]+', '_', self.name.lower()).strip('_')
-            self.slug = slug
-            self.db_name = 'tms_tenant_%s' % slug
+        if self.name and not self.db_name:
+            import time
+            timestamp = int(time.time())
+            self.slug = 'tenant_%d' % timestamp
+            self.db_name = 'tms_tenant_%d' % timestamp
 
     @api.constrains('db_name')
     def _check_db_name(self):
