@@ -89,8 +89,8 @@ class TourSaasTenant(models.Model):
                         tenant._do_create_database()
                         tenant.state = 'active'
                         tenant.db_created_at = fields.Datetime.now()
-                        tenant._push_params(env)
                         cr.commit()
+                        tenant._sync_params_to_tenant()
                         _logger.info('租户数据库 %s 创建成功', tenant.db_name)
                     except Exception as e:
                         tenant.state = 'draft'
@@ -130,11 +130,12 @@ class TourSaasTenant(models.Model):
             admin_vals = {
                 'login': self.admin_login,
                 'password': self.admin_password,
-                'lang': self.lang,
             }
             if self.admin_email:
                 admin_vals['email'] = self.admin_email
             admin.write(admin_vals)
+            if self.lang:
+                admin.partner_id.write({'lang': self.lang})
 
             if self.company_name:
                 env['res.company'].browse(1).write({'name': self.company_name})
@@ -165,6 +166,16 @@ class TourSaasTenant(models.Model):
         params.set_param('saas.limit_users', str(self.limit_users or 0))
         params.set_param('saas.plan_name', self.name or '')
         self.last_sync_at = fields.Datetime.now()
+
+    def _sync_params_to_tenant(self):
+        self.ensure_one()
+        if not self.db_name:
+            return
+        registry = odoo.modules.registry.Registry(self.db_name)
+        with closing(registry.cursor()) as cr:
+            env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+            self._push_params(env)
+            cr.commit()
 
     def action_sync_params(self):
         self.ensure_one()
