@@ -59,3 +59,4 @@ from . import tour_pay_request
 from . import product_product
 from . import hr_expense
 from . import tour_guide_loan
+from . import batch_expense_wizard

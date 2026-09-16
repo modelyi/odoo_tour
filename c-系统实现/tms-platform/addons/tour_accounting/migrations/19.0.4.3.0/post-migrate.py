@@ -72,8 +72,8 @@ def migrate(cr, version):
 
         cr.execute("""
             INSERT INTO hr_expense (
-                name, employee_id, product_id, quantity, total_amount_currency,
-                total_amount, untaxed_amount_currency, untaxed_amount,
+                name, employee_id, product_id, quantity, price_unit,
+                total_amount_currency, total_amount, untaxed_amount_currency, untaxed_amount,
                 date, state, approval_state, approval_date,
                 payment_mode, company_id, currency_id,
                 account_move_id,
@@ -81,9 +81,9 @@ def migrate(cr, version):
                 create_uid, create_date, write_uid, write_date
             ) VALUES (
                 %s, %s, %s, 1, %s,
-                %s, %s, %s,
                 %s, %s, %s, %s,
-                'own_account', %s,
+                %s, %s, %s, %s,
+                'own_account', COALESCE(%s, 1),
                 (SELECT id FROM res_currency WHERE name = 'CNY' LIMIT 1),
                 %s,
                 %s, %s, %s, %s, %s,
@@ -93,6 +93,7 @@ def migrate(cr, version):
             '%s-%s' % (rp_name or 'BZ', line_id),
             employee_id,
             product_id,
+            amount,
             amount, amount, amount, amount,
             report_date,
             new_state,
@@ -105,3 +106,26 @@ def migrate(cr, version):
         created += 1
 
     _logger.info('迁移 %d 条报账明细到 hr_expense', created)
+
+    # 更新借款单冲抵金额（SQL 插入不触发 ORM compute）
+    cr.execute("""
+        UPDATE tour_guide_loan l
+        SET settled_amount = COALESCE(sub.total, 0),
+            residual = l.amount - COALESCE(sub.total, 0)
+        FROM (
+            SELECT x_loan_id, SUM(total_amount_currency) as total
+            FROM hr_expense
+            WHERE x_loan_id IS NOT NULL
+            AND state IN ('approved', 'posted', 'in_payment', 'paid')
+            GROUP BY x_loan_id
+        ) sub
+        WHERE l.id = sub.x_loan_id
+    """)
+    # 无冲抵的借款单：settled=0, residual=amount
+    cr.execute("""
+        UPDATE tour_guide_loan
+        SET settled_amount = 0, residual = amount
+        WHERE id NOT IN (SELECT DISTINCT x_loan_id FROM hr_expense WHERE x_loan_id IS NOT NULL)
+        AND state != 'settled'
+    """)
+    _logger.info('借款单冲抵金额已更新')

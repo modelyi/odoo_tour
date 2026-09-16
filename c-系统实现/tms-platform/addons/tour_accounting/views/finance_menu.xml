@@ -42,7 +42,7 @@
     <!-- 借款/报账迁到「费用与借款」顶级菜单（hr_expense.menu_hr_expense_root，zh_CN「费用与借款」），
          全员自助可见；数据层由 record rule 隔离（员工仅见自己，财务全权）[BS-15 §7.6/§7.7]。 -->
     <menuitem id="menu_tour_guide_loan"
-        name="导游借款"
+        name="借款"
         parent="hr_expense.menu_hr_expense_root"
         action="action_tour_guide_loan"
         groups="-tour_base.group_tour_finance,base.group_user"
@@ -55,9 +55,16 @@
         groups="-tour_base.group_tour_finance,base.group_user"
         sequence="3"/>
 
+    <menuitem id="menu_office_expense"
+        name="办公报账"
+        parent="hr_expense.menu_hr_expense_root"
+        action="action_office_expense"
+        groups="-tour_base.group_tour_finance,base.group_user"
+        sequence="4"/>
+
     <!-- 旅行社财务菜单下的借款/报账入口（从 tour_base 迁移至此，避免加载顺序问题）-->
     <menuitem id="menu_tms_fin_guide_loan"
-        name="导游借款"
+        name="借款"
         parent="tour_base.menu_tms_finance"
         action="action_tour_guide_loan"
         groups="tour_base.group_tour_finance"
@@ -74,6 +81,12 @@
         action="action_tour_guide_expense"
         groups="tour_base.group_tour_finance"
         sequence="100"/>
+    <menuitem id="menu_tms_fin_office_expense"
+        name="办公报账"
+        parent="tour_base.menu_tms_finance"
+        action="action_office_expense"
+        groups="tour_base.group_tour_finance"
+        sequence="110"/>
 
     <menuitem id="menu_tour_dunning"
         name="团款催收台账"

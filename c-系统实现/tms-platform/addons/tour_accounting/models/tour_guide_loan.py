@@ -8,6 +8,7 @@
 """
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from odoo.tools.float_utils import float_is_zero
 
 
 class TourGuideLoan(models.Model):
@@ -227,13 +228,10 @@ class TourGuideLoan(models.Model):
         return move.id
 
     def _mark_settled_if_clear(self):
-        """报账结算后借款单流转为已冲抵。
-
-        结算凭证（借 6401 / 贷 1221.01，差额退款借 1002 / 补款贷 1002）已把
-        1221.01 全额核平（完全冲抵），故只要原状态为已放款即流转已冲抵。
-        """
+        """报账结算后借款单流转为已冲抵（仅当 residual=0 即全额冲抵）。"""
         self.ensure_one()
-        if self.state == 'disbursed':
+        rounding = self.currency_id.rounding if self.currency_id else 0.01
+        if self.state == 'disbursed' and float_is_zero(self.residual, precision_rounding=rounding):
             self.state = 'settled'
 
     @api.model
