@@ -355,11 +355,11 @@
     <!-- ==================== 9. 财务管理（已提升为顶级应用） ==================== -->
     <!-- 财务管理现为独立顶级入口，由 tour_accounting/views/finance_menu.xml 管理 -->
 
-    <!-- ==================== 12. 发票管理 ==================== -->
+    <!-- ==================== 12. 发票管理（挂在财务管理下） ==================== -->
     <!-- 发票 action 定义在 tour_accounting 模块 -->
     <menuitem id="menu_tms_invoice"
         name="发票管理"
-        parent="menu_tms_root"
+        parent="tour_accounting.menu_tour_finance"
         sequence="120"/>
     <menuitem id="menu_tms_inv_apply"
         name="开票申请"
@@ -472,93 +472,84 @@
         sequence="30"
         groups="base.group_system"/>
 
-    <!-- ==================== 15. 资源中心 ==================== -->
-    <!-- 资源中心 action 定义在 tour_resource 模块 -->
+    <!-- ==================== 15. 资源中心 → 已合并到资源管理(tour_resource) ==================== -->
+    <!-- 原资源中心子项全部迁入 tour_resource.menu_tms_resource（顶级应用「资源管理」） -->
 
-    <menuitem id="menu_tms_resource"
-        name="资源中心"
-        parent="menu_tms_root"
-        sequence="150"/>
     <menuitem id="menu_tms_res_category"
         name="线路分类"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_product.action_tour_product_category"
-        sequence="10"/>
+        sequence="20"/>
     <menuitem id="menu_tms_res_template"
         name="线路模板"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_product.action_tour_line"
-        sequence="20"/>
+        sequence="25"/>
     <menuitem id="menu_tms_res_customer"
         name="客户档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier"
-        sequence="30"/>
+        sequence="50"/>
     <menuitem id="menu_tms_res_local"
         name="地接社档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier"
-        sequence="40"/>
+        sequence="60"/>
     <menuitem id="menu_tms_res_scenic"
-        name="景区景点"
-        parent="menu_tms_resource"
+        name="景区档案"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_scenic"
-        sequence="50"/>
+        sequence="70"/>
     <menuitem id="menu_tms_res_hotel"
         name="酒店档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_hotel"
-        sequence="60"/>
+        sequence="80"/>
     <menuitem id="menu_tms_res_restaurant"
         name="餐厅档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_meal"
-        sequence="70"/>
+        sequence="90"/>
     <menuitem id="menu_tms_res_vehicle_company"
         name="车辆公司"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_vehicle_comp"
-        sequence="80"/>
+        sequence="100"/>
     <menuitem id="menu_tms_res_vehicle"
         name="车辆档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="fleet.fleet_vehicle_action"
-        sequence="90"/>
+        sequence="110"/>
     <menuitem id="menu_tms_res_shop"
         name="购物店档案"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_shop"
-        sequence="100"/>
+        sequence="120"/>
     <menuitem id="menu_tms_res_ticket_company"
         name="票务公司"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_ticket"
-        sequence="110"/>
+        sequence="130"/>
     <menuitem id="menu_tms_res_insurance_company"
         name="保险公司"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_insurance"
-        sequence="120"/>
+        sequence="140"/>
     <menuitem id="menu_tms_res_visa_company"
         name="签证公司"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_visa"
-        sequence="130"/>
+        sequence="150"/>
     <menuitem id="menu_tms_res_self_company"
         name="自费公司"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_self_fee"
-        sequence="140"/>
-    <menuitem id="menu_tms_res_guide"
-        name="导游档案"
-        parent="menu_tms_resource"
-        action="tour_resource.action_tour_guide"
-        sequence="150"/>
+        sequence="160"/>
     <menuitem id="menu_tms_res_ticket_list"
         name="票务列表"
-        parent="menu_tms_resource"
+        parent="tour_resource.menu_tms_resource"
         action="tour_resource.action_tour_supplier_ticket_list"
-        sequence="160"/>
+        sequence="170"/>
 
     <!-- ==================== 16. 协议中心 ==================== -->
     <record id="action_tms_pending_agree_cost" model="ir.actions.act_url">
