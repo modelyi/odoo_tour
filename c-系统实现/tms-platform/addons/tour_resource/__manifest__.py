@@ -21,6 +21,7 @@
         'views/tour_guide_views.xml',
         'views/tour_supplier_views.xml',
         'views/tour_shop_agreement_views.xml',
+        'views/tour_base_data_views.xml',
         'views/hr_employee_views.xml',
         'views/menu.xml',
     ],

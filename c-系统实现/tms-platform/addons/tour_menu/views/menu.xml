@@ -129,25 +129,15 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 基础数据占位 (5) -- -->
+    <!-- -- 基础数据占位 (3) -- -->
     <record id="action_tms_pending_base_data" model="ir.actions.act_url">
         <field name="name">基础数据</field>
         <field name="url">/tutor/pending?name=基础数据</field>
         <field name="target">self</field>
     </record>
-    <record id="action_tms_pending_base_area" model="ir.actions.act_url">
-        <field name="name">区域维护</field>
-        <field name="url">/tutor/pending?name=区域维护</field>
-        <field name="target">self</field>
-    </record>
     <record id="action_tms_pending_base_category" model="ir.actions.act_url">
         <field name="name">基础数据分类</field>
         <field name="url">/tutor/pending?name=基础数据分类</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_base_settle" model="ir.actions.act_url">
-        <field name="name">结算方式</field>
-        <field name="url">/tutor/pending?name=结算方式</field>
         <field name="target">self</field>
     </record>
     <record id="action_tms_pending_base_print" model="ir.actions.act_url">
@@ -678,9 +668,8 @@
     <menuitem id="menu_tms_base_area"
         name="区域维护"
         parent="menu_tms_base_data"
-        action="action_tms_pending_base_area"
-        sequence="20"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_region"
+        sequence="20"/>
     <menuitem id="menu_tms_base_category"
         name="基础数据分类"
         parent="menu_tms_base_data"
@@ -690,9 +679,8 @@
     <menuitem id="menu_tms_base_settle"
         name="结算方式"
         parent="menu_tms_base_data"
-        action="action_tms_pending_base_settle"
-        sequence="40"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_settlement_method"
+        sequence="40"/>
     <menuitem id="menu_tms_base_pay_channel"
         name="支付渠道"
         parent="menu_tms_base_data"

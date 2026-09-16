@@ -9,3 +9,8 @@ access_tour_supplier_manager,tour.supplier.manager,model_tour_supplier,tour_base
 access_tour_shop_agreement_operator,tour.shop.agreement.operator,model_tour_shop_agreement,tour_base.group_tour_operator,1,1,1,0
 access_tour_shop_agreement_finance,tour.shop.agreement.finance,model_tour_shop_agreement,tour_base.group_tour_finance,1,0,0,0
 access_tour_shop_agreement_manager,tour.shop.agreement.manager,model_tour_shop_agreement,tour_base.group_tour_manager,1,1,1,1
+access_tour_region_operator,tour.region.operator,model_tour_region,tour_base.group_tour_operator,1,1,1,0
+access_tour_region_manager,tour.region.manager,model_tour_region,tour_base.group_tour_manager,1,1,1,1
+access_tour_settlement_method_operator,tour.settlement.method.operator,model_tour_settlement_method,tour_base.group_tour_operator,1,1,1,0
+access_tour_settlement_method_finance,tour.settlement.method.finance,model_tour_settlement_method,tour_base.group_tour_finance,1,0,0,0
+access_tour_settlement_method_manager,tour.settlement.method.manager,model_tour_settlement_method,tour_base.group_tour_manager,1,1,1,1
