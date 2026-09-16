@@ -356,55 +356,31 @@
     <!-- 财务管理现为独立顶级入口，由 tour_accounting/views/finance_menu.xml 管理 -->
 
     <!-- ==================== 12. 发票管理 ==================== -->
-    <record id="action_tms_pending_inv_apply" model="ir.actions.act_url">
-        <field name="name">开票申请</field>
-        <field name="url">/tutor/pending?name=开票申请</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_inv_audit" model="ir.actions.act_url">
-        <field name="name">开票审核</field>
-        <field name="url">/tutor/pending?name=开票审核</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_inv_issue" model="ir.actions.act_url">
-        <field name="name">发票开具</field>
-        <field name="url">/tutor/pending?name=发票开具</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_inv_list" model="ir.actions.act_url">
-        <field name="name">发票列表</field>
-        <field name="url">/tutor/pending?name=发票列表</field>
-        <field name="target">self</field>
-    </record>
-
+    <!-- 发票 action 定义在 tour_accounting 模块 -->
     <menuitem id="menu_tms_invoice"
         name="发票管理"
         parent="menu_tms_root"
         sequence="120"/>
     <menuitem id="menu_tms_inv_apply"
-        name="开票申请（待实施）"
+        name="开票申请"
         parent="menu_tms_invoice"
-        action="action_tms_pending_inv_apply"
-        sequence="10"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_invoice_apply"
+        sequence="10"/>
     <menuitem id="menu_tms_inv_audit"
-        name="开票审核（待实施）"
+        name="开票审核"
         parent="menu_tms_invoice"
-        action="action_tms_pending_inv_audit"
-        sequence="20"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_invoice_audit"
+        sequence="20"/>
     <menuitem id="menu_tms_inv_issue"
-        name="发票开具（待实施）"
+        name="发票开具"
         parent="menu_tms_invoice"
-        action="action_tms_pending_inv_issue"
-        sequence="30"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_invoice_issue"
+        sequence="30"/>
     <menuitem id="menu_tms_inv_list"
-        name="发票列表（待实施）"
+        name="发票列表"
         parent="menu_tms_invoice"
-        action="action_tms_pending_inv_list"
-        sequence="40"
-        groups="base.group_system"/>
+        action="tour_accounting.action_tour_invoice_list"
+        sequence="40"/>
 
     <!-- ==================== 13. 查询统计 ==================== -->
     <record id="action_tms_pending_query_pickup" model="ir.actions.act_url">

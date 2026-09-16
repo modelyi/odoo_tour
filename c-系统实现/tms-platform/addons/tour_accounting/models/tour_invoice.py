@@ -76,6 +76,35 @@ class AccountMoveTourInvoice(models.Model):
                 raise ValidationError(
                     '[财税2016-36号] 差额征税发票不得开具增值税专用发票')
 
+    # ── 工作流按钮 ──────────────────────────────────────────────
+    def action_apply(self):
+        """提交开票申请 draft → applied [BS-12 §4.1]。"""
+        for rec in self:
+            rec.tour_invoice_state = 'applied'
+            rec.tour_invoice_apply_date = fields.Date.context_today(rec)
+
+    def action_cancel_apply(self):
+        """撤回开票申请 applied → draft。"""
+        for rec in self:
+            rec.tour_invoice_state = 'draft'
+            rec.tour_invoice_apply_date = False
+
+    def action_issue(self):
+        """审核通过并开具发票 applied → issued [BS-12 §4.1]。"""
+        for rec in self:
+            rec.tour_invoice_state = 'issued'
+            rec.tour_invoice_issue_date = fields.Date.context_today(rec)
+
+    def action_void(self):
+        """作废发票 issued → void。"""
+        for rec in self:
+            rec.tour_invoice_state = 'void'
+
+    def action_reverse(self):
+        """红冲发票 issued → reversed。"""
+        for rec in self:
+            rec.tour_invoice_state = 'reversed'
+
     def action_post(self):
         """过账前把团维度落到应收行（挂团分析账户 + 落 1122.01 团款应收）[BS-12 §6.1/§6.2]。"""
         self._tour_propagate_receivable_analytic()
