@@ -473,56 +473,7 @@
         groups="base.group_system"/>
 
     <!-- ==================== 15. 资源中心 ==================== -->
-    <record id="action_tms_pending_res_scenic" model="ir.actions.act_url">
-        <field name="name">景区景点</field>
-        <field name="url">/tutor/pending?name=景区景点</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_hotel" model="ir.actions.act_url">
-        <field name="name">酒店档案</field>
-        <field name="url">/tutor/pending?name=酒店档案</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_restaurant" model="ir.actions.act_url">
-        <field name="name">餐厅档案</field>
-        <field name="url">/tutor/pending?name=餐厅档案</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_vehicle_company" model="ir.actions.act_url">
-        <field name="name">车辆公司</field>
-        <field name="url">/tutor/pending?name=车辆公司</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_shop" model="ir.actions.act_url">
-        <field name="name">购物店档案</field>
-        <field name="url">/tutor/pending?name=购物店档案</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_ticket_company" model="ir.actions.act_url">
-        <field name="name">票务公司</field>
-        <field name="url">/tutor/pending?name=票务公司</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_insurance_company" model="ir.actions.act_url">
-        <field name="name">保险公司</field>
-        <field name="url">/tutor/pending?name=保险公司</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_visa_company" model="ir.actions.act_url">
-        <field name="name">签证公司</field>
-        <field name="url">/tutor/pending?name=签证公司</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_self_company" model="ir.actions.act_url">
-        <field name="name">自费公司</field>
-        <field name="url">/tutor/pending?name=自费公司</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_res_ticket_list" model="ir.actions.act_url">
-        <field name="name">票务列表</field>
-        <field name="url">/tutor/pending?name=票务列表</field>
-        <field name="target">self</field>
-    </record>
+    <!-- 资源中心 action 定义在 tour_resource 模块 -->
 
     <menuitem id="menu_tms_resource"
         name="资源中心"
@@ -549,75 +500,65 @@
         action="tour_resource.action_tour_supplier"
         sequence="40"/>
     <menuitem id="menu_tms_res_scenic"
-        name="景区景点（待实施）"
+        name="景区景点"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_scenic"
-        sequence="50"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_scenic"
+        sequence="50"/>
     <menuitem id="menu_tms_res_hotel"
-        name="酒店档案（待实施）"
+        name="酒店档案"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_hotel"
-        sequence="60"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_hotel"
+        sequence="60"/>
     <menuitem id="menu_tms_res_restaurant"
-        name="餐厅档案（待实施）"
+        name="餐厅档案"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_restaurant"
-        sequence="70"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_meal"
+        sequence="70"/>
     <menuitem id="menu_tms_res_vehicle_company"
-        name="车辆公司（待实施）"
+        name="车辆公司"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_vehicle_company"
-        sequence="80"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_vehicle_comp"
+        sequence="80"/>
     <menuitem id="menu_tms_res_vehicle"
         name="车辆档案"
         parent="menu_tms_resource"
         action="fleet.fleet_vehicle_action"
         sequence="90"/>
     <menuitem id="menu_tms_res_shop"
-        name="购物店档案（待实施）"
+        name="购物店档案"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_shop"
-        sequence="100"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_shop"
+        sequence="100"/>
     <menuitem id="menu_tms_res_ticket_company"
-        name="票务公司（待实施）"
+        name="票务公司"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_ticket_company"
-        sequence="110"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_ticket"
+        sequence="110"/>
     <menuitem id="menu_tms_res_insurance_company"
-        name="保险公司（待实施）"
+        name="保险公司"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_insurance_company"
-        sequence="120"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_insurance"
+        sequence="120"/>
     <menuitem id="menu_tms_res_visa_company"
-        name="签证公司（待实施）"
+        name="签证公司"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_visa_company"
-        sequence="130"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_visa"
+        sequence="130"/>
     <menuitem id="menu_tms_res_self_company"
-        name="自费公司（待实施）"
+        name="自费公司"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_self_company"
-        sequence="140"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_self_fee"
+        sequence="140"/>
     <menuitem id="menu_tms_res_guide"
         name="导游档案"
         parent="menu_tms_resource"
         action="tour_resource.action_tour_guide"
         sequence="150"/>
     <menuitem id="menu_tms_res_ticket_list"
-        name="票务列表（待实施）"
+        name="票务列表"
         parent="menu_tms_resource"
-        action="action_tms_pending_res_ticket_list"
-        sequence="160"
-        groups="base.group_system"/>
+        action="tour_resource.action_tour_supplier_ticket_list"
+        sequence="160"/>
 
     <!-- ==================== 16. 协议中心 ==================== -->
     <record id="action_tms_pending_agree_cost" model="ir.actions.act_url">

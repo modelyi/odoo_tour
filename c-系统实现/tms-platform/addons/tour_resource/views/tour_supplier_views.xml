@@ -46,6 +46,97 @@
         <field name="context">{'search_default_active': 1}</field>
     </record>
 
+    <!-- 资源中心各类型 action（按 sup_type 分域） -->
+    <record id="action_tour_supplier_scenic" model="ir.actions.act_window">
+        <field name="name">景区景点</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'scenic')]</field>
+        <field name="context">{'default_sup_type': 'scenic', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_hotel" model="ir.actions.act_window">
+        <field name="name">酒店档案</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'hotel')]</field>
+        <field name="context">{'default_sup_type': 'hotel', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_meal" model="ir.actions.act_window">
+        <field name="name">餐厅档案</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'meal')]</field>
+        <field name="context">{'default_sup_type': 'meal', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_vehicle_comp" model="ir.actions.act_window">
+        <field name="name">车辆公司</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'vehicle_comp')]</field>
+        <field name="context">{'default_sup_type': 'vehicle_comp', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_shop" model="ir.actions.act_window">
+        <field name="name">购物店档案</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'shop')]</field>
+        <field name="context">{'default_sup_type': 'shop', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_ticket" model="ir.actions.act_window">
+        <field name="name">票务公司</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'ticket')]</field>
+        <field name="context">{'default_sup_type': 'ticket', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_insurance" model="ir.actions.act_window">
+        <field name="name">保险公司</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'insurance')]</field>
+        <field name="context">{'default_sup_type': 'insurance', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_visa" model="ir.actions.act_window">
+        <field name="name">签证公司</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'visa')]</field>
+        <field name="context">{'default_sup_type': 'visa', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_self_fee" model="ir.actions.act_window">
+        <field name="name">自费公司</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'self_fee')]</field>
+        <field name="context">{'default_sup_type': 'self_fee', 'search_default_active': 1}</field>
+    </record>
+
+    <record id="action_tour_supplier_ticket_list" model="ir.actions.act_window">
+        <field name="name">票务列表</field>
+        <field name="res_model">tour.supplier</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_supplier_search"/>
+        <field name="domain">[('sup_type', '=', 'ticket')]</field>
+        <field name="context">{'default_sup_type': 'ticket', 'search_default_active': 1}</field>
+    </record>
+
     <!-- Kanban View -->
     <record id="view_tour_supplier_kanban" model="ir.ui.view">
         <field name="name">tour.supplier.kanban</field>
