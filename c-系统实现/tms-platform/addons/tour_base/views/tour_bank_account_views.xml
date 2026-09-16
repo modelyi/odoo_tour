@@ -82,11 +82,4 @@
             </p>
         </field>
     </record>
-
-    <!-- 菜单：挂在 业务管理 根菜单下 -->
-    <menuitem id="menu_tour_bank_account"
-        name="银行账户"
-        parent="menu_tms_root"
-        action="action_tour_bank_account"
-        sequence="90"/>
 </odoo>

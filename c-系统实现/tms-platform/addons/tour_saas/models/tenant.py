@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 TENANT_MODULES = [
     'tour_saas',
-    'tour_tutor',
+    'tour_menu',
 ]
 
 

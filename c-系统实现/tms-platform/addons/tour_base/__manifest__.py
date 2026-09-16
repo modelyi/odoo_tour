@@ -24,7 +24,6 @@
     'data': [
         'security/tour_base_security.xml',
         'views/tour_dashboard_views.xml',
-        'views/menu.xml',
         'views/res_config_settings_views.xml',
         'views/tour_bank_account_views.xml',
     ],
