@@ -5,31 +5,31 @@
          1. 凭证管理  2. 固定资产管理  3. 预算管理  4. 财务报表  5. 统计与分析
     ================================================================ -->
 
-    <!-- ===== 5 个新的二级菜单 ===== -->
+    <!-- ===== 5 个新的二级菜单（挂在 TMS 财务管理下） ===== -->
     <menuitem id="menu_acct_voucher"
         name="凭证管理"
-        parent="account.menu_finance"
-        sequence="10"/>
+        parent="menu_tour_finance"
+        sequence="110"/>
 
     <menuitem id="menu_acct_asset"
         name="固定资产管理"
-        parent="account.menu_finance"
-        sequence="20"/>
+        parent="menu_tour_finance"
+        sequence="120"/>
 
     <menuitem id="menu_acct_budget"
         name="预算管理"
-        parent="account.menu_finance"
-        sequence="30"/>
+        parent="menu_tour_finance"
+        sequence="130"/>
 
     <menuitem id="menu_acct_report"
         name="财务报表"
-        parent="account.menu_finance"
-        sequence="40"/>
+        parent="menu_tour_finance"
+        sequence="140"/>
 
     <menuitem id="menu_acct_analysis"
         name="统计与分析"
-        parent="account.menu_finance"
-        sequence="50"/>
+        parent="menu_tour_finance"
+        sequence="150"/>
 
     <!-- ===== 凭证管理：日记帐/期末/定期/管理 ===== -->
     <record model="ir.ui.menu" id="account.account_transactions_menu">
@@ -134,6 +134,56 @@
         <field name="active" eval="False"/>
     </record>
     <record model="ir.ui.menu" id="account.menu_finance_reports">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ===== 将 Odoo 原生财务菜单迁入 TMS 财务管理 ===== -->
+    <record model="ir.ui.menu" id="account.menu_finance_receivables">
+        <field name="parent_id" ref="menu_tour_finance"/>
+        <field name="sequence">10</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_finance_payables">
+        <field name="parent_id" ref="menu_tour_finance"/>
+        <field name="sequence">20</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_audit_menu">
+        <field name="parent_id" ref="menu_tour_finance"/>
+        <field name="sequence">30</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_finance_configuration">
+        <field name="parent_id" ref="menu_tour_finance"/>
+        <field name="sequence">200</field>
+    </record>
+
+    <!-- ===== 隐藏 Odoo 原生 Accounting 根菜单 ===== -->
+    <record model="ir.ui.menu" id="account.menu_finance">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ===== 合并配置菜单：将 Odoo 配置项迁入 TMS 配置 ===== -->
+    <record model="ir.ui.menu" id="account.menu_account_config">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">40</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_account_menu">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">50</field>
+    </record>
+    <record model="ir.ui.menu" id="account.account_invoicing_menu">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">60</field>
+    </record>
+    <record model="ir.ui.menu" id="account.root_payment_menu">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">70</field>
+    </record>
+    <record model="ir.ui.menu" id="account.menu_analytic_accounting">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="sequence">80</field>
+    </record>
+
+    <!-- ===== 隐藏 Odoo 原生配置根菜单 ===== -->
+    <record model="ir.ui.menu" id="account.menu_finance_configuration">
         <field name="active" eval="False"/>
     </record>
 </odoo>
