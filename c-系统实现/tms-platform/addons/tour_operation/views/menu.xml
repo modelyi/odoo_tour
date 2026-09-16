@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 计调操作菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
-    <!-- 本文件仅保留 action 定义供其他模块引用 -->
+    <!-- 计调中心：独立顶级应用入口（与业务管理、资源管理并列） -->
+    <menuitem id="menu_tms_operation"
+        name="计调中心"
+        web_icon="tour_operation,static/description/icon.png"
+        sequence="35"
+        groups="tour_base.group_tour_operator"/>
 
-    <!-- 5 类资源专属 Action（带 domain 过滤） -->
+    <!-- 7 类资源专属 Action（带 domain 过滤） -->
     <record id="action_booking_guide" model="ir.actions.act_window">
         <field name="name">派导</field>
         <field name="res_model">project.task</field>

@@ -85,55 +85,53 @@
         action="tour_order.action_tour_merge"
         sequence="20"/>
 
-    <!-- ==================== 4. 预定安排 ==================== -->
+    <!-- ==================== 4. 预定安排 → 已合并到计调中心(tour_operation) ==================== -->
     <record id="action_tms_pending_order_booking" model="ir.actions.act_url">
         <field name="name">订单预订安排</field>
         <field name="url">/tutor/pending?name=订单预订安排</field>
         <field name="target">self</field>
     </record>
 
-    <menuitem id="menu_tms_booking"
-        name="预定安排"
-        parent="menu_tms_root"
-        sequence="40"/>
     <menuitem id="menu_tms_booking_all"
         name="预订安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_guide"
         sequence="10"/>
     <menuitem id="menu_tms_booking_order"
         name="订单预订安排（待实施）"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="action_tms_pending_order_booking"
         sequence="20"
         groups="base.group_system"/>
     <menuitem id="menu_tms_booking_guide"
         name="导游安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_guide"
         sequence="30"/>
     <menuitem id="menu_tms_booking_hotel"
         name="用房安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_hotel"
         sequence="40"/>
     <menuitem id="menu_tms_booking_vehicle"
         name="用车安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_vehicle"
         sequence="50"/>
     <menuitem id="menu_tms_booking_local"
         name="地接安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_ditch"
         sequence="60"/>
     <menuitem id="menu_tms_booking_insurance"
         name="保险安排"
-        parent="menu_tms_booking"
+        parent="tour_operation.menu_tms_operation"
         action="tour_operation.action_booking_insurance"
         sequence="70"/>
 
-    <!-- ==================== 5. 购物管理 ==================== -->
+    <!-- ==================== 5. 购物管理（已提升为顶级应用） ==================== -->
+    <!-- 顶级入口定义在 tour_shopping/views/menu.xml -->
+
     <record id="action_tms_pending_shop_batch" model="ir.actions.act_url">
         <field name="name">购物批量收款</field>
         <field name="url">/tutor/pending?name=购物批量收款</field>
@@ -155,61 +153,57 @@
         <field name="target">self</field>
     </record>
 
-    <menuitem id="menu_tms_shopping"
-        name="购物管理"
-        parent="menu_tms_root"
-        sequence="50"/>
     <menuitem id="menu_tms_shopping_input"
         name="购物数据录入"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="tour_shopping.action_tour_shop_record"
         sequence="10"/>
     <menuitem id="menu_tms_shopping_query"
         name="购物信息查询"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="tour_shopping.action_tour_shop_record"
         sequence="20"/>
     <menuitem id="menu_tms_shopping_single"
         name="单团购物查询"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="tour_shopping.action_tour_shop_single_query"
         sequence="30"/>
     <menuitem id="menu_tms_shopping_guide_perf"
         name="导游业绩统计"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="tour_report.action_report_guide_performance"
         sequence="40"/>
     <menuitem id="menu_tms_shopping_commission"
         name="佣金"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="tour_accounting.action_tour_commission"
         sequence="45"/>
     <menuitem id="menu_tms_shopping_batch"
         name="购物批量收款（待实施）"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="action_tms_pending_shop_batch"
         sequence="50"
         groups="base.group_system"/>
     <menuitem id="menu_tms_shopping_store"
         name="按购物店统计（待实施）"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="action_tms_pending_shop_store"
         sequence="60"
         groups="base.group_system"/>
     <menuitem id="menu_tms_shopping_item"
         name="购物项目统计（待实施）"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="action_tms_pending_shop_item"
         sequence="70"
         groups="base.group_system"/>
     <menuitem id="menu_tms_shopping_guide"
         name="导游购物统计（待实施）"
-        parent="menu_tms_shopping"
+        parent="tour_shopping.menu_tms_shopping"
         action="action_tms_pending_shop_guide"
         sequence="80"
         groups="base.group_system"/>
 
-    <!-- ==================== 6. 营运中心 ==================== -->
+    <!-- ==================== 6. 营运中心 → 已合并到计调中心(tour_operation) ==================== -->
     <record id="action_tms_pending_ops_hotel" model="ir.actions.act_url">
         <field name="name">用房预订确认</field>
         <field name="url">/tutor/pending?name=用房预订确认</field>
@@ -231,33 +225,29 @@
         <field name="target">self</field>
     </record>
 
-    <menuitem id="menu_tms_operation"
-        name="营运中心"
-        parent="menu_tms_root"
-        sequence="60"/>
     <menuitem id="menu_tms_ops_hotel"
         name="用房预订确认（待实施）"
-        parent="menu_tms_operation"
+        parent="tour_operation.menu_tms_operation"
         action="action_tms_pending_ops_hotel"
-        sequence="10"
+        sequence="80"
         groups="base.group_system"/>
     <menuitem id="menu_tms_ops_ticket"
         name="门票预订确认（待实施）"
-        parent="menu_tms_operation"
+        parent="tour_operation.menu_tms_operation"
         action="action_tms_pending_ops_ticket"
-        sequence="20"
+        sequence="90"
         groups="base.group_system"/>
     <menuitem id="menu_tms_ops_settle"
         name="二次结算操作（待实施）"
-        parent="menu_tms_operation"
+        parent="tour_operation.menu_tms_operation"
         action="action_tms_pending_ops_settle"
-        sequence="30"
+        sequence="100"
         groups="base.group_system"/>
     <menuitem id="menu_tms_ops_audit"
         name="二次结算审核（待实施）"
-        parent="menu_tms_operation"
+        parent="tour_operation.menu_tms_operation"
         action="action_tms_pending_ops_audit"
-        sequence="40"
+        sequence="110"
         groups="base.group_system"/>
 
     <!-- ==================== 7. 审核管理 ==================== -->
