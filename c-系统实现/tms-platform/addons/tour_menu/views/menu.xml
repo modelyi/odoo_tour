@@ -412,10 +412,10 @@
         sequence="30"
         groups="base.group_system"/>
 
-    <!-- ==================== 7. 往来对帐 ==================== -->
+    <!-- ==================== 7. 往来对帐（挂在财务管理下） ==================== -->
     <menuitem id="menu_tms_reconciliation"
         name="往来对帐"
-        parent="menu_tms_root"
+        parent="tour_accounting.menu_tour_finance"
         sequence="80"/>
     <menuitem id="menu_tms_recon_team"
         name="团款对账"
