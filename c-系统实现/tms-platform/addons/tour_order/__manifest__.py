@@ -28,6 +28,7 @@
         'security/tour_crm_security.xml',
         'data/tour_plan_crm_sequence.xml',
         'views/tour_plan_views.xml',
+        'views/tour_plan_audit_views.xml',
         'views/crm_lead_views.xml',
         'views/tour_plan_reg_views.xml',
         'views/tour_merge_views.xml',

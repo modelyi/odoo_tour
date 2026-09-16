@@ -66,23 +66,6 @@
         <field name="target">self</field>
     </record>
 
-    <!-- -- 审核管理占位 (3) -- -->
-    <record id="action_tms_pending_audit_op" model="ir.actions.act_url">
-        <field name="name">计调审核</field>
-        <field name="url">/tutor/pending?name=计调审核</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_audit_fin" model="ir.actions.act_url">
-        <field name="name">财务审核</field>
-        <field name="url">/tutor/pending?name=财务审核</field>
-        <field name="target">self</field>
-    </record>
-    <record id="action_tms_pending_audit_archive" model="ir.actions.act_url">
-        <field name="name">单团归档</field>
-        <field name="url">/tutor/pending?name=单团归档</field>
-        <field name="target">self</field>
-    </record>
-
     <!-- -- 查询统计占位 (3) -- -->
     <record id="action_tms_pending_query_pickup" model="ir.actions.act_url">
         <field name="name">订单接送查询</field>
@@ -391,21 +374,21 @@
     <menuitem id="menu_tms_audit_op"
         name="计调审核"
         parent="menu_tms_audit"
-        action="action_tms_pending_audit_op"
+        action="tour_order.action_tour_plan_operation_audit"
         sequence="10"
-        groups="base.group_system"/>
+        groups="tour_base.group_tour_operator,tour_base.group_tour_manager"/>
     <menuitem id="menu_tms_audit_fin"
         name="财务审核"
         parent="menu_tms_audit"
-        action="action_tms_pending_audit_fin"
+        action="tour_order.action_tour_plan_finance_audit"
         sequence="20"
-        groups="base.group_system"/>
+        groups="tour_base.group_tour_finance,tour_base.group_tour_manager"/>
     <menuitem id="menu_tms_audit_archive"
         name="单团归档"
         parent="menu_tms_audit"
-        action="action_tms_pending_audit_archive"
+        action="tour_order.action_tour_plan_archive"
         sequence="30"
-        groups="base.group_system"/>
+        groups="tour_base.group_tour_operator,tour_base.group_tour_manager"/>
 
     <!-- ==================== 7. 往来对帐（挂在财务管理下） ==================== -->
     <menuitem id="menu_tms_reconciliation"

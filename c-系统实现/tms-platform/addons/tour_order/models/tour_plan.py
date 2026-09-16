@@ -179,6 +179,27 @@ class TourPlan(models.Model):
     reg_verification_chk = fields.Boolean('报名核销')
     is_contract = fields.Boolean('已签合同')
 
+    # === 审核管理 ===
+    operation_audit_state = fields.Selection([
+        ('none', '未审核'),
+        ('pending', '待审核'),
+        ('approved', '已通过'),
+        ('rejected', '已驳回'),
+    ], string='计调审核状态', default='none', tracking=True, index=True)
+    operation_audit_uid = fields.Many2one('res.users', string='计调审核人')
+    operation_audit_date = fields.Datetime('计调审核时间')
+    operation_audit_remark = fields.Text('计调审核备注')
+
+    finance_audit_state = fields.Selection([
+        ('none', '未审核'),
+        ('pending', '待审核'),
+        ('approved', '已通过'),
+        ('rejected', '已驳回'),
+    ], string='财务审核状态', default='none', tracking=True, index=True)
+    finance_audit_uid = fields.Many2one('res.users', string='财务审核人')
+    finance_audit_date = fields.Datetime('财务审核时间')
+    finance_audit_remark = fields.Text('财务审核备注')
+
     # === 并团/溯源（核心：散客并团靠 first_plan_id） ===
     first_plan_id = fields.Many2one('tour.plan', string='首发计划', index=True,
                                     ondelete='restrict',
@@ -307,3 +328,64 @@ class TourPlan(models.Model):
 
     def action_set_draft(self):
         self.write({'state': 'draft'})
+
+    # === 审核管理 ===
+    def action_submit_operation_audit(self):
+        """提交计调审核"""
+        for rec in self:
+            if rec.state not in ('operating', 'in_progress', 'completed'):
+                raise ValidationError('仅计调中/出行中/已完成的订单可提交计调审核')
+            rec.operation_audit_state = 'pending'
+
+    def action_approve_operation_audit(self):
+        """通过计调审核"""
+        for rec in self:
+            if rec.operation_audit_state != 'pending':
+                raise ValidationError('仅待审核的订单可通过')
+            rec.write({
+                'operation_audit_state': 'approved',
+                'operation_audit_uid': self.env.user.id,
+                'operation_audit_date': fields.Datetime.now(),
+            })
+
+    def action_reject_operation_audit(self):
+        """驳回计调审核"""
+        for rec in self:
+            if rec.operation_audit_state != 'pending':
+                raise ValidationError('仅待审核的订单可驳回')
+            rec.write({
+                'operation_audit_state': 'rejected',
+                'operation_audit_uid': self.env.user.id,
+                'operation_audit_date': fields.Datetime.now(),
+            })
+
+    def action_submit_finance_audit(self):
+        """提交财务审核"""
+        for rec in self:
+            if rec.operation_audit_state != 'approved':
+                raise ValidationError('需先通过计调审核')
+            if rec.state not in ('in_progress', 'completed'):
+                raise ValidationError('仅出行中/已完成的订单可提交财务审核')
+            rec.finance_audit_state = 'pending'
+
+    def action_approve_finance_audit(self):
+        """通过财务审核"""
+        for rec in self:
+            if rec.finance_audit_state != 'pending':
+                raise ValidationError('仅待审核的订单可通过')
+            rec.write({
+                'finance_audit_state': 'approved',
+                'finance_audit_uid': self.env.user.id,
+                'finance_audit_date': fields.Datetime.now(),
+            })
+
+    def action_reject_finance_audit(self):
+        """驳回财务审核"""
+        for rec in self:
+            if rec.finance_audit_state != 'pending':
+                raise ValidationError('仅待审核的订单可驳回')
+            rec.write({
+                'finance_audit_state': 'rejected',
+                'finance_audit_uid': self.env.user.id,
+                'finance_audit_date': fields.Datetime.now(),
+            })
