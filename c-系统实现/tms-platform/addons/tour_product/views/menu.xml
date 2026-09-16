@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 线路产品菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
-    <!-- 本文件仅保留 action 定义供其他模块引用 -->
+    <!-- 产品中心顶级菜单（独立入口，与「业务管理」「资源管理」平级） -->
+    <menuitem id="menu_tms_product"
+        name="产品中心"
+        web_icon="tour_product,static/description/icon.png"
+        sequence="15"/>
 
-    <!--
-        收付场景：action 定义在 tour_product，parent 由下游模块挂载：
-        - 收付场景 → tour_accounting「财务配置」
-    -->
+    <!-- 收付场景：parent 由下游模块挂载 -->
     <menuitem id="menu_tour_pay_way"
         name="收付场景"
         action="action_tour_pay_way"/>
