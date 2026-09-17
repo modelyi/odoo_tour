@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_lead_cmo,crm.lead cmo,crm.model_crm_lead,group_cmo_portal,1,1,0,0
+access_tour_plan_cmo,tour.plan cmo,tour_order.model_tour_plan,group_cmo_portal,1,0,0,0
+access_tour_plan_reg_cmo,tour.plan.reg cmo,tour_order.model_tour_plan_reg,group_cmo_portal,1,0,0,0
+access_tour_line_cmo,tour.line cmo,tour_product.model_tour_line,group_cmo_portal,1,0,0,0
+access_res_partner_cmo,res.partner cmo,base.model_res_partner,group_cmo_portal,1,0,0,0

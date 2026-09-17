@@ -1,0 +1,852 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== 仪表盘 ==================== -->
+    <template id="portal_cmo_home" name="CMO Portal Home">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_home">
+                <h3 class="mb-4">
+                    <i class="fa fa-dashboard me-2"/>营销概览
+                </h3>
+
+                <!-- 统计卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">本月营收</h6>
+                                        <h2 class="mb-0 mt-2">¥ <t t-esc="'%.2f' % monthly_revenue"/></h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-rmb fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/cmo/reports/products" class="text-white text-decoration-none">
+                                    线路详情 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">本月新线索</h6>
+                                        <h2 class="mb-0 mt-2"><t t-esc="new_lead_count"/></h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-handshake-o fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/cmo/leads" class="text-white text-decoration-none">
+                                    查看线索 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">本月成团</h6>
+                                        <h2 class="mb-0 mt-2"><t t-esc="team_count"/></h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-bus fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/cmo/reports/products" class="text-white text-decoration-none">
+                                    线路分析 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">活跃线索</h6>
+                                        <h2 class="mb-0 mt-2"><t t-esc="active_lead_count"/></h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-bullhorn fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/cmo/leads" class="text-white text-decoration-none">
+                                    管理线索 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 渠道分布 + 热门线路 -->
+                <div class="row mb-4">
+                    <!-- 渠道分布 -->
+                    <div class="col-md-5">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-pie-chart me-2"/>本月渠道分布
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="channel_distribution">
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="channel_distribution[:8]" t-as="ch">
+                                            <div class="list-group-item px-0 d-flex justify-content-between align-items-center border-0">
+                                                <span><t t-esc="ch['name']"/></span>
+                                                <span class="badge bg-primary rounded-pill">
+                                                    <t t-esc="ch['count']"/>
+                                                </span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted small text-center py-3">暂无渠道数据</p>
+                                </t>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="/my/cmo/reports/channels" class="text-decoration-none">
+                                    查看完整渠道分析 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 热门线路 -->
+                    <div class="col-md-7">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-fire me-2"/>本月热门线路
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="hot_lines">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>线路名称</th>
+                                                <th class="text-end">收客数</th>
+                                                <th class="text-end">团数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="hot_lines" t-as="line">
+                                                <tr>
+                                                    <td><t t-esc="line_index + 1"/></td>
+                                                    <td><t t-esc="line['line_name']"/></td>
+                                                    <td class="text-end">
+                                                        <span class="badge bg-success">
+                                                            <t t-esc="line['guest_count']"/>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end"><t t-esc="line['plan_count']"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted small text-center py-3">暂无线路数据</p>
+                                </t>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="/my/cmo/reports/products" class="text-decoration-none">
+                                    查看线路收客分析 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近线索 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-clock-o me-2"/>最近线索
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="recent_leads">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>线索名称</th>
+                                                <th>联系人</th>
+                                                <th>来源</th>
+                                                <th>阶段</th>
+                                                <th>创建日期</th>
+                                                <th class="text-end">预期收入</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="recent_leads" t-as="lead">
+                                                <tr>
+                                                    <td>
+                                                        <a t-att-href="'/my/cmo/leads/%s' % lead.id">
+                                                            <t t-esc="lead.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td><t t-esc="lead.contact_name or lead.partner_name or '-'"/></td>
+                                                    <td><t t-esc="lead.source_id.name or '-'"/></td>
+                                                    <td>
+                                                        <span t-if="lead.stage_id"
+                                                              t-att-class="'badge' + (lead.stage_id.is_won_stage and ' bg-success' or ' bg-secondary')">
+                                                            <t t-esc="lead.stage_id.name"/>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="lead.create_date" t-options="{'widget': 'date'}"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <t t-if="lead.expected_revenue">
+                                                            ¥ <t t-esc="'%.2f' % lead.expected_revenue"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-3">暂无线索</p>
+                                </t>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="/my/cmo/leads" class="text-decoration-none">
+                                    查看所有线索 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ==================== 线索列表 ==================== -->
+    <template id="portal_cmo_leads" name="CMO Leads List">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_leads">
+                <h3 class="mb-3">
+                    <i class="fa fa-handshake-o me-2"/>线索管理
+                </h3>
+                <t t-call="portal.portal_searchbar"/>
+                <t t-if="leads">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>线索名称</th>
+                                <th>联系人</th>
+                                <th>电话</th>
+                                <th>来源</th>
+                                <th>阶段</th>
+                                <th>负责人</th>
+                                <th>创建日期</th>
+                                <th class="text-end">预期收入</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="leads" t-as="lead">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/cmo/leads/%s' % lead.id">
+                                            <t t-esc="lead.name"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="lead.contact_name or lead.partner_name or '-'"/></td>
+                                    <td><t t-esc="lead.phone or lead.mobile or '-'"/></td>
+                                    <td><t t-esc="lead.source_id.name or '-'"/></td>
+                                    <td>
+                                        <span t-if="lead.stage_id"
+                                              t-att-class="'badge' + (lead.stage_id.is_won_stage and ' bg-success' or ' bg-secondary')">
+                                            <t t-esc="lead.stage_id.name"/>
+                                        </span>
+                                        <span t-else="" class="text-muted">-</span>
+                                    </td>
+                                    <td><t t-esc="lead.user_id.name or '-'"/></td>
+                                    <td>
+                                        <t t-esc="lead.create_date" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="lead.expected_revenue">
+                                            ¥ <t t-esc="'%.2f' % lead.expected_revenue"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <t t-call="portal.pager"/><!-- fixed -->
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-inbox fa-3x mb-3"/>
+                        <br/>
+                        暂无线索数据
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ==================== 线索详情 ==================== -->
+    <template id="portal_cmo_lead_detail" name="CMO Lead Detail">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_lead_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">线索详情</h3>
+                    <a href="/my/cmo/leads" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">线索名称</th>
+                                <td><t t-esc="lead.name"/></td>
+                            </tr>
+                            <tr>
+                                <th>类型</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (lead.type == 'opportunity' and 'bg-primary' or 'bg-secondary')">
+                                        <t t-esc="dict(lead._fields['type'].selection).get(lead.type)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>联系人</th>
+                                <td><t t-esc="lead.contact_name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>公司名称</th>
+                                <td><t t-esc="lead.partner_name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>电话</th>
+                                <td><t t-esc="lead.phone or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>邮箱</th>
+                                <td><t t-esc="lead.email_from or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>来源</th>
+                                <td><t t-esc="lead.source_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>营销渠道</th>
+                                <td><t t-esc="lead.medium_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>营销活动</th>
+                                <td><t t-esc="lead.campaign_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>阶段</th>
+                                <td>
+                                    <span t-if="lead.stage_id"
+                                          t-att-class="'badge ' + (lead.stage_id.is_won_stage and 'bg-success' or 'bg-secondary')">
+                                        <t t-esc="lead.stage_id.name"/>
+                                    </span>
+                                    <span t-else="" class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>优先级</th>
+                                <td>
+                                    <t t-if="lead.priority != '0'">
+                                        <t t-foreach="range(int(lead.priority))" t-as="i">
+                                            <i class="fa fa-star text-warning"/>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-muted">无</span>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>负责人</th>
+                                <td><t t-esc="lead.user_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>销售团队</th>
+                                <td><t t-esc="lead.team_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>预期收入</th>
+                                <td>
+                                    <t t-if="lead.expected_revenue">
+                                        ¥ <t t-esc="'%.2f' % lead.expected_revenue"/>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>预计成交日期</th>
+                                <td>
+                                    <t t-if="lead.date_deadline">
+                                        <t t-esc="lead.date_deadline" t-options="{'widget': 'date'}"/>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>创建日期</th>
+                                <td><t t-esc="lead.create_date" t-options="{'widget': 'datetime'}"/></td>
+                            </tr>
+                            <tr>
+                                <th>最后更新</th>
+                                <td><t t-esc="lead.write_date" t-options="{'widget': 'datetime'}"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- 备注 -->
+                        <t t-if="lead.description">
+                            <div class="mt-3 pt-3 border-top">
+                                <h6>备注</h6>
+                                <t t-out="lead.description"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- 关联团队订单 -->
+                <t t-if="related_plans">
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fa fa-bus me-2"/>关联团队订单
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>团号</th>
+                                        <th>线路</th>
+                                        <th>出发日期</th>
+                                        <th>客人数</th>
+                                        <th class="text-end">收入报价</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="related_plans" t-as="plan">
+                                        <tr>
+                                            <td><t t-esc="plan.plan_code"/></td>
+                                            <td><t t-esc="plan.line_id.name or '-'"/></td>
+                                            <td><t t-esc="plan.begin_date" t-options="{'widget': 'date'}"/></td>
+                                            <td><t t-esc="plan.guest_count"/></td>
+                                            <td class="text-end">¥ <t t-esc="'%.2f' % plan.in_com_quo_sum"/></td>
+                                            <td>
+                                                <span class="badge bg-secondary">
+                                                    <t t-esc="dict(plan._fields['state'].selection).get(plan.state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ==================== 渠道分析报表 ==================== -->
+    <template id="portal_cmo_channels" name="CMO Channel Analysis">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_channels">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-pie-chart me-2"/>渠道分析
+                    </h3>
+                    <div class="btn-group">
+                        <a t-att-href="'/my/cmo/reports/channels?period=month'"
+                           t-att-class="'btn btn-sm ' + (period == 'month' and 'btn-primary' or 'btn-outline-primary')">本月</a>
+                        <a t-att-href="'/my/cmo/reports/channels?period=quarter'"
+                           t-att-class="'btn btn-sm ' + (period == 'quarter' and 'btn-primary' or 'btn-outline-primary')">近三月</a>
+                        <a t-att-href="'/my/cmo/reports/channels?period=year'"
+                           t-att-class="'btn btn-sm ' + (period == 'year' and 'btn-primary' or 'btn-outline-primary')">近一年</a>
+                    </div>
+                </div>
+
+                <!-- 汇总卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card text-white bg-info">
+                            <div class="card-body text-center">
+                                <h6>线索总数</h6>
+                                <h2 class="mb-0"><t t-esc="total_leads"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card text-white bg-success">
+                            <div class="card-body text-center">
+                                <h6>渠道营收合计</h6>
+                                <h2 class="mb-0">¥ <t t-esc="'%.2f' % total_revenue"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 线索来源分布 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">线索来源分布</h5>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="channel_stats">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>来源渠道</th>
+                                        <th class="text-end">线索数</th>
+                                        <th class="text-end">占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="channel_stats" t-as="ch">
+                                        <tr>
+                                            <td><t t-esc="ch_index + 1"/></td>
+                                            <td><t t-esc="ch['name']"/></td>
+                                            <td class="text-end"><t t-esc="ch['lead_count']"/></td>
+                                            <td class="text-end">
+                                                <t t-if="total_leads > 0">
+                                                    <t t-esc="'%.1f' % (ch['lead_count'] * 100.0 / total_leads)"/>%
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted text-center py-3">暂无线索数据</p>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- 渠道营收 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">渠道营收分析</h5>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="channel_revenue">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>渠道</th>
+                                        <th class="text-end">团数</th>
+                                        <th class="text-end">收客数</th>
+                                        <th class="text-end">营收</th>
+                                        <th class="text-end">占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="channel_revenue" t-as="ch">
+                                        <tr>
+                                            <td><t t-esc="ch_index + 1"/></td>
+                                            <td><t t-esc="ch['name']"/></td>
+                                            <td class="text-end"><t t-esc="ch['plan_count']"/></td>
+                                            <td class="text-end"><t t-esc="ch['guest_count']"/></td>
+                                            <td class="text-end">¥ <t t-esc="'%.2f' % ch['revenue']"/></td>
+                                            <td class="text-end">
+                                                <t t-if="total_revenue > 0">
+                                                    <t t-esc="'%.1f' % (ch['revenue'] * 100.0 / total_revenue)"/>%
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted text-center py-3">暂无营收数据</p>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ==================== 线路收客分析报表 ==================== -->
+    <template id="portal_cmo_products" name="CMO Product Analysis">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_products">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-map me-2"/>线路收客分析
+                    </h3>
+                    <div class="btn-group">
+                        <a t-att-href="'/my/cmo/reports/products?period=month'"
+                           t-att-class="'btn btn-sm ' + (period == 'month' and 'btn-primary' or 'btn-outline-primary')">本月</a>
+                        <a t-att-href="'/my/cmo/reports/products?period=quarter'"
+                           t-att-class="'btn btn-sm ' + (period == 'quarter' and 'btn-primary' or 'btn-outline-primary')">近三月</a>
+                        <a t-att-href="'/my/cmo/reports/products?period=year'"
+                           t-att-class="'btn btn-sm ' + (period == 'year' and 'btn-primary' or 'btn-outline-primary')">近一年</a>
+                    </div>
+                </div>
+
+                <!-- 汇总卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body text-center">
+                                <h6>线路数</h6>
+                                <h2 class="mb-0"><t t-esc="len(line_stats)"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info">
+                            <div class="card-body text-center">
+                                <h6>收客总数</h6>
+                                <h2 class="mb-0"><t t-esc="total_guests"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body text-center">
+                                <h6>营收合计</h6>
+                                <h2 class="mb-0">¥ <t t-esc="'%.2f' % total_revenue"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 线路明细 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">线路排行</h5>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="line_stats">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>线路名称</th>
+                                        <th class="text-end">团数</th>
+                                        <th class="text-end">收客数</th>
+                                        <th class="text-end">营收</th>
+                                        <th class="text-end">收客占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="line_stats" t-as="line">
+                                        <tr>
+                                            <td><t t-esc="line_index + 1"/></td>
+                                            <td><t t-esc="line['line_name']"/></td>
+                                            <td class="text-end"><t t-esc="line['plan_count']"/></td>
+                                            <td class="text-end">
+                                                <span class="badge bg-info">
+                                                    <t t-esc="line['guest_count']"/>
+                                                </span>
+                                            </td>
+                                            <td class="text-end">¥ <t t-esc="'%.2f' % line['revenue']"/></td>
+                                            <td class="text-end">
+                                                <t t-if="total_guests > 0">
+                                                    <t t-esc="'%.1f' % (line['guest_count'] * 100.0 / total_guests)"/>%
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted text-center py-3">暂无线路数据</p>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ==================== 客户分析报表 ==================== -->
+    <template id="portal_cmo_customers" name="CMO Customer Analysis">
+        <t t-call="tour_cmo_portal.portal_cmo_layout">
+            <div class="o_cmo_customers">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-users me-2"/>客户分析
+                    </h3>
+                    <div class="btn-group">
+                        <a t-att-href="'/my/cmo/reports/customers?period=month'"
+                           t-att-class="'btn btn-sm ' + (period == 'month' and 'btn-primary' or 'btn-outline-primary')">本月</a>
+                        <a t-att-href="'/my/cmo/reports/customers?period=quarter'"
+                           t-att-class="'btn btn-sm ' + (period == 'quarter' and 'btn-primary' or 'btn-outline-primary')">近三月</a>
+                        <a t-att-href="'/my/cmo/reports/customers?period=year'"
+                           t-att-class="'btn btn-sm ' + (period == 'year' and 'btn-primary' or 'btn-outline-primary')">近一年</a>
+                    </div>
+                </div>
+
+                <!-- 汇总卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body text-center">
+                                <h6>客户地域数</h6>
+                                <h2 class="mb-0"><t t-esc="len(province_stats)"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info">
+                            <div class="card-body text-center">
+                                <h6>收客总数</h6>
+                                <h2 class="mb-0"><t t-esc="total_guests"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body text-center">
+                                <h6>营收合计</h6>
+                                <h2 class="mb-0">¥ <t t-esc="'%.2f' % total_revenue"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 客户地域分布 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">客户地域分布</h5>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="province_stats">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>省份</th>
+                                        <th class="text-end">团数</th>
+                                        <th class="text-end">收客数</th>
+                                        <th class="text-end">营收</th>
+                                        <th class="text-end">收客占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="province_stats" t-as="prov">
+                                        <tr>
+                                            <td><t t-esc="prov_index + 1"/></td>
+                                            <td><t t-esc="prov['name']"/></td>
+                                            <td class="text-end"><t t-esc="prov['plan_count']"/></td>
+                                            <td class="text-end"><t t-esc="prov['guest_count']"/></td>
+                                            <td class="text-end">¥ <t t-esc="'%.2f' % prov['revenue']"/></td>
+                                            <td class="text-end">
+                                                <t t-if="total_guests > 0">
+                                                    <t t-esc="'%.1f' % (prov['guest_count'] * 100.0 / total_guests)"/>%
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted text-center py-3">暂无地域数据</p>
+                        </t>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 客户排行 TOP 20 -->
+                    <div class="col-md-7">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">客户排行 TOP 20</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="partner_stats">
+                                    <table class="table table-sm">
+                                        <thead>
+            <tr>
+                                                <th>#</th>
+                                                <th>客户名称</th>
+                                                <th class="text-end">团数</th>
+                                                <th class="text-end">收客数</th>
+                                                <th class="text-end">营收</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="partner_stats" t-as="partner">
+                                                <tr>
+                                                    <td><t t-esc="partner_index + 1"/></td>
+                                                    <td><t t-esc="partner['partner_name']"/></td>
+                                                    <td class="text-end"><t t-esc="partner['plan_count']"/></td>
+                                                    <td class="text-end"><t t-esc="partner['guest_count']"/></td>
+                                                    <td class="text-end">¥ <t t-esc="'%.2f' % partner['revenue']"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-3">暂无客户数据</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 线索来源州省分布 -->
+                    <div class="col-md-5">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">线索来源地区</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="state_stats">
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="state_stats[:10]" t-as="st">
+                                            <div class="list-group-item px-0 d-flex justify-content-between align-items-center border-0">
+                                                <span><t t-esc="st['name']"/></span>
+                                                <span class="badge bg-secondary rounded-pill">
+                                                    <t t-esc="st['count']"/>
+                                                </span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-3">暂无线索地区数据</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

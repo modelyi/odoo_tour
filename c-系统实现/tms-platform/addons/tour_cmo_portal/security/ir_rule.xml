@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CMO 门户：可以查看所有营销和业务数据 -->
+
+    <!-- crm.lead: CMO 可以查看所有线索 -->
+    <record id="rule_lead_cmo" model="ir.rule">
+        <field name="name">crm.lead: CMO sees all leads</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cmo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.plan: CMO 可以查看所有团队订单 -->
+    <record id="rule_plan_cmo" model="ir.rule">
+        <field name="name">tour.plan: CMO sees all plans</field>
+        <field name="model_id" ref="tour_order.model_tour_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cmo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.plan.reg: CMO 可以查看所有报名 -->
+    <record id="rule_plan_reg_cmo" model="ir.rule">
+        <field name="name">tour.plan.reg: CMO sees all regs</field>
+        <field name="model_id" ref="tour_order.model_tour_plan_reg"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cmo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.line: CMO 可以查看所有线路 -->
+    <record id="rule_line_cmo" model="ir.rule">
+        <field name="name">tour.line: CMO sees all lines</field>
+        <field name="model_id" ref="tour_product.model_tour_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cmo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- res.partner: CMO 可以查看所有客户 -->
+    <record id="rule_partner_cmo" model="ir.rule">
+        <field name="name">res.partner: CMO sees all partners</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cmo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

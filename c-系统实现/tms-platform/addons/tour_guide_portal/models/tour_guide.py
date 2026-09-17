@@ -42,7 +42,7 @@ class TourGuide(models.Model):
                 'login': self.partner_id.email or self.guide_code,
                 'partner_id': self.partner_id.id,
                 'share': True,
-                'groups_id': [(6, 0, [self.env.ref('base.group_portal').id])],
+                'group_ids': [(6, 0, [self.env.ref('base.group_portal').id])],
             })
         template = self.env.ref(
             'tour_guide_portal.mail_template_guide_portal_invite',

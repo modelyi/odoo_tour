@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CFO 门户：可以查看所有财务数据 -->
+
+    <!-- hr.expense: CFO 可以查看所有报账 -->
+    <record id="rule_expense_cfo" model="ir.rule">
+        <field name="name">hr.expense: CFO sees all expenses</field>
+        <field name="model_id" ref="hr_expense.model_hr_expense"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.commission: CFO 可以查看所有佣金 -->
+    <record id="rule_commission_cfo" model="ir.rule">
+        <field name="name">tour.commission: CFO sees all commissions</field>
+        <field name="model_id" ref="tour_accounting.model_tour_commission"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.guide.loan: CFO 可以查看所有借款 -->
+    <record id="rule_loan_cfo" model="ir.rule">
+        <field name="name">tour.guide.loan: CFO sees all loans</field>
+        <field name="model_id" ref="tour_accounting.model_tour_guide_loan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.guide: CFO 可以查看所有导游 -->
+    <record id="rule_guide_cfo" model="ir.rule">
+        <field name="name">tour.guide: CFO sees all guides</field>
+        <field name="model_id" ref="tour_resource.model_tour_guide"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.plan: CFO 可以查看所有团队 -->
+    <record id="rule_plan_cfo" model="ir.rule">
+        <field name="name">tour.plan: CFO sees all plans</field>
+        <field name="model_id" ref="tour_order.model_tour_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ir.attachment: CFO 可以访问所有报账附件 -->
+    <record id="rule_attachment_cfo" model="ir.rule">
+        <field name="name">ir.attachment: CFO sees all expense attachments</field>
+        <field name="model_id" ref="base.model_ir_attachment"/>
+        <field name="domain_force">[('res_model', '=', 'hr.expense')]</field>
+        <field name="groups" eval="[(4, ref('group_cfo_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

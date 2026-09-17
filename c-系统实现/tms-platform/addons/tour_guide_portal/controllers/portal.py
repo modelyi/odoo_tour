@@ -281,12 +281,34 @@ class PortalGuide(CustomerPortal):
         expense = request.env['hr.expense'].sudo().browse(expense_id)
         if expense.x_guide_id.id != guide.id and expense.employee_id.id != (guide.employee_id.id if guide.employee_id else False):
             raise AccessError(_('无权查看此报账记录'))
+        attachments = request.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.expense'),
+            ('res_id', '=', expense.id),
+        ], order='create_date desc')
         values = {
             'expense': expense,
+            'attachments': attachments,
             'guide': guide,
             'page_name': 'expense_detail',
         }
         return request.render('tour_guide_portal.portal_expense_detail', values)
+
+    @http.route('/my/guide/expenses/<int:expense_id>/attachment/<int:attachment_id>',
+                type='http', auth='user', website=False)
+    def portal_expense_attachment_download(self, expense_id, attachment_id, **kw):
+        guide = self._get_current_guide()
+        if not guide:
+            raise AccessError(_('无权访问'))
+        expense = request.env['hr.expense'].sudo().browse(expense_id)
+        if expense.x_guide_id.id != guide.id and expense.employee_id.id != (guide.employee_id.id if guide.employee_id else False):
+            raise AccessError(_('无权访问此报账记录'))
+        attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+        if attachment.res_model != 'hr.expense' or attachment.res_id != expense.id:
+            raise AccessError(_('附件不属于此报账记录'))
+
+        attachment.generate_access_token()
+        return request.redirect('/web/content/%s?download=true&access_token=%s' % (
+            attachment.id, attachment.access_token))
 
     @http.route('/my/guide/expenses/new', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
@@ -335,6 +357,21 @@ class PortalGuide(CustomerPortal):
             if kw.get('x_loan_id'):
                 vals['x_loan_id'] = int(kw['x_loan_id'])
             expense = Expense.create(vals)
+
+            # 处理附件上传
+            files = request.httprequest.files.getlist('attachments')
+            if files:
+                Attachment = request.env['ir.attachment'].sudo()
+                for file_storage in files:
+                    if file_storage.filename:
+                        Attachment.create({
+                            'name': file_storage.filename,
+                            'datas': file_storage.read(),
+                            'res_model': 'hr.expense',
+                            'res_id': expense.id,
+                            'type': 'binary',
+                        })
+
             return request.redirect('/my/guide/expenses/%s' % expense.id)
         except (ValidationError, ValueError) as e:
             values = {'error': str(e), 'guide': guide, 'page_name': 'expense_new'}

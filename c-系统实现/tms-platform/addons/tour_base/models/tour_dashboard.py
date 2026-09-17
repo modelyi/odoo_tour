@@ -64,7 +64,7 @@ class TourDashboard(models.TransientModel):
         active_states = ['draft', 'pending', 'confirmed', 'operating', 'in_progress', 'completed']
         groups = Plan.read_group(
             domain=[('state', 'in', active_states)],
-            fields=['__count'],
+            fields=[],
             groupby=['state'],
         )
         state_labels = dict(Plan._fields['state'].selection)
@@ -114,7 +114,7 @@ class TourDashboard(models.TransientModel):
             return []
         groups = Task.read_group(
             domain=[('state', '=', '01_in_progress')],
-            fields=['__count'],
+            fields=[],
             groupby=['resource_type'],
         )
         type_labels = dict(Task._fields['resource_type'].selection)

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CFO 门户用户组 -->
+    <record id="group_cfo_portal" model="res.groups">
+        <field name="name">CFO 门户用户</field>
+        <field name="comment">CFO 门户用户组，可以访问财务审批和监控功能</field>
+    </record>
+</odoo>
