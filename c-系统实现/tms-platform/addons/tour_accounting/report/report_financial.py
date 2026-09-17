@@ -142,22 +142,82 @@ class AccountFinancialReport(models.Model):
         """Fix financial report data for existing records.
 
         Since the XML data files have noupdate="1", existing records won't be
-        updated on module upgrade. This method fixes the account_type_ids for
-        Assets and Liability reports.
+        updated on module upgrade. This method ensures:
+        1. Equity accounts exist in the chart of accounts.
+        2. The Owner's Equity section exists under Balance Sheet.
+        3. "Profit (Loss) to report" is under Equity, not Liability.
         """
-        # Fix Assets report
-        assets = self.env.ref(
-            'tour_accounting.account_financial_report_assets0',
-            raise_if_not_found=False)
-        if assets and assets.account_type_ids != 'asset_receivable':
-            assets.write({'account_type_ids': 'asset_receivable'})
+        # ------------------------------------------------------------------
+        # 1. Ensure equity accounts exist (noupdate="1" skips them on update)
+        # ------------------------------------------------------------------
+        equity_accounts = [
+            ('4001', '实收资本', 'equity'),
+            ('4101', '资本公积', 'equity'),
+            ('4102', '盈余公积', 'equity'),
+            ('4104', '利润分配——未分配利润', 'equity'),
+        ]
+        AccountAccount = self.env['account.account']
+        for code, name, account_type in equity_accounts:
+            existing = AccountAccount.search(
+                [('code', '=', code)], limit=1)
+            if not existing:
+                AccountAccount.create({
+                    'code': code,
+                    'name': name,
+                    'account_type': account_type,
+                })
 
-        # Fix Liability report
-        liability = self.env.ref(
-            'tour_accounting.account_financial_report_liability0',
+        # ------------------------------------------------------------------
+        # 2. Ensure Owner's Equity section in Balance Sheet
+        # ------------------------------------------------------------------
+        balance_sheet = self.env.ref(
+            'tour_accounting.account_financial_report_balancesheet0',
             raise_if_not_found=False)
-        if liability and liability.account_type_ids != 'liability_payable':
-            liability.write({'account_type_ids': 'liability_payable'})
+        liability_sum = self.env.ref(
+            'tour_accounting.account_financial_report_liabilitysum0',
+            raise_if_not_found=False)
+        profit_loss_report = self.env.ref(
+            'tour_accounting.account_financial_report_profitloss_toreport0',
+            raise_if_not_found=False)
+        pnl_report = self.env.ref(
+            'tour_accounting.account_financial_report_profitandloss0',
+            raise_if_not_found=False)
+
+        if not all([balance_sheet, liability_sum, profit_loss_report, pnl_report]):
+            return True
+
+        # Ensure equity sum section exists
+        equity_sum = self.env.ref(
+            'tour_accounting.account_financial_report_equity_sum0',
+            raise_if_not_found=False)
+        if not equity_sum and balance_sheet:
+            equity_sum = self.create({
+                'name': '所有者权益',
+                'sequence': 2,
+                'parent_id': balance_sheet.id,
+                'display_detail': 'no_detail',
+                'type': 'sum',
+            })
+
+        # Ensure equity leaf exists
+        if equity_sum:
+            equity_leaf = self.env.ref(
+                'tour_accounting.account_financial_report_equity0',
+                raise_if_not_found=False)
+            if not equity_leaf:
+                self.create({
+                    'name': '权益',
+                    'parent_id': equity_sum.id,
+                    'display_detail': 'detail_with_hierarchy',
+                    'type': 'account_type',
+                    'account_type_ids': 'equity',
+                })
+
+        # ------------------------------------------------------------------
+        # 3. Move "Profit (Loss) to report" from liability to equity
+        # ------------------------------------------------------------------
+        if profit_loss_report.parent_id.id != equity_sum.id:
+            profit_loss_report.write({'parent_id': equity_sum.id})
 
         return True
 

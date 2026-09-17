@@ -288,6 +288,28 @@
         <field name="reconcile">True</field>
     </record>
 
+    <!-- ============ 权益类 ============ -->
+    <record id="tour_account_4001" model="account.account">
+        <field name="code">4001</field>
+        <field name="name">实收资本</field>
+        <field name="account_type">equity</field>
+    </record>
+    <record id="tour_account_4101" model="account.account">
+        <field name="code">4101</field>
+        <field name="name">资本公积</field>
+        <field name="account_type">equity</field>
+    </record>
+    <record id="tour_account_4102" model="account.account">
+        <field name="code">4102</field>
+        <field name="name">盈余公积</field>
+        <field name="account_type">equity</field>
+    </record>
+    <record id="tour_account_4104" model="account.account">
+        <field name="code">4104</field>
+        <field name="name">利润分配——未分配利润</field>
+        <field name="account_type">equity</field>
+    </record>
+
     <!-- ============ 损益类 ============ -->
     <record id="tour_account_6001" model="account.account">
         <field name="code">6001</field>

@@ -39,7 +39,7 @@
                 </div>
 
                 <!-- Report content -->
-                <div t-else-if="state.reportData" class="p-3">
+                <div t-elif="state.reportData" class="p-3">
                     <h3 class="mb-3 text-center" t-esc="state.reportName"/>
 
                     <table class="table table-sm table-hover o_report_table">

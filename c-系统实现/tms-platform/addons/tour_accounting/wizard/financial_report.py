@@ -264,7 +264,6 @@ class FinancialReport(models.TransientModel):
                 multi_type_map = {
                     'tour_accounting.account_financial_report_expense0': [
                         'expense', 'expense_depreciation',
-                        'expense_direct_cost',
                     ],
                     'tour_accounting.account_financial_report_liability0': [
                         'liability_payable', 'liability_credit_card',
@@ -274,6 +273,9 @@ class FinancialReport(models.TransientModel):
                         'asset_receivable', 'asset_cash', 'asset_current',
                         'asset_non_current', 'asset_prepayments',
                         'asset_fixed',
+                    ],
+                    'tour_accounting.account_financial_report_equity0': [
+                        'equity', 'equity_unaffected',
                     ],
                 }
                 account_types = None
