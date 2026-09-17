@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 导游门户邀请邮件模板 -->
+    <data noupdate="1">
+        <record id="mail_template_guide_portal_invite" model="mail.template">
+            <field name="name">导游门户：邀请激活</field>
+            <field name="model_id" ref="tour_resource.model_tour_guide"/>
+            <field name="subject">导游门户邀请 - {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+    <p style="margin: 0px;">
+        尊敬的 <t t-out="object.name"/> 导游：
+    </p>
+    <p style="margin: 8px 0;">
+        您好！公司已为您开通导游自助门户，您可以通过门户查看：
+    </p>
+    <ul>
+        <li>我的派团安排</li>
+        <li>佣金查询（含个税明细）</li>
+        <li>借款状态与报账截止日</li>
+        <li>在线提交报账</li>
+    </ul>
+    <p style="margin: 8px 0;">
+        请点击下方按钮登录门户：
+    </p>
+    <p style="margin: 16px 0;">
+        <a t-att-href="ctx.get('portal_url', '/my/guide')"
+           style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;">
+            登录导游门户
+        </a>
+    </p>
+    <p style="margin: 8px 0;">
+        登录账号：<t t-out="user.login"/>
+    </p>
+    <p style="margin: 8px 0;">
+        首次登录请修改密码。如有疑问，请联系公司管理员。
+    </p>
+    <p style="margin: 16px 0;">
+        此致<br/>
+        <t t-out="object.company_id.name"/>
+    </p>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

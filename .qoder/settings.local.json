@@ -10,7 +10,11 @@
       "Bash(docker ps --format \"table {{.Names}}\\\\t{{.Status}}\\\\t{{.Ports}}\" 2>&1 | head -30)",
       "Bash(find /home/adai -maxdepth 3 -type d -iname \"*frappe*\" 2>/dev/null)",
       "Read(//home/adai/**)",
-      "Bash(ls -d /home/adai/tms/c-系统实现/tms-platform/addons/tour_* 2>/dev/null | sort)"
+      "Bash(ls -d /home/adai/tms/c-系统实现/tms-platform/addons/tour_* 2>/dev/null | sort)",
+      "Bash(cd /home/adai/tourerp/frappe-staging && docker compose ps 2>&1)",
+      "Bash(docker ps -a --filter \"name=frappe\" --format \"table {{.Names}}\\\\t{{.Status}}\\\\t{{.Ports}}\" 2>&1)",
+      "Bash(find /home/adai -maxdepth 4 -name \"docker-compose*\" -path \"*frappe*\" 2>/dev/null; find /home/adai -maxdepth 4 -name \"*.yml\" -path \"*frappe*\" 2>/dev/null | head -20)",
+      "Bash(git log --oneline --all -- \"c-系统实现/tms-platform/addons/tour_guide_portal/\" 2>/dev/null | head -20)"
     ]
   }
 }

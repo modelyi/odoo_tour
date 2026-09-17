@@ -7,6 +7,7 @@
     'license': 'LGPL-3',
     'depends': [
         'portal',
+        'website',
         'tour_resource',
         'tour_accounting',
         'tour_order',

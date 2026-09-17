@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 门户菜单 -->
+    <record id="menu_guide_portal" model="website.menu">
+        <field name="name">导游门户</field>
+        <field name="url">/my/guide</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">50</field>
+    </record>
+
+    <!-- 门户首页 -->
+    <template id="portal_guide_home">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_home">
+                <h3 class="mb-4">
+                    <i class="fa fa-dashboard me-2"/>
+                    欢迎，<t t-esc="guide.name"/>
+                </h3>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="/my/guide/dispatches" class="text-decoration-none">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fa fa-calendar fa-2x text-primary mb-2"/>
+                                    <h2 class="mb-0" t-esc="dispatch_count"/>
+                                    <div class="text-muted">我的派团</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="/my/guide/commissions" class="text-decoration-none">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fa fa-money fa-2x text-success mb-2"/>
+                                    <h2 class="mb-0" t-esc="commission_count"/>
+                                    <div class="text-muted">佣金记录</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="/my/guide/loans" class="text-decoration-none">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fa fa-credit-card fa-2x text-warning mb-2"/>
+                                    <h2 class="mb-0" t-esc="loan_count"/>
+                                    <div class="text-muted">借款单</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="/my/guide/expenses" class="text-decoration-none">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fa fa-file-text-o fa-2x text-info mb-2"/>
+                                    <h2 class="mb-0" t-esc="expense_count"/>
+                                    <div class="text-muted">报账单</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">最近派团</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="recent_dispatches">
+                                    <table class="table table-sm mb-0">
+                                        <tbody>
+                                            <t t-foreach="recent_dispatches" t-as="task">
+                                                <tr>
+                                                    <td>
+                                                        <a t-att-href="'/my/guide/dispatches/%s' % task.id">
+                                                            <t t-esc="task.booking_no or '-'"/>
+                                                        </a>
+                                                    </td>
+                                                    <td><t t-esc="task.plan_code or '-'"/></td>
+                                                    <td class="text-end">
+                                                        <t t-esc="task.date_start" t-options="{'widget': 'date'}"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center text-muted py-3">暂无派团记录</div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">最近佣金</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="recent_commissions">
+                                    <table class="table table-sm mb-0">
+                                        <tbody>
+                                            <t t-foreach="recent_commissions" t-as="comm">
+                                                <tr>
+                                                    <td>
+                                                        <a t-att-href="'/my/guide/commissions/%s' % comm.id">
+                                                            <t t-esc="comm.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td><t t-esc="comm.plan_code or '-'"/></td>
+                                                    <td class="text-end">
+                                                        <span t-att-class="'badge ' + (comm.state == 'paid' and 'bg-success' or comm.state == 'confirmed' and 'bg-info' or 'bg-secondary')">
+                                                            <t t-esc="dict(comm._fields['state'].selection).get(comm.state)"/>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center text-muted py-3">暂无佣金记录</div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 派团列表 -->
+    <template id="portal_my_dispatches">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_dispatches">
+                <h3 class="mb-3">
+                    <i class="fa fa-calendar me-2"/>我的派团
+                </h3>
+                <t t-call="portal.portal_searchbar"/>
+                <t t-if="tasks">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>预订编号</th>
+                                <th>团号</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="tasks" t-as="task">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/guide/dispatches/%s' % task.id">
+                                            <t t-esc="task.booking_no or '-'"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="task.plan_code or '-'"/></td>
+                                    <td><t t-esc="task.date_start" t-options="{'widget': 'datetime'}"/></td>
+                                    <td><t t-esc="task.date_deadline" t-options="{'widget': 'datetime'}"/></td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (task.state == '1_done' and 'bg-success' or task.state == '1_canceled' and 'bg-danger' or 'bg-primary')">
+                                            <t t-esc="dict(task._fields['state'].selection).get(task.state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">暂无派团记录</div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- 派团详情 -->
+    <template id="portal_dispatch_detail">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_dispatch_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">派团详情</h3>
+                    <a href="/my/guide/dispatches" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">预订编号</th>
+                                <td><t t-esc="task.booking_no or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>团号</th>
+                                <td><t t-esc="task.plan_code or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>开始时间</th>
+                                <td><t t-esc="task.date_start" t-options="{'widget': 'datetime'}"/></td>
+                            </tr>
+                            <tr>
+                                <th>结束时间</th>
+                                <td><t t-esc="task.date_deadline" t-options="{'widget': 'datetime'}"/></td>
+                            </tr>
+                            <tr>
+                                <th>人数</th>
+                                <td><t t-esc="task.guest_count"/> 人</td>
+                            </tr>
+                            <tr>
+                                <th>金额</th>
+                                <td>¥ <t t-esc="'%.2f' % task.amount_total"/></td>
+                            </tr>
+                            <tr>
+                                <th>状态</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (task.state == '1_done' and 'bg-success' or task.state == '1_canceled' and 'bg-danger' or 'bg-primary')">
+                                        <t t-esc="dict(task._fields['state'].selection).get(task.state)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 佣金列表 -->
+    <template id="portal_my_commissions">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_commissions">
+                <h3 class="mb-3">
+                    <i class="fa fa-money me-2"/>佣金查询
+                </h3>
+                <t t-call="portal.portal_searchbar"/>
+                <t t-if="commissions">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>佣金编号</th>
+                                <th>团号</th>
+                                <th>购物店</th>
+                                <th class="text-end">税前分成</th>
+                                <th class="text-end">代扣个税</th>
+                                <th class="text-end">实发</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="commissions" t-as="comm">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/guide/commissions/%s' % comm.id">
+                                            <t t-esc="comm.name"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="comm.plan_code or '-'"/></td>
+                                    <td><t t-esc="comm.shop_name or '-'"/></td>
+                                    <td class="text-end">¥ <t t-esc="'%.2f' % comm.guide_share_before_tax"/></td>
+                                    <td class="text-end">¥ <t t-esc="'%.2f' % comm.guide_tax"/></td>
+                                    <td class="text-end text-success fw-bold">¥ <t t-esc="'%.2f' % comm.guide_net_pay"/></td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (comm.state == 'paid' and 'bg-success' or comm.state == 'confirmed' and 'bg-info' or comm.state == 'received' and 'bg-warning' or 'bg-secondary')">
+                                            <t t-esc="dict(comm._fields['state'].selection).get(comm.state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">暂无佣金记录</div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- 佣金详情 -->
+    <template id="portal_commission_detail">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_commission_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">佣金详情</h3>
+                    <a href="/my/guide/commissions" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">佣金编号</th>
+                                <td><t t-esc="commission.name"/></td>
+                            </tr>
+                            <tr>
+                                <th>团号</th>
+                                <td><t t-esc="commission.plan_code or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>购物店</th>
+                                <td><t t-esc="commission.shop_name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>佣金总额</th>
+                                <td>¥ <t t-esc="'%.2f' % commission.commission_total"/></td>
+                            </tr>
+                            <tr>
+                                <th>返佣比例</th>
+                                <td><t t-esc="'%.2f' % commission.commission_rate"/>%</td>
+                            </tr>
+                            <tr>
+                                <th>购物金额</th>
+                                <td>¥ <t t-esc="'%.2f' % commission.shop_amount"/></td>
+                            </tr>
+                            <tr class="table-info">
+                                <th>导游税前分成</th>
+                                <td>¥ <t t-esc="'%.2f' % commission.guide_share_before_tax"/></td>
+                            </tr>
+                            <tr>
+                                <th>导游奖金</th>
+                                <td>¥ <t t-esc="'%.2f' % commission.premium"/></td>
+                            </tr>
+                            <tr>
+                                <th>税务类型</th>
+                                <td><t t-esc="dict(commission._fields['guide_tax_type'].selection).get(commission.guide_tax_type) or '-'"/></td>
+                            </tr>
+                            <tr class="table-warning">
+                                <th>代扣个税</th>
+                                <td>¥ <t t-esc="'%.2f' % commission.guide_tax"/></td>
+                            </tr>
+                            <tr class="table-success">
+                                <th>实发金额</th>
+                                <td class="fw-bold">¥ <t t-esc="'%.2f' % commission.guide_net_pay"/></td>
+                            </tr>
+                            <tr>
+                                <th>状态</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (commission.state == 'paid' and 'bg-success' or commission.state == 'confirmed' and 'bg-info' or commission.state == 'received' and 'bg-warning' or 'bg-secondary')">
+                                        <t t-esc="dict(commission._fields['state'].selection).get(commission.state)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 借款列表 -->
+    <template id="portal_my_loans">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_loans">
+                <h3 class="mb-3">
+                    <i class="fa fa-credit-card me-2"/>借款状态
+                </h3>
+                <t t-call="portal.portal_searchbar"/>
+                <t t-if="loans">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>借款单号</th>
+                                <th>团号</th>
+                                <th>申请日期</th>
+                                <th class="text-end">借款金额</th>
+                                <th class="text-end">未冲抵余额</th>
+                                <th>报账截止日</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="loans" t-as="loan">
+                                <tr t-att-class="'table-danger' if loan.is_overdue else ''">
+                                    <td>
+                                        <a t-att-href="'/my/guide/loans/%s' % loan.id">
+                                            <t t-esc="loan.name"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="loan.plan_code or '-'"/></td>
+                                    <td><t t-esc="loan.apply_date" t-options="{'widget': 'date'}"/></td>
+                                    <td class="text-end">¥ <t t-esc="'%.2f' % loan.amount"/></td>
+                                    <td class="text-end">
+                                        <span t-att-class="'text-danger fw-bold' if loan.residual > 0 else 'text-success'">
+                                            ¥ <t t-esc="'%.2f' % loan.residual"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <t t-if="loan.due_date">
+                                            <span t-att-class="'text-danger' if loan.is_overdue else ''">
+                                                <t t-esc="loan.due_date" t-options="{'widget': 'date'}"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (loan.state == 'settled' and 'bg-success' or loan.state == 'disbursed' and 'bg-primary' or loan.state == 'approved' and 'bg-info' or 'bg-secondary')">
+                                            <t t-esc="dict(loan._fields['state'].selection).get(loan.state)"/>
+                                        </span>
+                                        <t t-if="loan.is_overdue">
+                                            <span class="badge bg-danger ms-1">超期</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">暂无借款记录</div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- 借款详情 -->
+    <template id="portal_loan_detail">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_loan_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">借款详情</h3>
+                    <a href="/my/guide/loans" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">借款单号</th>
+                                <td><t t-esc="loan.name"/></td>
+                            </tr>
+                            <tr>
+                                <th>团号</th>
+                                <td><t t-esc="loan.plan_code or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>申请日期</th>
+                                <td><t t-esc="loan.apply_date" t-options="{'widget': 'date'}"/></td>
+                            </tr>
+                            <tr>
+                                <th>借款金额</th>
+                                <td>¥ <t t-esc="'%.2f' % loan.amount"/></td>
+                            </tr>
+                            <tr>
+                                <th>借款用途</th>
+                                <td><t t-esc="loan.purpose or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>放款日期</th>
+                                <td><t t-esc="loan.loan_date" t-options="{'widget': 'date'}" t-if="loan.loan_date"/><t t-else="">-</t></td>
+                            </tr>
+                            <tr>
+                                <th>报账截止日</th>
+                                <td>
+                                    <t t-if="loan.due_date">
+                                        <span t-att-class="'text-danger fw-bold' if loan.is_overdue else ''">
+                                            <t t-esc="loan.due_date" t-options="{'widget': 'date'}"/>
+                                        </span>
+                                        <t t-if="loan.is_overdue">
+                                            <span class="badge bg-danger ms-2">已超期</span>
+                                        </t>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                            </tr>
+                            <tr class="table-info">
+                                <th>已冲抵金额</th>
+                                <td>¥ <t t-esc="'%.2f' % loan.settled_amount"/></td>
+                            </tr>
+                            <tr class="table-warning">
+                                <th>未冲抵余额</th>
+                                <td class="fw-bold">¥ <t t-esc="'%.2f' % loan.residual"/></td>
+                            </tr>
+                            <tr>
+                                <th>状态</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (loan.state == 'settled' and 'bg-success' or loan.state == 'disbursed' and 'bg-primary' or loan.state == 'approved' and 'bg-info' or 'bg-secondary')">
+                                        <t t-esc="dict(loan._fields['state'].selection).get(loan.state)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 报账列表 -->
+    <template id="portal_my_expenses">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_expenses">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-file-text-o me-2"/>我的报账
+                    </h3>
+                    <a href="/my/guide/expenses/new" class="btn btn-primary">
+                        <i class="fa fa-plus me-1"/>新建报账
+                    </a>
+                </div>
+                <t t-call="portal.portal_searchbar"/>
+                <t t-if="expenses">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>报账说明</th>
+                                <th>团号</th>
+                                <th>报账日期</th>
+                                <th>报账类型</th>
+                                <th class="text-end">金额</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="expenses" t-as="exp">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/guide/expenses/%s' % exp.id">
+                                            <t t-esc="exp.name or '-'"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="exp.x_plan_code or '-'"/></td>
+                                    <td><t t-esc="exp.date" t-options="{'widget': 'date'}"/></td>
+                                    <td><t t-esc="dict(exp._fields['x_report_type'].selection).get(exp.x_report_type)"/></td>
+                                    <td class="text-end">¥ <t t-esc="'%.2f' % exp.total_amount"/></td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (exp.state == 'paid' and 'bg-success' or exp.state == 'approved' and 'bg-info' or exp.state == 'reported' and 'bg-warning' or 'bg-secondary')">
+                                            <t t-esc="dict(exp._fields['state'].selection).get(exp.state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        暂无报账记录
+                        <br/>
+                        <a href="/my/guide/expenses/new" class="btn btn-primary mt-3">
+                            <i class="fa fa-plus me-1"/>新建报账
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- 报账详情 -->
+    <template id="portal_expense_detail">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_expense_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">报账详情</h3>
+                    <a href="/my/guide/expenses" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">报账说明</th>
+                                <td><t t-esc="expense.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>团号</th>
+                                <td><t t-esc="expense.x_plan_code or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>报账日期</th>
+                                <td><t t-esc="expense.date" t-options="{'widget': 'date'}"/></td>
+                            </tr>
+                            <tr>
+                                <th>报账类型</th>
+                                <td><t t-esc="dict(expense._fields['x_report_type'].selection).get(expense.x_report_type)"/></td>
+                            </tr>
+                            <tr>
+                                <th>费用类别</th>
+                                <td><t t-esc="expense.product_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>数量</th>
+                                <td><t t-esc="expense.quantity"/></td>
+                            </tr>
+                            <tr>
+                                <th>单价</th>
+                                <td>¥ <t t-esc="'%.2f' % expense.price_unit"/></td>
+                            </tr>
+                            <tr class="table-success">
+                                <th>总金额</th>
+                                <td class="fw-bold">¥ <t t-esc="'%.2f' % expense.total_amount"/></td>
+                            </tr>
+                            <tr>
+                                <th>发票号</th>
+                                <td><t t-esc="expense.x_invoice_no or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>关联借款</th>
+                                <td>
+                                    <t t-if="expense.x_loan_id">
+                                        <a t-att-href="'/my/guide/loans/%s' % expense.x_loan_id.id">
+                                            <t t-esc="expense.x_loan_id.name"/>
+                                        </a>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>状态</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (expense.state == 'paid' and 'bg-success' or expense.state == 'approved' and 'bg-info' or expense.state == 'reported' and 'bg-warning' or 'bg-secondary')">
+                                        <t t-esc="dict(expense._fields['state'].selection).get(expense.state)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 新建报账 -->
+    <template id="portal_expense_new">
+        <t t-call="tour_guide_portal.portal_guide_layout">
+            <div class="o_guide_expense_new">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">新建报账</h3>
+                    <a href="/my/guide/expenses" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+                <t t-if="error">
+                    <div class="alert alert-danger">
+                        <t t-esc="error"/>
+                    </div>
+                </t>
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" action="/my/guide/expenses/new">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">报账说明 <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" class="form-control" required="required"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">报账类型</label>
+                                    <select name="x_report_type" class="form-select">
+                                        <option value="expense">费用报销</option>
+                                        <option value="income">收入报账</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">关联团队</label>
+                                    <select name="x_plan_id" class="form-select">
+                                        <option value="">-- 不挂团 --</option>
+                                        <t t-foreach="plans" t-as="plan">
+                                            <option t-att-value="plan.id">
+                                                <t t-esc="plan.plan_code"/> - <t t-esc="plan.plan_name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">报账日期</label>
+                                    <input type="date" name="date" class="form-control"
+                                           t-att-value="context_today().strftime('%Y-%m-%d')"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">费用类别 <span class="text-danger">*</span></label>
+                                    <select name="product_id" class="form-select" required="required">
+                                        <option value="">-- 请选择 --</option>
+                                        <t t-foreach="products" t-as="prod">
+                                            <option t-att-value="prod.id">
+                                                <t t-esc="prod.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">数量</label>
+                                    <input type="number" name="quantity" class="form-control" value="1" step="0.01"/>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">金额 <span class="text-danger">*</span></label>
+                                    <input type="number" name="total_amount" class="form-control" required="required" step="0.01"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">发票号</label>
+                                    <input type="text" name="x_invoice_no" class="form-control"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">关联借款（冲抵）</label>
+                                    <select name="x_loan_id" class="form-select">
+                                        <option value="">-- 不冲抵借款 --</option>
+                                        <t t-foreach="loans" t-as="loan">
+                                            <option t-att-value="loan.id">
+                                                <t t-esc="loan.name"/> (余额: ¥<t t-esc="'%.2f' % loan.residual"/>)
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-check me-1"/>提交报账
+                                </button>
+                                <a href="/my/guide/expenses" class="btn btn-outline-secondary ms-2">取消</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
