@@ -50,6 +50,11 @@ class TourPlanReg(models.Model):
     passenger_ids = fields.One2many('tour.plan.reg.passenger', 'reg_id',
                                     string='客人证件')
 
+    # 游客门户：关联的门户注册用户，用于数据隔离
+    partner_id = fields.Many2one('res.partner', string='注册用户',
+                                 index=True, copy=False,
+                                 help='关联的门户注册用户，用于游客门户数据隔离')
+
     @api.depends('supplier_user_mobile')
     def _compute_masked_fields(self):
         for rec in self:
@@ -59,13 +64,15 @@ class TourPlanReg(models.Model):
     # 在线报名（无登录轻量入口）：单一校验入口，public 无 ORM 权限，全程 sudo 执行，
     # 校验在共享方法 _create_plan_reg_from_order 内完成。
     # ------------------------------------------------------------------
-    def create_online_reg(self, line, departure, vals, passengers=None):
+    def create_online_reg(self, line, departure, vals, passengers=None,
+                          partner_id=None):
         """在线报名（无登录）：校验 → 定位/创建承载团队 → 创建报名 → 回写余位。
 
         :param line: tour.line 线路（已 sudo().browse）
         :param departure: tour.departure 班期（已 sudo().browse）
         :param vals: dict 表单字段（supplier_name/supplier_user_mobile/各类人数/备注等）
         :param passengers: list[dict] 每人的 {name, passenger_type, id_type, id_number}
+        :param partner_id: int|None 关联的门户注册用户 ID
         :return: tour.plan.reg
         """
         counts = {
@@ -88,7 +95,8 @@ class TourPlanReg(models.Model):
         }
         return self._create_plan_reg_from_order(
             line, departure, counts, contact, passengers=passengers,
-            from_type='6', source_label='线上报名', require_valid_mobile=True)
+            from_type='6', source_label='线上报名', require_valid_mobile=True,
+            partner_id=partner_id)
 
     # ------------------------------------------------------------------
     # 共享服务方法（电商 sale.order 桥接 + 无登录轻量报名 共用）
@@ -96,7 +104,7 @@ class TourPlanReg(models.Model):
     def _create_plan_reg_from_order(self, line, departure, counts, contact,
                                     passengers=None, from_type='6',
                                     source_label='线上报名', require_valid_mobile=True,
-                                    sale_order_line=None):
+                                    sale_order_line=None, partner_id=None):
         """共享服务方法：校验余位 → 定位/建团 → 建报名 → 回写余位 → 汇总团金额。
 
         电商（sale.order 确认桥接，from_type='7'）与无登录轻量报名（create_online_reg，
@@ -193,6 +201,9 @@ class TourPlanReg(models.Model):
             'sum_un_pay': quote,
             'remark': ((contact.get('remark') or '').strip() + ' [%s]' % source_label).strip(),
         }
+        # 游客门户：关联注册用户
+        if partner_id:
+            values['partner_id'] = partner_id
         # 电商回链（字段在 tour_website_sale 定义；未安装该模块时优雅跳过）
         if sale_order_line is not None:
             if 'sale_order_id' in self._fields:

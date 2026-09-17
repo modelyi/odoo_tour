@@ -98,8 +98,11 @@ class TourWebsite(http.Controller):
 
         passengers = self._parse_passengers(post)
         try:
+            partner_id = (request.env.user.partner_id.id
+                          if not request.env.user._is_public() else None)
             reg = request.env['tour.plan.reg'].sudo().create_online_reg(
-                line, departure, post, passengers=passengers)
+                line, departure, post, passengers=passengers,
+                partner_id=partner_id)
         except ValidationError as exc:
             return request.render('tour_website.tour_register', {
                 'line': line,
