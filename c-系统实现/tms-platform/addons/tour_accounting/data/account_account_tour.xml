@@ -314,6 +314,11 @@
         <field name="name">主营收入—购物佣金收入</field>
         <field name="account_type">income</field>
     </record>
+    <record id="tour_account_6050" model="account.account">
+        <field name="code">6050</field>
+        <field name="name">佣金收入（购物佣金旅行社留存）</field>
+        <field name="account_type">income</field>
+    </record>
     <record id="tour_account_6051" model="account.account">
         <field name="code">6051</field>
         <field name="name">其他业务收入</field>

@@ -21,7 +21,7 @@
 #############################################################################
 {
     'name': 'Tour Accounting - 旅行社财务增强',
-    'version': '19.0.4.5.0',
+    'version': '19.0.4.6.0',
     'category': 'Accounting',
     'summary': """旅行社财务增强套件（fork 自 Cybrosys base_accounting_kit），为 Odoo 19 Community 补回完整财务功能：
                   财务报表（损益表/资产负债表/总账/试算平衡/往来明细账/账龄应收应付）、资产管理、预算、
@@ -54,6 +54,7 @@
         'security/tour_self_service_rules.xml',
         'data/account_financial_report_data.xml',
         'data/cash_flow_data.xml',
+        'data/data_fixes.xml',
         'data/followup_levels.xml',
         'data/mail_template_followup.xml',
         'data/followup_cron.xml',
@@ -162,13 +163,16 @@
         'web.assets_backend': [
             'tour_accounting/static/src/scss/style.scss',
             'tour_accounting/static/src/scss/bank_rec_widget.css',
+            'tour_accounting/static/src/scss/financial_report.scss',
             'tour_accounting/static/src/js/bank_reconcile_form_list_widget.js',
             'tour_accounting/static/src/js/KanbanController.js',
             'tour_accounting/static/src/js/ListController.js',
             'tour_accounting/static/src/js/bank_reconcile_form_lines_widget.js',
             'tour_accounting/static/src/js/action_manager.js',
+            'tour_accounting/static/src/js/financial_report.js',
             'tour_accounting/static/src/xml/bank_rec_widget.xml',
             'tour_accounting/static/src/xml/bank_reconcile_widget.xml',
+            'tour_accounting/static/src/xml/financial_report.xml',
         ]
     },
     'license': 'LGPL-3',

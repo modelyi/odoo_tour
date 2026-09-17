@@ -1,0 +1,67 @@
+.o_financial_report {
+    .o_report_table {
+        font-size: 0.9rem;
+
+        td, th {
+            padding: 0.4rem 0.5rem;
+            vertical-align: middle;
+        }
+
+        .o_report_header {
+            background-color: $primary;
+            color: white;
+
+            th {
+                border-bottom: 2px solid $primary;
+            }
+        }
+
+        .o_report_section {
+            background-color: #f0f4f8;
+            font-weight: 600;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .o_report_detail {
+            font-size: 0.85rem;
+            color: #495057;
+        }
+
+        .o_toggle_btn {
+            cursor: pointer;
+            color: $primary;
+            width: 1rem;
+            text-align: center;
+
+            &:hover {
+                color: darken($primary, 15%);
+            }
+        }
+
+        .o_drilldown {
+            cursor: pointer;
+            color: $primary;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        .o_report_total {
+            background-color: #e9ecef;
+            border-top: 2px solid #6c757d;
+
+            td {
+                padding-top: 0.6rem;
+                padding-bottom: 0.6rem;
+            }
+        }
+    }
+
+    // Indentation for nested rows
+    @for $i from 1 through 8 {
+        .o_depth_#{$i} td:first-child {
+            padding-left: ($i * 1.2rem);
+        }
+    }
+}

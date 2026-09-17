@@ -59,10 +59,11 @@
         <field name="name">ir.attachment: portal user sees own expense attachments</field>
         <field name="model_id" ref="base.model_ir_attachment"/>
         <field name="domain_force">[
+            '|',
+            ('res_model', '!=', 'hr.expense'),
+            '&amp;',
             ('res_model', '=', 'hr.expense'),
-            ('res_id', 'in', user.partner_id.id and env['hr.expense'].sudo()._search(['|',
-                ('x_guide_id.partner_id', '=', user.partner_id.id),
-                ('employee_id.user_id.partner_id', '=', user.partner_id.id)]) or [])]</field>
+            ('create_uid', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>

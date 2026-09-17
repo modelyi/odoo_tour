@@ -136,3 +136,52 @@ class AccountFinancialReport(models.Model):
              " automatic formatting, it will be computed"
              " based on the financial reports hierarchy "
              "(auto-computed field 'level').")
+
+    @api.model
+    def _fix_financial_report_data(self):
+        """Fix financial report data for existing records.
+
+        Since the XML data files have noupdate="1", existing records won't be
+        updated on module upgrade. This method fixes the account_type_ids for
+        Assets and Liability reports.
+        """
+        # Fix Assets report
+        assets = self.env.ref(
+            'tour_accounting.account_financial_report_assets0',
+            raise_if_not_found=False)
+        if assets and assets.account_type_ids != 'asset_receivable':
+            assets.write({'account_type_ids': 'asset_receivable'})
+
+        # Fix Liability report
+        liability = self.env.ref(
+            'tour_accounting.account_financial_report_liability0',
+            raise_if_not_found=False)
+        if liability and liability.account_type_ids != 'liability_payable':
+            liability.write({'account_type_ids': 'liability_payable'})
+
+        return True
+
+    @api.model
+    def _fix_cash_flow_report_data(self):
+        """Fix cash flow report data for existing records.
+
+        Changes the type from 'accounts' to 'account_type' and sets the
+        account_type_ids for each cash flow leaf item.
+        """
+        cash_flow_items = {
+            'tour_accounting.cash_in_from_operation0': 'asset_cash',
+            'tour_accounting.cash_out_operation1': 'expense',
+            'tour_accounting.cash_in_investing0': 'asset_non_current',
+            'tour_accounting.cash_out_investing1': 'asset_fixed',
+            'tour_accounting.cash_in_financial0': 'equity',
+            'tour_accounting.cash_out_financial1': 'liability_non_current',
+        }
+        for xml_id, account_type in cash_flow_items.items():
+            report = self.env.ref(xml_id, raise_if_not_found=False)
+            if report:
+                if report.type != 'account_type':
+                    report.write({'type': 'account_type'})
+                if report.account_type_ids != account_type:
+                    report.write({'account_type_ids': account_type})
+
+        return True

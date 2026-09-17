@@ -7,9 +7,10 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <group string="Dates">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
+                    <group string="期间">
+                        <field name="period_id" options="{'no_create': True}"/>
+                        <field name="date_from" invisible="1"/>
+                        <field name="date_to" invisible="1"/>
                     </group>
                     <group string="Type">
                         <field name="target_move" widget="radio"/>
@@ -20,8 +21,10 @@
                     </group>
                 </group>
                 <footer>
-                    <button string="Print" name="view_report_pdf" type="object"
+                    <button string="查看报表" name="action_view_report" type="object"
                             class="btn-primary"/>
+                    <button string="Print" name="view_report_pdf" type="object"
+                            class="btn-secondary"/>
                     <button string="Export XLSX" name="action_print_xlsx"
                             type="object"/>
                     <button string="Discard" class="btn-secondary"

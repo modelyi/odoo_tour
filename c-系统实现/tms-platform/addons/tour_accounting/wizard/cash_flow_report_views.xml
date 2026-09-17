@@ -7,6 +7,14 @@
         <field name="inherit_id" ref="tour_accounting.account_report_view_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="replace"/>
+            <!-- 用会计期间替换日期字段 -->
+            <field name="date_from" position="replace">
+                <field name="period_id" options="{'no_create': True}"/>
+            </field>
+            <field name="date_to" position="replace">
+                <field name="date_from" invisible="1"/>
+                <field name="date_to" invisible="1"/>
+            </field>
             <field name="target_move" position="before">
                 <field name="account_report_id" domain="[('parent_id','=',False)]" readonly="1" invisible="1"/>
                 <field name="enable_filter"/>
@@ -32,6 +40,10 @@
                 </notebook>
             </field>
             <field name="journal_ids" position="replace"/>
+            <xpath expr="//footer/button[@name='check_report']" position="before">
+                <button string="查看报表" name="action_view_report" type="object"
+                        class="btn-primary"/>
+            </xpath>
         </field>
     </record>
 <!--Action Cash Flow Report-->

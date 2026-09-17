@@ -47,10 +47,20 @@ class AccountCommonReport(models.TransientModel):
         domain="[('company_id', '=', company_id)]")
     date_from = fields.Date(string='Start Date')
     date_to = fields.Date(string='End Date')
+    period_id = fields.Many2one(
+        'tour.account.period', string='会计期间',
+        help='选择会计期间后，开始日期和结束日期将自动填入')
     target_move = fields.Selection([('posted', 'All Posted Entries'),
                                     ('all', 'All Entries'),
                                     ], string='Target Moves',
                                    required=True, default='posted')
+
+    @api.onchange('period_id')
+    def _onchange_period_id(self):
+        """当选择会计期间时，自动填入期间的开始和结束日期。"""
+        if self.period_id:
+            self.date_from = self.period_id.date_start
+            self.date_to = self.period_id.date_end
 
     @api.onchange('company_id')
     def _onchange_company_id(self):

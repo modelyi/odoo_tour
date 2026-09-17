@@ -140,3 +140,85 @@ class AccountingReport(models.TransientModel):
             'rows': rows,
         }
         return self._xlsx_action('Cash Flow Report', table)
+
+    # ------------------------------------------------------------------
+    # Online report viewer support
+    # ------------------------------------------------------------------
+    def action_view_report(self):
+        """Open the cash flow report in an online OWL-based viewer."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'tour_accounting.financial_report',
+            'params': {
+                'wizard_model': 'cash.flow.report',
+                'wizard_id': self.id,
+                'period_id': self.period_id.id if self.period_id else False,
+            },
+            'name': '现金流量表',
+        }
+
+    @api.model
+    def get_online_report_data(self, wizard_id, period_id=None,
+                               date_from=None, date_to=None):
+        """Return cash flow report data as JSON-serializable dict.
+
+        ``period_id`` takes precedence over explicit date parameters.
+        """
+        wizard = self.browse(wizard_id)
+        if not wizard.exists():
+            return {'error': 'Wizard record not found'}
+
+        # Resolve period to date range
+        if period_id:
+            period = self.env['tour.account.period'].browse(int(period_id))
+            if period.exists():
+                date_from = str(period.date_start)
+                date_to = str(period.date_end)
+
+        data = {}
+        data['ids'] = []
+        data['model'] = 'cash.flow.report'
+        data['form'] = wizard.read(
+            ['account_report_id', 'date_from_cmp', 'debit_credit',
+             'date_to_cmp', 'filter_cmp', 'target_move',
+             'enable_filter', 'label_filter'])[0]
+
+        used_context = wizard._build_contexts({
+            'form': {
+                'journal_ids': wizard.journal_ids.ids,
+                'target_move': wizard.target_move,
+                'date_from': date_from or wizard.date_from,
+                'date_to': date_to or wizard.date_to,
+                'company_id': (wizard.company_id.id, wizard.company_id.name),
+            }
+        })
+        data['form']['used_context'] = dict(
+            used_context,
+            lang=self.env.context.get('lang') or 'en_US')
+
+        report_lines = self.env[
+            'report.tour_accounting.report_cash_flow'].get_account_lines(
+            data['form'])
+
+        # Reuse the tree builder from financial.report
+        tree, all_ids = self.env['financial.report']._build_report_tree(
+            report_lines)
+
+        total_debit = sum(
+            l.get('debit', 0) for l in report_lines if l['type'] == 'account')
+        total_credit = sum(
+            l.get('credit', 0) for l in report_lines if l['type'] == 'account')
+        total_balance = sum(
+            l.get('balance', 0) for l in report_lines if l['type'] == 'account')
+
+        return {
+            'tree': tree,
+            'expanded_rows': all_ids,
+            'show_debit_credit': data['form'].get('debit_credit', True),
+            'currency': self.env.company.currency_id.id,
+            'report_name': '现金流量表',
+            'total_debit': round(total_debit, 2),
+            'total_credit': round(total_credit, 2),
+            'total_balance': round(total_balance, 2),
+        }

@@ -19,6 +19,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
+import re
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -58,6 +59,42 @@ class ReportFinancial(models.AbstractModel):
                 res[row['id']] = row
         return res
 
+    # Map cash-flow leaf report XML IDs to the list of account types
+    # whose balances should be aggregated for that line.
+    _CASH_FLOW_TYPE_MAP = {
+        'tour_accounting.cash_in_from_operation0': [
+            'asset_cash', 'asset_current',
+        ],
+        'tour_accounting.cash_out_operation1': [
+            'liability_current', 'expense', 'expense_direct_cost',
+        ],
+        'tour_accounting.cash_in_investing0': [
+            'asset_non_current',
+        ],
+        'tour_accounting.cash_out_investing1': [
+            'asset_fixed',
+        ],
+        'tour_accounting.cash_in_financial0': [
+            'equity', 'liability_non_current',
+        ],
+        'tour_accounting.cash_out_financial1': [
+            'liability_non_current', 'liability_payable',
+        ],
+    }
+
+    def _resolve_cash_flow_account_types(self, report):
+        """Return the list of account types for a cash-flow leaf report."""
+        for xml_id, types in self._CASH_FLOW_TYPE_MAP.items():
+            try:
+                if report == self.env.ref(xml_id, raise_if_not_found=False):
+                    return types
+            except (ValueError, TypeError):
+                continue
+        # Fallback: use the single type stored on the record
+        if report.account_type_ids:
+            return [report.account_type_ids]
+        return []
+
     def _compute_report_balance(self, reports):
         res = {}
         fields = ['credit', 'debit', 'balance']
@@ -66,51 +103,35 @@ class ReportFinancial(models.AbstractModel):
                 continue
             res[report.id] = dict((fn, 0.0) for fn in fields)
             if report.type == 'accounts':
-                # it's the sum of credit or debit
-                res2 = self._compute_report_balance(report.parent_id)
-                for key, value in res2.items():
-                    cash_in_operation = self.env.ref(
-                        'tour_accounting.cash_in_from_operation0')
-                    cash_out_operation = self.env.ref(
-                        'tour_accounting.cash_out_operation1')
-                    cash_in_financial = self.env.ref(
-                        'tour_accounting.cash_in_financial0')
-                    cash_out_financial = self.env.ref(
-                        'tour_accounting.cash_out_financial1')
-                    cash_in_investing = self.env.ref(
-                        'tour_accounting.cash_in_investing0')
-                    cash_out_investing = self.env.ref(
-                        'tour_accounting.cash_out_investing1')
-                    if report == cash_in_operation or report == cash_in_financial or report == cash_in_investing:
-                        res[report.id]['debit'] += value['debit']
-                        res[report.id]['balance'] += value['debit']
-                    elif report == cash_out_operation or report == cash_out_financial or report == cash_out_investing:
-                        res[report.id]['credit'] += value['credit']
-                        res[report.id]['balance'] += -(value['credit'])
+                # Sum of directly linked accounts
+                res[report.id]['account'] = self._compute_account_balance(
+                    report.account_ids)
+                for value in res[report.id]['account'].values():
+                    for field in fields:
+                        res[report.id][field] += value.get(field)
             elif report.type == 'account_type':
-                # it's the sum the leaf accounts with such an account type
-                accounts = self.env['account.account'].search(
-                    [('account_type', '=', report.account_type_ids)])
+                # Sum of leaf accounts matching the resolved account types
+                account_types = self._resolve_cash_flow_account_types(report)
+                accounts = self.env['account.account'].search([
+                    ('account_type', 'in', account_types),
+                ]) if account_types else self.env['account.account']
                 res[report.id]['account'] = self._compute_account_balance(
                     accounts)
                 for value in res[report.id]['account'].values():
                     for field in fields:
                         res[report.id][field] += value.get(field)
             elif report.type == 'account_report' and report.account_report_id:
-                # it's the amount of the linked
-                res[report.id]['account'] = self._compute_account_balance(
-                    report.account_ids)
-                for value in res[report.id]['account'].values():
+                # Amount of the linked report
+                res2 = self._compute_report_balance(report.account_report_id)
+                for key, value in res2.items():
                     for field in fields:
-                        res[report.id][field] += value.get(field)
-
+                        res[report.id][field] += value[field]
             elif report.type == 'sum':
-                # it's the sum of the linked accounts
-                res[report.id]['account'] = self._compute_account_balance(
-                    report.account_ids)
-                for values in res[report.id]['account'].values():
+                # Sum of children
+                res2 = self._compute_report_balance(report.children_ids)
+                for key, value in res2.items():
                     for field in fields:
-                        res[report.id][field] += values.get(field)
+                        res[report.id][field] += value[field]
         return res
 
     def get_account_lines(self, data):
@@ -132,15 +153,25 @@ class ReportFinancial(models.AbstractModel):
                             'account').items():
                         report_acc[account_id]['comp_bal'] = val['balance']
 
+        def _report_key(rec):
+            """Build a unique key for a report line (matches financial.report pattern)."""
+            r_name = re.sub('[^0-9a-zA-Z]+', '', str(rec.name))
+            return r_name + str(rec.id)
+
         for report in child_reports:
+            r_key = _report_key(report)
+            p_key = _report_key(report.parent_id) if report.parent_id else False
+
             vals = {
+                'r_id': report.id,
+                'id': r_key,
+                'parent': p_key,
                 'name': report.name,
                 'balance': res[report.id]['balance'] * int(report.sign),
                 'type': 'report',
                 'level': bool(report.style_overwrite) and int(
                     report.style_overwrite) or report.level,
                 'account_type': report.type or False,
-                # used to underline the financial report balances
             }
             if data['debit_credit']:
                 vals['debit'] = res[report.id]['debit']
@@ -152,40 +183,38 @@ class ReportFinancial(models.AbstractModel):
 
             lines.append(vals)
             if report.display_detail == 'no_detail':
-                # the rest of the loop is used to display the details of the financial report, so it's not needed here.
                 continue
             if res[report.id].get('account'):
                 sub_lines = []
                 for account_id, value in res[report.id]['account'].items():
-                    # if there are accounts to display, we add them to the
-                    # lines with a level equals to their level in
-                    # the COA + 1 (to avoid having them with a too low level
-                    # that would conflicts with the level of data
-                    # financial reports for Assets, liabilities...)
                     flag = False
                     account = self.env['account.account'].browse(account_id)
+                    acct_code = account.code or ''
                     vals = {
-                        'name': account.code + ' ' + account.name,
+                        'name': acct_code + ' ' + account.name,
                         'balance': value['balance'] * int(report.sign) or 0.0,
                         'type': 'account',
+                        'parent': r_key,
+                        'a_id': acct_code + re.sub('[^0-9a-zA-Z]+', 'acnt',
+                                                    account.name) + str(account.id),
                         'level': report.display_detail == 'detail_with_hierarchy' and 4,
                         'account_type': account.account_type,
+                        'account': account.id,
                     }
                     if data['debit_credit']:
                         vals['debit'] = value['debit']
                         vals['credit'] = value['credit']
-                        if not account.company_id.currency_id.is_zero(
-                                vals[
-                                    'debit']) or not account.company_id.currency_id.is_zero(
+                        if not self.env.company.currency_id.is_zero(
+                                vals['debit']) or not self.env.company.currency_id.is_zero(
                             vals['credit']):
                             flag = True
-                    if not account.company_id.currency_id.is_zero(
+                    if not self.env.company.currency_id.is_zero(
                             vals['balance']):
                         flag = True
                     if data['enable_filter']:
                         vals['balance_cmp'] = value['comp_bal'] * int(
                             report.sign)
-                        if not account.company_id.currency_id.is_zero(
+                        if not self.env.company.currency_id.is_zero(
                                 vals['balance_cmp']):
                             flag = True
                     if flag:

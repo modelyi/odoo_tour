@@ -180,6 +180,20 @@ class FinancialReport(models.TransientModel):
         return self._xlsx_action(
             self.account_report_id.name or 'Financial Report', table)
 
+    def action_view_report(self):
+        """Open the financial report in an online OWL-based viewer."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'tour_accounting.financial_report',
+            'params': {
+                'wizard_model': 'financial.report',
+                'wizard_id': self.id,
+                'period_id': self.period_id.id if self.period_id else False,
+            },
+            'name': self.account_report_id.name or 'Financial Report',
+        }
+
     def _compute_account_balance(self, accounts):
         """ compute the balance, debit
         and credit for the provided accounts
@@ -245,20 +259,38 @@ class FinancialReport(models.TransientModel):
             elif report.type == 'account_type':
                 # it's the sum the leaf accounts
                 #  with such an account type
-                accounts = self.env['account.account'].search([
-                    ('account_type', '=', report.account_type_ids)
-                ])
-                if report.name == "Expenses":
+                # Use XML ID to identify reports that need multiple account
+                # types, so the logic works regardless of UI language.
+                multi_type_map = {
+                    'tour_accounting.account_financial_report_expense0': [
+                        'expense', 'expense_depreciation',
+                        'expense_direct_cost',
+                    ],
+                    'tour_accounting.account_financial_report_liability0': [
+                        'liability_payable', 'liability_credit_card',
+                        'liability_current', 'liability_non_current',
+                    ],
+                    'tour_accounting.account_financial_report_assets0': [
+                        'asset_receivable', 'asset_cash', 'asset_current',
+                        'asset_non_current', 'asset_prepayments',
+                        'asset_fixed',
+                    ],
+                }
+                account_types = None
+                for xml_id, types in multi_type_map.items():
+                    try:
+                        if report == self.env.ref(xml_id):
+                            account_types = types
+                            break
+                    except ValueError:
+                        continue
+                if account_types:
                     accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["expense","expense_depreciation","expense_direct_cost"])
+                        ('account_type', 'in', account_types),
                     ])
-                if report.name == "Liability":
+                else:
                     accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["liability_payable","equity","liability_current","liability_non_current"])
-                    ])
-                if report.name == "Assets":
-                    accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["asset_receivable","asset_cash","asset_current","asset_non_current","asset_prepayments","asset_fixed"])
+                        ('account_type', '=', report.account_type_ids),
                     ])
 
                 res[report.id]['account'] = self._compute_account_balance(
@@ -351,12 +383,13 @@ class FinancialReport(models.TransientModel):
                     account = self.env['account.account'].browse(account_id)
                     # new_r_name = str(report.name)
                     # new_r_name = new_r_name.replace(" ", "-") + "-"
+                    acct_code = account.code or ''
                     vals = {
                         'account': account.id,
-                        'a_id': account.code + re.sub('[^0-9a-zA-Z]+', 'acnt',
+                        'a_id': acct_code + re.sub('[^0-9a-zA-Z]+', 'acnt',
                                                       account.name) + str(
                             account.id),
-                        'name': account.code + '-' + account.name,
+                        'name': acct_code + '-' + account.name,
                         'balance': value['balance'] * int(report.sign) or 0.0,
                         'type': 'account',
                         'parent': r_name + str(report.id),
@@ -447,6 +480,194 @@ class FinancialReport(models.TransientModel):
         if journal.currency_id:
             return journal.currency_id.id
         return self.env.company.currency_id.symbol
+
+    # ------------------------------------------------------------------
+    # Online report viewer support
+    # ------------------------------------------------------------------
+    @api.model
+    def get_online_report_data(self, wizard_id, period_id=None,
+                               date_from=None, date_to=None):
+        """Return report data as JSON-serializable dict for the OWL viewer.
+
+        ``period_id`` takes precedence over explicit ``date_from``/``date_to``
+        values: when provided the date range is read from the period record.
+        """
+        wizard = self.browse(wizard_id)
+        if not wizard.exists():
+            return {'error': 'Wizard record not found'}
+
+        # Resolve period to date range
+        if period_id:
+            period = self.env['tour.account.period'].browse(int(period_id))
+            if period.exists():
+                date_from = str(period.date_start)
+                date_to = str(period.date_end)
+
+        data = dict()
+        data['ids'] = []
+        data['model'] = 'financial.report'
+        data['form'] = wizard.read(
+            ['date_from', 'enable_filter', 'debit_credit', 'date_to',
+             'account_report_id', 'target_move', 'view_format',
+             'company_id'])[0]
+
+        used_context = wizard._build_contexts(data)
+        if date_from:
+            used_context['date_from'] = date_from
+        if date_to:
+            used_context['date_to'] = date_to
+        used_context['strict_range'] = True if used_context.get('date_from') else False
+
+        data['form']['used_context'] = dict(
+            used_context,
+            lang=self.env.context.get('lang') or 'en_US')
+
+        report_lines = wizard.get_account_lines(data['form'])
+
+        # Build tree structure for the OWL viewer
+        tree, all_ids = self._build_report_tree(report_lines)
+
+        # Compute totals
+        total_debit = sum(l.get('debit', 0) for l in report_lines if l['type'] == 'account')
+        total_credit = sum(l.get('credit', 0) for l in report_lines if l['type'] == 'account')
+        total_balance = sum(l.get('balance', 0) for l in report_lines if l['type'] == 'account')
+
+        return {
+            'tree': tree,
+            'expanded_rows': all_ids,
+            'show_debit_credit': data['form'].get('debit_credit', True),
+            'currency': self.env.company.currency_id.id,
+            'report_name': wizard.account_report_id.name,
+            'total_debit': round(total_debit, 2),
+            'total_credit': round(total_credit, 2),
+            'total_balance': round(total_balance, 2),
+        }
+
+    @api.model
+    def _build_report_tree(self, report_lines):
+        """Convert flat report lines into a tree structure for the OWL viewer.
+
+        The flat list from ``get_account_lines`` contains report-type lines
+        (section headers) and account-type lines (detail rows).  The
+        hierarchy is defined by the ``parent`` key on each line, not by the
+        ``level`` field (which is unreliable for report-type lines due to
+        ``style_overwrite`` being the string ``'0'``).
+        """
+        # Phase 1: Create a node for every line, indexed by its unique key
+        node_map = {}  # key -> node dict
+        ordered_keys = []  # preserve document order
+
+        for idx, line in enumerate(report_lines):
+            is_report = line['type'] == 'report'
+            is_account = line['type'] == 'account'
+            if is_report:
+                # Report lines have unique ids (e.g. 'Expense7')
+                node_key = line.get('id') or ('rpt_%d' % idx)
+            else:
+                # Account lines may share the same a_id across sections,
+                # so append the index to guarantee uniqueness.
+                base_key = line.get('a_id') or ('acct_%d' % idx)
+                node_key = '%s__%d' % (base_key, idx)
+
+            node = {
+                'id': node_key,
+                'name': line.get('name', ''),
+                'debit': round(line.get('debit', 0), 2),
+                'credit': round(line.get('credit', 0), 2),
+                'balance': round(line.get('balance', 0), 2),
+                'account_id': line.get('account') if is_account else False,
+                'report_id': line.get('r_id') if is_report else False,
+                'is_report': is_report,
+                'has_children': False,
+                'children': [],
+                '_parent_key': line.get('parent'),
+                '_display_level': 0,
+            }
+            node_map[node_key] = node
+            ordered_keys.append(node_key)
+
+        # Phase 2: Wire parent → children using the ``parent`` key
+        root_keys = []
+        for key in ordered_keys:
+            node = node_map[key]
+            parent_key = node.pop('_parent_key', None)
+            if parent_key and parent_key in node_map:
+                parent = node_map[parent_key]
+                parent['has_children'] = True
+                parent['children'].append(node)
+            else:
+                root_keys.append(key)
+
+        # Phase 3: Compute display levels from tree depth
+        all_ids = []
+
+        def set_depth(nodes, depth):
+            for n in nodes:
+                n['level'] = depth
+                all_ids.append(n['id'])
+                if n['children']:
+                    set_depth(n['children'], depth + 1)
+
+        roots = [node_map[k] for k in root_keys]
+        set_depth(roots, 0)
+
+        return roots, all_ids
+
+    @api.model
+    def get_drilldown_action(self, account_id=False, report_id=False,
+                             period_id=None, date_from=None, date_to=None):
+        """Return an action dict to drill down into journal items."""
+        # Resolve period to date range
+        if period_id:
+            period = self.env['tour.account.period'].browse(int(period_id))
+            if period.exists():
+                date_from = str(period.date_start)
+                date_to = str(period.date_end)
+
+        domain = [('display_type', 'not in', ['line_note', 'line_section'])]
+        if date_from:
+            domain.append(('date', '>=', date_from))
+        if date_to:
+            domain.append(('date', '<=', date_to))
+
+        if account_id:
+            account = self.env['account.account'].browse(int(account_id))
+            domain.append(('account_id', '=', int(account_id)))
+            name = '%s - %s' % (account.code, account.name)
+        elif report_id:
+            account_ids = self._get_report_account_ids(int(report_id))
+            if account_ids:
+                domain.append(('account_id', 'in', account_ids))
+            report = self.env['account.financial.report'].browse(int(report_id))
+            name = report.name
+        else:
+            name = '凭证明细'
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': name,
+            'res_model': 'account.move.line',
+            'view_mode': 'list,form',
+            'domain': domain,
+        }
+
+    def _get_report_account_ids(self, report_id):
+        """Recursively collect account IDs for a financial report node."""
+        report = self.env['account.financial.report'].browse(report_id)
+        if not report.exists():
+            return []
+        account_ids = set()
+        if report.type == 'accounts':
+            account_ids.update(report.account_ids.ids)
+        elif report.type == 'account_type':
+            if report.account_type_ids:
+                accounts = self.env['account.account'].search([
+                    ('account_type', '=', report.account_type_ids),
+                ])
+                account_ids.update(accounts.ids)
+        for child in report.children_ids:
+            account_ids.update(self._get_report_account_ids(child.id))
+        return list(account_ids)
 
 
 class ProfitLossPdf(models.AbstractModel):

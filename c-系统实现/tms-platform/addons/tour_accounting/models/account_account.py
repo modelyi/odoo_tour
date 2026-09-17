@@ -91,3 +91,24 @@ class AccountAccount(models.Model):
         if account and account.name != '其他应收款—员工借款':
             account.name = '其他应收款—员工借款'
         return True
+
+    @api.model
+    def _fix_depreciation_codes(self):
+        """为缺少编码的折旧科目补充 code_store。
+
+        折旧费用（Depreciation Expense）→ 6801
+        累计折旧（Accumulated Depreciation）→ 1502
+        幂等：仅当 code_store 为空时才写入。
+        """
+        code_map = {
+            'Depreciation Expense': '6801',
+            'Accumulated Depreciation': '1502',
+        }
+        for name, code in code_map.items():
+            account = self.search([
+                ('name', '=', name),
+                ('code_store', '=', False),
+            ], limit=1)
+            if account:
+                account.write({'code_store': code})
+        return True

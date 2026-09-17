@@ -88,7 +88,7 @@
                    ref="account_financial_report_balancesheet0"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
-            <field name="account_type_ids">income_other</field>
+            <field name="account_type_ids">asset_receivable</field>
         </record>
 <!--    Liability    -->
         <record id="account_financial_report_liabilitysum0"
@@ -108,7 +108,7 @@
                    ref="account_financial_report_liabilitysum0"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
-            <field name="account_type_ids">income_other</field>
+            <field name="account_type_ids">liability_payable</field>
         </record>
 <!--    Profit (Loss) to report   -->
         <record id="account_financial_report_profitloss_toreport0"
