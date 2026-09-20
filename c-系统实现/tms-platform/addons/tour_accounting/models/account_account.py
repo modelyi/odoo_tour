@@ -22,6 +22,21 @@
 from odoo import api, fields, models
 
 
+def _ondelete_custom_account_type(records):
+    """Reset custom account types to base types on module uninstall."""
+    mapping = {
+        'income_non_operating': 'income',
+        'expense_tax': 'expense',
+        'expense_selling': 'expense',
+        'expense_admin': 'expense',
+        'expense_finance': 'expense',
+        'expense_non_operating': 'expense',
+    }
+    for record in records:
+        if record.account_type in mapping:
+            record.account_type = mapping[record.account_type]
+
+
 class CashFlow(models.Model):
     """Inherits the account.account model to add additional functionality and
      fields to the account"""
@@ -83,6 +98,14 @@ class AccountAccount(models.Model):
             ('expense_finance', 'Financial Expenses'),
             ('expense_non_operating', 'Non-operating Expenses'),
         ],
+        ondelete={
+            'income_non_operating': _ondelete_custom_account_type,
+            'expense_tax': _ondelete_custom_account_type,
+            'expense_selling': _ondelete_custom_account_type,
+            'expense_admin': _ondelete_custom_account_type,
+            'expense_finance': _ondelete_custom_account_type,
+            'expense_non_operating': _ondelete_custom_account_type,
+        },
     )
 
     tour_vat_deductible = fields.Boolean(

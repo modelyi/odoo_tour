@@ -317,6 +317,62 @@ class FinancialReport(models.TransientModel):
                         res[report.id][field] += value[field]
         return res
 
+    def _inject_pnl_computed_lines(self, res, child_reports):
+        """Inject computed values for P&L summary lines (MOF standard).
+
+        Computes: 营业利润, 利润总额, 净利润 from their component lines.
+        """
+        # Map XML IDs to report records
+        xml_id_map = {}
+        for report in child_reports:
+            try:
+                xml_id = self.env['ir.model.data'].search([
+                    ('model', '=', 'account.financial.report'),
+                    ('res_id', '=', report.id),
+                    ('module', '=', 'tour_accounting'),
+                ], limit=1)
+                if xml_id:
+                    full_id = f"tour_accounting.{xml_id.name}"
+                    xml_id_map[full_id] = report
+            except:
+                continue
+
+        # Helper to get balance by XML ID
+        def get_bal(xml_id):
+            report = xml_id_map.get(xml_id)
+            return res.get(report.id, {}).get('balance', 0.0) if report else 0.0
+
+        # Compute 营业利润 = 营业收入 - 营业成本 - 税金及附加 - 销售费用 - 管理费用 - 财务费用 - 资产减值损失 + 营业外收入 - 营业外支出
+        operating_profit = (
+            get_bal('tour_accounting.fr_pnl_revenue')
+            - get_bal('tour_accounting.fr_pnl_cost')
+            - get_bal('tour_accounting.fr_pnl_tax_surcharges')
+            - get_bal('tour_accounting.fr_pnl_selling')
+            - get_bal('tour_accounting.fr_pnl_admin')
+            - get_bal('tour_accounting.fr_pnl_finance')
+            - get_bal('tour_accounting.fr_pnl_impairment')
+            + get_bal('tour_accounting.fr_pnl_non_op_income')
+            - get_bal('tour_accounting.fr_pnl_non_op_expense')
+        )
+
+        # Inject 营业利润
+        op_report = xml_id_map.get('tour_accounting.fr_pnl_operating_profit')
+        if op_report:
+            res[op_report.id] = {'balance': operating_profit, 'debit': 0.0, 'credit': 0.0}
+
+        # 利润总额 = 营业利润 (already includes non-operating items)
+        total_profit = operating_profit
+        tp_report = xml_id_map.get('tour_accounting.fr_pnl_total_profit')
+        if tp_report:
+            res[tp_report.id] = {'balance': total_profit, 'debit': 0.0, 'credit': 0.0}
+
+        # 净利润 = 利润总额 - 所得税费用
+        income_tax = get_bal('tour_accounting.fr_pnl_income_tax')
+        net_profit = total_profit - income_tax
+        np_report = xml_id_map.get('tour_accounting.fr_pnl_net_profit')
+        if np_report:
+            res[np_report.id] = {'balance': net_profit, 'debit': 0.0, 'credit': 0.0}
+
     def get_account_lines(self, data):
         lines = []
         account_report = self.env['account.financial.report'].search([
@@ -334,6 +390,11 @@ class FinancialReport(models.TransientModel):
                     for account_id, val in \
                             comparison_res[report_id].get('account').items():
                         report_acc[account_id]['comp_bal'] = val['balance']
+
+        # Inject computed lines for P&L (MOF standard)
+        pnl_report = self.env.ref('tour_accounting.account_financial_report_profitandloss0', raise_if_not_found=False)
+        if pnl_report and account_report.id == pnl_report.id:
+            self._inject_pnl_computed_lines(res, child_reports)
 
         for report in child_reports:
             r_name = str(report.name)

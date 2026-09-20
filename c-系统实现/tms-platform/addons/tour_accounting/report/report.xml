@@ -94,4 +94,44 @@
         <field name="report_file">tour_accounting.day_book_report_template</field>
         <field name="attachment_use">True</field>
     </record>
+
+    <!--    # 记账凭证打印    -->
+    <record id="action_report_voucher" model="ir.actions.report">
+        <field name="name">记账凭证</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_voucher</field>
+        <field name="report_file">tour_accounting.report_voucher</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--    # 固定资产卡片打印    -->
+    <record id="action_report_asset_card" model="ir.actions.report">
+        <field name="name">固定资产卡片</field>
+        <field name="model">account.asset.asset</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_card</field>
+        <field name="report_file">tour_accounting.report_asset_card</field>
+        <field name="binding_model_id" ref="tour_accounting.model_account_asset_asset"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--    # 折旧明细表打印    -->
+    <record id="action_report_asset_depreciation_detail" model="ir.actions.report">
+        <field name="name">折旧明细表</field>
+        <field name="model">asset.depreciation.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_depreciation_detail</field>
+        <field name="report_file">tour_accounting.report_asset_depreciation_detail</field>
+    </record>
+
+    <!--    # 资产增减变动表打印    -->
+    <record id="action_report_asset_change" model="ir.actions.report">
+        <field name="name">资产增减变动表</field>
+        <field name="model">asset.change.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_change</field>
+        <field name="report_file">tour_accounting.report_asset_change</field>
+    </record>
 </odoo>
