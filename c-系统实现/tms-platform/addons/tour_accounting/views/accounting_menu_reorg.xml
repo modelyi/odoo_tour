@@ -66,6 +66,12 @@
         <field name="action" ref="action_asset_change_report_wizard"/>
         <field name="sequence">4</field>
     </record>
+    <record model="ir.ui.menu" id="menu_asset_impairment">
+        <field name="name">资产减值</field>
+        <field name="parent_id" ref="menu_acct_asset"/>
+        <field name="action" ref="action_asset_impairment"/>
+        <field name="sequence">5</field>
+    </record>
     <record model="ir.ui.menu" id="menu_finance_config_assets">
         <field name="parent_id" ref="menu_acct_asset"/>
         <field name="sequence">10</field>

@@ -66,10 +66,16 @@ class AccountAssetAsset(models.Model):
     active = fields.Boolean(default=True)
     partner_id = fields.Many2one('res.partner', string='Partner')
     method = fields.Selection(
-        [('linear', 'Straight Line'), ('degressive', 'Declining')],
-        string='Computation Method', required=True,default='linear',
-        help="Choose the method to use to compute the amount of depreciation lines.\n  * Linear: Calculated on basis of: Gross Value / Number of Depreciations\n"
-             "  * Degressive: Calculated on basis of: Residual Value * Degressive Factor")
+        [('linear', 'Straight Line'),
+         ('degressive', 'Declining Balance'),
+         ('double_degressive', 'Double Declining Balance'),
+         ('sum_of_years', 'Sum-of-Years-Digits')],
+        string='Computation Method', required=True, default='linear',
+        help="Choose the method to use to compute the amount of depreciation lines.\n"
+             "  * Straight Line: Gross Value / Number of Depreciations\n"
+             "  * Declining Balance: Residual Value * Degressive Factor\n"
+             "  * Double Declining Balance: 2 * Straight Line Rate * Residual Value\n"
+             "  * Sum-of-Years-Digits: (Remaining Life / Sum of Years) * Depreciable Base")
     method_number = fields.Integer(string='Number of Depreciations',
                                    default=5,
                                    help="The number of depreciation's needed to depreciate your asset")
@@ -93,6 +99,15 @@ class AccountAssetAsset(models.Model):
                                             'asset_id',
                                             string='Depreciation Lines',
                                             )
+    impairment_line_ids = fields.One2many('asset.impairment',
+                                          'asset_id',
+                                          string='Impairment Lines',
+                                          )
+    impairment_total = fields.Float(string='累计减值',
+                                    compute='_compute_impairment_total',
+                                    store=True)
+    value_net = fields.Float(string='账面价值',
+                             compute='_compute_value_net')
     salvage_value = fields.Float(string='Salvage Value', digits=0,
 
                                  help="It is the amount you plan to have that you cannot depreciate.")
@@ -247,6 +262,37 @@ class AccountAssetAsset(models.Model):
                                         'date_to'] - depreciation_date).days + 1
                             amount = (
                                              residual_amount * self.method_progress_factor) / total_days * days
+            elif self.method == 'double_degressive':
+                # Double Declining Balance: 2 * (1 / useful_life) * residual_value
+                straight_line_rate = 1.0 / self.method_number
+                double_rate = 2 * straight_line_rate
+                amount = residual_amount * double_rate
+                if self.prorata and sequence == 1:
+                    if self.method_period % 12 != 0:
+                        date = datetime.strptime(str(self.date), '%Y-%m-%d')
+                        month_days = calendar.monthrange(date.year, date.month)[1]
+                        days = month_days - date.day + 1
+                        amount = (residual_amount * double_rate) / month_days * days
+                    else:
+                        days = (self.company_id.compute_fiscalyear_dates(
+                            depreciation_date)['date_to'] - depreciation_date).days + 1
+                        amount = (residual_amount * double_rate) / total_days * days
+            elif self.method == 'sum_of_years':
+                # Sum-of-Years-Digits: (remaining_life / sum_of_years) * depreciable_base
+                sum_of_years = sum(range(1, self.method_number + 1))
+                remaining_life = self.method_number - sequence + 1
+                depreciable_base = self.value - self.salvage_value
+                amount = depreciable_base * remaining_life / sum_of_years
+                if self.prorata and sequence == 1:
+                    if self.method_period % 12 != 0:
+                        date = datetime.strptime(str(self.date), '%Y-%m-%d')
+                        month_days = calendar.monthrange(date.year, date.month)[1]
+                        days = month_days - date.day + 1
+                        amount = amount / month_days * days
+                    else:
+                        days = (self.company_id.compute_fiscalyear_dates(
+                            depreciation_date)['date_to'] - depreciation_date).days + 1
+                        amount = amount / total_days * days
         return amount
 
     def _compute_board_undone_dotation_nb(self, depreciation_date, total_days):
@@ -554,6 +600,18 @@ class AccountAssetAsset(models.Model):
     def set_to_draft(self):
         """Set the asset's state to 'draft'."""
         self.write({'state': 'draft'})
+
+    @api.depends('impairment_line_ids.amount', 'impairment_line_ids.state')
+    def _compute_impairment_total(self):
+        for record in self:
+            record.impairment_total = sum(
+                record.impairment_line_ids.filtered(
+                    lambda l: l.state == 'posted').mapped('amount'))
+
+    @api.depends('value_residual', 'impairment_total')
+    def _compute_value_net(self):
+        for record in self:
+            record.value_net = record.value_residual - record.impairment_total
 
     @api.depends('value', 'salvage_value', 'depreciation_line_ids.move_check',
                  'depreciation_line_ids.amount')

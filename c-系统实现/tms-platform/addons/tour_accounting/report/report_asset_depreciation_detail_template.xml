@@ -33,11 +33,12 @@
                 <table class="table table-sm table-bordered" style="margin-bottom: 0;">
                     <thead>
                         <tr style="background-color: #f5f5f5;">
-                            <th class="text-center" style="width: 20%;">资产数量</th>
-                            <th class="text-center" style="width: 20%;">原值合计</th>
-                            <th class="text-center" style="width: 20%;">本期折旧合计</th>
-                            <th class="text-center" style="width: 20%;">累计折旧合计</th>
-                            <th class="text-center" style="width: 20%;">净值合计</th>
+                            <th class="text-center" style="width: 14%;">资产数量</th>
+                            <th class="text-center" style="width: 14%;">原值合计</th>
+                            <th class="text-center" style="width: 14%;">本期折旧合计</th>
+                            <th class="text-center" style="width: 14%;">累计折旧合计</th>
+                            <th class="text-center" style="width: 14%;">累计减值合计</th>
+                            <th class="text-center" style="width: 16%;">账面价值合计</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,8 +71,12 @@
                                 <t t-set="total_accumulated" t-value="sum(sum(l.amount for l in a.depreciation_line_ids if l.move_posted_check) for a in assets)"/>
                                 <t t-out="total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
                             </td>
+                            <td class="text-end">
+                                <t t-set="total_impairment" t-value="sum(a.impairment_total for a in assets)"/>
+                                <t t-out="total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
                             <td class="text-end" style="font-weight: bold;">
-                                <t t-out="total_value - total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
+                                <t t-out="total_value - total_accumulated - total_impairment" t-options='{"widget": "float", "precision": 2}'/>
                             </td>
                         </tr>
                     </tbody>
@@ -83,16 +88,17 @@
                 <table class="table table-sm table-bordered" style="font-size: 10px;">
                     <thead>
                         <tr style="background-color: #f5f5f5;">
-                            <th class="text-center" style="width: 8%;">序号</th>
-                            <th class="text-center" style="width: 10%;">资产编号</th>
-                            <th class="text-center" style="width: 15%;">资产名称</th>
-                            <th class="text-center" style="width: 12%;">资产类别</th>
-                            <th class="text-center" style="width: 10%;">原值</th>
-                            <th class="text-center" style="width: 8%;">残值</th>
+                            <th class="text-center" style="width: 7%;">序号</th>
+                            <th class="text-center" style="width: 9%;">资产编号</th>
+                            <th class="text-center" style="width: 13%;">资产名称</th>
+                            <th class="text-center" style="width: 10%;">资产类别</th>
+                            <th class="text-center" style="width: 9%;">原值</th>
+                            <th class="text-center" style="width: 7%;">残值</th>
                             <th class="text-center" style="width: 8%;">折旧方法</th>
-                            <th class="text-center" style="width: 10%;">本期折旧</th>
-                            <th class="text-center" style="width: 10%;">累计折旧</th>
-                            <th class="text-center" style="width: 9%;">净值</th>
+                            <th class="text-center" style="width: 9%;">本期折旧</th>
+                            <th class="text-center" style="width: 9%;">累计折旧</th>
+                            <th class="text-center" style="width: 8%;">减值</th>
+                            <th class="text-center" style="width: 10%;">账面价值</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,6 +121,8 @@
                                 <td class="text-center">
                                     <t t-if="asset.method == 'linear'">直线法</t>
                                     <t t-elif="asset.method == 'degressive'">余额递减法</t>
+                                    <t t-elif="asset.method == 'double_degressive'">双倍余额递减法</t>
+                                    <t t-elif="asset.method == 'sum_of_years'">年数总和法</t>
                                     <t t-else="">-</t>
                                 </td>
                                 <td class="text-end">
@@ -124,7 +132,10 @@
                                     <t t-out="asset_accumulated_dep" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
                                 <td class="text-end">
-                                    <t t-out="asset.value - asset_accumulated_dep" t-options='{"widget": "float", "precision": 2}'/>
+                                    <t t-out="asset.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset.value - asset_accumulated_dep - asset.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
                             </tr>
                         </t>
@@ -133,6 +144,7 @@
                         <t t-foreach="range(max(0, 10 - asset_count))" t-as="i">
                             <tr>
                                 <td style="height: 20px;"> </td>
+                                <td> </td>
                                 <td> </td>
                                 <td> </td>
                                 <td> </td>
@@ -160,7 +172,10 @@
                                 <t t-out="total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
                             </td>
                             <td class="text-end">
-                                <t t-out="total_value - total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
+                                <t t-out="total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="total_value - total_accumulated - total_impairment" t-options='{"widget": "float", "precision": 2}'/>
                             </td>
                         </tr>
                     </tfoot>

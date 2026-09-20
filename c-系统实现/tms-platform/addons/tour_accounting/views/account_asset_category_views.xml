@@ -65,8 +65,8 @@
                         <group invisible="type == 'sale'" string="Depreciation Method">
                             <field name="method"/>
                             <field name="method_progress_factor"
-                                   invisible="method == 'linear'"
-                                   required="method == 'degressive'" widget="percentage"/>
+                                   invisible="method not in ('degressive', 'double_degressive')"
+                                   required="method in ('degressive', 'double_degressive')" widget="percentage"/>
                             <field name="prorata"
                                    invisible="method == 'end'"/>
                         </group>

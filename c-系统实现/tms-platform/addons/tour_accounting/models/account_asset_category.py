@@ -62,11 +62,16 @@ class AccountAssetCategory(models.Model):
     journal_id = fields.Many2one('account.journal', string='Journal',
                                  required=True)
     method = fields.Selection(
-        [('linear', 'Straight Line'), ('degressive', 'Declining')],
+        [('linear', 'Straight Line'),
+         ('degressive', 'Declining Balance'),
+         ('double_degressive', 'Double Declining Balance'),
+         ('sum_of_years', 'Sum-of-Years-Digits')],
         string='Computation Method', required=True, default='linear',
         help="Choose the method to use to compute the amount of depreciation lines.\n"
-             "  * Linear: Calculated on basis of: Gross Value / Number of Depreciations\n"
-             "  * Degressive: Calculated on basis of: Residual Value * Degressive Factor")
+             "  * Straight Line: Gross Value / Number of Depreciations\n"
+             "  * Declining Balance: Residual Value * Degressive Factor\n"
+             "  * Double Declining Balance: 2 * Straight Line Rate * Residual Value\n"
+             "  * Sum-of-Years-Digits: (Remaining Life / Sum of Years) * Depreciable Base")
     method_number = fields.Integer(string='Number of Depreciations', default=5,
                                    help="The number of depreciations needed to depreciate your asset")
     method_period = fields.Integer(string='Period Length', default=1,

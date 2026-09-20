@@ -62,6 +62,8 @@
                                    readonly="state != 'draft'"
                                    invisible="type == 'sale'"/>
                             <field name="value_residual" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="impairment_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="value_net" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="partner_id" string="Vendor" readonly="state != 'draft'"
                                    domain="[('supplier_rank', '>', 0)]"/>
                             <field name="invoice_id" string="Invoice"
@@ -121,12 +123,28 @@
                                 <group invisible="type == 'sale'" string="Depreciation Method">
                                     <field name="method" readonly="state != 'draft'"/>
                                     <field name="method_progress_factor"
-                                           invisible="method == 'linear'"
-                                           required="method == 'degressive'" widget="percentage" readonly="state != 'draft'"/>
+                                           invisible="method not in ('degressive', 'double_degressive')"
+                                           required="method in ('degressive', 'double_degressive')" widget="percentage" readonly="state != 'draft'"/>
                                     <field name="prorata"
                                            invisible="method == 'end'" readonly="state != 'draft'"/>
                                 </group>
                             </group>
+                        </page>
+                        <page string="Impairment" invisible="not impairment_line_ids">
+                            <field name="impairment_line_ids" readonly="state not in ['open', 'paused']">
+                                <list string="Impairment Lines" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="amount" widget="monetary"/>
+                                    <field name="reason"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'draft'"
+                                           decoration-warning="state == 'confirmed'"
+                                           decoration-success="state == 'posted'"
+                                           decoration-danger="state == 'cancelled'"/>
+                                    <field name="move_id"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Depreciation Board" invisible="not depreciation_line_ids">
                             <field name="depreciation_line_ids" mode="list"

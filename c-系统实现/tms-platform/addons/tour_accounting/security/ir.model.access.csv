@@ -20,6 +20,9 @@ access_account_asset_category_invoicing_payment,account.asset.category,model_acc
 access_account_asset_asset_invoicing_payment,account.asset.asset,model_account_asset_asset,account.group_account_invoice,1,0,1,0
 access_account_asset_depreciation_line_invoicing_payment,account.asset.depreciation.line,model_account_asset_depreciation_line,account.group_account_invoice,1,0,1,0
 
+access_asset_impairment_user,asset.impairment.user,model_asset_impairment,account.group_account_user,1,0,0,0
+access_asset_impairment_manager,asset.impairment.manager,model_asset_impairment,tour_accounting.group_account_chief,1,1,1,1
+
 access_account_aged_trial_balance,access.account.aged.trial.balance,model_account_aged_trial_balance,account.group_account_user,1,1,1,1
 access_account_account_bank_book_report,access.account.bank.book.report,model_account_bank_book_report,account.group_account_user,1,1,1,1
 access_account_cash_book_report,access.account.cash.book.report,model_account_cash_book_report,account.group_account_user,1,1,1,1
