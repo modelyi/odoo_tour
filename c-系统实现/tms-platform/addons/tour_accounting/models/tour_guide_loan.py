@@ -111,6 +111,38 @@ class TourGuideLoan(models.Model):
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
 
+    # === Stat button counts ===
+    expense_count = fields.Integer('报账费用数', compute='_compute_related_counts')
+    move_count = fields.Integer('凭证数', compute='_compute_related_counts')
+
+    @api.depends('move_id', 'x_expense_ids')
+    def _compute_related_counts(self):
+        for rec in self:
+            rec.expense_count = len(rec.x_expense_ids) if rec.x_expense_ids else 0
+            rec.move_count = 1 if rec.move_id else 0
+
+    def action_view_expenses(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '报账费用',
+            'res_model': 'hr.expense',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.x_expense_ids.ids)],
+        }
+
+    def action_view_move(self):
+        self.ensure_one()
+        if not self.move_id:
+            return {'type': 'ir.actions.act_window', 'name': '凭证', 'res_model': 'account.move', 'view_mode': 'form', 'views': [(False, 'form')], 'target': 'current'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '放款凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.move_id.id,
+        }
+
     _uniq_loan_name = models.Constraint('unique(name)', '借款单号已存在')
 
     @api.onchange('guide_id')

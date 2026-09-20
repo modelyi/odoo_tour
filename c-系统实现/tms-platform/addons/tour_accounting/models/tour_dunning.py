@@ -60,6 +60,21 @@ class TourDunning(models.Model):
 
     company_id = fields.Many2one(
         'res.company', string='所属公司', default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+
+    def action_view_plan_account(self):
+        self.ensure_one()
+        account = self.env['tour.plan.account'].search(
+            [('plan_id', '=', self.plan_id.id)], limit=1)
+        if not account:
+            return {'type': 'ir.actions.act_window', 'name': '单团核算', 'res_model': 'tour.plan.account', 'view_mode': 'list,form'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '单团核算',
+            'res_model': 'tour.plan.account',
+            'view_mode': 'form',
+            'res_id': account.id,
+        }
 
     @api.onchange('plan_id')
     def _onchange_plan_id(self):

@@ -28,6 +28,25 @@ class AssetImpairment(models.Model):
                                  required=True,
                                  default=lambda self: self.env.company)
     notes = fields.Text(string='备注')
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+    move_count = fields.Integer('凭证数', compute='_compute_move_count')
+
+    @api.depends('move_id')
+    def _compute_move_count(self):
+        for rec in self:
+            rec.move_count = 1 if rec.move_id else 0
+
+    def action_view_move(self):
+        self.ensure_one()
+        if not self.move_id:
+            return {'type': 'ir.actions.act_window', 'name': '凭证', 'res_model': 'account.move', 'view_mode': 'form', 'views': [(False, 'form')], 'target': 'current'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '减值凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.move_id.id,
+        }
 
     @api.model_create_multi
     def create(self, vals_list):

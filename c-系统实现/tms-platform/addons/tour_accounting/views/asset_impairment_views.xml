@@ -19,29 +19,44 @@
                            statusbar_visible="draft,confirmed,posted"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not move_id">
+                            <field name="move_count" widget="statinfo" string="凭证"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="减值信息">
                             <field name="asset_id" readonly="state != 'draft'"/>
                             <field name="date" readonly="state != 'draft'"/>
-                            <field name="amount" readonly="state != 'draft'"/>
-                        </group>
-                        <group>
+                            <field name="amount" widget="monetary" currency_field="currency_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id" column_invisible="True"/>
                             <field name="company_id" options="{'no_create': True}"
                                    groups="base.group_multi_company" readonly="state != 'draft'"/>
                         </group>
+                        <group string="减值原因">
+                            <field name="reason" nolabel="1" readonly="state != 'draft'"
+                                   placeholder="请说明减值原因..."/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="reason" readonly="state != 'draft'"/>
-                        <field name="notes" readonly="state != 'draft'"/>
-                    </group>
-                    <group invisible="not move_id">
-                        <field name="move_id" readonly="1"/>
-                    </group>
+                    <notebook>
+                        <page string="备注" name="notes">
+                            <field name="notes" nolabel="1" readonly="state != 'draft'"
+                                   placeholder="备注信息..."/>
+                        </page>
+                        <page string="凭证" name="move" invisible="not move_id">
+                            <group>
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>

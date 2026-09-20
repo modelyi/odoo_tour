@@ -98,6 +98,10 @@ class TourPlanAccount(models.Model):
     profit_no_shop = fields.Float('毛利(不含税,不含购物)', digits=(16, 2),
                                   compute='_compute_profit', store=True,
                                   help='= (不含税收入 − 购物佣金收入) − 不含税成本')
+    profit_margin = fields.Float('毛利率(%)', digits=(8, 2), compute='_compute_profit',
+                                 store=True,
+                                 help='= 毛利(不含税) ÷ 收入合计 × 100')
+    begin_date = fields.Date('出发日期', related='plan_id.begin_date', store=True)
 
     # === 状态/归属 ===
     state = fields.Selection([
@@ -108,6 +112,7 @@ class TourPlanAccount(models.Model):
     company_id = fields.Many2one('res.company', string='所属公司',
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
 
     _uniq_plan = models.Constraint(
         'unique(plan_id)',
@@ -242,6 +247,64 @@ class TourPlanAccount(models.Model):
                 income - (rec.income_commission or 0.0) - cost_net, 2)
             inc_gross = income * (1 + rr) if rr else income
             rec.profit_tax_incl = round(inc_gross - gross, 2)
+            rec.profit_margin = round(
+                (income - cost_net) / income * 100.0, 2) if income else 0.0
+
+    # === Stat button counts ===
+    invoice_count = fields.Integer('发票数', compute='_compute_related_counts')
+    claim_count = fields.Integer('收款数', compute='_compute_related_counts')
+    analytic_move_count = fields.Integer('凭证行数', compute='_compute_related_counts')
+    dunning_count = fields.Integer('催收数', compute='_compute_related_counts')
+
+    @api.depends('plan_id', 'analytic_account_id')
+    def _compute_related_counts(self):
+        for rec in self:
+            plan = rec.plan_id
+            rec.invoice_count = len(plan.invoice_ids) if plan else 0
+            rec.claim_count = len(plan.claim_ids) if plan else 0
+            rec.analytic_move_count = len(rec.analytic_account_id.line_ids) if rec.analytic_account_id else 0
+            rec.dunning_count = self.env['tour.dunning'].search_count(
+                [('plan_id', '=', plan.id)]) if plan else 0
+
+    def action_view_invoices(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '团队发票',
+            'res_model': 'account.move',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.plan_id.invoice_ids.ids)],
+        }
+
+    def action_view_claims(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '收款认领',
+            'res_model': 'tour.payment.claim',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.plan_id.claim_ids.ids)],
+        }
+
+    def action_view_analytic_lines(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '分析凭证行',
+            'res_model': 'account.analytic.line',
+            'view_mode': 'list,form',
+            'domain': [('account_id', '=', self.analytic_account_id.id)],
+        }
+
+    def action_view_dunnings(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '催收记录',
+            'res_model': 'tour.dunning',
+            'view_mode': 'list,form',
+            'domain': [('plan_id', '=', self.plan_id.id)],
+        }
 
     def action_settle(self):
         for rec in self:

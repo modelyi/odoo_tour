@@ -21,7 +21,7 @@
 #############################################################################
 {
     'name': 'Tour Accounting - 旅行社财务增强',
-    'version': '19.0.4.8.0',
+    'version': '19.0.4.10.0',
     'category': 'Accounting',
     'summary': """旅行社财务增强套件（fork 自 Cybrosys base_accounting_kit），为 Odoo 19 Community 补回完整财务功能：
                   财务报表（损益表/资产负债表/总账/试算平衡/往来明细账/账龄应收应付）、资产管理、预算、
@@ -66,6 +66,7 @@
         'data/account_asset_cron.xml',
         'data/account_pdc_data.xml',
         'data/asset_impairment_sequence.xml',
+        'data/analytic_plans_data.xml',
         'views/reports_config_view.xml',
         'views/finance_menu.xml',
         'wizard/asset_depreciation_confirmation_views.xml',
@@ -163,6 +164,9 @@
         'views/finance_general_menu.xml',
         'views/tour_invoice_views.xml',
         'views/tour_pay_request_views.xml',
+        'views/management_analysis_views.xml',
+        'views/cost_allocation_views.xml',
+        'views/budget_analysis_views.xml',
     ],
     'external_dependencies': {
             'python': ['openpyxl', 'ofxparse', 'qifparse', 'xlsxwriter']
@@ -184,6 +188,7 @@
         ]
     },
     'license': 'LGPL-3',
+    'post_init_hook': '_populate_cost_profit_centers',
     'images': ['static/description/banner.gif'],
     'installable': True,
     'auto_install': False,

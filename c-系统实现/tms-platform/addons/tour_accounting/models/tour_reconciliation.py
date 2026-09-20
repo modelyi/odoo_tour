@@ -82,9 +82,42 @@ class TourReconciliation(models.Model):
     company_id = fields.Many2one('res.company', string='所属公司',
                                  default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string='所属部门')
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
 
     line_ids = fields.One2many('tour.reconciliation.line', 'reconciliation_id',
                                string='对账明细行')
+
+    # === Stat button counts ===
+    line_count = fields.Integer('明细行数', compute='_compute_related_counts')
+    diff_move_count = fields.Integer('差异凭证数', compute='_compute_related_counts')
+
+    @api.depends('line_ids', 'diff_move_id')
+    def _compute_related_counts(self):
+        for rec in self:
+            rec.line_count = len(rec.line_ids)
+            rec.diff_move_count = 1 if rec.diff_move_id else 0
+
+    def action_view_diff_move(self):
+        self.ensure_one()
+        if not self.diff_move_id:
+            return {'type': 'ir.actions.act_window', 'name': '差异凭证', 'res_model': 'account.move', 'view_mode': 'form', 'views': [(False, 'form')], 'target': 'current'}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '差异调整凭证',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.diff_move_id.id,
+        }
+
+    def action_view_lines(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '对账明细行',
+            'res_model': 'tour.reconciliation.line',
+            'view_mode': 'list,form',
+            'domain': [('reconciliation_id', '=', self.id)],
+        }
 
     def _reconciliation_move_lines(self):
         """该对账单（往来方 + 期间 + 往来科目）的已过账凭证行。"""

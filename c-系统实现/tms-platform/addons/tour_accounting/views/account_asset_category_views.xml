@@ -5,72 +5,88 @@
         <field name="name">account.asset.category.view.form</field>
         <field name="model">account.asset.category</field>
         <field name="arch" type="xml">
-            <form string="Asset category">
+            <form string="资产类别">
                 <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="资产类型"
+                               class="oe_edit_only"
+                               invisible="type != 'purchase'"/>
+                        <label for="name" string="递延收入类型"
+                               class="oe_edit_only"
+                               invisible="type == 'purchase'"/>
+                        <h1>
+                            <field name="name" placeholder="例如：电脑设备"/>
+                        </h1>
+                    </div>
                     <group>
-                        <div class="oe_title">
-                            <label for="name" string="Asset Type"
-                                   class="oe_edit_only"
-                                   invisible="type != 'purchase'"/>
-                            <label for="name" string="Deferred Revenue Type"
-                                   class="oe_edit_only"
-                                   invisible="type == 'purchase'"/>
-                            <h1>
-                                <field name="name" placeholder="e.g. Computers"/>
-                            </h1>
-                        </div>
                         <group>
                             <field name="type" invisible="1"/>
                             <field name="company_id" options="{'no_create': True}"/>
                             <field name="price"/>
                         </group>
-                        <group string="Journal Entries">
-                            <field name="journal_id"/>
-                            <div>
-                                <label for="account_asset_id" invisible="type != 'purchase'"/>
-                                <label for="account_asset_id" string="Deferred Revenue Account" invisible="type != 'sale'"/>
-                            </div>
-                            <field name="account_asset_id" nolabel="1" invisible="not type"/>
-                            <div>
-                                <label for="account_depreciation_id" invisible="type != 'purchase'"/>
-                                <label for="account_depreciation_id" string="Recognition Income Account" invisible="type != 'sale'"/>
-                            </div>
-                            <field name="account_depreciation_id" nolabel="1" />
-                            <div>
-                                <label for="account_depreciation_expense_id" invisible="type != 'purchase'"/>
-                                <label for="account_depreciation_expense_id" string="Recognition Account" invisible="type != 'sale'"/>
-                            </div>
-                            <field name="account_depreciation_expense_id" nolabel="1"/>
-                            <field name="account_disposal_id"/>
-                            <field name="account_analytic_id"/>
-                        </group>
-                        <group string="Periodicity">
-                            <field name="method_time" string="Time Method Based On" widget="radio" invisible="type != 'purchase'"/>
-                            <field name="method_number" string="Number of Entries"
-                                   invisible="method_time != 'number' and not type"
-                                   required="method_time == 'number'"/>
-                            <label for="method_period" string="One Entry Every"/>
-                            <div>
-                                <field name="method_period" nolabel="1" invisible="not type" class="oe_inline"/>
-                                months
-                            </div>
-                            <field name="method_end"
-                                   required="method_time == 'end'"
-                                   invisible="method_time != 'end'"/>
-                        </group>
-                        <group string="Additional Options">
-                            <field name="open_asset"/>
-                            <field name="group_entries"/>
-                        </group>
-                        <group invisible="type == 'sale'" string="Depreciation Method">
-                            <field name="method"/>
-                            <field name="method_progress_factor"
-                                   invisible="method not in ('degressive', 'double_degressive')"
-                                   required="method in ('degressive', 'double_degressive')" widget="percentage"/>
-                            <field name="prorata"
-                                   invisible="method == 'end'"/>
-                        </group>
                     </group>
+                    <notebook>
+                        <page string="基本信息" name="basic">
+                            <group>
+                                <group string="期间设置">
+                                    <field name="method_time" string="时间计算方式" widget="radio" invisible="type != 'purchase'"/>
+                                    <field name="method_number" string="折旧期数"
+                                           invisible="method_time != 'number' and not type"
+                                           required="method_time == 'number'"/>
+                                    <label for="method_period" string="折旧频率"/>
+                                    <div>
+                                        <field name="method_period" nolabel="1" invisible="not type" class="oe_inline"/>
+                                        个月
+                                    </div>
+                                    <field name="method_end"
+                                           required="method_time == 'end'"
+                                           invisible="method_time != 'end'"/>
+                                </group>
+                                <group string="其他选项">
+                                    <field name="open_asset"/>
+                                    <field name="group_entries"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="会计科目" name="accounts">
+                            <group>
+                                <group string="日记账">
+                                    <field name="journal_id"/>
+                                </group>
+                                <group string="科目配置">
+                                    <div>
+                                        <label for="account_asset_id" invisible="type != 'purchase'"/>
+                                        <label for="account_asset_id" string="递延收入科目" invisible="type != 'sale'"/>
+                                    </div>
+                                    <field name="account_asset_id" nolabel="1" invisible="not type"/>
+                                    <div>
+                                        <label for="account_depreciation_id" invisible="type != 'purchase'"/>
+                                        <label for="account_depreciation_id" string="确认收入科目" invisible="type != 'sale'"/>
+                                    </div>
+                                    <field name="account_depreciation_id" nolabel="1"/>
+                                    <div>
+                                        <label for="account_depreciation_expense_id" invisible="type != 'purchase'"/>
+                                        <label for="account_depreciation_expense_id" string="确认费用科目" invisible="type != 'sale'"/>
+                                    </div>
+                                    <field name="account_depreciation_expense_id" nolabel="1"/>
+                                    <field name="account_disposal_id"/>
+                                    <field name="account_analytic_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="折旧方法" name="depreciation" invisible="type == 'sale'">
+                            <group>
+                                <group>
+                                    <field name="method"/>
+                                    <field name="method_progress_factor"
+                                           invisible="method not in ('degressive', 'double_degressive')"
+                                           required="method in ('degressive', 'double_degressive')" widget="percentage"/>
+                                    <field name="prorata"
+                                           invisible="method == 'end'"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -80,23 +96,23 @@
         <field name="name">account.asset.category.view.kanban</field>
         <field name="model">account.asset.category</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile">
+            <kanban class="o_kanban_mobile" sample="1">
                 <field name="name"/>
                 <field name="journal_id"/>
                 <field name="method"/>
+                <field name="price"/>
                 <templates>
                     <t t-name="card">
-                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                            <div class="row mb4">
-                                <div class="col-6">
-                                    <strong><span><t t-out="record.name.value"/></span></strong>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <span class="badge"><strong><t t-out="record.method.value"/></strong></span>
-                                </div>
-                            </div>
-                            <div> <t t-out="record.journal_id.value"/></div>
+                        <div class="d-flex align-items-baseline mb-2">
+                            <field name="name" class="fw-bolder fs-5 me-2"/>
+                            <field name="price" widget="monetary" class="fw-bolder ms-auto flex-shrink-0"/>
                         </div>
+                        <div class="text-muted mb-2">
+                            <field name="journal_id"/>
+                        </div>
+                        <footer>
+                            <field name="method" widget="badge"/>
+                        </footer>
                     </t>
                 </templates>
             </kanban>
@@ -110,7 +126,7 @@
             <list string="Asset category">
                 <field name="name"/>
                 <field name="journal_id"/>
-                <field name="method"/>
+                <field name="method" widget="badge"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </list>
         </field>

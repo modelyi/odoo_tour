@@ -23,3 +23,4 @@ from . import models
 from . import report
 from . import wizard
 from . import controllers
+from .hooks import _populate_cost_profit_centers

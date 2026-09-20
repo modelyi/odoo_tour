@@ -134,46 +134,58 @@
                     <field name="state" widget="statusbar" statusbar_visible="pending,verified,settled"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="line_count" widget="statinfo" string="明细行"/>
+                        </button>
+                        <button name="action_view_diff_move" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="diff_move_count" widget="statinfo" string="差异凭证"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name" placeholder="对账单号"/></h1>
+                        <h1>
+                            <field name="name" placeholder="对账单号"/>
+                        </h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="对账信息">
                             <field name="verify_type"/>
                             <field name="supplier_id"/>
                             <field name="supplier_name"/>
+                            <field name="currency_id" column_invisible="True"/>
                         </group>
-                        <group>
+                        <group string="期间与账龄">
                             <field name="period_begin"/>
                             <field name="period_end"/>
                             <field name="aging_days"/>
                         </group>
                     </group>
-                    <group string="金额（由凭证行派生）">
-                        <field name="total_amount"/>
-                        <field name="settled_amount"/>
-                        <field name="unsettled_amount"/>
-                        <field name="invoice_collected"/>
-                        <field name="invoice_gap"/>
-                    </group>
-                    <group string="差异调整（经 account.move 落地）">
-                        <field name="adjust_amount"/>
-                        <field name="diff_move_id"/>
-                        <field name="diff_move_state"/>
-                    </group>
-                    <group string="核对与确认（对账人 ≠ 确认人）">
-                        <field name="verify_user_id"/>
-                        <field name="verify_date"/>
-                        <field name="confirm_user_id"/>
-                        <field name="confirm_date"/>
-                    </group>
-                    <group string="归属">
-                        <field name="company_id"/>
-                        <field name="department_id"/>
-                    </group>
                     <notebook>
-                        <page string="明细行">
+                        <page string="金额" name="amounts">
+                            <group>
+                                <group string="金额（由凭证行派生）">
+                                    <field name="total_amount" widget="monetary" currency_field="currency_id"/>
+                                    <field name="settled_amount" widget="monetary" currency_field="currency_id"/>
+                                    <field name="unsettled_amount" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                                <group string="发票">
+                                    <field name="invoice_collected" widget="monetary" currency_field="currency_id"/>
+                                    <field name="invoice_gap" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                            </group>
+                            <group string="差异调整（经 account.move 落地）">
+                                <group>
+                                    <field name="adjust_amount" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="diff_move_id"/>
+                                    <field name="diff_move_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="明细行" name="lines">
                             <field name="line_ids">
                                 <list string="对账明细行">
                                     <field name="plan_id"/>
@@ -184,13 +196,36 @@
                                     <field name="settled_amount"/>
                                     <field name="unsettled_amount"/>
                                     <field name="invoice_amount"/>
-                                    <field name="verify_state"/>
+                                    <field name="verify_state" widget="badge"
+                                           decoration-success="verify_state=='verified'"
+                                           decoration-warning="verify_state=='unverified'"
+                                           decoration-danger="verify_state=='diff'"/>
                                     <field name="diff_reason"/>
                                 </list>
                             </field>
                         </page>
-                        <page string="备注">
-                            <field name="remark"/>
+                        <page string="核对与确认" name="verification">
+                            <group>
+                                <group string="对账人">
+                                    <field name="verify_user_id" widget="many2one_avatar_user"/>
+                                    <field name="verify_date"/>
+                                </group>
+                                <group string="确认人">
+                                    <field name="confirm_user_id" widget="many2one_avatar_user"/>
+                                    <field name="confirm_date"/>
+                                </group>
+                            </group>
+                            <group string="归属">
+                                <group>
+                                    <field name="company_id"/>
+                                </group>
+                                <group>
+                                    <field name="department_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="备注" name="remark">
+                            <field name="remark" nolabel="1" placeholder="备注信息..."/>
                         </page>
                     </notebook>
                 </sheet>

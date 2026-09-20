@@ -33,8 +33,49 @@
     <record id="action_tour_plan_account" model="ir.actions.act_window">
         <field name="name">单团核算</field>
         <field name="res_model">tour.plan.account</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_tour_plan_account_search"/>
+    </record>
+
+    <record id="view_tour_plan_account_kanban" model="ir.ui.view">
+        <field name="name">tour.plan.account.kanban</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="plan_code"/>
+                <field name="plan_id"/>
+                <field name="income_total"/>
+                <field name="cost_total"/>
+                <field name="profit"/>
+                <field name="state"/>
+                <field name="supplier_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex align-items-baseline mb-2">
+                            <field name="plan_code" class="fw-bolder fs-5 me-2"/>
+                            <field name="profit" widget="monetary" class="fw-bolder ms-auto flex-shrink-0"/>
+                        </div>
+                        <div class="text-muted mb-2">
+                            <field name="supplier_id"/>
+                        </div>
+                        <div class="d-flex justify-content-between mt4">
+                            <span class="text-muted">收入</span>
+                            <field name="income_total" widget="monetary"/>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">成本</span>
+                            <field name="cost_total" widget="monetary"/>
+                        </div>
+                        <footer class="align-items-end">
+                            <field name="state" widget="badge"
+                                decoration-success="state=='settled'"
+                                decoration-info="state=='accounting'"
+                                decoration-muted="state=='archived'"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
     </record>
 
     <record id="view_tour_plan_account_list" model="ir.ui.view">
@@ -73,68 +114,137 @@
                     <field name="state" widget="statusbar" statusbar_visible="accounting,settled,archived"/>
                 </header>
                 <sheet>
-                    <group>
-                        <group>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="invoice_count" widget="statinfo" string="发票"/>
+                        </button>
+                        <button name="action_view_claims" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="claim_count" widget="statinfo" string="收款"/>
+                        </button>
+                        <button name="action_view_analytic_lines" type="object"
+                                class="oe_stat_button" icon="fa-list-alt">
+                            <field name="analytic_move_count" widget="statinfo" string="凭证行"/>
+                        </button>
+                        <button name="action_view_dunnings" type="object"
+                                class="oe_stat_button" icon="fa-bell">
+                            <field name="dunning_count" widget="statinfo" string="催收"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="plan_code" readonly="1"/>
+                        </h1>
+                        <h2>
                             <field name="plan_id"/>
-                            <field name="plan_code"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group string="基本信息">
                             <field name="biz_mode"/>
-                        </group>
-                        <group>
                             <field name="analytic_account_id"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </group>
+                        <group string="归属">
                             <field name="company_id"/>
                             <field name="department_id"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="收入">
+                        <page string="收入" name="income">
                             <group>
-                                <field name="income_total"/>
-                                <field name="income_commission"/>
+                                <group>
+                                    <field name="income_total" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="income_commission" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="成本">
+                        <page string="成本" name="cost">
                             <group>
-                                <field name="cost_total"/>
-                                <field name="cost_deductible"/>
-                                <field name="cost_non_deductible"/>
+                                <group>
+                                    <field name="cost_total" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="cost_deductible" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="cost_non_deductible" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="增值税">
+                        <page string="增值税" name="vat">
                             <group>
-                                <field name="vat_deductible_total"/>
-                                <field name="vat_deduct_amount"/>
-                                <field name="vat_output_amount"/>
-                                <field name="vat_payable"/>
+                                <group>
+                                    <field name="vat_deductible_total" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="vat_deduct_amount" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="vat_output_amount" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="vat_payable" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="应收/预收/发票">
+                        <page string="应收/预收/发票" name="receivable">
                             <group>
-                                <field name="receivable"/>
-                                <field name="receivable_positive"/>
-                                <field name="receivable_negative"/>
-                                <field name="prepaid"/>
-                                <field name="invoice_gap"/>
+                                <group>
+                                    <field name="receivable" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="receivable_positive" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="receivable_negative" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="prepaid" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="invoice_gap" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="应收账龄">
+                        <page string="应收账龄" name="aging">
                             <group>
-                                <field name="overdue_days"/>
-                                <field name="aging_0_30"/>
-                                <field name="aging_31_90"/>
-                                <field name="aging_91_180"/>
-                                <field name="aging_181_365"/>
-                                <field name="aging_over_365"/>
+                                <group>
+                                    <field name="overdue_days"/>
+                                    <field name="aging_0_30" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="aging_31_90" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="aging_91_180" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="aging_181_365" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="aging_over_365" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="利润">
+                        <page string="利润" name="profit">
                             <group>
-                                <field name="cost_net_total"/>
-                                <field name="profit"/>
-                                <field name="profit_no_shop"/>
-                                <field name="profit_tax_incl"/>
-                            </group>
-                            <group>
-                                <field name="income_commission"/>
+                                <group>
+                                    <field name="cost_net_total" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="profit" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="profit_no_shop" widget="monetary"
+                                           currency_field="currency_id"/>
+                                    <field name="profit_tax_incl" widget="monetary"
+                                           currency_field="currency_id"/>
+                                </group>
                             </group>
                         </page>
                     </notebook>

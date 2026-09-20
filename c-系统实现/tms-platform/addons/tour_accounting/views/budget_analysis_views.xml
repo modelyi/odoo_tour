@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- 预算执行分析 pivot -->
+    <record id="action_report_budget_analysis" model="ir.actions.act_window">
+        <field name="name">预算执行分析</field>
+        <field name="res_model">budget.lines</field>
+        <field name="view_mode">pivot,list</field>
+    </record>
+
+    <record id="view_budget_line_pivot" model="ir.ui.view">
+        <field name="name">budget.lines.pivot</field>
+        <field name="model">budget.lines</field>
+        <field name="arch" type="xml">
+            <pivot string="预算执行分析" sample="1">
+                <field name="analytic_account_id" type="row"/>
+                <field name="general_budget_id" type="row"/>
+                <field name="planned_amount" type="measure"/>
+                <field name="practical_amount" type="measure"/>
+                <field name="theoretical_amount" type="measure"/>
+                <field name="percentage" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_budget_line_list" model="ir.ui.view">
+        <field name="name">budget.lines.list.analysis</field>
+        <field name="model">budget.lines</field>
+        <field name="arch" type="xml">
+            <list string="预算执行分析" decoration-danger="percentage > 100"
+                  decoration-warning="percentage > 80 and percentage &lt;= 100">
+                <field name="budget_id"/>
+                <field name="analytic_account_id"/>
+                <field name="general_budget_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="planned_amount"/>
+                <field name="practical_amount"/>
+                <field name="theoretical_amount"/>
+                <field name="percentage" widget="progressbar"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 菜单 -->
+    <menuitem id="menu_report_budget_analysis"
+              name="预算执行分析"
+              parent="menu_management_analysis"
+              action="action_report_budget_analysis"
+              sequence="70"/>
+</odoo>

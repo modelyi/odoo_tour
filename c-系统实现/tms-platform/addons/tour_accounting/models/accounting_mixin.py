@@ -95,14 +95,52 @@ class TourAccountingMixin(models.AbstractModel):
         return journal
 
     def _plan_analytic_distribution(self, plan):
-        """返回单团 analytic_distribution dict；plan 无分析账户时返回空。
+        """返回多分析计划 analytic_distribution dict。
 
-        Odoo 19 恒为 {str(analytic_account_id): 100.0}（单分析计划）[TDS §7.2]。
+        三维度正交分配（各计划独立 100%）[管理会计迭代1]：
+          - 项目计划：团级分析账户（一团一核算）
+          - 成本中心计划：部门级费用归集
+          - 利润中心计划：线路级获利分析
         """
         if not plan:
             return {}
+        dist = {}
         aa = plan.analytic_account_id
-        return {str(aa.id): 100.0} if aa else {}
+        if aa:
+            dist[str(aa.id)] = 100.0
+        cc = self._get_cost_center_account(plan)
+        if cc:
+            dist[str(cc.id)] = 100.0
+        pc = self._get_profit_center_account(plan)
+        if pc:
+            dist[str(pc.id)] = 100.0
+        return dist
+
+    def _get_cost_center_account(self, plan):
+        """取该团部门对应的成本中心分析账户（code='CC-{dept_id}'）。"""
+        dept_id = getattr(plan, 'department_id', False)
+        if not dept_id:
+            return self.env['account.analytic.account']
+        plan_rec = self.env['account.analytic.plan'].search(
+            [('name', '=', '成本中心')], limit=1)
+        if not plan_rec:
+            return self.env['account.analytic.account']
+        code = 'CC-%s' % dept_id.id
+        return self.env['account.analytic.account'].search(
+            [('code', '=', code), ('plan_id', '=', plan_rec.id)], limit=1)
+
+    def _get_profit_center_account(self, plan):
+        """取该团线路对应的利润中心分析账户（code='PC-{line_id}'）。"""
+        line_id = getattr(plan, 'line_id', False)
+        if not line_id:
+            return self.env['account.analytic.account']
+        plan_rec = self.env['account.analytic.plan'].search(
+            [('name', '=', '利润中心')], limit=1)
+        if not plan_rec:
+            return self.env['account.analytic.account']
+        code = 'PC-%s' % line_id.id
+        return self.env['account.analytic.account'].search(
+            [('code', '=', code), ('plan_id', '=', plan_rec.id)], limit=1)
 
     # === Phase 2：金额派生（account.move.line / account.analytic.line 为记账真相）===
 
