@@ -14,7 +14,10 @@
       "Bash(cd /home/adai/tourerp/frappe-staging && docker compose ps 2>&1)",
       "Bash(docker ps -a --filter \"name=frappe\" --format \"table {{.Names}}\\\\t{{.Status}}\\\\t{{.Ports}}\" 2>&1)",
       "Bash(find /home/adai -maxdepth 4 -name \"docker-compose*\" -path \"*frappe*\" 2>/dev/null; find /home/adai -maxdepth 4 -name \"*.yml\" -path \"*frappe*\" 2>/dev/null | head -20)",
-      "Bash(git log --oneline --all -- \"c-系统实现/tms-platform/addons/tour_guide_portal/\" 2>/dev/null | head -20)"
+      "Bash(git log --oneline --all -- \"c-系统实现/tms-platform/addons/tour_guide_portal/\" 2>/dev/null | head -20)",
+      "Bash(find /home/adai -maxdepth 4 -name \"settings.json\" -path \"*code-server*\" 2>/dev/null; find /home/adai -maxdepth 4 -name \"*.json\" -path \"*code-server*\" 2>/dev/null | head -20)",
+      "Bash(find /home/adai/.local/share/code-server -name \"settings.json\" 2>/dev/null | xargs -I{} sh -c 'echo \"=== {} ===\"; cat {}')",
+      "Bash(grep -r \"code-server\\\\|8081\" /etc/nginx/ 2>/dev/null | head -20)"
     ]
   }
 }

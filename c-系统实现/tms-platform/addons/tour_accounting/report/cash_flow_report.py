@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #############################################################################
 #
-#    TMS Cash Flow Report - Direct Method Implementation
+#    TMS Cash Flow Report - Direct Method (财政部标准格式)
 #    基于会计分录的现金流量分析（直接法）
+#    对齐《企业会计准则第31号——现金流量表》
 #
 #############################################################################
-import re
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -13,148 +13,234 @@ from odoo.exceptions import UserError
 
 class ReportCashFlow(models.AbstractModel):
     _name = 'report.tour_accounting.report_cash_flow'
-    _description = 'Cash Flow Report (Direct Method)'
+    _description = 'Cash Flow Report (Direct Method - MOF Standard)'
 
-    # 现金及现金等价物账户类型
     CASH_ACCOUNT_TYPES = ['asset_cash', 'asset_current']
 
     def _get_cash_accounts(self):
-        """获取所有现金及现金等价物账户"""
         return self.env['account.account'].search([
             ('account_type', 'in', self.CASH_ACCOUNT_TYPES),
         ])
 
+    def _get_opening_cash_balance(self, date_from):
+        """计算期初现金及现金等价物余额"""
+        cash_accounts = self._get_cash_accounts()
+        if not cash_accounts:
+            return 0.0
+        tables, where_clause, where_params = (
+            self.env['account.move.line']._query_get())
+        tables = tables.replace('"', '') if tables else "account_move_line"
+        wheres = [""]
+        if where_clause.strip():
+            wheres.append(where_clause.strip())
+        filters = " AND ".join(wheres)
+        request = (
+            "SELECT COALESCE(SUM(debit - credit), 0) "
+            "FROM " + tables +
+            " WHERE account_id IN %s " + filters +
+            " AND date < %s"
+        )
+        params = (tuple(cash_accounts.ids),) + tuple(where_params) + (date_from,)
+        self.env.cr.execute(request, params)
+        return self.env.cr.fetchone()[0] or 0.0
+
     def _classify_cash_flow(self, cash_line, counterpart_line):
         """
-        根据对方科目分类现金流量
-        
-        Args:
-            cash_line: 现金账户的分录行
-            counterpart_line: 对方科目的分录行
-        
+        根据对方科目分类现金流量（财政部标准行项目）
+
         Returns:
-            dict: {'category': 'operating/investing/financing', 'direction': 'in/out', 'amount': float}
+            dict: {'section': 'operating/investing/financing',
+                   'line_name': str,
+                   'direction': 'in/out',
+                   'amount': float}
         """
-        cash_amount = cash_line.debit - cash_line.credit  # 正数=流入，负数=流出
+        cash_amount = cash_line.debit - cash_line.credit
         if cash_amount == 0:
             return None
 
-        counterpart_type = counterpart_line.account_id.account_type
-        
-        # 经营活动 - 收入类（现金流入）
-        if counterpart_type in ['income', 'income_other']:
+        cp = counterpart_line.account_id
+        cp_type = cp.account_type
+        cp_code = cp.code or ''
+
+        # === 经营活动 ===
+        if cp_type in ('income', 'income_other'):
             return {
-                'category': 'operating',
+                'section': 'operating',
+                'line_name': '销售商品、提供劳务收到的现金',
                 'direction': 'in',
                 'amount': abs(cash_amount),
-                'description': '销售商品、提供劳务收到的现金',
             }
-        
-        # 经营活动 - 成本费用类（现金流出）
-        if counterpart_type in ['expense', 'expense_direct_cost', 'expense_depreciation']:
+
+        if cp_type in ('expense_direct_cost',):
             return {
-                'category': 'operating',
+                'section': 'operating',
+                'line_name': '购买商品、接受劳务支付的现金',
                 'direction': 'out',
                 'amount': abs(cash_amount),
-                'description': '购买商品、接受劳务支付的现金',
             }
-        
-        # 经营活动 - 应收应付（营运资金变动）
-        if counterpart_type == 'asset_receivable':
-            if cash_amount > 0:  # 应收账款减少 = 现金流入
+
+        if cp_type in ('expense', 'expense_depreciation'):
+            return {
+                'section': 'operating',
+                'line_name': '支付其他与经营活动有关的现金',
+                'direction': 'out',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type == 'expense_tax':
+            return {
+                'section': 'operating',
+                'line_name': '支付的各项税费',
+                'direction': 'out',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type in ('expense_selling', 'expense_admin'):
+            return {
+                'section': 'operating',
+                'line_name': '支付其他与经营活动有关的现金',
+                'direction': 'out',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type == 'expense_finance':
+            return {
+                'section': 'operating',
+                'line_name': '支付其他与经营活动有关的现金',
+                'direction': 'out',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type == 'expense_non_operating':
+            return {
+                'section': 'operating',
+                'line_name': '支付其他与经营活动有关的现金',
+                'direction': 'out',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type == 'income_non_operating':
+            return {
+                'section': 'operating',
+                'line_name': '收到其他与经营活动有关的现金',
+                'direction': 'in',
+                'amount': abs(cash_amount),
+            }
+
+        if cp_type == 'asset_receivable':
+            if cash_amount > 0:
                 return {
-                    'category': 'operating',
+                    'section': 'operating',
+                    'line_name': '销售商品、提供劳务收到的现金',
                     'direction': 'in',
                     'amount': abs(cash_amount),
-                    'description': '收到客户款项',
                 }
-            else:  # 应收账款增加 = 现金流出（赊销）
-                return None  # 不涉及现金
-        
-        if counterpart_type == 'liability_payable':
-            if cash_amount < 0:  # 应付账款减少 = 现金流出
+            return None
+
+        if cp_type == 'liability_payable':
+            if cash_amount < 0:
                 return {
-                    'category': 'operating',
+                    'section': 'operating',
+                    'line_name': '购买商品、接受劳务支付的现金',
                     'direction': 'out',
                     'amount': abs(cash_amount),
-                    'description': '支付供应商款项',
                 }
-            else:  # 应付账款增加 = 现金流入（赊购）
-                return None  # 不涉及现金
-        
-        # 投资活动
-        if counterpart_type in ['asset_fixed', 'asset_non_current']:
-            if cash_amount < 0:  # 购买固定资产 = 现金流出
+            if cash_amount > 0:
                 return {
-                    'category': 'investing',
-                    'direction': 'out',
-                    'amount': abs(cash_amount),
-                    'description': '购建固定资产支付的现金',
-                }
-            else:  # 处置固定资产 = 现金流入
-                return {
-                    'category': 'investing',
+                    'section': 'operating',
+                    'line_name': '收到其他与经营活动有关的现金',
                     'direction': 'in',
                     'amount': abs(cash_amount),
-                    'description': '处置固定资产收到的现金',
                 }
-        
-        # 筹资活动
-        if counterpart_type == 'equity':
-            if cash_amount > 0:  # 吸收投资 = 现金流入
+            return None
+
+        if cp_type == 'liability_current':
+            if cp_code.startswith('2211'):
+                if cash_amount < 0:
+                    return {
+                        'section': 'operating',
+                        'line_name': '支付给职工以及为职工支付的现金',
+                        'direction': 'out',
+                        'amount': abs(cash_amount),
+                    }
+                return None
+            if cp_code.startswith('2221'):
+                if cash_amount < 0:
+                    return {
+                        'section': 'operating',
+                        'line_name': '支付的各项税费',
+                        'direction': 'out',
+                        'amount': abs(cash_amount),
+                    }
+                return None
+            if cash_amount < 0:
                 return {
-                    'category': 'financing',
-                    'direction': 'in',
-                    'amount': abs(cash_amount),
-                    'description': '吸收投资收到的现金',
-                }
-            else:  # 分配股利 = 现金流出
-                return {
-                    'category': 'financing',
+                    'section': 'operating',
+                    'line_name': '支付其他与经营活动有关的现金',
                     'direction': 'out',
                     'amount': abs(cash_amount),
-                    'description': '分配股利、利润支付的现金',
                 }
-        
-        if counterpart_type == 'liability_non_current':
-            if cash_amount > 0:  # 取得借款 = 现金流入
+            return None
+
+        # === 投资活动 ===
+        if cp_type in ('asset_fixed', 'asset_non_current'):
+            if cash_amount < 0:
                 return {
-                    'category': 'financing',
-                    'direction': 'in',
-                    'amount': abs(cash_amount),
-                    'description': '取得借款收到的现金',
-                }
-            else:  # 偿还借款 = 现金流出
-                return {
-                    'category': 'financing',
+                    'section': 'investing',
+                    'line_name': '购建固定资产等支付的现金',
                     'direction': 'out',
                     'amount': abs(cash_amount),
-                    'description': '偿还债务支付的现金',
                 }
-        
-        # 未分类（可能是现金内部转账）
+            else:
+                return {
+                    'section': 'investing',
+                    'line_name': '处置固定资产等收到的现金净额',
+                    'direction': 'in',
+                    'amount': abs(cash_amount),
+                }
+
+        # === 筹资活动 ===
+        if cp_type == 'equity':
+            if cash_amount > 0:
+                return {
+                    'section': 'financing',
+                    'line_name': '吸收投资收到的现金',
+                    'direction': 'in',
+                    'amount': abs(cash_amount),
+                }
+            else:
+                return {
+                    'section': 'financing',
+                    'line_name': '分配股利、利润或偿付利息支付的现金',
+                    'direction': 'out',
+                    'amount': abs(cash_amount),
+                }
+
+        if cp_type == 'liability_non_current':
+            if cash_amount > 0:
+                return {
+                    'section': 'financing',
+                    'line_name': '取得借款收到的现金',
+                    'direction': 'in',
+                    'amount': abs(cash_amount),
+                }
+            else:
+                return {
+                    'section': 'financing',
+                    'line_name': '偿还债务支付的现金',
+                    'direction': 'out',
+                    'amount': abs(cash_amount),
+                }
+
         return None
 
     def _compute_cash_flow(self, date_from, date_to):
-        """
-        计算期间内的现金流量
-        
-        Returns:
-            dict: {
-                'operating': {'in': float, 'out': float, 'net': float, 'items': []},
-                'investing': {'in': float, 'out': float, 'net': float, 'items': []},
-                'financing': {'in': float, 'out': float, 'net': float, 'items': []},
-            }
-        """
+        """计算期间内的现金流量，按财政部标准行项目汇总"""
         cash_accounts = self._get_cash_accounts()
+        empty = self._empty_result()
         if not cash_accounts:
-            return {
-                'operating': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-                'investing': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-                'financing': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-            }
+            return empty
 
-        # 查询期间内所有涉及现金的分录行
         move_lines = self.env['account.move.line'].search([
             ('account_id', 'in', cash_accounts.ids),
             ('date', '>=', date_from),
@@ -162,261 +248,110 @@ class ReportCashFlow(models.AbstractModel):
             ('parent_state', '=', 'posted'),
         ])
 
-        result = {
-            'operating': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-            'investing': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-            'financing': {'in': 0, 'out': 0, 'net': 0, 'items': []},
-        }
+        result = self._empty_result()
 
         for line in move_lines:
-            # 找到同一分录中的对方科目（排除现金账户本身）
             counterpart_lines = line.move_id.line_ids.filtered(
                 lambda l: l.account_id not in cash_accounts
             )
-
             for counterpart in counterpart_lines:
                 classification = self._classify_cash_flow(line, counterpart)
                 if classification:
-                    category = classification['category']
+                    section = classification['section']
                     direction = classification['direction']
                     amount = classification['amount']
+                    line_name = classification['line_name']
 
-                    result[category][direction] += amount
-                    
-                    # 记录明细
-                    result[category]['items'].append({
-                        'date': line.move_id.date,
-                        'move_name': line.move_id.name,
-                        'description': classification['description'],
-                        'counterpart_account': counterpart.account_id.name,
-                        'amount': amount if direction == 'in' else -amount,
-                        'move_id': line.move_id.id,
-                    })
+                    result[section][direction] += amount
+                    if line_name not in result[section]['items']:
+                        result[section]['items'][line_name] = {
+                            'in': 0.0, 'out': 0.0}
+                    result[section]['items'][line_name][direction] += amount
 
-        # 计算净额
-        for category in ['operating', 'investing', 'financing']:
-            result[category]['net'] = (
-                result[category]['in'] - result[category]['out']
-            )
+        for section in ('operating', 'investing', 'financing'):
+            result[section]['net'] = (
+                result[section]['in'] - result[section]['out'])
 
         return result
 
+    def _empty_result(self):
+        return {
+            'operating': {'in': 0, 'out': 0, 'net': 0, 'items': {}},
+            'investing': {'in': 0, 'out': 0, 'net': 0, 'items': {}},
+            'financing': {'in': 0, 'out': 0, 'net': 0, 'items': {}},
+        }
+
     def get_account_lines(self, data):
-        """生成现金流量表行数据"""
-        account_report = self.env['account.financial.report'].search(
-            [('id', '=', data['account_report_id'][0])])
-        
-        # 获取期间
+        """生成财政部标准格式的现金流量表行数据"""
         context = data.get('used_context', {})
         date_from = context.get('date_from')
         date_to = context.get('date_to')
-        
         if not date_from or not date_to:
             return []
 
-        # 计算现金流量
         cash_flow = self._compute_cash_flow(date_from, date_to)
-        
-        # 构建报表行
+        opening_balance = self._get_opening_cash_balance(date_from)
+
         lines = []
-        
-        # 一、经营活动
-        lines.append({
-            'id': 'operating',
-            'name': '一、经营活动产生的现金流量',
-            'level': 0,
-            'balance': cash_flow['operating']['net'],
-            'type': 'section',
-        })
-        
-        lines.append({
-            'id': 'operating_in',
-            'name': '经营活动现金流入',
-            'level': 1,
-            'balance': cash_flow['operating']['in'],
-            'type': 'subtotal',
-            'parent': 'operating',
-        })
-        
-        # 经营活动明细
-        for item in cash_flow['operating']['items']:
-            if item['amount'] > 0:
-                lines.append({
-                    'id': f"op_in_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'operating_in',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'operating_out',
-            'name': '经营活动现金流出',
-            'level': 1,
-            'balance': -cash_flow['operating']['out'],
-            'type': 'subtotal',
-            'parent': 'operating',
-        })
-        
-        # 经营活动流出明细
-        for item in cash_flow['operating']['items']:
-            if item['amount'] < 0:
-                lines.append({
-                    'id': f"op_out_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'operating_out',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'operating_net',
-            'name': '经营活动产生的现金流量净额',
-            'level': 1,
-            'balance': cash_flow['operating']['net'],
-            'type': 'total',
-            'parent': 'operating',
-        })
-        
-        # 二、投资活动
-        lines.append({
-            'id': 'investing',
-            'name': '二、投资活动产生的现金流量',
-            'level': 0,
-            'balance': cash_flow['investing']['net'],
-            'type': 'section',
-        })
-        
-        lines.append({
-            'id': 'investing_in',
-            'name': '投资活动现金流入',
-            'level': 1,
-            'balance': cash_flow['investing']['in'],
-            'type': 'subtotal',
-            'parent': 'investing',
-        })
-        
-        for item in cash_flow['investing']['items']:
-            if item['amount'] > 0:
-                lines.append({
-                    'id': f"inv_in_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'investing_in',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'investing_out',
-            'name': '投资活动现金流出',
-            'level': 1,
-            'balance': -cash_flow['investing']['out'],
-            'type': 'subtotal',
-            'parent': 'investing',
-        })
-        
-        for item in cash_flow['investing']['items']:
-            if item['amount'] < 0:
-                lines.append({
-                    'id': f"inv_out_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'investing_out',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'investing_net',
-            'name': '投资活动产生的现金流量净额',
-            'level': 1,
-            'balance': cash_flow['investing']['net'],
-            'type': 'total',
-            'parent': 'investing',
-        })
-        
-        # 三、筹资活动
-        lines.append({
-            'id': 'financing',
-            'name': '三、筹资活动产生的现金流量',
-            'level': 0,
-            'balance': cash_flow['financing']['net'],
-            'type': 'section',
-        })
-        
-        lines.append({
-            'id': 'financing_in',
-            'name': '筹资活动现金流入',
-            'level': 1,
-            'balance': cash_flow['financing']['in'],
-            'type': 'subtotal',
-            'parent': 'financing',
-        })
-        
-        for item in cash_flow['financing']['items']:
-            if item['amount'] > 0:
-                lines.append({
-                    'id': f"fin_in_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'financing_in',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'financing_out',
-            'name': '筹资活动现金流出',
-            'level': 1,
-            'balance': -cash_flow['financing']['out'],
-            'type': 'subtotal',
-            'parent': 'financing',
-        })
-        
-        for item in cash_flow['financing']['items']:
-            if item['amount'] < 0:
-                lines.append({
-                    'id': f"fin_out_{item['move_id']}",
-                    'name': f"{item['date']} {item['move_name']} - {item['description']}",
-                    'level': 2,
-                    'balance': item['amount'],
-                    'type': 'detail',
-                    'parent': 'financing_out',
-                    'move_id': item['move_id'],
-                })
-        
-        lines.append({
-            'id': 'financing_net',
-            'name': '筹资活动产生的现金流量净额',
-            'level': 1,
-            'balance': cash_flow['financing']['net'],
-            'type': 'total',
-            'parent': 'financing',
-        })
-        
-        # 四、现金净增加额
-        total_net = (
-            cash_flow['operating']['net'] +
-            cash_flow['investing']['net'] +
-            cash_flow['financing']['net']
-        )
-        
-        lines.append({
-            'id': 'total_net',
-            'name': '四、现金及现金等价物净增加额',
-            'level': 0,
-            'balance': total_net,
-            'type': 'grand_total',
-        })
-        
+        seq = [0]
+
+        def add(name, balance, level=0, style=''):
+            seq[0] += 1
+            lines.append({
+                'id': 'cf_%d' % seq[0],
+                'name': name,
+                'level': level + 1,
+                'balance': round(balance, 2),
+                'type': style or ('total' if level == 0 else 'detail'),
+            })
+
+        # === 一、经营活动 ===
+        add('一、经营活动产生的现金流量', 0, level=0, style='section')
+        op = cash_flow['operating']
+        for name, amounts in op['items'].items():
+            net = amounts['in'] - amounts['out']
+            if net != 0:
+                add(name, net, level=1)
+        add('经营活动现金流入小计', op['in'], level=1, style='subtotal')
+        for name, amounts in op['items'].items():
+            if amounts['out'] > 0:
+                add(name, -amounts['out'], level=1)
+        add('经营活动现金流出小计', -op['out'], level=1, style='subtotal')
+        add('经营活动产生的现金流量净额', op['net'], level=1, style='total')
+
+        # === 二、投资活动 ===
+        add('二、投资活动产生的现金流量', 0, level=0, style='section')
+        inv = cash_flow['investing']
+        for name, amounts in inv['items'].items():
+            if amounts['in'] > 0:
+                add(name, amounts['in'], level=1)
+        add('投资活动现金流入小计', inv['in'], level=1, style='subtotal')
+        for name, amounts in inv['items'].items():
+            if amounts['out'] > 0:
+                add(name, -amounts['out'], level=1)
+        add('投资活动现金流出小计', -inv['out'], level=1, style='subtotal')
+        add('投资活动产生的现金流量净额', inv['net'], level=1, style='total')
+
+        # === 三、筹资活动 ===
+        add('三、筹资活动产生的现金流量', 0, level=0, style='section')
+        fin = cash_flow['financing']
+        for name, amounts in fin['items'].items():
+            if amounts['in'] > 0:
+                add(name, amounts['in'], level=1)
+        add('筹资活动现金流入小计', fin['in'], level=1, style='subtotal')
+        for name, amounts in fin['items'].items():
+            if amounts['out'] > 0:
+                add(name, -amounts['out'], level=1)
+        add('筹资活动现金流出小计', -fin['out'], level=1, style='subtotal')
+        add('筹资活动产生的现金流量净额', fin['net'], level=1, style='total')
+
+        # === 四、现金净增加额 ===
+        total_net = op['net'] + inv['net'] + fin['net']
+        add('四、现金及现金等价物净增加额', total_net, level=0, style='grand_total')
+        add('加：期初现金及现金等价物余额', opening_balance, level=1)
+        add('五、期末现金及现金等价物余额',
+            opening_balance + total_net, level=0, style='grand_total')
+
         return lines
 
     @api.model

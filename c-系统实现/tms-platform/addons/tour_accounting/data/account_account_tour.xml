@@ -349,7 +349,7 @@
     <record id="tour_account_6301" model="account.account">
         <field name="code">6301</field>
         <field name="name">营业外收入</field>
-        <field name="account_type">income_other</field>
+        <field name="account_type">income_non_operating</field>
     </record>
 
     <record id="tour_account_6401" model="account.account">
@@ -426,22 +426,22 @@
     <record id="tour_account_6403" model="account.account">
         <field name="code">6403</field>
         <field name="name">税金及附加</field>
-        <field name="account_type">expense</field>
+        <field name="account_type">expense_tax</field>
     </record>
     <record id="tour_account_6601" model="account.account">
         <field name="code">6601</field>
         <field name="name">销售费用</field>
-        <field name="account_type">expense</field>
+        <field name="account_type">expense_selling</field>
     </record>
     <record id="tour_account_6602" model="account.account">
         <field name="code">6602</field>
         <field name="name">管理费用</field>
-        <field name="account_type">expense</field>
+        <field name="account_type">expense_admin</field>
     </record>
     <record id="tour_account_6603" model="account.account">
         <field name="code">6603</field>
         <field name="name">财务费用</field>
-        <field name="account_type">expense</field>
+        <field name="account_type">expense_finance</field>
     </record>
     <record id="tour_account_6701" model="account.account">
         <field name="code">6701</field>
@@ -451,7 +451,7 @@
     <record id="tour_account_6711" model="account.account">
         <field name="code">6711</field>
         <field name="name">营业外支出</field>
-        <field name="account_type">expense</field>
+        <field name="account_type">expense_non_operating</field>
     </record>
 
 </odoo>

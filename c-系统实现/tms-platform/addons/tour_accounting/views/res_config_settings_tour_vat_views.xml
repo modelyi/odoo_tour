@@ -31,6 +31,12 @@
                             <field name="tour_cost_tax_split"/>
                         </setting>
                     </block>
+                    <block title="财务报表格式" name="tour_report_format">
+                        <setting string="财政部报表格式"
+                            help="开启=利润表费用显示为正数+减号前缀（财政部标准）；关闭=费用显示为负数（Odoo 原生格式）">
+                            <field name="tour_mof_report_format"/>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

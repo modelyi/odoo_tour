@@ -92,9 +92,15 @@ class AccountFinancialReport(models.Model):
             ("equity_unaffected", "Current Year Earnings"),
             ("income", "Income"),
             ("income_other", "Other Income"),
+            ("income_non_operating", "Non-operating Income"),
             ("expense", "Expenses"),
             ("expense_depreciation", "Depreciation"),
             ("expense_direct_cost", "Cost of Revenue"),
+            ("expense_tax", "Tax & Surcharges"),
+            ("expense_selling", "Selling Expenses"),
+            ("expense_admin", "Administrative Expenses"),
+            ("expense_finance", "Financial Expenses"),
+            ("expense_non_operating", "Non-operating Expenses"),
             ("off_balance", "Off-Balance Sheet"),
         ],
         string="Account Type",
@@ -143,80 +149,42 @@ class AccountFinancialReport(models.Model):
 
         Since the XML data files have noupdate="1", existing records won't be
         updated on module upgrade. This method ensures:
-        1. Equity accounts exist in the chart of accounts.
-        2. The Owner's Equity section exists under Balance Sheet.
-        3. "Profit (Loss) to report" is under Equity, not Liability.
+        1. Old report nodes are cleaned up.
+        2. Equity section exists under Balance Sheet.
+        3. "本年利润" is under Equity.
         """
-        # ------------------------------------------------------------------
-        # 1. Ensure equity accounts exist (noupdate="1" skips them on update)
-        # ------------------------------------------------------------------
-        equity_accounts = [
-            ('4001', '实收资本', 'equity'),
-            ('4101', '资本公积', 'equity'),
-            ('4102', '盈余公积', 'equity'),
-            ('4104', '利润分配——未分配利润', 'equity'),
+        # Clean up old report nodes that no longer exist in XML
+        old_xml_ids = [
+            'tour_accounting.account_financial_report_assets0',
+            'tour_accounting.account_financial_report_liabilitysum0',
+            'tour_accounting.account_financial_report_liability0',
+            'tour_accounting.financial_report_gross_profit',
+            'tour_accounting.financial_report_cost_of_revenue',
+            'tour_accounting.account_financial_report_operating_income0',
+            'tour_accounting.account_financial_report_income0',
+            'tour_accounting.account_financial_report_other_income0',
+            'tour_accounting.account_financial_report_expense0',
         ]
-        AccountAccount = self.env['account.account']
-        for code, name, account_type in equity_accounts:
-            existing = AccountAccount.search(
-                [('code', '=', code)], limit=1)
-            if not existing:
-                AccountAccount.create({
-                    'code': code,
-                    'name': name,
-                    'account_type': account_type,
-                })
+        for xml_id in old_xml_ids:
+            record = self.env.ref(xml_id, raise_if_not_found=False)
+            if record:
+                record.unlink()
 
-        # ------------------------------------------------------------------
-        # 2. Ensure Owner's Equity section in Balance Sheet
-        # ------------------------------------------------------------------
+        # Ensure equity section exists
         balance_sheet = self.env.ref(
             'tour_accounting.account_financial_report_balancesheet0',
-            raise_if_not_found=False)
-        liability_sum = self.env.ref(
-            'tour_accounting.account_financial_report_liabilitysum0',
             raise_if_not_found=False)
         profit_loss_report = self.env.ref(
             'tour_accounting.account_financial_report_profitloss_toreport0',
             raise_if_not_found=False)
-        pnl_report = self.env.ref(
-            'tour_accounting.account_financial_report_profitandloss0',
-            raise_if_not_found=False)
-
-        if not all([balance_sheet, liability_sum, profit_loss_report, pnl_report]):
-            return True
-
-        # Ensure equity sum section exists
         equity_sum = self.env.ref(
             'tour_accounting.account_financial_report_equity_sum0',
             raise_if_not_found=False)
-        if not equity_sum and balance_sheet:
-            equity_sum = self.create({
-                'name': '所有者权益',
-                'sequence': 2,
-                'parent_id': balance_sheet.id,
-                'display_detail': 'no_detail',
-                'type': 'sum',
-            })
 
-        # Ensure equity leaf exists
-        if equity_sum:
-            equity_leaf = self.env.ref(
-                'tour_accounting.account_financial_report_equity0',
-                raise_if_not_found=False)
-            if not equity_leaf:
-                self.create({
-                    'name': '权益',
-                    'parent_id': equity_sum.id,
-                    'display_detail': 'detail_with_hierarchy',
-                    'type': 'account_type',
-                    'account_type_ids': 'equity',
-                })
+        if not all([balance_sheet, equity_sum]):
+            return True
 
-        # ------------------------------------------------------------------
-        # 3. Move "Profit (Loss) to report" from liability to equity
-        # ------------------------------------------------------------------
-        if profit_loss_report.parent_id.id != equity_sum.id:
+        if profit_loss_report and profit_loss_report.parent_id.id != equity_sum.id:
             profit_loss_report.write({'parent_id': equity_sum.id})
 
         return True
@@ -225,23 +193,19 @@ class AccountFinancialReport(models.Model):
     def _fix_cash_flow_report_data(self):
         """Fix cash flow report data for existing records.
 
-        Changes the type from 'accounts' to 'account_type' and sets the
-        account_type_ids for each cash flow leaf item.
+        Clean up old leaf nodes that no longer exist in the simplified XML.
+        The actual cash flow lines are now computed in Python.
         """
-        cash_flow_items = {
-            'tour_accounting.cash_in_from_operation0': 'asset_cash',
-            'tour_accounting.cash_out_operation1': 'expense',
-            'tour_accounting.cash_in_investing0': 'asset_non_current',
-            'tour_accounting.cash_out_investing1': 'asset_fixed',
-            'tour_accounting.cash_in_financial0': 'equity',
-            'tour_accounting.cash_out_financial1': 'liability_non_current',
-        }
-        for xml_id, account_type in cash_flow_items.items():
-            report = self.env.ref(xml_id, raise_if_not_found=False)
-            if report:
-                if report.type != 'account_type':
-                    report.write({'type': 'account_type'})
-                if report.account_type_ids != account_type:
-                    report.write({'account_type_ids': account_type})
-
+        old_leaf_ids = [
+            'tour_accounting.cash_in_from_operation0',
+            'tour_accounting.cash_out_operation1',
+            'tour_accounting.cash_in_investing0',
+            'tour_accounting.cash_out_investing1',
+            'tour_accounting.cash_in_financial0',
+            'tour_accounting.cash_out_financial1',
+        ]
+        for xml_id in old_leaf_ids:
+            record = self.env.ref(xml_id, raise_if_not_found=False)
+            if record:
+                record.unlink()
         return True

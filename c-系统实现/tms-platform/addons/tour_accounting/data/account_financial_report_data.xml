@@ -1,146 +1,396 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Financial Reports data records in the model account.financial.report-->
-        <record id="account_financial_report_profitandloss0"
-                model="account.financial.report">
-            <field name="name">Profit and Loss</field>
-            <field name="sign" eval="'-1'"/>
+
+        <!-- ============================================================ -->
+        <!-- 利润表 (Profit & Loss) — 财政部《企业会计准则第30号》格式      -->
+        <!-- ============================================================ -->
+        <record id="account_financial_report_profitandloss0" model="account.financial.report">
+            <field name="name">利润表</field>
+            <field name="sign">-1</field>
             <field name="type">sum</field>
         </record>
-<!--    Income report -->
-        <record id="account_financial_report_income0"
-                model="account.financial.report">
-            <field name="name">Income</field>
-            <field name="sign" eval="'-1'"/>
-            <field name="sequence">1</field>
-            <field name="parent_id"
-                   ref="account_financial_report_profitandloss0"/>
-            <field name="display_detail">detail_with_hierarchy</field>
-            <field name="type">sum</field>
-        </record>
-<!--    Other Income    -->
-        <record id="account_financial_report_other_income0"
-                model="account.financial.report">
-            <field name="name">Other Income</field>
+
+        <!-- 一、营业收入 -->
+        <record id="fr_pnl_revenue" model="account.financial.report">
+            <field name="name">一、营业收入</field>
+            <field name="sign">-1</field>
             <field name="sequence">10</field>
-            <field name="parent_id"
-                   ref="account_financial_report_income0"/>
-            <field name="display_detail">detail_with_hierarchy</field>
-            <field name="type">account_type</field>
-            <field name="account_type_ids">income_other</field>
-        </record>
-<!--    Gross profit    -->
-        <record id="financial_report_gross_profit"
-                model="account.financial.report">
-            <field name="name">Gross Profit</field>
-            <field name="parent_id"
-                   ref="account_financial_report_income0"/>
-            <field name="display_detail">detail_with_hierarchy</field>
-            <field name="type">sum</field>
-            <field name="sequence">3</field>
-        </record>
-<!--    Cost of revenue    -->
-        <record id="financial_report_cost_of_revenue"
-                model="account.financial.report">
-            <field name="name">Cost of Revenue</field>
-            <field name="sequence">10</field>
-            <field name="parent_id"
-                   ref="financial_report_gross_profit"/>
-            <field name="display_detail">detail_with_hierarchy</field>
-            <field name="type">account_type</field>
-            <field name="account_type_ids">expense_direct_cost</field>
-        </record>
-<!--    Operating Income    -->
-        <record id="account_financial_report_operating_income0"
-                model="account.financial.report">
-            <field name="name">Operating Income</field>
-            <field name="sequence">1</field>
-            <field name="parent_id"
-                   ref="financial_report_gross_profit"/>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
             <field name="account_type_ids">income</field>
+            <field name="style_overwrite">1</field>
         </record>
-<!--    Expense    -->
-        <record id="account_financial_report_expense0"
-                model="account.financial.report">
-            <field name="name">Expense</field>
-            <field name="sign" eval="'-1'"/>
-            <field name="sequence">2</field>
-            <field name="parent_id"
-                   ref="account_financial_report_profitandloss0"/>
+
+        <!-- 减：营业成本 -->
+        <record id="fr_pnl_cogs" model="account.financial.report">
+            <field name="name">减：营业成本</field>
+            <field name="sign">-1</field>
+            <field name="sequence">20</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
-            <field name="account_type_ids">expense</field>
+            <field name="account_type_ids">expense_direct_cost</field>
+            <field name="style_overwrite">1</field>
         </record>
-<!--    Balance Sheet    -->
-        <record id="account_financial_report_balancesheet0"
-                model="account.financial.report">
-            <field name="name">Balance Sheet</field>
+
+        <!-- 减：税金及附加 -->
+        <record id="fr_pnl_tax_surcharge" model="account.financial.report">
+            <field name="name">减：税金及附加</field>
+            <field name="sign">-1</field>
+            <field name="sequence">30</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_tax</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 减：销售费用 -->
+        <record id="fr_pnl_selling" model="account.financial.report">
+            <field name="name">减：销售费用</field>
+            <field name="sign">-1</field>
+            <field name="sequence">40</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_selling</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 减：管理费用 -->
+        <record id="fr_pnl_admin" model="account.financial.report">
+            <field name="name">减：管理费用</field>
+            <field name="sign">-1</field>
+            <field name="sequence">50</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_admin</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 减：财务费用 -->
+        <record id="fr_pnl_finance" model="account.financial.report">
+            <field name="name">减：财务费用</field>
+            <field name="sign">-1</field>
+            <field name="sequence">60</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_finance</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 减：资产减值损失 -->
+        <record id="fr_pnl_impairment" model="account.financial.report">
+            <field name="name">减：资产减值损失</field>
+            <field name="sign">-1</field>
+            <field name="sequence">70</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_depreciation</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 加：营业外收入 -->
+        <record id="fr_pnl_non_operating_income" model="account.financial.report">
+            <field name="name">加：营业外收入</field>
+            <field name="sign">-1</field>
+            <field name="sequence">80</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">income_non_operating</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- 减：营业外支出 -->
+        <record id="fr_pnl_non_operating_expense" model="account.financial.report">
+            <field name="name">减：营业外支出</field>
+            <field name="sign">-1</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">expense_non_operating</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- ★ 二、营业利润 (computed in Python) -->
+        <record id="fr_pnl_operating_profit" model="account.financial.report">
+            <field name="name">二、营业利润</field>
+            <field name="sequence">100</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">2</field>
+        </record>
+
+        <!-- 减：所得税费用 -->
+        <record id="fr_pnl_income_tax" model="account.financial.report">
+            <field name="name">减：所得税费用</field>
+            <field name="sign">-1</field>
+            <field name="sequence">110</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">4</field>
+        </record>
+
+        <!-- ★ 四、净利润 (computed in Python) -->
+        <record id="fr_pnl_net_profit" model="account.financial.report">
+            <field name="name">四、净利润</field>
+            <field name="sequence">120</field>
+            <field name="parent_id" ref="account_financial_report_profitandloss0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- 资产负债表 (Balance Sheet) — 财政部标准格式                    -->
+        <!-- ============================================================ -->
+        <record id="account_financial_report_balancesheet0" model="account.financial.report">
+            <field name="name">资产负债表</field>
             <field name="type">sum</field>
         </record>
-<!--    Assets    -->
-        <record id="account_financial_report_assets0"
-                model="account.financial.report">
-            <field name="name">Assets</field>
-            <field name="parent_id"
-                   ref="account_financial_report_balancesheet0"/>
+
+        <!-- ======== 资产类 ======== -->
+        <!-- 流动资产 -->
+        <record id="fr_bs_current_assets" model="account.financial.report">
+            <field name="name">流动资产</field>
+            <field name="sequence">10</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+        <record id="fr_bs_cash" model="account.financial.report">
+            <field name="name">货币资金</field>
+            <field name="sequence">11</field>
+            <field name="parent_id" ref="fr_bs_current_assets"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">asset_cash</field>
+        </record>
+        <record id="fr_bs_receivable" model="account.financial.report">
+            <field name="name">应收票据及应收账款</field>
+            <field name="sequence">12</field>
+            <field name="parent_id" ref="fr_bs_current_assets"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
             <field name="account_type_ids">asset_receivable</field>
         </record>
-<!--    Liability    -->
-        <record id="account_financial_report_liabilitysum0"
-                model="account.financial.report">
-            <field name="name">Liability</field>
-            <field name="sequence">1</field>
-            <field name="parent_id"
-                   ref="account_financial_report_balancesheet0"/>
+        <record id="fr_bs_prepayments" model="account.financial.report">
+            <field name="name">预付款项</field>
+            <field name="sequence">13</field>
+            <field name="parent_id" ref="fr_bs_current_assets"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">asset_prepayments</field>
+        </record>
+        <record id="fr_bs_other_current_assets" model="account.financial.report">
+            <field name="name">其他流动资产</field>
+            <field name="sequence">14</field>
+            <field name="parent_id" ref="fr_bs_current_assets"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">asset_current</field>
+        </record>
+
+        <!-- ★ 流动资产合计 -->
+        <record id="fr_bs_current_assets_total" model="account.financial.report">
+            <field name="name">流动资产合计</field>
+            <field name="sequence">19</field>
+            <field name="parent_id" ref="fr_bs_current_assets"/>
             <field name="display_detail">no_detail</field>
             <field name="type">sum</field>
+            <field name="style_overwrite">2</field>
         </record>
-<!--    Liability    -->
-        <record id="account_financial_report_liability0"
-                model="account.financial.report">
-            <field name="name">Liability</field>
-            <field name="parent_id"
-                   ref="account_financial_report_liabilitysum0"/>
+
+        <!-- 非流动资产 -->
+        <record id="fr_bs_noncurrent_assets" model="account.financial.report">
+            <field name="name">非流动资产</field>
+            <field name="sequence">20</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+        <record id="fr_bs_fixed_assets" model="account.financial.report">
+            <field name="name">固定资产</field>
+            <field name="sequence">21</field>
+            <field name="parent_id" ref="fr_bs_noncurrent_assets"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">asset_fixed</field>
+        </record>
+        <record id="fr_bs_other_noncurrent_assets" model="account.financial.report">
+            <field name="name">其他非流动资产</field>
+            <field name="sequence">22</field>
+            <field name="parent_id" ref="fr_bs_noncurrent_assets"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">asset_non_current</field>
+        </record>
+
+        <!-- ★ 非流动资产合计 -->
+        <record id="fr_bs_noncurrent_assets_total" model="account.financial.report">
+            <field name="name">非流动资产合计</field>
+            <field name="sequence">29</field>
+            <field name="parent_id" ref="fr_bs_noncurrent_assets"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">2</field>
+        </record>
+
+        <!-- ★ 资产总计 -->
+        <record id="fr_bs_total_assets" model="account.financial.report">
+            <field name="name">资产总计</field>
+            <field name="sequence">30</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+
+        <!-- ======== 负债类 ======== -->
+        <!-- 流动负债 -->
+        <record id="fr_bs_current_liabilities" model="account.financial.report">
+            <field name="name">流动负债</field>
+            <field name="sequence">40</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+        <record id="fr_bs_payable" model="account.financial.report">
+            <field name="name">应付票据及应付账款</field>
+            <field name="sequence">41</field>
+            <field name="parent_id" ref="fr_bs_current_liabilities"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
             <field name="account_type_ids">liability_payable</field>
         </record>
-<!--    Owner's Equity (所有者权益)    -->
-        <record id="account_financial_report_equity_sum0"
-                model="account.financial.report">
-            <field name="name">所有者权益</field>
-            <field name="sequence">2</field>
-            <field name="parent_id"
-                   ref="account_financial_report_balancesheet0"/>
+        <record id="fr_bs_current_liabilities_other" model="account.financial.report">
+            <field name="name">其他流动负债</field>
+            <field name="sequence">42</field>
+            <field name="parent_id" ref="fr_bs_current_liabilities"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">liability_current</field>
+        </record>
+        <record id="fr_bs_credit_card" model="account.financial.report">
+            <field name="name">信用卡负债</field>
+            <field name="sequence">43</field>
+            <field name="parent_id" ref="fr_bs_current_liabilities"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">liability_credit_card</field>
+        </record>
+
+        <!-- ★ 流动负债合计 -->
+        <record id="fr_bs_current_liabilities_total" model="account.financial.report">
+            <field name="name">流动负债合计</field>
+            <field name="sequence">49</field>
+            <field name="parent_id" ref="fr_bs_current_liabilities"/>
             <field name="display_detail">no_detail</field>
             <field name="type">sum</field>
+            <field name="style_overwrite">2</field>
         </record>
-        <record id="account_financial_report_equity0"
-                model="account.financial.report">
-            <field name="name">权益</field>
-            <field name="parent_id"
-                   ref="account_financial_report_equity_sum0"/>
+
+        <!-- 非流动负债 -->
+        <record id="fr_bs_noncurrent_liabilities" model="account.financial.report">
+            <field name="name">非流动负债</field>
+            <field name="sequence">50</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+        <record id="fr_bs_noncurrent_liabilities_leaf" model="account.financial.report">
+            <field name="name">非流动负债</field>
+            <field name="sequence">51</field>
+            <field name="parent_id" ref="fr_bs_noncurrent_liabilities"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids">liability_non_current</field>
+        </record>
+
+        <!-- ★ 非流动负债合计 -->
+        <record id="fr_bs_noncurrent_liabilities_total" model="account.financial.report">
+            <field name="name">非流动负债合计</field>
+            <field name="sequence">59</field>
+            <field name="parent_id" ref="fr_bs_noncurrent_liabilities"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">2</field>
+        </record>
+
+        <!-- ★ 负债合计 -->
+        <record id="fr_bs_total_liabilities" model="account.financial.report">
+            <field name="name">负债合计</field>
+            <field name="sequence">60</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+
+        <!-- ======== 所有者权益 ======== -->
+        <record id="account_financial_report_equity_sum0" model="account.financial.report">
+            <field name="name">所有者权益</field>
+            <field name="sequence">70</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+        <record id="account_financial_report_equity0" model="account.financial.report">
+            <field name="name">所有者权益明细</field>
+            <field name="sequence">71</field>
+            <field name="parent_id" ref="account_financial_report_equity_sum0"/>
             <field name="display_detail">detail_with_hierarchy</field>
             <field name="type">account_type</field>
             <field name="account_type_ids">equity</field>
         </record>
-<!--    Profit (Loss) to report   -->
-        <record id="account_financial_report_profitloss_toreport0"
-                model="account.financial.report">
-            <field name="name">Profit (Loss) to report</field>
-            <field name="parent_id"
-                   ref="account_financial_report_equity_sum0"/>
+
+        <!-- 本年利润 (引用利润表) -->
+        <record id="account_financial_report_profitloss_toreport0" model="account.financial.report">
+            <field name="name">本年利润</field>
+            <field name="sequence">79</field>
+            <field name="parent_id" ref="account_financial_report_equity_sum0"/>
             <field name="display_detail">no_detail</field>
             <field name="type">account_report</field>
-            <field name="account_report_id"
-                   ref="account_financial_report_profitandloss0"/>
+            <field name="account_report_id" ref="account_financial_report_profitandloss0"/>
         </record>
-<!--    Common Report    -->
+
+        <!-- ★ 所有者权益合计 -->
+        <record id="fr_bs_total_equity" model="account.financial.report">
+            <field name="name">所有者权益合计</field>
+            <field name="sequence">80</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+
+        <!-- ★ 负债和所有者权益总计 -->
+        <record id="fr_bs_total_liability_equity" model="account.financial.report">
+            <field name="name">负债和所有者权益总计</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+            <field name="style_overwrite">1</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- Common Report Wizard Form                                      -->
+        <!-- ============================================================ -->
         <record id="account_report_view_form" model="ir.ui.view">
             <field name="name">account.common.report.view.form</field>
             <field name="model">account.common.report</field>

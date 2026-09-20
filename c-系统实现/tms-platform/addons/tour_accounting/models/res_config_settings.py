@@ -102,3 +102,7 @@ class ResConfigSettingsTourVat(models.TransientModel):
     tour_pr_approve_limit_l2 = fields.Float(
         related='company_id.tour_pr_approve_limit_l2', readonly=False,
         string='二级审批上限')
+
+    tour_mof_report_format = fields.Boolean(
+        related='company_id.tour_mof_report_format', readonly=False,
+        string='财政部报表格式')

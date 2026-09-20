@@ -265,11 +265,13 @@ class FinancialReport(models.TransientModel):
                     'tour_accounting.account_financial_report_expense0': [
                         'expense', 'expense_depreciation',
                     ],
-                    'tour_accounting.account_financial_report_liability0': [
+                    'tour_accounting.fr_bs_payable': [
                         'liability_payable', 'liability_credit_card',
-                        'liability_current', 'liability_non_current',
                     ],
-                    'tour_accounting.account_financial_report_assets0': [
+                    'tour_accounting.fr_bs_current_liabilities_other': [
+                        'liability_current',
+                    ],
+                    'tour_accounting.fr_bs_cash': [
                         'asset_receivable', 'asset_cash', 'asset_current',
                         'asset_non_current', 'asset_prepayments',
                         'asset_fixed',

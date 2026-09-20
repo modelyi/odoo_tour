@@ -156,3 +156,8 @@ class ResCompanyTourVat(models.Model):
         help='金额 ≤ 该值走一级审批（默认 5 万）')
     tour_pr_approve_limit_l2 = fields.Float('二级审批上限', default=200000.0, digits=(16, 2),
         help='金额 ≤ 该值走二级审批（默认 20 万）；超过走三级双签')
+
+    # === 财务报表格式 ===
+    tour_mof_report_format = fields.Boolean('财政部报表格式', default=True,
+        help='True=费用显示为正数+减号前缀（财政部标准）；'
+             'False=费用显示为负数（Odoo 原生格式）')

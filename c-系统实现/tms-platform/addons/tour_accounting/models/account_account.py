@@ -74,6 +74,17 @@ class AccountAccount(models.Model):
     """差额征税可扣除标记（合并自 tour_finance）[财税2016-36号]"""
     _inherit = 'account.account'
 
+    account_type = fields.Selection(
+        selection_add=[
+            ('income_non_operating', 'Non-operating Income'),
+            ('expense_tax', 'Tax & Surcharges'),
+            ('expense_selling', 'Selling Expenses'),
+            ('expense_admin', 'Administrative Expenses'),
+            ('expense_finance', 'Financial Expenses'),
+            ('expense_non_operating', 'Non-operating Expenses'),
+        ],
+    )
+
     tour_vat_deductible = fields.Boolean(
         '差额征税可扣除', default=False,
         help='[财税2016-36号] 旅游服务差额征税：住宿/餐饮/交通/门票/地接/签证费可扣除；'
@@ -111,4 +122,25 @@ class AccountAccount(models.Model):
             ], limit=1)
             if account:
                 account.write({'code_store': code})
+        return True
+
+    @api.model
+    def _tour_remap_expense_account_types(self):
+        """重映射费用科目 account_type 以支持财政部报表格式。
+
+        因 account_account_tour.xml 整体 noupdate=1，存量库 -u 不会更新
+        已有科目的 account_type。此函数在模块升级时自动执行。
+        """
+        type_map = {
+            '6403': 'expense_tax',
+            '6601': 'expense_selling',
+            '6602': 'expense_admin',
+            '6603': 'expense_finance',
+            '6711': 'expense_non_operating',
+            '6301': 'income_non_operating',
+        }
+        for code, new_type in type_map.items():
+            account = self.search([('code', '=', code)], limit=1)
+            if account and account.account_type != new_type:
+                account.write({'account_type': new_type})
         return True
