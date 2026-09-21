@@ -1,0 +1,15 @@
+kind,model,group,xid,note
+CTX_OUT_OF_20,product.pricelist,,,20 的 access domain 只有 user/time/company_id/company_ids；本条用到 website → B1 必须改写
+CTX_OUT_OF_20,product.pricelist.item,,,20 的 access domain 只有 user/time/company_id/company_ids；本条用到 website → B1 必须改写
+NO_GRANT_POP,account.invoice.report,sales_team.group_sale_salesman,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,account.invoice.report,sales_team.group_sale_salesman_all_leads,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,auth_totp.device,base.group_public,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,event.lead.rule,base.group_multi_company,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,hr.leave,hr_holidays.group_hr_holidays_responsible,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,hr.leave.allocation,hr_holidays.group_hr_holidays_responsible,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,mail.canned.response,mail.group_mail_canned_response_admin,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,payment.transaction,sales_team.group_sale_salesman,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,res.users.apikeys,base.group_public,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,tour.guide.loan,base.group_user,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,website.page,base.group_portal,,组规则命中该人群，但整条继承链上没有任何 access 行
+NO_GRANT_POP,website.page,base.group_public,,组规则命中该人群，但整条继承链上没有任何 access 行

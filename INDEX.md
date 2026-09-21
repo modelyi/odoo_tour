@@ -137,7 +137,7 @@ tms/
 | deploy.sh | ✅ 完成 | 自动化部署脚本 |
 | Nginx 反代 | ✅ 运行中 | tms.solepro.cloud → 127.0.0.1:8070 |
 | [tour-platform/](c-系统实现/tour-platform/) | 🚧 A1 平桥运行中 | 与 tms 同一镜像(`9ebb8c2d5340`)的 19 平桥实例：`tour-db/tour-odoo/tour-redis`，`127.0.0.1:8071`，库 `tour19`，`dbfilter=^tour19$`；pin 见 `config/ODOO_PIN.md` |
-| [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账） |
+| [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账）、`security_19to20/`（19 `ir.model.access`+`ir.rule` → 20 `ir.access` 转换与复核工具，含 README） |
 
 ### C2. Subagent 角色配置
 
@@ -192,6 +192,7 @@ tms/
 | [A0-Gate基线加固报告_2026-09-21.md](d-交付验收/A0-Gate基线加固报告_2026-09-21.md) | ✅ 完成 | 迁移 A0 阶段 gate：备份/密钥/暴露面/镜像 pin + 已知问题清单 K1–K10（09-21 校订 2 处判据表述） |
 | [A1-平桥验收报告_2026-09-21.md](d-交付验收/A1-平桥验收报告_2026-09-21.md) | 🚧 数据等价已实测通过 | 910 键核对 + G1–G5 金样例（总账 15,059 行摘要两侧同值）+ 登录/权限实测；**域名切换待授权**；新增 K11–K14 |
 | [B0-Odoo20可行性spike报告_2026-09-21.md](d-交付验收/B0-Odoo20可行性spike报告_2026-09-21.md) | ✅ Gate 通过 | 37 模块逐个 20 试装判定 + 19↔20 diff + 4 项待业务确认（B0-Q1–Q4） |
+| [B3-切换runbook_草案.md](d-交付验收/B3-切换runbook_草案.md) | 🚧 草案（未演练） | 13 步主流程（命令/责任人/耗时/验证/中止判据/回滚动作）+ 切换后配置清单 + 5 条回退判据 + 时间线 GO/NO-GO 决策点 |
 | [A0-备份恢复演练_20260921_060048.md](d-交付验收/A0-备份恢复演练_20260921_060048.md) | ✅ PASS | 910 指纹键 0 差异；filestore 备份缺陷 0（附 `A0-recon-*.tsv` 可复算） |
 | 测试计划.md | ⏳ 待编写 | 测试策略和范围 |
 | 测试用例库/ | ⏳ 待编写 | 按模块的测试用例 |

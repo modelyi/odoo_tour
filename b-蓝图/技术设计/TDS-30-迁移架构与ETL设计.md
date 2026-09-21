@@ -168,13 +168,64 @@ ir_act_client.params_store        bytea   -> text
 
 | 组 | 模块 | 处置 | 依据 |
 |---|---|---|---|
-| G-门户链 | tour_base + 其余 19 个 tour_* | **port**，且必须先做两件共享前置：① `tour.bank.account` 去 `res.bank` 化（改挂 `res_partner_bank` 展平列）② 全量 security → `ir.access` | §3-F2/F3；前置未做时后面每个模块的深层错误都看不见 |
+| G-门户链 | tour_base + 其余 19 个 tour_* | **port**，且必须先做两件共享前置：① `tour.bank.account` 去 `res.bank` 化（**已改道**：新建自有 `tour.bank` 主数据模型，见 §5.2-S1）② 全量 security → `ir.access` | §3-F2/F3；前置未做时后面每个模块的深层错误都看不见 |
 | G-payroll | hr_payroll_community / hr_payroll_account_community | **abandon（本期）** | 20 假勤重构（F5）+ 生产是否真在用工资单待业务确认；确认前不排工作量 |
 | G-loan | ohrms_loan / ohrms_loan_accounting / ohrms_salary_advance | **port，阻塞于 F5** | 同样引用 `hr.leave.type` |
 | G-HR 其余 | hr_custody, hr_employee_updation, hr_reminder, hr_resignation, hr_reward_warning, hrms_dashboard, oh_employee_documents_expiry | **port**（主要是 F2 的 security 重写） | 首失败全部是 ir.access 类 |
 | G-已可用 | hr_leave_request_aliasing, oh_employee_creation_from_user, **web_responsive** | **直接复用**（只改版本号） | 实测 `-i` 通过 |
 | G-SaaS | tour_saas | **abandon**（计划 §7 已定） | F4 |
 | G-前端 | tour_website_sale | **port + OWL 重写** | F6 |
+
+### 5.2 B1 前置原型实测（2026-09-21，基线 alpha 20.1a1）
+
+工具：`c-系统实现/tms-platform/scripts/migration/security_19to20/`（README 含复现命令）。
+实验全部在 `/tmp` 副本 `b1addons` 与一次性数据库 `b1sec1..7` 上完成，**未改动 `addons/` 生产源码**。
+
+| 步骤 | 动作 | 结果 |
+|---|---|---|
+| S1 | `tour_base` 去 `res.bank` 化：**新建自有模型 `tour.bank`**（name/bic/country/state/地址），`tour.bank.account.bank_id` 改指它 | 由"改挂 `res_partner_bank` 展平列"改道。理由：`res_bank` 在 19 仅 60 行，被两处外键引用（`res_partner_bank.bank_id` 48/97 有值、`tour_bank_account.bank_id` 72/72 全有值）；同 ID 复制到新表 ⇒ `tour_bank_account.bank_id` 一个值都不用改，而挂 `res_partner_bank` 会把"开户行主数据"和"往来账户"两种语义混在一起。`tour_base` 空库 `-i` **通过**（43.7 s，29 模块） |
+| S2 | 以 19 现网为权威源生成 ir.access（v1：逐行复制） | 1,561 行 / 106 个 owner 模块 —— 但其中官方模块的行是重复授权，故改 v2 |
+| S3 | v2：与 20 core 的 2,429 个 (模型,组) 授权做差 + 拆宽行 | **696 行**：官方组差量 283、规则行 264、自定义组全量 125、全局限制 22（另有 93 条与 core 完全重复，已自动去重）；`tour_security_bridge` 桥接模块承载官方组差量（522 行，depends 66） |
+| S4 | 逐模块替换：删 `ir.model.access.csv`、剥离 XML 里的 `ir.rule`/`ir.model.access` 记录、manifest 改指 `security/ir.access.csv` | 24 个自有模块，共写入 213 行规则/宽授权，剥离 62 处 XML 记录 |
+| S5 | 全链路空库安装 `-i tour_security_bridge`（168 模块） | 见下方里程碑 |
+
+**里程碑（阻塞阶梯，逐层实测）**：
+
+| 轮次 | 进度 | 首个失败点 | 失败原因 | 结论 |
+|---|---|---|---|---|
+| R1 | 106/169 | `tour_budget/views/account_budget_views.xml:203` | `Forbidden owl directive used in arch (t-esc)` | 新工作包 ①QWeb 指令 |
+| R2 | 117/168 | `hr_employee_updation/views/hr_employee_views.xml:4` | xpath `//page[@name='payroll_information']//field[@name='contract_type_id']` 在 20 的 `hr.employee` 表单中不存在（页签在、字段已移走） | 新工作包 ②Webkul 视图继承断裂 |
+| R3 | 117/159 通过 → 127/159 | `hr_custody` `report.custody.init()` | `AttributeError: 'report.custody' object has no attribute '_cr'` | 新工作包 ③遗留 API |
+| R4（剔除 OHRMS，只跑 tour 链） | **127/138** | `tour_accounting/data/data_fixes.xml:17` | `<function model="account.financial.report" name="_fix_financial_report_data">` 执行失败（模型由 tour_accounting 自带：`report/report_financial.py:29`） | 阻塞点已推到 tour_accounting 的报表数据层，即 §5.1 A 箱最重的一块 |
+
+R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`tour_order`、`tour_fleet`
+与 `hr_reminder`、`hr_reward_warning` 全部在 20 空库安装成功** —— 说明
+①权限层转换成立，②`res.bank` 解耦成立，③B0 判断的"两个共享前置挡住后面所有模块"得到验证。
+
+**三类新工作包（原计划未量化）**：
+
+1. **QWeb 指令**：20 的 arch 校验白名单（`ir_ui_view._validate_qweb_directive`）不再允许
+   `t-esc` / `t-raw`，官方统一改成 `t-out`。现网自有模块 **560 处 / 23 文件 / 14 模块**
+   （另有 480 处已在用 `t-out`）。机械替换即可，但属"批量改动生产模板"，须单独提交、单独回归。
+2. **Webkul 视图继承断裂**：上游 20 把 `contract_type_id` 一类的字段从 `hr.employee` 表单移走，
+   Webkul 的 xpath 失去锚点。G-HR 其余 7 件的"只需重写 security"结论**偏乐观**，
+   需按视图逐个复核继承点（`hr_employee_updation`、`hr_custody` 已各中一处）。
+3. **遗留 API**：`self._cr` 在 20 的模型上彻底消失（19 仍可用且带 deprecation 警告）。
+   自有代码 **61 处 / 6 模块**（tour_resource、tour_accounting、tour_website、tour_fleet、
+   hrms_dashboard、hr_custody）需改 `self.env.cr`；另有 `from odoo.http import content_disposition`
+   → 20 移到 `odoo.http.stream`（现网仅 `tour_accounting/controllers/statement_report.py` 2 处，已在副本中改通）。
+
+**未通过 Gate B1 的部分**：`tour_accounting`（卡在上面 R4 的数据修复函数）、其下游 7 个 portal 模块、
+`tour_website_sale` 尚未跑到；`hr.leave.type` 相关的 G-loan/G-payroll 仍按 §5.1 结论阻塞；
+`tour_saas` 在第 108 个模块处以 `ModuleNotFoundError: odoo.service.db` 复现失败 —— 与 CR-01 一致，
+原型中已从 addons 副本与桥接依赖里剔除（其 1 条权限行并入桥接）；`tour_hr` 因依赖 OHRMS 而无法独立验证。
+
+**据此修正 §9 的 B1 工作量**：权限层由"12–16 人日"降到 **6–9 人日**（工具已覆盖 80% 机械部分，
+剩 86 条人工裁决 + `noupdate`/覆盖上游行的归属设计）；新增 ①QWeb 指令 **1–2 人日**、
+②Webkul 视图继承复核 **+3–5 人日**、③遗留 API **1–2 人日**；
+`tour_accounting` 报表数据层 **仍按 §7 的 10–18 人日**，但现已给出确切入口
+（`data/data_fixes.xml` 的 `_fix_financial_report_data` + `report/report_financial.py`）。
+
 
 ## 6. 11 个「20 社区版已删除」的官方模块
 
@@ -194,10 +245,27 @@ ir_act_client.params_store        bytea   -> text
 
 ## 7. ETL 设计增量（在计划 §8 四象限之上，B0 新结论）
 
-1. **象限 3 新增「权限重写子步骤」**：`ir_model_access`（516 行 tour 相关）+ `ir_rule`（198 行）
-   → 生成 `ir.access` 行；这是纯规则转换（operation=crud 映射 + `domain_force` → `domain`），
-   可用脚本完成，但**必须逐条人工复核**，因为它决定门户可见性。验收判据：A1 用的
-   登录/权限矩阵（`d-交付验收/A1-平桥验收报告_2026-09-21.md` §5）在 20 上结果一致。
+1. **象限 3 新增「权限重写子步骤」**：`ir_model_access`（19 现网实测 1,405 行）+ `ir_rule`（431 行）
+   → 生成 `ir.access` 行；已按此实现转换工具
+   `c-系统实现/tms-platform/scripts/migration/security_19to20/`（导出 → diff 20 core → 生成
+   各模块 `security/ir.access.csv` + 桥接模块 `tour_security_bridge`，实测 696 行 / 24 模块 /
+   桥接 522 行 / 待人工复核 86 项），见 §5.2-S2。这是纯规则转换（operation=crud 映射 +
+   `domain_force` → `domain`），但**必须逐条人工复核**，因为它决定门户可见性。
+   关键语义：20 中带 `group_id` 的 permission 行是 **OR**、无 group 的 restriction 是 **AND**，
+   所以 19 的"宽授予 + 记录规则收窄"**不能只在 security 文件里加 restriction**，
+   必须同一步把宽授予收窄，否则访问面静默扩大。
+   **v2 逐条平移有一处语义错误已修正**：19 的组成员继承父组授予、记录规则按用户所属任意组匹配，
+   因此"规则挂在没有 access 行的组上"（v2 判为 inert 的 77 条）其实**生效**——
+   丢弃=静默收窄（如 `crm.lead` 的 All Leads 会让"看全部线索"的人退回只看自己），
+   当 restriction 平移=静默放宽。v3 改为**按人群重建有效权限**
+   （`classify_rules.py`：全局规则→restriction 行、组规则→带 domain 的 permission 行；
+   多规则人群的 domain 合并借用 **20 自己的 `odoo.orm.domains.Domain`** 做，前缀记法 arity
+   由引擎保证，出站逐条自检 0 条不可解析）。实测 permission 1,407 + restriction 117 行 /
+   626 模型，待复核由 86 降到 **14**（NO_GRANT_POP 12 + CTX_OUT_OF_20 2）。
+   附带一条硬事实：20 的 access domain 可求值上下文**只有** `user/time/company_id/company_ids`
+   （`ir_access.py:312 _eval_context`），19 里用到 `website`/`uid`/`object` 的域 B1 必须改写
+   （落库后是 NameError 报错，不是静默放行），详见该目录 README。
+   验收判据：A1 用的登录/权限矩阵（`d-交付验收/A1-平桥验收报告_2026-09-21.md` §5）在 20 上结果一致。
 2. **象限 1 的 `account_move*` 需两处列映射**：`checked→review_state`、
    `deductible_amount→deductible_percentage`。**禁止默认换算**：先在 staging 上重算并与 19 报表逐户比对，
    再由财务签字确认换算式，否则总账出数会有系统性偏差（这条直接进 B2 对账判据）。
@@ -209,6 +277,19 @@ ir_act_client.params_store        bytea   -> text
    未声明的列类型变化一律 **报错而不是隐式转换**。
 6. `res.users` 创建会自动建 `hr.employee`（A1 的 K12）→ 象限 2 的用户搬迁必须走
    「先建 partner+user，再回填 employee 关联」的顺序，不能直拷后加约束。
+7. **`res.bank` 消亡 → 自有 `tour.bank` 主数据（象限 3，保 ID 直拷）**。20 已删除 `res.bank` 模型，
+   §5.1 已定：改为 B1 新建自有 `tour.bank`（字段沿用 `res.bank` 的 name/bic/street/street2/zip/city/
+   phone/email/country/state，见 §5.2-S1）。现网实测规模：`res_bank` **60 行**、
+   `tour_bank_account` **72 行且 `bank_id` 72/72 全部有值**、`res_partner_bank` 97 行（`bank_id` 48 行有值）。
+   搬迁规则：
+   - `INSERT INTO tour_bank (id, name, bic, street, …) SELECT id, name, bic, street, … FROM 19.res_bank`
+     **保留原 ID 并 `setval` 序列** → `tour_bank_account.bank_id` 列名与取值都不必改写，
+     只需在 20 侧把该列的 FK 目标改成 `tour_bank`（模型定义阶段就是新 FK，无需 UPDATE 业务行）。
+   - 对账判据：`count(tour_bank)=60`、`tour_bank_account.bank_id` 悬空引用 0、抽样 10 条账户的
+     开户行名称与 19 逐字一致。
+   - `res_partner_bank.bank_id`（48 行）不再走 FK，展平写入 20 的 `bank_name`/`bank_city`/
+     `bank_bic`/`country_id` 列；余下 49 行本就只填了 `bank_name` 自由文本，原样直拷。
+     展平取值优先级：`bank_id` 指向的主数据 > 已有 `bank_name` 文本（后者不可被空串覆盖）。
 
 ## 8. 复现命令
 
