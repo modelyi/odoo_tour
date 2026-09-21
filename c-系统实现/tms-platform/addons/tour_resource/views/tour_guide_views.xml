@@ -121,6 +121,20 @@
                                 <field name="real_pay_count" widget="statinfo" string="报账"/>
                             </div>
                         </button>
+                        <button name="action_view_evaluations" type="object"
+                            class="oe_stat_button" icon="fa-star"
+                            help="查看该导游的评价">
+                            <div class="o_stat_info">
+                                <field name="evaluation_count" widget="statinfo" string="评价"/>
+                            </div>
+                        </button>
+                        <button name="action_view_dispatches" type="object"
+                            class="oe_stat_button" icon="fa-calendar"
+                            help="查看该导游的派团日历">
+                            <div class="o_stat_info">
+                                <field name="dispatch_count" widget="statinfo" string="派团"/>
+                            </div>
+                        </button>
                     </div>
                     <widget name="web_ribbon" title="已归档" bg_color="text-bg-danger" invisible="active"/>
                     <div class="d-flex flex-column flex-sm-row align-items-center">
@@ -184,6 +198,20 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="档期" name="schedule">
+                            <group>
+                                <group string="出团信息">
+                                    <field name="next_dispatch_date"/>
+                                    <field name="last_dispatch_date"/>
+                                    <field name="dispatch_count"/>
+                                </group>
+                                <group string="快速操作">
+                                    <button name="action_view_dispatches" type="object"
+                                        string="查看派团日历" icon="fa-calendar"
+                                        class="btn-link"/>
+                                </group>
+                            </group>
+                        </page>
                         <page string="从业经历" name="experience">
                             <group>
                                 <group>

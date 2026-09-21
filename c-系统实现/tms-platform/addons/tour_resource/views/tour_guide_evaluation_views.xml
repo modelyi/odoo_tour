@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 搜索视图 -->
+    <record id="view_tour_guide_evaluation_search" model="ir.ui.view">
+        <field name="name">tour.guide.evaluation.search</field>
+        <field name="model">tour.guide.evaluation</field>
+        <field name="arch" type="xml">
+            <search string="导游评价">
+                <field name="guide_id"/>
+                <field name="plan_id"/>
+                <field name="tourist_name"/>
+                <field name="source"/>
+                <field name="state"/>
+                <separator/>
+                <filter string="草稿" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="已确认" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="匿名" name="anonymous" domain="[('state', '=', 'anonymous')]"/>
+                <separator/>
+                <filter string="手动录入" name="manual" domain="[('source', '=', 'manual')]"/>
+                <filter string="游客门户" name="portal" domain="[('source', '=', 'portal')]"/>
+                <separator/>
+                <group expand="0" string="分组">
+                    <filter string="导游" name="group_guide" context="{'group_by': 'guide_id'}"/>
+                    <filter string="来源" name="group_source" context="{'group_by': 'source'}"/>
+                    <filter string="状态" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="月份" name="group_month" context="{'group_by': 'create_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 列表视图 -->
+    <record id="view_tour_guide_evaluation_list" model="ir.ui.view">
+        <field name="name">tour.guide.evaluation.list</field>
+        <field name="model">tour.guide.evaluation</field>
+        <field name="arch" type="xml">
+            <list string="导游评价" multi_edit="1" decoration-muted="state == 'anonymous'">
+                <field name="create_date" string="评价时间" readonly="1"/>
+                <field name="guide_id"/>
+                <field name="plan_id"/>
+                <field name="tourist_name"/>
+                <field name="service_score" widget="float" optional="show"/>
+                <field name="professional_score" widget="float" optional="show"/>
+                <field name="communication_score" widget="float" optional="hide"/>
+                <field name="punctuality_score" widget="float" optional="hide"/>
+                <field name="overall_score" widget="float" string="综合评分"/>
+                <field name="source"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'" decoration-muted="state == 'anonymous'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 表单视图 -->
+    <record id="view_tour_guide_evaluation_form" model="ir.ui.view">
+        <field name="name">tour.guide.evaluation.form</field>
+        <field name="model">tour.guide.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="导游评价">
+                <header>
+                    <button name="action_confirm" string="确认" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_anonymous" string="匿名" type="object" invisible="state != 'confirmed'"/>
+                    <button name="action_draft" string="重置为草稿" type="object" invisible="state != 'anonymous'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="guide_id" placeholder="选择导游"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="task_id"/>
+                            <field name="tourist_name" readonly="state == 'anonymous'"/>
+                            <field name="tourist_phone" readonly="state == 'anonymous'"/>
+                        </group>
+                        <group>
+                            <field name="source"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="评分" name="scores">
+                            <group>
+                                <group>
+                                    <field name="service_score" widget="float"/>
+                                    <field name="professional_score" widget="float"/>
+                                </group>
+                                <group>
+                                    <field name="communication_score" widget="float"/>
+                                    <field name="punctuality_score" widget="float"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="overall_score" widget="float" string="综合评分 (自动计算)"/>
+                            </group>
+                        </page>
+                        <page string="评价内容" name="comment">
+                            <field name="comment" placeholder="请输入评价内容..."/>
+                            <field name="tags" placeholder="标签，如：热情、专业、准时"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- 动作 -->
+    <record id="action_tour_guide_evaluation" model="ir.actions.act_window">
+        <field name="name">导游评价</field>
+        <field name="res_model">tour.guide.evaluation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_guide_evaluation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                创建第一条导游评价
+            </p>
+            <p>
+                记录游客对导游服务的评价，用于服务质量监控和导游星级评定。
+            </p>
+        </field>
+    </record>
+</odoo>

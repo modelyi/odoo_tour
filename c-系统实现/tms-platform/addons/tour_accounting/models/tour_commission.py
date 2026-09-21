@@ -169,8 +169,8 @@ class TourCommission(models.Model):
             if rec.guide_tax_type == 'labor':
                 rec.guide_tax = self._calc_labor_tax(before_tax)
             else:
-                # 工资薪金代扣（3%-45% 累进）待后续实现
-                rec.guide_tax = 0.0
+                # 工资薪金代扣（累计预扣法 3%-45% 累进）
+                rec.guide_tax = rec._calc_salary_tax(before_tax)
             rec.guide_net_pay = before_tax - rec.guide_tax
             rec.company_retain = (rec.commission_total or 0.0) - before_tax
 
@@ -192,6 +192,112 @@ class TourCommission(models.Model):
         if taxable <= 50000:
             return round(taxable * 0.30 - 2000, 2)
         return round(taxable * 0.40 - 7000, 2)
+
+    def _calc_salary_tax(self, current_income):
+        """工资薪金个税 - 累计预扣法 [个税法 - 工资薪金]
+        
+        累计预扣预缴应纳税所得额 = 累计收入 - 累计免税收入 - 累计减除费用 - 
+                                  累计专项扣除 - 累计专项附加扣除 - 累计依法确定的其他扣除
+        
+        本期应预扣预缴税额 = (累计预扣预缴应纳税所得额 × 预扣率 - 速算扣除数) - 
+                           累计减免税额 - 累计已预扣预缴税额
+        
+        减除费用：5000 元/月 (60000 元/年)
+        税率表 (综合所得适用):
+        - 不超过 36000: 3%, 速算扣除数 0
+        - 36000-144000: 10%, 速算扣除数 2520
+        - 144000-300000: 20%, 速算扣除数 16920
+        - 300000-420000: 25%, 速算扣除数 31920
+        - 420000-660000: 30%, 速算扣除数 52920
+        - 660000-960000: 35%, 速算扣除数 85920
+        - 超过 960000: 45%, 速算扣除数 181920
+        """
+        if not self.employee_id:
+            return 0.0
+        
+        current_income = current_income or 0.0
+        if current_income <= 0:
+            return 0.0
+        
+        # 获取当前期间 (从 plan_id 的 begin_date 或当前日期)
+        if self.plan_id and self.plan_id.begin_date:
+            current_date = self.plan_id.begin_date
+        else:
+            current_date = fields.Date.today()
+        
+        current_year = current_date.year
+        current_month = current_date.month
+        
+        # 查询本年已确认/已发放的佣金 (同员工)
+        domain = [
+            ('employee_id', '=', self.employee_id.id),
+            ('state', 'in', ['confirmed', 'received', 'paid']),
+            ('guide_tax_type', '=', 'salary'),
+        ]
+        
+        # 获取本年所有记录
+        all_records = self.search(domain)
+        
+        # 计算累计收入 (不含当前记录)
+        ytd_income = 0.0
+        ytd_tax = 0.0
+        for record in all_records:
+            if record.plan_id and record.plan_id.begin_date:
+                record_month = record.plan_id.begin_date.month
+                record_year = record.plan_id.begin_date.year
+                if record_year == current_year and record_month < current_month:
+                    ytd_income += (record.guide_share_before_tax or 0.0) + (record.premium or 0.0)
+                    ytd_tax += record.guide_tax or 0.0
+            elif not record.plan_id:
+                # 如果没有 plan_id，按 create_date 判断
+                if record.create_date and record.create_date.year == current_year:
+                    if record.create_date.month < current_month:
+                        ytd_income += (record.guide_share_before_tax or 0.0) + (record.premium or 0.0)
+                        ytd_tax += record.guide_tax or 0.0
+        
+        # 累计收入 (含当前)
+        total_income = ytd_income + current_income
+        
+        # 累计减除费用 (5000/月)
+        total_deduction = 5000 * current_month
+        
+        # 累计专项扣除 (社保 + 公积金) - 简化处理，假设每月 1000 元
+        # TODO: 应从 hr.employee 或 hr.payroll 获取实际数据
+        special_deduction = 1000 * current_month
+        
+        # 累计应纳税所得额
+        taxable_income = total_income - total_deduction - special_deduction
+        taxable_income = max(0, taxable_income)
+        
+        # 计算累计应纳税额 (累进税率)
+        cumulative_tax = self._apply_progressive_tax(taxable_income)
+        
+        # 本期应预扣税额 = 累计税额 - 已预扣税额
+        current_tax = cumulative_tax - ytd_tax
+        current_tax = max(0, current_tax)
+        
+        return round(current_tax, 2)
+    
+    @staticmethod
+    def _apply_progressive_tax(taxable_income):
+        """应用累进税率表 (综合所得)"""
+        if taxable_income <= 0:
+            return 0.0
+        
+        if taxable_income <= 36000:
+            return taxable_income * 0.03
+        elif taxable_income <= 144000:
+            return taxable_income * 0.10 - 2520
+        elif taxable_income <= 300000:
+            return taxable_income * 0.20 - 16920
+        elif taxable_income <= 420000:
+            return taxable_income * 0.25 - 31920
+        elif taxable_income <= 660000:
+            return taxable_income * 0.30 - 52920
+        elif taxable_income <= 960000:
+            return taxable_income * 0.35 - 85920
+        else:
+            return taxable_income * 0.45 - 181920
 
     def action_confirm(self):
         for rec in self:

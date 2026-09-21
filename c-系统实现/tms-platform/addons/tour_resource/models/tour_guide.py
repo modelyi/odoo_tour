@@ -98,6 +98,10 @@ class TourGuide(models.Model):
     #     故不声明 One2many，改为运行时按 guide_id 反查计数）===
     loan_count = fields.Integer('借款单数', compute='_compute_loan_count')
     real_pay_count = fields.Integer('报账单数', compute='_compute_real_pay_count')
+    evaluation_count = fields.Integer('评价数', compute='_compute_evaluation_count')
+    dispatch_count = fields.Integer('派团数', compute='_compute_dispatch_info')
+    next_dispatch_date = fields.Date('下次出团', compute='_compute_dispatch_info')
+    last_dispatch_date = fields.Date('上次出团', compute='_compute_dispatch_info')
 
     _uniq_guide_code = models.Constraint(
         'unique(guide_code)',
@@ -151,6 +155,16 @@ class TourGuide(models.Model):
         for rec in self:
             rec.real_pay_count = counts.get(rec.id, 0)
 
+    def _compute_evaluation_count(self):
+        if 'tour.guide.evaluation' not in self.env:
+            self.evaluation_count = 0
+            return
+        groups = self.env['tour.guide.evaluation'].read_group(
+            [('guide_id', 'in', self.ids)], ['guide_id'], ['guide_id'])
+        counts = {g['guide_id'][0]: g['guide_id_count'] for g in groups}
+        for rec in self:
+            rec.evaluation_count = counts.get(rec.id, 0)
+
     def action_view_employee(self):
         """跳转员工档案（hr.employee）。"""
         self.ensure_one()
@@ -194,4 +208,54 @@ class TourGuide(models.Model):
             'view_mode': 'list,form',
             'domain': [('x_guide_id', '=', self.id)],
             'context': {'default_x_guide_id': self.id},
+        }
+
+    def _compute_dispatch_info(self):
+        if 'project.task' not in self.env:
+            for rec in self:
+                rec.dispatch_count = 0
+                rec.next_dispatch_date = False
+                rec.last_dispatch_date = False
+            return
+        Task = self.env['project.task']
+        today = fields.Date.context_today(self)
+        for rec in self:
+            tasks = Task.search([
+                ('resource_type', '=', 'guide'),
+                ('guide_id', '=', rec.id),
+                ('state', '!=', '1_canceled'),
+            ], order='date_start asc')
+            rec.dispatch_count = len(tasks)
+            future = tasks.filtered(lambda t: t.date_start and t.date_start.date() >= today)
+            rec.next_dispatch_date = future[:1].date_start.date() if future else False
+            past = tasks.filtered(lambda t: t.date_start and t.date_start.date() < today)
+            rec.last_dispatch_date = past[-1:].date_start.date() if past else False
+
+    def action_view_evaluations(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '导游评价',
+            'res_model': 'tour.guide.evaluation',
+            'view_mode': 'list,form',
+            'domain': [('guide_id', '=', self.id)],
+            'context': {'default_guide_id': self.id},
+        }
+
+    def action_view_dispatches(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '%s 派团日历' % self.name,
+            'res_model': 'project.task',
+            'view_mode': 'calendar,list,form',
+            'domain': [
+                ('resource_type', '=', 'guide'),
+                ('guide_id', '=', self.id),
+                ('state', '!=', '1_canceled'),
+            ],
+            'context': {
+                'default_resource_type': 'guide',
+                'default_guide_id': self.id,
+            },
         }

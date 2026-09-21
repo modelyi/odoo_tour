@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import hr_employee
 from . import tour_guide
+from . import tour_guide_evaluation
 from . import tour_supplier
 from . import tour_shop_agreement
 from . import tour_region
