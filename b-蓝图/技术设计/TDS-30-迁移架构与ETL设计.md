@@ -32,7 +32,7 @@
 | OCA `web_responsive` | **1** | 20 试装**直接通过** |
 | `tour_tutor`（在 addons 里但未安装） | 1 | 与本次迁移无关，建议归档 |
 
-## 3. 六条决定性硬事实（B1 的范围由此定形）
+## 3. 七条决定性硬事实（B1 的范围由此定形）
 
 - **F1 版本门禁**：Odoo 20 `odoo/modules/module.py:500` 新增 `check_version()`，要求
   `major_version = '20.1'`，即模块 `version` 必须以 **`20.1.`** 开头，且
@@ -43,11 +43,22 @@
   （`b0snap20` 的 `information_schema.tables` 里查不到），统一成
   `odoo/addons/base/models/ir_access.py` 的 **`ir.access`**：
   `operation ∈ {c,r,u,d}` + `domain`（记录规则）+ `kind ∈ {permission, restriction}`。
+  **注意 `operation` 是 Selection 而非任意子串**：合法值只有 `ir_access.py:16 CRUD_SELECTION`
+  的 15 个键，键内顺序固定为 `crud` —— `rud` 合法、`rucd`/`ruc`/`rc`/`ucd` 不合法，
+  非法值被写成 NULL 后撞 `not-null` 约束**整批装载失败**。权限转换工具 v3 就因此
+  有 **959/1,524 行**在真实 registry 上装不进去（见下）。
   → 这是 B1 **最大的单一工作量**：36 个模块共 ~300 行 `security/*.csv` + 91 条
   `model="ir.rule"` 的 XML 要重写；现网数据侧有 **516 行 ir_model_access + 198 行 ir_rule**
   （挂在 tour_* 模型上）要在 ETL 象限 3 里转换成 `ir.access` 行。
   首失败样本：`KeyError: 'ir.model.access'`（hr_custody 等）、
   `ParseError … security/hr_reminder_security.xml`、`ParseError … tour_budget/security/account_budget_security.xml`。
+  → **该重写已被工具化并在真实 20 registry 上验证**（`c-系统实现/tms-platform/scripts/migration/security_19to20/`）：
+  19 现网 1,405 access + 431 rule → 按人群重建出 **1,407 permission + 117 restriction** 行、
+  待人工复核 14 项；抽样 188 行装进 scratch 库 `b1sec7` **0 ERROR**，
+  行为探针确认带 `domain` 的行在查询期真的收窄（portal 用户 `tour.guide` 2 可见 1、
+  域外 `read()` 报 `AccessError`、superuser 对照可见 2）。
+  **结论：转换层不能只靠读 CSV 自审，必须过一次真实装载** —— 上面那个 959 行的缺陷
+  在文本层面完全看不出来。
 - **F3 `res.bank` 模型整体删除**：20 侧 `grep -r "_name = 'res.bank'"` 无结果，
   银行信息被**扁平化进 `res_partner_bank`**（新增列 `bank_name/bank_bic/city/street/street2/zip/state_id/country_id/clearing_label_id`）。
   同时 `acc_number→account_number`、`acc_holder_name→holder_name`、
@@ -68,6 +79,15 @@
 - **F6 前端与报表**：`publicWidget` 注册表已移除 → `tour_website_sale/tour_website_sale.js`
   （3 处）必须 OWL 重写；`tour_accounting` 的 6 个 JS 已是 `@odoo-module`，可平移。
   20 社区版 `account/report/` 仍**没有**总账/余额表 → 报表层必须保留（计划 §7 判定成立）。
+- **F7 `res.users` 的组字段改名**：19 的 `groups_id` → 20 的 **`group_ids`**
+  （`odoo/addons/base/models/res_users.py:251`，关系表仍是 `res_groups_users_rel(uid,gid)`，
+  所以象限 3 的直拷 SQL 不受影响），并新增 `all_group_ids`（**传递闭包**后的组集）与
+  `base.group_user_regular` 这个新基线组。所有 `env['res.users'] … groups_id` 的读写、
+  以及验收脚本里的用户-组断言都要改名，且"该用户属于哪些组"的判定应改用 `all_group_ids`。
+  `res.groups.implied_ids` 的关系表和 gid/hid 方向在 20 **未变**（`res_groups.py:75`）
+  → 权限重建脚本按继承链算人群的逻辑在两侧通用。
+  另：CLI 层 `--without-demo=all` 自 19 起是**非法布尔值**（WARNING 后退化成 True），
+  B2 的 ETL/装载命令串要去掉 `=all`。
 
 ## 4. 字段级 diff（数据丢失风险清单）
 
@@ -87,7 +107,7 @@
 | `res_device_log` | 3 列 | 344 | 日志表，**丢弃** |
 | `res_country` | `zip_required` | 251 | 20 无该列 → 丢弃（不影响业务） |
 | `product_template` | `expense_policy` | 233 | 迁到 `res_company.sale_invoice_policy` 家族？需人工判定；先落 staging |
-| `res_partner_bank` | `acc_number`/`acc_holder_name`/`sanitized_acc_number`/`bank_id`/`currency_id`/`has_iban_warning` | 97 | 重命名映射 + `bank_id`→展平列 + **`currency_id` 无对应（丢弃需业务确认）**；`acc_number` 是密文列 |
+| `res_partner_bank` | `acc_number`/`acc_holder_name`/`sanitized_acc_number`/`bank_id`/`currency_id`/`has_iban_warning`/`has_money_transfer_warning` | 97 | 重命名映射 + `bank_id`→展平列 + **`currency_id` 无对应（丢弃需业务确认）**；后两个告警列在 20 合并为 `has_phishing_warnings`（compute，不迁）；`acc_number` 是密文列 |
 | `product_category` | `complete_name` | 90 | 20 里 `product/models/product_category.py` 仍有 → 计算列，重算即可 |
 | `payment_provider` | `state`/`color` | 25 | 20 payment 重构，按新 provider 模型重配（**支付通道需重登记**，与 B3 清单合并） |
 | `resource_calendar(_attendance)` | `tz`/`schedule_type`/`two_weeks_calendar`/`flexible_hours`/`name`/`duration_days` | 1/15 | 20 为 `calendar_type`/`days_per_week`/`work_time_rate`/`reference_calendar_id`；工作日历**必须逐条转换**，否则排团工时算错 |
@@ -248,8 +268,8 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 1. **象限 3 新增「权限重写子步骤」**：`ir_model_access`（19 现网实测 1,405 行）+ `ir_rule`（431 行）
    → 生成 `ir.access` 行；已按此实现转换工具
    `c-系统实现/tms-platform/scripts/migration/security_19to20/`（导出 → diff 20 core → 生成
-   各模块 `security/ir.access.csv` + 桥接模块 `tour_security_bridge`，实测 696 行 / 24 模块 /
-   桥接 522 行 / 待人工复核 86 项），见 §5.2-S2。这是纯规则转换（operation=crud 映射 +
+   各模块 `security/ir.access.csv` + 桥接模块；v2 原型 696 行 / 桥接 522 行 / 复核 86 项，
+   **该组数字已随 v3 作废**），见 §5.2-S2。这是纯规则转换（operation=crud 映射 +
    `domain_force` → `domain`），但**必须逐条人工复核**，因为它决定门户可见性。
    关键语义：20 中带 `group_id` 的 permission 行是 **OR**、无 group 的 restriction 是 **AND**，
    所以 19 的"宽授予 + 记录规则收窄"**不能只在 security 文件里加 restriction**，
@@ -265,6 +285,14 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
    附带一条硬事实：20 的 access domain 可求值上下文**只有** `user/time/company_id/company_ids`
    （`ir_access.py:312 _eval_context`），19 里用到 `website`/`uid`/`object` 的域 B1 必须改写
    （落库后是 NameError 报错，不是静默放行），详见该目录 README。
+   **装载验证（2026-09-21，scratch 库 `b1sec7`）**：作用域裁剪后的 188 行
+   `security/ir.access.csv` 装进真实 20 registry **0 ERROR**、domain 40 行全部落库；
+   行为探针（`probe_bridge.py`，shell 退出即回滚）证实 domain 在查询期生效 ——
+   portal 用户对 `tour.guide` 2 条只见 1 条、域外 `read()` 报 `AccessError`、
+   superuser 对照见 2 条；`res.partner.bank` 的**带点关系路径**域
+   （`partner_id.employee_ids = False`）在 20 也可用。
+   这一轮同时抓出 §3-F2 说的 `operation` Selection 顺序缺陷（修复前 959/1,524 行装不进去）：
+   **文本层面完全看不出来，转换层必须过一次真实装载才算验证。**
    验收判据：A1 用的登录/权限矩阵（`d-交付验收/A1-平桥验收报告_2026-09-21.md` §5）在 20 上结果一致。
 2. **象限 1 的 `account_move*` 需两处列映射**：`checked→review_state`、
    `deductible_amount→deductible_percentage`。**禁止默认换算**：先在 staging 上重算并与 19 报表逐户比对，

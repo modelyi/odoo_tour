@@ -1,88 +1,88 @@
 model,ops,domain,source
-account.account,rucd,"[('company_ids', 'parent_of', company_ids)]",account.account_comp_rule
-account.analytic.account,rucd,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_comp_rule
-account.analytic.applicability,rucd,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_applicability_comp_rule
-account.analytic.distribution.model,rucd,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_distribution_model_comp_rule
-account.analytic.line,rucd,"[('company_id', 'in', company_ids)]",analytic.analytic_line_comp_rule
-account.asset.asset,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
+account.account,crud,"[('company_ids', 'parent_of', company_ids)]",account.account_comp_rule
+account.analytic.account,crud,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_comp_rule
+account.analytic.applicability,crud,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_applicability_comp_rule
+account.analytic.distribution.model,crud,"['|',('company_id','=',False),('company_id', 'parent_of', company_ids)]",analytic.analytic_distribution_model_comp_rule
+account.analytic.line,crud,"[('company_id', 'in', company_ids)]",analytic.analytic_line_comp_rule
+account.asset.asset,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
             ",tour_accounting.account_asset_asset_multi_company_rule
-account.asset.category,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
+account.asset.category,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
             ",tour_accounting.account_asset_category_multi_company_rule
-account.bank.statement,rucd,"[('company_id', 'in', company_ids + [False])]",account.account_bank_statement_comp_rule
-account.bank.statement.line,rucd,"[('company_id', 'in', company_ids)]",account.account_bank_statement_line_comp_rule
-account.budget.post,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_post_comp_rule
-account.fiscal.position,rucd,"[('company_id', 'parent_of', company_ids)]",account.account_fiscal_position_comp_rule
-account.group,rucd,"[('company_id', 'parent_of', company_ids)]",account.account_group_comp_rule
-account.invoice.report,rucd,"[('company_id', 'in', company_ids)]",account.invoice_analysis_comp_rule
-account.journal,rucd,"[('company_id', 'parent_of', company_ids)]",account.journal_comp_rule
-account.journal.group,rucd,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",account.journal_group_comp_rule
-account.move,rucd,"[('company_id', 'in', company_ids)]",account.account_move_comp_rule
-account.move.line,rucd,"[('company_id', 'in', company_ids)]",account.account_move_line_comp_rule
-account.payment,rucd,"[('company_id', 'in', company_ids)]",account.account_payment_comp_rule
-account.payment.term,rucd,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",account.account_payment_term_comp_rule
-account.reconcile.model,rucd,"[('company_id', 'parent_of', company_ids)]",account.account_reconcile_model_template_comp_rule
-account.reconcile.model.line,rucd,"[('company_id', 'parent_of', company_ids)]",account.account_reconcile_model_line_template_comp_rule
-account.report.external.value,rucd,"[('company_id', 'in', company_ids)]",account.report_external_value_comp_rule
-account.tax,rucd,"[('company_id', 'parent_of', company_ids)]",account.tax_comp_rule
-account.tax.group,rucd,"[('company_id', 'parent_of', company_ids)]",account.tax_group_comp_rule
-account.tax.repartition.line,rucd,"['|',('company_id','=',False), ('company_id', 'parent_of', company_ids)]",account.tax_rep_comp_rule
-auth_totp.wizard,rucd,"[('user_id', '=', user.id)]",auth_totp.rule_auth_totp_wizard
-budget.budget,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_comp_rule
-budget.lines,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_lines_comp_rule
-calendar.event,ucd,"['|', ('privacy', '!=', 'private'), '&', ('privacy', '=', 'private'), '|', ('user_id', '=', user.id), ('partner_ids', 'in', user.partner_id.id)]",calendar.calendar_event_rule_private
-change.password.own,rucd,"[('create_uid', '=', user.id)]",base.change_password_own_rule
-change.password.user,rucd,"[('create_uid', '=', user.id)]",base.change_password_rule
-crm.activity.report,rucd,"[('company_id', 'in', company_ids + [False])]",crm.crm_activity_report_rule_multi_company
-crm.lead,rucd,"[('company_id', 'in', company_ids + [False])]",crm.crm_lead_company_rule
-crm.team,rucd,"[('company_id', 'in', company_ids + [False])]",sales_team.sale_team_comp_rule
-custody.property,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",hr_custody.property_rule_custody
-delivery.carrier,rucd,"[('company_id', 'in', company_ids + [False])]",delivery.delivery_carrier_comp_rule
-event.event,rucd,"[('company_id', 'in', company_ids + [False])]",event.event_event_company_rule
-event.event.ticket,rucd,"[('event_id.company_id', 'in', company_ids + [False])]",event.ir_rule_event_event_ticket_company
-event.registration,rucd,"[('company_id', 'in', company_ids + [False])]",event.event_registration_company_rule
-event.sale.report,rucd,"[('company_id', 'in', company_ids + [False])]",event_sale.event_sale_report_comp_rule
-fleet.vehicle,rucd,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_vehicle
-fleet.vehicle.cost.report,rucd,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_report
-fleet.vehicle.log.contract,rucd,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_vehicle_log_contract
-fleet.vehicle.log.services,rucd,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_log_services
-fleet.vehicle.odometer,rucd,"[('vehicle_id.company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_odometer
-gamification.goal,rucd,"[('user_id.company_id', 'in', company_ids)]",gamification.goal_global_multicompany
-hr.applicant,rucd,"[('company_id', 'in', company_ids + [False])]",hr_recruitment.hr_applicant_comp_rule
-hr.attendance,rucd,"['|',('employee_id.company_id','=',False),('employee_id.company_id', 'in', company_ids)]",hr_attendance.hr_attendance_rule_employee_company
-hr.attendance.overtime.line,rucd,"[('employee_id.company_id', 'in', company_ids)]",hr_attendance.hr_attendance_overtime_line_rule_employee_company
+account.bank.statement,crud,"[('company_id', 'in', company_ids + [False])]",account.account_bank_statement_comp_rule
+account.bank.statement.line,crud,"[('company_id', 'in', company_ids)]",account.account_bank_statement_line_comp_rule
+account.budget.post,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_post_comp_rule
+account.fiscal.position,crud,"[('company_id', 'parent_of', company_ids)]",account.account_fiscal_position_comp_rule
+account.group,crud,"[('company_id', 'parent_of', company_ids)]",account.account_group_comp_rule
+account.invoice.report,crud,"[('company_id', 'in', company_ids)]",account.invoice_analysis_comp_rule
+account.journal,crud,"[('company_id', 'parent_of', company_ids)]",account.journal_comp_rule
+account.journal.group,crud,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",account.journal_group_comp_rule
+account.move,crud,"[('company_id', 'in', company_ids)]",account.account_move_comp_rule
+account.move.line,crud,"[('company_id', 'in', company_ids)]",account.account_move_line_comp_rule
+account.payment,crud,"[('company_id', 'in', company_ids)]",account.account_payment_comp_rule
+account.payment.term,crud,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",account.account_payment_term_comp_rule
+account.reconcile.model,crud,"[('company_id', 'parent_of', company_ids)]",account.account_reconcile_model_template_comp_rule
+account.reconcile.model.line,crud,"[('company_id', 'parent_of', company_ids)]",account.account_reconcile_model_line_template_comp_rule
+account.report.external.value,crud,"[('company_id', 'in', company_ids)]",account.report_external_value_comp_rule
+account.tax,crud,"[('company_id', 'parent_of', company_ids)]",account.tax_comp_rule
+account.tax.group,crud,"[('company_id', 'parent_of', company_ids)]",account.tax_group_comp_rule
+account.tax.repartition.line,crud,"['|',('company_id','=',False), ('company_id', 'parent_of', company_ids)]",account.tax_rep_comp_rule
+auth_totp.wizard,crud,"[('user_id', '=', user.id)]",auth_totp.rule_auth_totp_wizard
+budget.budget,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_comp_rule
+budget.lines,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",tour_budget.budget_lines_comp_rule
+calendar.event,cud,"['|', ('privacy', '!=', 'private'), '&', ('privacy', '=', 'private'), '|', ('user_id', '=', user.id), ('partner_ids', 'in', user.partner_id.id)]",calendar.calendar_event_rule_private
+change.password.own,crud,"[('create_uid', '=', user.id)]",base.change_password_own_rule
+change.password.user,crud,"[('create_uid', '=', user.id)]",base.change_password_rule
+crm.activity.report,crud,"[('company_id', 'in', company_ids + [False])]",crm.crm_activity_report_rule_multi_company
+crm.lead,crud,"[('company_id', 'in', company_ids + [False])]",crm.crm_lead_company_rule
+crm.team,crud,"[('company_id', 'in', company_ids + [False])]",sales_team.sale_team_comp_rule
+custody.property,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",hr_custody.property_rule_custody
+delivery.carrier,crud,"[('company_id', 'in', company_ids + [False])]",delivery.delivery_carrier_comp_rule
+event.event,crud,"[('company_id', 'in', company_ids + [False])]",event.event_event_company_rule
+event.event.ticket,crud,"[('event_id.company_id', 'in', company_ids + [False])]",event.ir_rule_event_event_ticket_company
+event.registration,crud,"[('company_id', 'in', company_ids + [False])]",event.event_registration_company_rule
+event.sale.report,crud,"[('company_id', 'in', company_ids + [False])]",event_sale.event_sale_report_comp_rule
+fleet.vehicle,crud,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_vehicle
+fleet.vehicle.cost.report,crud,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_report
+fleet.vehicle.log.contract,crud,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_vehicle_log_contract
+fleet.vehicle.log.services,crud,"[('company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_log_services
+fleet.vehicle.odometer,crud,"[('vehicle_id.company_id', 'in', company_ids + [False])]",fleet.ir_rule_fleet_odometer
+gamification.goal,crud,"[('user_id.company_id', 'in', company_ids)]",gamification.goal_global_multicompany
+hr.applicant,crud,"[('company_id', 'in', company_ids + [False])]",hr_recruitment.hr_applicant_comp_rule
+hr.attendance,crud,"['|',('employee_id.company_id','=',False),('employee_id.company_id', 'in', company_ids)]",hr_attendance.hr_attendance_rule_employee_company
+hr.attendance.overtime.line,crud,"[('employee_id.company_id', 'in', company_ids)]",hr_attendance.hr_attendance_overtime_line_rule_employee_company
 hr.attendance.overtime.ruleset,r,"[('company_id', 'in', company_ids + [False])]",hr_attendance.hr_attendance_overtime_ruleset_rule
-hr.attendance.overtime.ruleset,rucd,"[('company_id', 'in', company_ids + [False])]",hr_attendance.hr_attendance_overtime_ruleset_rule_group_hr_attendance_manager
-hr.contract.type,rucd,"['|', ('country_id', '=', False), ('country_id', 'in', user.env.companies.country_id.ids)]",hr.ir_rule_hr_contract_type_multi_company
-hr.custody,rucd,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",hr_custody.property_rule_custody_req
-hr.department,rucd,"[('company_id', 'in', company_ids + [False])]",hr.hr_dept_comp_rule
-hr.departure.reason,rucd,"[('country_code', 'in', user.env.companies.mapped('country_code') + [False])]",hr.ir_rule_hr_departure_reason_multi_company
-hr.employee,rucd,"['|', '|', '|',
+hr.attendance.overtime.ruleset,crud,"[('company_id', 'in', company_ids + [False])]",hr_attendance.hr_attendance_overtime_ruleset_rule_group_hr_attendance_manager
+hr.contract.type,crud,"['|', ('country_id', '=', False), ('country_id', 'in', user.env.companies.country_id.ids)]",hr.ir_rule_hr_contract_type_multi_company
+hr.custody,crud,"['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]",hr_custody.property_rule_custody_req
+hr.department,crud,"[('company_id', 'in', company_ids + [False])]",hr.hr_dept_comp_rule
+hr.departure.reason,crud,"[('country_code', 'in', user.env.companies.mapped('country_code') + [False])]",hr.ir_rule_hr_departure_reason_multi_company
+hr.employee,crud,"['|', '|', '|',
             ('company_id', 'in', company_ids + [False]),
             ('parent_id.user_id', '=', user.id),
             ('id', '=', user.employee_id.parent_id.id),
             ('user_id', '=', user.id)
         ]",hr.hr_employee_comp_rule
-hr.employee.public,rucd,"['|', '|', '|',
+hr.employee.public,crud,"['|', '|', '|',
             ('company_id', 'in', company_ids + [False]),
             ('parent_id.user_id', '=', user.id),
             ('id', '=', user.employee_id.parent_id.id),
             ('user_id', '=', user.id)
         ]",hr.hr_employee_public_comp_rule
-hr.employee.skill.report,rucd,"[('company_id', 'in', company_ids + [False])]",hr_skills.hr_employee_skill_report_multicompany
-hr.expense,rucd,"[('company_id', 'in', company_ids)]",hr_expense.hr_expense_comp_rule
-hr.job,rucd,"[('company_id', 'in', company_ids + [False])]",hr.hr_job_comp_rule
-hr.leave,rucd,"[('company_id', 'in', company_ids)]",hr_holidays.hr_leave_rule_multicompany
-hr.leave.accrual.plan,rucd,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_accrual_plan_rule_multi_company
-hr.leave.allocation,rucd,"[
+hr.employee.skill.report,crud,"[('company_id', 'in', company_ids + [False])]",hr_skills.hr_employee_skill_report_multicompany
+hr.expense,crud,"[('company_id', 'in', company_ids)]",hr_expense.hr_expense_comp_rule
+hr.job,crud,"[('company_id', 'in', company_ids + [False])]",hr.hr_job_comp_rule
+hr.leave,crud,"[('company_id', 'in', company_ids)]",hr_holidays.hr_leave_rule_multicompany
+hr.leave.accrual.plan,crud,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_accrual_plan_rule_multi_company
+hr.leave.allocation,crud,"[
             '|',
                 ('employee_id', '=', False),
                 ('employee_id.company_id', 'in', company_ids),
             ('holiday_status_id.company_id', 'in', company_ids + [False])
         ]",hr_holidays.hr_leave_allocation_rule_multicompany
-hr.leave.mandatory.day,rucd,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_mandatory_day_rule_multi_company
-hr.leave.report,rucd,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_report_rule_multi_company
-hr.leave.report.calendar,rucd,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_report_calendar_rule_multi_company
-hr.leave.type,rucd,"[
+hr.leave.mandatory.day,crud,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_mandatory_day_rule_multi_company
+hr.leave.report,crud,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_report_rule_multi_company
+hr.leave.report.calendar,crud,"[('company_id', 'in', company_ids + [False])]",hr_holidays.hr_leave_report_calendar_rule_multi_company
+hr.leave.type,crud,"[
             '|', 
                 ('company_id', 'in', company_ids),
                 '&',
@@ -90,64 +90,64 @@ hr.leave.type,rucd,"[
                     ('country_id', 'in', user.env.companies.country_id.ids + [False])
         ]
         ",hr_holidays.hr_holidays_status_rule_multi_company
-hr.loan,rucd,"
+hr.loan,crud,"
                 ['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
             ",ohrms_loan.hr_loan_rule_company
-hr.payroll.structure.type,rucd,"['|', ('country_id', '=', False), ('country_id', 'in', user.env.companies.mapped('country_id').ids)]",hr.ir_rule_hr_payroll_structure_type_multi_company
-hr.payslip,rucd,"['|', ('company_id', '=', False),
+hr.payroll.structure.type,crud,"['|', ('country_id', '=', False), ('country_id', 'in', user.env.companies.mapped('country_id').ids)]",hr.ir_rule_hr_payroll_structure_type_multi_company
+hr.payslip,crud,"['|', ('company_id', '=', False),
                 ('company_id', 'in', company_ids)]
             ",hr_payroll_community.payroll_multi_company_rule
-hr.reminder,rucd,"['|',('company_id','=',False),
+hr.reminder,crud,"['|',('company_id','=',False),
             ('company_id','child_of',[user.company_id.id])]",hr_reminder.hr_reminder_company_rule
-hr.timesheet.attendance.report,rucd," [('company_id', 'in', company_ids + [False])]",hr_timesheet_attendance.hr_timesheet_attendance_report_restricted_company_rule
-hr.version,rucd,"[('company_id', 'in', company_ids)]",hr.ir_rule_hr_contract_multi_company
-ir.ui.view.custom,rucd,"[('user_id','=',user.id)]",base.ir_ui_view_custom_personal
+hr.timesheet.attendance.report,crud," [('company_id', 'in', company_ids + [False])]",hr_timesheet_attendance.hr_timesheet_attendance_report_restricted_company_rule
+hr.version,crud,"[('company_id', 'in', company_ids)]",hr.ir_rule_hr_contract_multi_company
+ir.ui.view.custom,crud,"[('user_id','=',user.id)]",base.ir_ui_view_custom_personal
 mail.compose.message,ru,"[('create_uid', '=', user.id)]",mail.mail_compose_message_rule
-mail.scheduled.message,uc,"[('create_uid', '=', user.id)]",mail.ir_rule_mail_scheduled_message_user
-payment.capture.wizard,rucd,"[('create_uid', '=', user.id)]",payment.payment_capture_wizard_rule
-payment.provider,rucd,"[('company_id', 'parent_of', company_ids)]",payment.payment_provider_company_rule
-payment.token,rucd,"[('company_id', 'parent_of', company_ids)]",payment.payment_token_company_rule
-payment.transaction,rucd,"[('company_id', 'in', company_ids)]",payment.transaction_company_rule
-product.combo,rucd,"
+mail.scheduled.message,cu,"[('create_uid', '=', user.id)]",mail.ir_rule_mail_scheduled_message_user
+payment.capture.wizard,crud,"[('create_uid', '=', user.id)]",payment.payment_capture_wizard_rule
+payment.provider,crud,"[('company_id', 'parent_of', company_ids)]",payment.payment_provider_company_rule
+payment.token,crud,"[('company_id', 'parent_of', company_ids)]",payment.payment_token_company_rule
+payment.transaction,crud,"[('company_id', 'in', company_ids)]",payment.transaction_company_rule
+product.combo,crud,"
             ['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]
         ",product.product_combo_comp_rule
-product.document,rucd," ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",product.product_document_comp_rule
-product.pricelist,rucd,"['|', ('company_id', 'in', [False, website.company_id.id]), ('company_id', 'in', company_ids)]",website_sale.product_pricelist_comp_rule
-product.pricelist.item,rucd,"['|', ('company_id', 'in', [False, website.company_id.id]), ('company_id', 'in', company_ids)]",website_sale.product_pricelist_item_comp_rule
-product.supplierinfo,rucd,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",product.product_supplierinfo_comp_rule
-product.template,rucd," ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",product.product_comp_rule
-project.milestone,rucd,"['|', ('project_id.company_id', 'in', company_ids), ('project_id.company_id', '=', False)]",project.milestone_comp_rule
-project.project,rucd,"[('company_id', 'in', company_ids + [False])]",project.project_comp_rule
-project.project.stage,rucd,"[('company_id', 'in', company_ids + [False])]",project.project_project_stage_rule
-project.task,rucd,"[('company_id', 'in', company_ids + [False])]",project.task_comp_rule
-project.task.stage.personal,rucd,"[('user_id', '=', user.id)]",project.ir_rule_project_personal_stage_my
-project.task.type,rucd,"[('user_id', 'in', (False, user.id))]",project.task_type_visibility_rule
-project.update,rucd,"['|', ('project_id.company_id', 'in', company_ids), ('project_id.company_id', '=', False)]",project.update_comp_rule
-purchase.bill.union,rucd,"[('company_id', 'in', company_ids + [False])]",purchase.purchase_bill_union_comp_rule
-purchase.order,rucd,"[('company_id', 'in', company_ids)]",purchase.purchase_order_comp_rule
-purchase.order.line,rucd,"[('company_id', 'in', company_ids)]",purchase.purchase_order_line_comp_rule
-purchase.report,rucd,"[('company_id', 'in', company_ids)]",purchase.purchase_order_report_comp_rule
-quotation.document,rucd,"
+product.document,crud," ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",product.product_document_comp_rule
+product.pricelist,crud,"['|', ('company_id', 'in', [False, website.company_id.id]), ('company_id', 'in', company_ids)]",website_sale.product_pricelist_comp_rule
+product.pricelist.item,crud,"['|', ('company_id', 'in', [False, website.company_id.id]), ('company_id', 'in', company_ids)]",website_sale.product_pricelist_item_comp_rule
+product.supplierinfo,crud,"['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]",product.product_supplierinfo_comp_rule
+product.template,crud," ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",product.product_comp_rule
+project.milestone,crud,"['|', ('project_id.company_id', 'in', company_ids), ('project_id.company_id', '=', False)]",project.milestone_comp_rule
+project.project,crud,"[('company_id', 'in', company_ids + [False])]",project.project_comp_rule
+project.project.stage,crud,"[('company_id', 'in', company_ids + [False])]",project.project_project_stage_rule
+project.task,crud,"[('company_id', 'in', company_ids + [False])]",project.task_comp_rule
+project.task.stage.personal,crud,"[('user_id', '=', user.id)]",project.ir_rule_project_personal_stage_my
+project.task.type,crud,"[('user_id', 'in', (False, user.id))]",project.task_type_visibility_rule
+project.update,crud,"['|', ('project_id.company_id', 'in', company_ids), ('project_id.company_id', '=', False)]",project.update_comp_rule
+purchase.bill.union,crud,"[('company_id', 'in', company_ids + [False])]",purchase.purchase_bill_union_comp_rule
+purchase.order,crud,"[('company_id', 'in', company_ids)]",purchase.purchase_order_comp_rule
+purchase.order.line,crud,"[('company_id', 'in', company_ids)]",purchase.purchase_order_line_comp_rule
+purchase.report,crud,"[('company_id', 'in', company_ids)]",purchase.purchase_order_report_comp_rule
+quotation.document,crud,"
             ['|', ('company_id', '=', False), ('company_id', 'parent_of', company_ids)]
         ",sale_pdf_quote_builder.quotation_document_comp_rule
-report.project.task.user,rucd,"[('company_id', 'in', company_ids + [False])]",project.report_project_task_user_report_comp_rule
-res.currency.rate,rucd,"['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_currency_rate_rule
-res.partner,rucd,"['|', '|', ('partner_share', '=', False), ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_partner_rule
-res.partner.bank,rucd,"['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_partner_bank_rule
-res.users,rucd,"['|', ('share', '=', False), ('company_ids', 'in', company_ids)]",base.res_users_rule
-res.users.identitycheck,rucd,"[('create_uid', '=', user.id)]",base.res_users_identity_check
-res.users.log,ucd,"[('create_uid','=', user.id)]",base.res_users_log_rule
-resource.calendar.leaves,rucd,"[('company_id', 'in', company_ids + [False])]",resource.resource_calendar_leaves_rule_multi_company
-resource.resource,rucd,"[('company_id', 'in', company_ids + [False])]",resource.resource_resource_multi_company
-salary.advance,rucd,"
+report.project.task.user,crud,"[('company_id', 'in', company_ids + [False])]",project.report_project_task_user_report_comp_rule
+res.currency.rate,crud,"['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_currency_rate_rule
+res.partner,crud,"['|', '|', ('partner_share', '=', False), ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_partner_rule
+res.partner.bank,crud,"['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]",base.res_partner_bank_rule
+res.users,crud,"['|', ('share', '=', False), ('company_ids', 'in', company_ids)]",base.res_users_rule
+res.users.identitycheck,crud,"[('create_uid', '=', user.id)]",base.res_users_identity_check
+res.users.log,cud,"[('create_uid','=', user.id)]",base.res_users_log_rule
+resource.calendar.leaves,crud,"[('company_id', 'in', company_ids + [False])]",resource.resource_calendar_leaves_rule_multi_company
+resource.resource,crud,"[('company_id', 'in', company_ids + [False])]",resource.resource_resource_multi_company
+salary.advance,crud,"
                 ['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
             ",ohrms_salary_advance.rule_advance_salary_multi_company
-sale.advance.payment.inv,rucd,"[('create_uid', '=', user.id)]",sale.sale_advance_payment_inv_rule
-sale.mass.cancel.orders,rucd,"[('create_uid', '=', user.id)]",sale.sale_mass_cancel_orders_rule
-sale.order,rucd,"[('company_id', 'in', company_ids)]",sale.sale_order_comp_rule
-sale.order.line,rucd,"[('company_id', 'in', company_ids)]",sale.sale_order_line_comp_rule
-sale.order.template,rucd,"[('company_id', 'in', company_ids + [False])]",sale_management.sale_order_template_rule_company
-sale.report,rucd,"[('company_id', 'in', company_ids)]",sale.sale_order_report_comp_rule
-spreadsheet.dashboard,rucd,"[('company_ids', 'in', company_ids + [False])]",spreadsheet_dashboard.spreadsheet_dashboard_rule_company
-timesheets.analysis.report,rucd,"[('company_id', 'in', company_ids)]",hr_timesheet.timesheets_analysis_report_comp_rule
-website.menu,rucd,"['|', ('group_ids', '=', False), ('group_ids', 'in', user.all_group_ids.ids)]",website.website_menu
+sale.advance.payment.inv,crud,"[('create_uid', '=', user.id)]",sale.sale_advance_payment_inv_rule
+sale.mass.cancel.orders,crud,"[('create_uid', '=', user.id)]",sale.sale_mass_cancel_orders_rule
+sale.order,crud,"[('company_id', 'in', company_ids)]",sale.sale_order_comp_rule
+sale.order.line,crud,"[('company_id', 'in', company_ids)]",sale.sale_order_line_comp_rule
+sale.order.template,crud,"[('company_id', 'in', company_ids + [False])]",sale_management.sale_order_template_rule_company
+sale.report,crud,"[('company_id', 'in', company_ids)]",sale.sale_order_report_comp_rule
+spreadsheet.dashboard,crud,"[('company_ids', 'in', company_ids + [False])]",spreadsheet_dashboard.spreadsheet_dashboard_rule_company
+timesheets.analysis.report,crud,"[('company_id', 'in', company_ids)]",hr_timesheet.timesheets_analysis_report_comp_rule
+website.menu,crud,"['|', ('group_ids', '=', False), ('group_ids', 'in', user.all_group_ids.ids)]",website.website_menu

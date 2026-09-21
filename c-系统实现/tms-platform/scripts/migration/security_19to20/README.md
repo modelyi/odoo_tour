@@ -60,8 +60,8 @@ python3 apply_security.py $ADDONS_COPY $D/out2
 | 19 权限现状 | 1,405 access 行 / 431 rule 行（119 全局，8 行无 XMLID，31 行无组） | 单公司 |
 | 20 core 已声明 (模型,组) | 2,429 对 | 用于做差 |
 | 生成 ir.access 行（v2 逐条平移） | **696** | grant_gap 283 / rule 264 / wide_custom_group 125 / global_restriction 22 / rule_only 2 |
-| 桥接模块 | `tour_security_bridge`，522 行，depends 66 | 承载"官方组"的差量授权与全局限制 |
-| **v3 有效权限重建**（`classify_rules.py` + `domains20.py`） | permission 1,407 行 + restriction 117 行 / 626 模型 | 待复核 **14**（NO_GRANT_POP 12、CTX_OUT_OF_20 2）；出站 domain 引擎自检 **0 条不可解析** |
+| 桥接模块 | `tour_security_bridge`，522 行，depends 66 | **v2 产物已作废**：depends 含装不上的 `tour_accounting`/`hr_custody`，这份永远装不起来，仅留作对照 |
+| **v3 有效权限重建**（`classify_rules.py` + `domains20.py`） | permission 1,407 行 + restriction 117 行 / 626 模型 | 待复核 **14**（NO_GRANT_POP 12、CTX_OUT_OF_20 2）；出站 domain 引擎自检 **0 条不可解析**；**已在真实 20 registry 装载 + 行为验证**（见「装载与行为验证」） |
 
 ### v2 的语义错误与 v3 的修正（必读）
 
@@ -115,7 +115,7 @@ group by g.id, gx.xid) TO STDOUT WITH (FORMAT csv, HEADER true)" > group_xid.csv
 # 必须用 odoo20 的解释器 + PYTHONPATH，才能借它的 domain 引擎
 cd <本目录> && PYTHONPATH=/home/adai/odoo20:. SEC20=/tmp/b0/sec20 \
   /home/adai/odoo20/.venv/bin/python classify_rules.py --outdir $SEC20/eff
-# → eff/rows_effective.csv（model,group,ops,domain,source）1,402 行
+# → eff/rows_effective.csv（model,group,ops,domain,source）1,407 行
 #   eff/restrictions_effective.csv（model,ops,domain,source）117 行
 #   eff/review.csv（NO_GRANT_POP 12 + CTX_OUT_OF_20 2）
 # 本次实测的三份产物已随工具留档在 ./eff/（136 KB，只含模型名/组 xmlid/domain，无业务数据）
@@ -123,6 +123,13 @@ cd <本目录> && PYTHONPATH=/home/adai/odoo20:. SEC20=/tmp/b0/sec20 \
 
 未带 `PYTHONPATH=/home/adai/odoo20` 时工具会**退化**为不合并（多规则人群进 NEEDS_DOMAIN_MERGE
 人工队列），并打印 `MERGE=False` —— 不会静默生成一条拼错的域。
+
+```bash
+# 4) 装载 + 行为验证（scratch 库，勿在生产 addons/库上跑）
+python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --out $SEC20/eff/ir.access.<scope>.csv
+#   → 拷进 <addons>/tour_sec_bridge3/security/ir.access.csv 后 odoo-bin -i tour_sec_bridge3
+#   → odoo-bin shell … < probe_bridge.py   打印可见性矩阵；shell 退出即回滚，不留测试数据
+```
 
 ## 导出数据的两处方向陷阱（改脚本前必读）
 
@@ -146,6 +153,36 @@ cd <本目录> && PYTHONPATH=/home/adai/odoo20:. SEC20=/tmp/b0/sec20 \
 | `hr.leave` / `hr.leave.allocation` | `hr_holidays.group_hr_holidays_responsible` | 19 里该组只有规则、没有任何 CRUD 授予；**该组现网 0 个活跃用户** → 规则确实无从生效 | 可直接丢弃并记录；若日后启用「假勤负责人」审批，需同时补授予 + domain |
 | `tour.guide.loan` | `base.group_user`（89 活跃用户） | 自有 `tour_accounting.rule_tour_guide_loan_self` 挂在 `base.group_user`，但该模型只授予 portal(0 人)/cfo(1 人)/finance/manager 四组 → **这条"只看自己"的规则从未生效过** | 改挂到实际持有授予的组（多半是 finance/manager 想限自己），并在 B1 加一条访问单测；不改就是延续现网的既有行为 |
 
+## 装载与行为验证（实测 2026-09-21，alpha 20.1a1，scratch 库 `b1sec7`）
+
+把 v3 产物真的装进 20 registry 跑了一遍 —— **这一步抓到了一个会整批失败的真实缺陷**：
+
+* `operation` 不是任意子串，而是 20 的 `Selection`（`ir_access.py:16` 的 15 个键），
+  键内顺序固定为 **`crud`**。v3 早期按 19 的 `perm_read/write/create/unlink` 顺序拼出
+  `rucd`/`ruc`/`rc`/`ucd`，这些值不在 Selection 里 → 被写成 NULL →
+  `null value in column "operation" violates not-null constraint`，**1,524 行里 959 行装载失败**。
+  只查 CSV 文本永远看不出这个问题（`rucd` 看起来完全合法）。
+  已修：`canon_ops()` 统一按 `crud` 排序 + 两个脚本出站时无条件硬校验非法值即失败。
+  修复后 permission/restriction 的 ops 分布为
+  `crud 646+112 / r 526+1 / cru 185+1 / ru 32+2 / cr 13 / cud 2 / rud 5 / cu 1`，非法值 0。
+* 装载实测：作用域裁剪后 188 行 → `security/ir.access.csv` →
+  `-i tour_sec_bridge3` **0 ERROR**，`select count(*)=188`、带 domain 40 行全部落库。
+* 行为实测（`probe_bridge.py`，shell 事务结束自动回滚，不留测试数据）：
+
+  | 探针 | 总数 | 目标用户可见 | 判据 |
+  |---|---|---|---|
+  | `tour.guide` / portal（domain = `partner_id = user.partner_id.id`） | 2 | **1** | ✅ domain 生效 |
+  | `tour.guide` / superuser（对照组） | 2 | 2 | ✅ 排除"数据没建出来"的假阳性 |
+  | `res.partner.bank` / internal（domain = `partner_id.employee_ids = False`） | 2 | **1** | ✅ **带点的关系路径 domain 在 20 可用** |
+  | portal 用户 `read()` 域外记录 | — | `AccessError` | ✅ 引擎侧记日志 `Access Denied ... model: tour.guide` |
+  | portal 用户 `read()` 域内记录 | — | OK | ✅ 没有过度收窄 |
+
+顺带抓到的 20 侧字段/API 事实（已并入 TDS-30 §7）：`res.users.groups_id` → **`group_ids`**
+（新增 `all_group_ids` 传递闭包、`base.group_user_regular` 新组；`res_groups_users_rel` 关系表未变
+→ 象限 3 直拷 SQL 仍成立）；`res.partner.bank` 列改名 `acc_number→account_number`、
+`sanitized_acc_number→sanitized_account_number`、`acc_holder_name→holder_name`，
+`bank_id`/`currency_id` 消失、改为内联地址列；`--without-demo=all` 自 19 起是非法布尔值。
+
 ## 已知边界（不要当成成品）
 
 
@@ -159,5 +196,11 @@ cd <本目录> && PYTHONPATH=/home/adai/odoo20:. SEC20=/tmp/b0/sec20 \
 4. `noupdate` 标记、`ir.access` 的 `is_standard` 归属、以及"改上游行"只能通过在自己模块里
    复用同一 XMLID 覆盖实现 —— 这条尚未在原型中处理。
 5. 视图层的 `t-esc`/`t-raw`（现网 560 处 / 23 文件）不属于本工具范围，见 TDS-30 §5.2。
-6. v3 只重建**数据可见性**，不覆盖 20 新引入的 `ir.access` 计算字段口径（`for_read/write/…`），
-   落库前需在 20 空库对 `rows_effective.csv` 抽样做 `read` 权限矩阵回归（A1 报告的 §5 矩阵）。
+6. v3 只重建**数据可见性**，不覆盖 20 新引入的 `ir.access` 计算字段口径（`for_read/write/…`）。
+   **装载 + 单点行为验证已做**（见上一节，含 domain 收窄与 AccessError 两个方向），
+   但那只是合成数据；A1 报告 §5 的登录/权限矩阵在**迁移后的真实数据**上回归仍是必做项。
+7. 桥接模块的 `depends` 目前靠 `--scope-modules` 人工给：真正落地要按"每行的 `model_id`
+   由哪个模块声明"自动求依赖闭包，否则装到部分模块的库上会因解析不到 `ir.model` 整批失败
+   （本次 129→46→188 行的三次裁剪就是这个现象）。
+   同时 v2 原型 `tour_security_bridge` 的 depends 有 66 个模块（含装不上的 `tour_accounting`），
+   那份产物已作废，仅留作对照。
