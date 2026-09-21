@@ -8,10 +8,13 @@
 - /my/tourist/payments     付款记录
 - /my/tourist/trips        即将出行
 - /my/tourist/invoices     发票列表
+- /my/tourist/evaluations  行程评价列表 / new/<plan_id> 表单 / submit 提交
 - /website/signup          注册（GET 表单 / POST 创建用户）
 
 数据隔离：所有查询均按 partner_id = request.env.user.partner_id.id 过滤。
 """
+from urllib.parse import urlencode
+
 from odoo import _, fields, http
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
@@ -313,8 +316,168 @@ class PortalTourist(CustomerPortal):
             'tour_tourist_portal.portal_tourist_invoices', values)
 
     # ------------------------------------------------------------------
-    # /website/signup — 注册
+    # /my/tourist/evaluations — 行程评价（导游评价）
     # ------------------------------------------------------------------
+
+    EVAL_ELIGIBLE_PLAN_STATES = ('in_progress', 'completed', 'archived')
+
+    @staticmethod
+    def _eval_redirect(message=None, ok=False):
+        query = {'ok': message} if ok else {'error': message}
+        return request.redirect(
+            '/my/tourist/evaluations?' + urlencode(query))
+
+    def _get_plan_guide_task(self, plan):
+        """团队当前派导任务（非取消、已选导游）"""
+        return request.env['project.task'].sudo().search([
+            ('project_id.tour_plan_id', '=', plan.id),
+            ('resource_type', '=', 'guide'),
+            ('state', '!=', '1_canceled'),
+            ('guide_id', '!=', False),
+        ], order='date_start desc, id desc', limit=1)
+
+    @http.route('/my/tourist/evaluations', type='http', auth='user',
+                website=True)
+    def portal_tourist_evaluations(self, **kw):
+        if not self._is_tourist_user():
+            return request.render('tour_tourist_portal.portal_tourist_no_access')
+
+        partner = request.env.user.partner_id
+        regs = request.env['tour.plan.reg'].sudo().search(
+            self._get_reg_domain())
+        plans = regs.mapped('plan_id').filtered(
+            lambda p: p.state in self.EVAL_ELIGIBLE_PLAN_STATES)
+        plans = plans.sorted(key=lambda p: p.begin_date, reverse=True)
+
+        Eval = request.env['tour.guide.evaluation'].sudo()
+        rows = []
+        for plan in plans:
+            task = self._get_plan_guide_task(plan)
+            evaluation = Eval.search([
+                ('plan_id', '=', plan.id),
+                ('tourist_partner_id', '=', partner.id),
+            ], limit=1) if task else Eval.browse()
+            rows.append({
+                'plan': plan,
+                'task': task,
+                'guide': task.guide_id if task else None,
+                'evaluation': evaluation,
+            })
+
+        values = {
+            'rows': rows,
+            'page_name': 'tourist_evaluations',
+            'flash_type': 'success' if kw.get('ok') else
+                          ('danger' if kw.get('error') else None),
+            'flash_message': kw.get('ok') or kw.get('error') or '',
+        }
+        return request.render(
+            'tour_tourist_portal.portal_tourist_evaluations', values)
+
+    @http.route('/my/tourist/evaluations/new/<int:plan_id>',
+                type='http', auth='user', website=True)
+    def portal_tourist_evaluation_new(self, plan_id, **kw):
+        if not self._is_tourist_user():
+            return request.render('tour_tourist_portal.portal_tourist_no_access')
+
+        plan = request.env['tour.plan'].sudo().browse(plan_id).exists()
+        if not plan:
+            raise MissingError(_('此团队不存在'))
+        own_plan_ids = request.env['tour.plan.reg'].sudo().search(
+            self._get_reg_domain()).mapped('plan_id').ids
+        if plan.id not in own_plan_ids:
+            raise AccessError(_('无权评价此团队'))
+        if plan.state not in self.EVAL_ELIGIBLE_PLAN_STATES:
+            return self._eval_redirect('行程结束后才能评价')
+
+        task = self._get_plan_guide_task(plan)
+        if not task:
+            return self._eval_redirect('该团队暂无派导记录，无法评价')
+
+        existing = request.env['tour.guide.evaluation'].sudo().search([
+            ('plan_id', '=', plan.id),
+            ('tourist_partner_id', '=', request.env.user.partner_id.id),
+        ], limit=1)
+        if existing:
+            return self._eval_redirect('您已评价过该团队')
+
+        values = {
+            'plan': plan,
+            'guide': task.guide_id,
+            'task': task,
+            'page_name': 'tourist_evaluations',
+        }
+        return request.render(
+            'tour_tourist_portal.portal_tourist_evaluation_form', values)
+
+    @staticmethod
+    def _parse_score(value):
+        """表单分数解析：空→None，非 1-5 整数→抛 ValueError"""
+        text = (value or '').strip()
+        if not text:
+            return None
+        score = int(float(text))
+        if score < 1 or score > 5:
+            raise ValueError
+        return score
+
+    @http.route('/my/tourist/evaluations/submit', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True)
+    def portal_tourist_evaluation_submit(self, **post):
+        if not self._is_tourist_user():
+            return request.render('tour_tourist_portal.portal_tourist_no_access')
+
+        try:
+            scores = {
+                field: self._parse_score(post.get(field))
+                for field in ('service_score', 'professional_score',
+                              'communication_score', 'punctuality_score')
+            }
+        except ValueError:
+            return self._eval_redirect('评分必须是 1-5 的整数')
+
+        if not any(scores.values()):
+            return self._eval_redirect('请至少完成一项评分')
+
+        try:
+            plan_id = int(post.get('plan_id') or 0)
+        except (TypeError, ValueError):
+            return self._eval_redirect('参数不合法')
+
+        plan = request.env['tour.plan'].sudo().browse(plan_id).exists()
+        own_plan_ids = request.env['tour.plan.reg'].sudo().search(
+            self._get_reg_domain()).mapped('plan_id').ids
+        if (not plan or plan.id not in own_plan_ids
+                or plan.state not in self.EVAL_ELIGIBLE_PLAN_STATES):
+            raise AccessError(_('无权评价此团队'))
+
+        task = self._get_plan_guide_task(plan)
+        if not task:
+            return self._eval_redirect('该团队暂无派导记录，无法评价')
+
+        partner = request.env.user.partner_id
+        existing = request.env['tour.guide.evaluation'].sudo().search([
+            ('plan_id', '=', plan.id),
+            ('tourist_partner_id', '=', partner.id),
+        ], limit=1)
+        if existing:
+            return self._eval_redirect('您已评价过该团队')
+
+        request.env['tour.guide.evaluation'].sudo().create({
+            'guide_id': task.guide_id.id,
+            'plan_id': plan.id,
+            'task_id': task.id,
+            'tourist_name': partner.name,
+            'tourist_phone': (partner.mobile if 'mobile' in partner._fields
+                              else False) or partner.phone or '',
+            'tourist_partner_id': partner.id,
+            'source': 'portal',
+            'state': 'confirmed',
+            'comment': (post.get('comment') or '').strip()[:2000],
+            'tags': '游客门户',
+            **scores,
+        })
+        return self._eval_redirect('感谢您的评价，已提交成功', ok=True)
 
     @http.route('/website/signup', type='http', auth='public',
                 website=True, methods=['GET'])
@@ -352,9 +515,12 @@ class PortalTourist(CustomerPortal):
                     'post': post,
                 })
 
-        # 检查手机号是否已注册
-        existing = request.env['res.partner'].sudo().search([
-            ('mobile', '=', phone),
+        # 检查手机号是否已注册（tms 库 res.partner 无 mobile 字段时退回 phone）
+        partner_model = request.env['res.partner'].sudo()
+        phone_field = ('mobile' if 'mobile' in partner_model._fields
+                       else 'phone')
+        existing = partner_model.search([
+            (phone_field, '=', phone),
         ], limit=1)
         if existing and existing.user_ids:
             return request.render(
@@ -366,7 +532,7 @@ class PortalTourist(CustomerPortal):
         # 创建 partner
         partner_vals = {
             'name': name,
-            'mobile': phone,
+            phone_field: phone,
         }
         if existing:
             partner = existing
@@ -383,7 +549,7 @@ class PortalTourist(CustomerPortal):
             'login': phone,
             'password': password,
             'partner_id': partner.id,
-            'groups_id': [(6, 0, [portal_group.id, tourist_group.id])],
+            'group_ids': [(6, 0, [portal_group.id, tourist_group.id])],
         })
 
         # 自动登录

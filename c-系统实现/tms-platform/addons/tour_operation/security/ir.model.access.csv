@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_guide_evaluation_operator,tour.guide.evaluation.operator,model_tour_guide_evaluation,tour_base.group_tour_operator,1,1,1,0
+access_tour_guide_evaluation_finance,tour.guide.evaluation.finance,model_tour_guide_evaluation,tour_base.group_tour_finance,1,0,0,0
+access_tour_guide_evaluation_manager,tour.guide.evaluation.manager,model_tour_guide_evaluation,tour_base.group_tour_manager,1,1,1,1

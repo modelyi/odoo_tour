@@ -35,6 +35,10 @@
                                        t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'tourist_invoices' else '')">
                                         <i class="fa fa-file-text-o me-2"/>发票管理
                                     </a>
+                                    <a href="/my/tourist/evaluations"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'tourist_evaluations' else '')">
+                                        <i class="fa fa-star me-2"/>我的评价
+                                    </a>
                                 </div>
                             </div>
                         </div>

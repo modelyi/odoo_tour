@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TMS Resource - 资源管理',
-    'version': '19.0.0.7.0',
+    'version': '19.0.0.8.0',
     'category': 'Travel/TMS',
     'summary': '旅行社资源管理：导游、供应商、购物协议',
     'description': """
@@ -19,7 +19,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/tour_guide_views.xml',
-        'views/tour_guide_evaluation_views.xml',
         'views/tour_supplier_views.xml',
         'views/tour_shop_agreement_views.xml',
         'views/tour_base_data_views.xml',

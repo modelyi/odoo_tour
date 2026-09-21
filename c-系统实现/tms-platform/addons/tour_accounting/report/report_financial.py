@@ -187,6 +187,25 @@ class AccountFinancialReport(models.Model):
         if profit_loss_report and profit_loss_report.parent_id.id != equity_sum.id:
             profit_loss_report.write({'parent_id': equity_sum.id})
 
+        # 清理无任何 ir.model.data 引用的旧版脚本产物（重复的英文报表树）
+        tracked = set(self.env['ir.model.data'].search([
+            ('model', '=', 'account.financial.report')]).mapped('res_id'))
+        stale_ids = [r.id for r in self.search([]) if r.id not in tracked]
+        if stale_ids:
+            self.browse(stale_ids).unlink()
+
+        # 根节点中英文名对齐数据文件（历史英文名/核心旧译名残留）
+        for xml_id, cn_name in [
+            ('account_financial_report_profitandloss0', '利润表'),
+            ('account_financial_report_balancesheet0', '资产负债表'),
+            ('account_financial_report_cash_flow0', '现金流量表'),
+        ]:
+            rec = self.env.ref('tour_accounting.' + xml_id,
+                               raise_if_not_found=False)
+            if rec:
+                rec.write({'name': cn_name})
+                rec.with_context(lang='zh_CN').write({'name': cn_name})
+
         return True
 
     @api.model

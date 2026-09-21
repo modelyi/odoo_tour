@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 行程评价列表 -->
+    <template id="portal_tourist_evaluations" name="Tourist Evaluations">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_evaluations">
+                <h3 class="mb-3">
+                    <i class="fa fa-star me-2"/>我的行程评价
+                </h3>
+
+                <t t-if="flash_message">
+                    <div t-attf-class="alert alert-{{ flash_type }}">
+                        <t t-esc="flash_message"/>
+                    </div>
+                </t>
+
+                <t t-if="not rows">
+                    <div class="alert alert-info">
+                        暂无可评价的行程。行程出发后即可在此评价带团导游。
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="card">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>团号</th>
+                                    <th>线路</th>
+                                    <th>行程日期</th>
+                                    <th>导游</th>
+                                    <th>我的评价</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rows" t-as="row">
+                                    <tr>
+                                        <td><t t-esc="row['plan'].plan_code"/></td>
+                                        <td><t t-esc="row['plan'].line_id.name or '-'"/></td>
+                                        <td>
+                                            <span t-esc="row['plan'].begin_date"
+                                                  t-options="{'widget': 'date'}"/>
+                                            ~
+                                            <span t-esc="row['plan'].end_date"
+                                                  t-options="{'widget': 'date'}"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="row['guide']">
+                                                <t t-esc="row['guide'].name"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted">未派导</span>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="row['evaluation']">
+                                                <span class="badge bg-success">
+                                                    已评价 <t t-esc="'%.1f' % row['evaluation'].overall_score"/> 分
+                                                </span>
+                                            </t>
+                                            <t t-elif="row['guide']">
+                                                <a t-attf-href="/my/tourist/evaluations/new/{{ row['plan'].id }}"
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-pencil me-1"/>去评价
+                                                </a>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted">-</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- 导游评价表单 -->
+    <template id="portal_tourist_evaluation_form" name="Tourist Evaluation Form">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_evaluation_form">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-star me-2"/>导游服务评价
+                    </h3>
+                    <a href="/my/tourist/evaluations" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <table class="table table-borderless mb-0">
+                            <tr>
+                                <th style="width: 120px;">团号</th>
+                                <td><t t-esc="plan.plan_code"/></td>
+                                <th style="width: 120px;">线路</th>
+                                <td><t t-esc="plan.line_id.name or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>行程日期</th>
+                                <td>
+                                    <t t-esc="plan.begin_date" t-options="{'widget': 'date'}"/>
+                                    ~
+                                    <t t-esc="plan.end_date" t-options="{'widget': 'date'}"/>
+                                </td>
+                                <th>带团导游</th>
+                                <td class="fw-bold"><t t-esc="guide.name"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fa fa-edit me-2"/>请为本次服务打分（1~5 星）
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/my/tourist/evaluations/submit">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="plan_id" t-att-value="plan.id"/>
+
+                            <t t-foreach="[
+                                    ('service_score', '服务态度'),
+                                    ('professional_score', '专业水平'),
+                                    ('communication_score', '沟通能力'),
+                                    ('punctuality_score', '准时程度'),
+                                ]" t-as="dim">
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-md-3 col-form-label fw-bold"
+                                           t-attf-for="{{ dim[0] }}">
+                                        <t t-esc="dim[1]"/>
+                                    </label>
+                                    <div class="col-md-9">
+                                        <t t-foreach="[1, 2, 3, 4, 5]" t-as="star">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio"
+                                                       t-att-name="dim[0]"
+                                                       t-attf-value="{{ star }}"
+                                                       t-attf-id="{{ dim[0] }}_{{ star }}"/>
+                                                <label class="form-check-label"
+                                                       t-attf-for="{{ dim[0] }}_{{ star }}">
+                                                    <span class="text-warning">
+                                                        <t t-esc="'★' * star"/><t t-esc="'☆' * (5 - star)"/>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <div class="mb-3">
+                                <label for="comment" class="form-label fw-bold">评价内容</label>
+                                <textarea class="form-control" id="comment" name="comment"
+                                          rows="4" maxlength="2000"
+                                          placeholder="说说本次行程中导游服务的亮点或不足（选填）"/>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-check me-1"/>提交评价
+                            </button>
+                            <span class="text-muted ms-3">提交后不可修改，感谢您的反馈！</span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

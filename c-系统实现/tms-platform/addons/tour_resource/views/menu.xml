@@ -13,12 +13,6 @@
         action="action_tour_guide"
         sequence="10"/>
 
-    <menuitem id="menu_tour_guide_evaluation"
-        name="导游评价"
-        parent="menu_tms_resource"
-        action="action_tour_guide_evaluation"
-        sequence="15"/>
-
     <menuitem id="menu_tour_supplier"
         name="供应商"
         parent="menu_tms_resource"

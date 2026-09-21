@@ -1,7 +1,7 @@
 FROM odoo:19
 
 USER root
-# base_accounting_kit 依赖：QIF 银行对账文件解析
-RUN pip3 install --break-system-packages --target=/opt/qiflibs qifparse
+# base_accounting_kit 依赖：QIF 银行对账文件解析；hrms_dashboard 依赖：pandas
+RUN pip3 install --break-system-packages --target=/opt/qiflibs qifparse pandas
 ENV PYTHONPATH="/opt/qiflibs:${PYTHONPATH}"
 USER odoo

@@ -70,4 +70,11 @@
         <field name="domain">[('resource_type','=','ditch')]</field>
         <field name="context">{'default_resource_type':'ditch'}</field>
     </record>
+
+    <!-- 导游评价（模型在本模块，菜单挂到资源管理下） -->
+    <menuitem id="menu_tour_guide_evaluation"
+        name="导游评价"
+        parent="tour_resource.menu_tms_resource"
+        action="action_tour_guide_evaluation"
+        sequence="15"/>
 </odoo>

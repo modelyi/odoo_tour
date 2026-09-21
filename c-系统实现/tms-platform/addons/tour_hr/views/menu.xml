@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 人事管理中文统一入口（模型与提醒逻辑由 Open HRMS 套件提供） -->
+    <menuitem id="menu_tour_hr_root"
+        name="人事管理"
+        web_icon="tour_hr,static/description/icon.png"
+        sequence="25"
+        groups="hr.group_hr_user,hr.group_hr_manager"/>
+
+    <menuitem id="menu_tour_hr_employee"
+        name="员工档案"
+        parent="menu_tour_hr_root"
+        action="hr.open_view_employee_list_my"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_hr_document"
+        name="员工证件"
+        parent="menu_tour_hr_root"
+        action="oh_employee_documents_expiry.hr_employee_document_action"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_hr_document_type"
+        name="证件类型"
+        parent="menu_tour_hr_root"
+        action="oh_employee_documents_expiry.document_type_action"
+        sequence="25"/>
+
+    <menuitem id="menu_tour_hr_resignation"
+        name="离职申请"
+        parent="menu_tour_hr_root"
+        action="hr_resignation.hr_resignation_action"
+        sequence="30"/>
+
+    <menuitem id="menu_tour_hr_resignation_approved"
+        name="已批离职"
+        parent="menu_tour_hr_root"
+        action="hr_resignation.hr_resignation_approved_action"
+        sequence="35"/>
+
+    <menuitem id="menu_tour_hr_loan"
+        name="员工借款"
+        parent="menu_tour_hr_root"
+        action="ohrms_loan.hr_loan_action"
+        sequence="40"/>
+
+    <menuitem id="menu_tour_hr_announcement"
+        name="奖罚公告"
+        parent="menu_tour_hr_root"
+        action="hr_reward_warning.hr_announcement_action"
+        sequence="45"/>
+
+    <menuitem id="menu_tour_hr_announcement_category"
+        name="公告分类"
+        parent="menu_tour_hr_root"
+        action="hr_reward_warning.hr_announcement_category_action"
+        sequence="50"
+        groups="hr.group_hr_manager"/>
+
+    <!-- 隐藏 hr_reward_warning 自带的英文顶级菜单，统一走中文「人事管理」入口 -->
+    <record id="hr_reward_warning.hr_announcement_menu_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

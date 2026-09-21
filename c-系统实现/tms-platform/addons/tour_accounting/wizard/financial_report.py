@@ -345,14 +345,14 @@ class FinancialReport(models.TransientModel):
         # Compute 营业利润 = 营业收入 - 营业成本 - 税金及附加 - 销售费用 - 管理费用 - 财务费用 - 资产减值损失 + 营业外收入 - 营业外支出
         operating_profit = (
             get_bal('tour_accounting.fr_pnl_revenue')
-            - get_bal('tour_accounting.fr_pnl_cost')
-            - get_bal('tour_accounting.fr_pnl_tax_surcharges')
+            - get_bal('tour_accounting.fr_pnl_cogs')
+            - get_bal('tour_accounting.fr_pnl_tax_surcharge')
             - get_bal('tour_accounting.fr_pnl_selling')
             - get_bal('tour_accounting.fr_pnl_admin')
             - get_bal('tour_accounting.fr_pnl_finance')
             - get_bal('tour_accounting.fr_pnl_impairment')
-            + get_bal('tour_accounting.fr_pnl_non_op_income')
-            - get_bal('tour_accounting.fr_pnl_non_op_expense')
+            + get_bal('tour_accounting.fr_pnl_non_operating_income')
+            - get_bal('tour_accounting.fr_pnl_non_operating_expense')
         )
 
         # Inject 营业利润
