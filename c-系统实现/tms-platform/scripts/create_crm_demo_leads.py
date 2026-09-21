@@ -13,10 +13,16 @@ import random
 import json
 import datetime
 
+import os
+import sys
+
 import psycopg2
 
 DB = 'tms'
-DSN = f"dbname={DB} user=odoo password=odoo19dev host=tms-db"
+# 口令从环境取（.env -> POSTGRES_PASSWORD），不再写死在脚本里
+DSN = (f"dbname={DB} user=odoo host=tms-db"
+       + (f" password={os.environ['PGPASSWORD']}" if os.environ.get('PGPASSWORD')
+          else sys.exit('缺少 PGPASSWORD 环境变量（口令在 .env 的 POSTGRES_PASSWORD）')))
 
 random.seed(20260917)
 

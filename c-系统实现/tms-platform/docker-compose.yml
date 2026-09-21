@@ -50,8 +50,16 @@ services:
       HOST: db
       PORT: 5432
       USER: ${POSTGRES_USER:-odoo}
-      PASSWORD: ${POSTGRES_PASSWORD:-odoo19dev}
-      ADMIN_PASSWD: ${ADMIN_PASSWD:-tms_admin_2026}
+      PASSWORD: ${POSTGRES_PASSWORD}
+      # odoo.conf 里不落 db 口令：Odoo 19 的 --db_password/--db_user/--db_host/--db_port
+      # 会回落读 PG* 环境变量，所以 `docker exec tms-odoo odoo shell -d tms ...`（不走
+      # entrypoint.sh 的注入）同样能连上库。口令只在 .env。
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:-odoo}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      # master 口令的 PBKDF2 哈希在 config/odoo.conf 的 admin_passwd；这里只留明文供人工取用
+      ADMIN_PASSWD: ${ADMIN_PASSWD}
       # 敏感字段落盘加密密钥（32 字节，hex/base64）；密钥本体在 .env，不进入 git
       TMS_FIELD_ENCRYPT_KEY: ${TMS_FIELD_ENCRYPT_KEY:-}
     ports:

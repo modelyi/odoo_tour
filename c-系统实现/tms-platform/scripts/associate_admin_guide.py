@@ -5,10 +5,14 @@
 """
 import xmlrpc.client
 
+import os
+import sys
+
 url = 'http://localhost:8070'
 db = 'tms'
 username = 'admin'
-password = 'tms_admin_2026'
+# 用户口令不写死；跑之前 TMS_ADMIN_PASSWORD=… python3 scripts/…
+password = os.environ.get('TMS_ADMIN_PASSWORD') or sys.exit('缺少 TMS_ADMIN_PASSWORD 环境变量')
 
 # 认证
 common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')

@@ -3,15 +3,19 @@
 """
 给 admin 用户关联导游档案 - 直接数据库操作
 """
+import os
+import sys
+
 import psycopg2
 
-# 数据库连接参数
+# 数据库连接参数：口令不写进代码（历史值已随 A0-3 轮换）。
+# 本机跑：PGPASSWORD=xxx python3 scripts/…；容器内跑会自动读 Odoo 的 PG* 环境变量。
 conn_params = {
-    'host': 'localhost',
-    'port': 5432,
-    'dbname': 'tms',
-    'user': 'odoo',
-    'password': 'odoo19dev'
+    'host': os.environ.get('PGHOST', 'localhost'),
+    'port': int(os.environ.get('PGPORT', '5432')),
+    'dbname': os.environ.get('PGDATABASE', 'tms'),
+    'user': os.environ.get('PGUSER', 'odoo'),
+    'password': os.environ.get('PGPASSWORD') or sys.exit('缺少 PGPASSWORD 环境变量（口令在 .env 的 POSTGRES_PASSWORD）'),
 }
 
 try:
