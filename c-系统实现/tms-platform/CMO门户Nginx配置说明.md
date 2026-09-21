@@ -43,7 +43,7 @@ server {
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host  $host;
-        proxy_set_header X-Odoo-Database   tms;  # 关键：指定数据库
+        # proxy_set_header X-Odoo-Database   tms;  # 已废止：见下方说明
 
         proxy_set_header Upgrade    $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -62,16 +62,18 @@ server {
 
 ### 关键配置说明
 
-**X-Odoo-Database 头**
+**X-Odoo-Database 头（❌ 2026-09-21 已废止，勿再照抄）**
 
 ```nginx
-proxy_set_header X-Odoo-Database   tms;
+# proxy_set_header X-Odoo-Database   tms;
 ```
 
-- **作用**：告诉 Odoo 使用 `tms` 数据库
-- **位置**：第 277 行
-- **必要性**：Odoo 支持多数据库部署，必须指定数据库名称
-- **影响范围**：所有通过 tms.solepro.cloud 访问的门户（导游、CFO、CMO）
+- **原意**：告诉 Odoo 使用 `tms` 数据库，省掉数据库选择页
+- **为什么错**：Odoo 19 见到该头即把请求判为无状态（`session.can_save=False`），不下发
+  `session_id` cookie，且每请求新铸随机 sid；CSRF token 绑定 `sid[:42]`，于是所有表单登录
+  都会 400 "Session expired (invalid CSRF token)"
+- **正确做法**：删掉该头，让用户走一次 `/web/database/selector`；要固定单库请在
+  `odoo.conf` 里配 `dbfilter`。详见同目录 `Nginx配置说明.md` 顶部警告
 
 **为什么需要这个头？**
 

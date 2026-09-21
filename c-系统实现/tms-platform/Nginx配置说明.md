@@ -1,8 +1,23 @@
 # Nginx 配置说明 - X-Odoo-Database 头
 
+> ⚠️ **2026-09-21 已废止：不要再给 Odoo 19 vhost 加 `X-Odoo-Database` 头。**
+> Odoo 19 的 `http.py:_get_session_and_dbname()` 只要看到该头就执行 `session.can_save = False`
+> （源码注释原文 "stateless"），于是不再下发 `session_id` cookie，且每个请求都会新铸一个随机
+> sid。而 CSRF token 是 `HMAC(database.secret, sid[:42] + ts)`，sid 每请求都变 ⇒ 表单 POST 的
+> token 永远校验不过 ⇒ 登录报 **Session expired (invalid CSRF token)**，且清空 cookie、换浏览器
+> 都无法绕过。日志特征：`CSRF validation failed on path '/web/login'`，首次出现在 2026-09-17
+> 07:13（即本头启用当日）。
+>
+> 正确做法：删除该头并 `nginx -s reload`；多库场景由 Odoo 自动跳转
+> `/web/database/selector` 选择数据库，选择结果保存在 session 里，之后不再出现。
+> 若希望固定单库、跳过选择页，用 Odoo 侧的 `dbfilter`（如 `dbfilter = ^tms$`）而不是转发头。
+>
+> 验证方式（无需浏览器）：带 cookie jar 连发两次请求，第二次 POST `/web/login` 用页面里的真实
+> `csrf_token` ⇒ 返回 200（进入密码校验）；改用乱填的 token ⇒ 返回 400。两条同时成立即修复。
+
 ## 配置概述
 
-为支持 Odoo 多数据库环境下的直接访问，在 Nginx 反向代理配置中添加了 `X-Odoo-Database` 头。
+为支持 Odoo 多数据库环境下的直接访问，在 Nginx 反向代理配置中添加了 `X-Odoo-Database` 头。（该做法已废止，见上文警告。）
 
 ## 配置位置
 

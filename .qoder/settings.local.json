@@ -20,7 +20,11 @@
       "Bash(grep -r \"code-server\\\\|8081\" /etc/nginx/ 2>/dev/null | head -20)",
       "Bash(cd /home/adai/tms && git diff --stat)",
       "Bash(cd /home/adai/tms && git diff --stat --cached)",
-      "Bash(cd /home/adai/tms && git status --short)"
+      "Bash(cd /home/adai/tms && git status --short)",
+      "Bash(ls -la /home/adai/tms; echo \"---\"; ls -la /home/adai | head -40; echo \"--- df\"; df -h /home/adai | tail -2)",
+      "Bash(ls -la /home/adai/tms/r.ref /home/adai/tms/c-系统实现 2>&1 | head -40; echo \"=== existing odoo dirs ===\"; find /home/adai -maxdepth 2 -iname \"odoo*\" -not -path \"*/.cache/*\" 2>/dev/null | head)",
+      "Bash(cd /home/adai && git clone --depth 1 https://github.com/odoo/odoo.git odoo20 2>&1 | tail -20)",
+      "Bash(python3 -V; which python3 psql pg_isready redis-cli docker 2>&1; echo \"--- pg procs\"; ps -ef | grep -E \"postgres|redis\" | grep -v grep | head; echo \"--- docker ps\"; docker ps --format '{{.Names}}\\\\t{{.Image}}\\\\t{{.Ports}}' 2>&1 | head)"
     ]
   }
 }
