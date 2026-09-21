@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_guide_portal,tour.guide portal,tour_resource.model_tour_guide,base.group_portal,1,0,0,0
+access_tour_commission_portal,tour.commission portal,tour_accounting.model_tour_commission,base.group_portal,1,0,0,0
+access_tour_guide_loan_portal,tour.guide.loan portal,tour_accounting.model_tour_guide_loan,base.group_portal,1,0,0,0
+access_hr_expense_portal,hr.expense portal,hr_expense.model_hr_expense,base.group_portal,1,1,1,0
+access_project_task_portal,project.task portal,project.model_project_task,base.group_portal,1,0,0,0
+access_tour_plan_portal,tour.plan portal,tour_order.model_tour_plan,base.group_portal,1,0,0,0
+access_product_product_portal,product.product portal,product.model_product_product,base.group_portal,1,0,0,0

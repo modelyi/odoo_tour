@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--    # Financial report    -->
+    <record id="financial_report_pdf" model="ir.actions.report">
+        <field name="name">Financial reports</field>
+        <field name="model">financial.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_financial</field>
+        <field name="report_file">tour_accounting.report_financial</field>
+    </record>
+    <!--    # General ledger report    -->
+    <record id="action_report_general_ledger" model="ir.actions.report">
+        <field name="name">General Ledger</field>
+        <field name="model">account.report.general.ledger</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_general_ledger</field>
+        <field name="report_file">tour_accounting.report_general_ledger
+        </field>
+    </record>
+    <!--    # Partner ledger report    -->
+    <record id="action_report_partnerledger" model="ir.actions.report">
+        <field name="name">Partner Ledger</field>
+        <field name="model">account.report.partner.ledger</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_partnerledger</field>
+        <field name="report_file">tour_accounting.report_partnerledger</field>
+    </record>
+    <!--    # Ageing report    -->
+    <record id="action_report_aged_partner_balance" model="ir.actions.report">
+        <field name="name">Aged Partner Balance</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_agedpartnerbalance</field>
+        <field name="report_file">tour_accounting.report_agedpartnerbalance</field>
+    </record>
+    <!--    # Journal audit report    -->
+    <record id="action_report_journal" model="ir.actions.report">
+        <field name="name">Journals Audit</field>
+        <field name="model">account.common.journal.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_journal_audit</field>
+        <field name="report_file">tour_accounting.report_journal_audit</field>
+    </record>
+    <!--    # Tax report    -->
+    <record id="action_report_account_tax" model="ir.actions.report">
+        <field name="name">Tax Report</field>
+        <field name="model">kit.account.tax.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_tax</field>
+        <field name="report_file">tour_accounting.report_tax</field>
+    </record>
+    <!--    # Trial balance report    -->
+    <record id="action_report_trial_balance" model="ir.actions.report">
+        <field name="name">Trial Balance</field>
+        <field name="model">account.balance.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_trial_balance</field>
+        <field name="report_file">tour_accounting.report_trial_balance</field>
+    </record>
+    <!--    # CAsh flow statements    -->
+    <record id="action_report_cash_flow" model="ir.actions.report">
+        <field name="name">Cash Flow Statement</field>
+        <field name="model">account.financial.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_cash_flow</field>
+        <field name="report_file">tour_accounting.report_cash_flow</field>
+    </record>
+    <!--    # Accounting Bank Book Report    -->
+    <record id="action_report_bank_book" model="ir.actions.report">
+        <field name="name">Bank Book Report</field>
+        <field name="model">account.bank.book.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_bank_book</field>
+        <field name="report_file">tour_accounting.report_bank_book</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+    <!--    # Accounting Cash Book Report    -->
+    <record id="action_report_cash_book" model="ir.actions.report">
+        <field name="name">Cash Book Report</field>
+        <field name="model">account.cash.book.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_cash_book</field>
+        <field name="report_file">tour_accounting.report_cash_book</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+    <!--    # Accounting Day Book Report    -->
+    <record id="day_book_pdf_report" model="ir.actions.report">
+        <field name="name">Day Book PDF Report</field>
+        <field name="model">account.day.book.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.day_book_report_template</field>
+        <field name="report_file">tour_accounting.day_book_report_template</field>
+        <field name="attachment_use">True</field>
+    </record>
+
+    <!--    # 记账凭证打印    -->
+    <record id="action_report_voucher" model="ir.actions.report">
+        <field name="name">记账凭证</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_voucher</field>
+        <field name="report_file">tour_accounting.report_voucher</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--    # 固定资产卡片打印    -->
+    <record id="action_report_asset_card" model="ir.actions.report">
+        <field name="name">固定资产卡片</field>
+        <field name="model">account.asset.asset</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_card</field>
+        <field name="report_file">tour_accounting.report_asset_card</field>
+        <field name="binding_model_id" ref="tour_accounting.model_account_asset_asset"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--    # 折旧明细表打印    -->
+    <record id="action_report_asset_depreciation_detail" model="ir.actions.report">
+        <field name="name">折旧明细表</field>
+        <field name="model">asset.depreciation.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_depreciation_detail</field>
+        <field name="report_file">tour_accounting.report_asset_depreciation_detail</field>
+    </record>
+
+    <!--    # 资产增减变动表打印    -->
+    <record id="action_report_asset_change" model="ir.actions.report">
+        <field name="name">资产增减变动表</field>
+        <field name="model">asset.change.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tour_accounting.report_asset_change</field>
+        <field name="report_file">tour_accounting.report_asset_change</field>
+    </record>
+</odoo>

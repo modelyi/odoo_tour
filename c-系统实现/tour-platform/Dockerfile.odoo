@@ -1,0 +1,19 @@
+# 基础镜像按 digest 固定（A0-5）：odoo:19 = sha256:4a96c54e7ccddc83ab3baba00be8f7cac418cbd5bd0291247ed1bba8bbd5d5e7
+# 记录同时写在 config/ODOO_PIN；升级基础镜像必须显式换 digest 并走一遍 A1 冒烟。
+FROM odoo:19@sha256:4a96c54e7ccddc83ab3baba00be8f7cac418cbd5bd0291247ed1bba8bbd5d5e7
+
+USER root
+# base_accounting_kit 依赖：QIF 银行对账文件解析
+# hrms_dashboard 依赖：pandas（import 发生在模块加载期，缺了会让整个 registry 载入失败 → 全站 500）
+# 版本全部 pin（python3.12 兼容线），避免"构建时静默装不上、运行时才炸"。
+RUN pip3 install --break-system-packages --no-cache-dir --target=/opt/qiflibs \
+        qifparse==0.5 \
+        pandas==2.2.3 \
+        "numpy==1.26.4"
+
+ENV PYTHONPATH="/opt/qiflibs:${PYTHONPATH}"
+
+# 构建期自检：镜像里少了任何一个运行期依赖就直接构建失败，而不是等生产 500。
+RUN python3 -c "import pandas, numpy, qifparse; print('deps ok', pandas.__version__, numpy.__version__)"
+
+USER odoo

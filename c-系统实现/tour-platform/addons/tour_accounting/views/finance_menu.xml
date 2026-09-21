@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 财务管理：独立顶级应用入口（与业务管理并列）。
+         整合原「业务管理>财务管理」和「会计>旅行社财务」的全部菜单项。
+         仅财务角色可见。 -->
+    <menuitem id="menu_tour_finance"
+        name="财务管理"
+        web_icon="tour_accounting,static/description/icon.png"
+        sequence="25"
+        groups="tour_base.group_tour_finance"/>
+
+    <!-- ==================== TMS 旅行社业务 ==================== -->
+
+    <!-- 日常收付 -->
+    <menuitem id="menu_tms_daily_ops"
+        name="日常收付"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_payment_claim"
+        name="收款登记/认领"
+        parent="menu_tms_daily_ops"
+        action="action_tour_payment_claim"
+        groups="tour_base.group_tour_finance"
+        sequence="11"/>
+
+    <menuitem id="menu_tour_reconciliation"
+        name="对账"
+        parent="menu_tms_daily_ops"
+        action="action_tour_reconciliation"
+        groups="tour_base.group_tour_finance"
+        sequence="13"/>
+
+    <menuitem id="menu_tour_commission"
+        name="佣金"
+        parent="menu_tms_daily_ops"
+        action="action_tour_commission"
+        groups="tour_base.group_tour_finance"
+        sequence="14"/>
+
+    <menuitem id="menu_tour_bank_account"
+        name="银行账户管理"
+        parent="menu_tms_daily_ops"
+        action="tour_base.action_tour_bank_account"
+        groups="tour_base.group_tour_finance"
+        sequence="15"/>
+
+    <!-- 核算与催收 -->
+    <menuitem id="menu_tms_profit_collection"
+        name="核算与催收"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="20"/>
+
+    <menuitem id="menu_tour_plan_account"
+        name="单团核算"
+        parent="menu_tms_profit_collection"
+        action="action_tour_plan_account"
+        groups="tour_base.group_tour_finance"
+        sequence="21"/>
+
+    <menuitem id="menu_tour_dunning"
+        name="团款催收台账"
+        parent="menu_tms_profit_collection"
+        action="action_tour_dunning"
+        groups="tour_base.group_tour_finance"
+        sequence="22"/>
+
+    <menuitem id="menu_tour_plan_account_aging"
+        name="团款应收账龄分析"
+        parent="menu_tms_profit_collection"
+        action="action_tour_plan_account_aging"
+        groups="tour_base.group_tour_finance"
+        sequence="23"/>
+
+    <!-- 借款/报账迁到「费用与借款」顶级菜单（hr_expense.menu_hr_expense_root），
+         全员自助可见；数据层由 record rule 隔离 [BS-15 §7.6/§7.7]。 -->
+    <menuitem id="menu_tour_guide_loan"
+        name="借款"
+        parent="hr_expense.menu_hr_expense_root"
+        action="action_tour_guide_loan"
+        groups="-tour_base.group_tour_finance,base.group_user"
+        sequence="2"/>
+
+    <menuitem id="menu_tour_guide_real_pay"
+        name="导游报账"
+        parent="hr_expense.menu_hr_expense_root"
+        action="action_tour_guide_expense"
+        groups="-tour_base.group_tour_finance,base.group_user"
+        sequence="3"/>
+
+    <menuitem id="menu_office_expense"
+        name="办公报账"
+        parent="hr_expense.menu_hr_expense_root"
+        action="action_office_expense"
+        groups="-tour_base.group_tour_finance,base.group_user"
+        sequence="4"/>
+
+    <!-- ==================== 配置（Odoo 惯例：放最后） ==================== -->
+    <menuitem id="menu_tms_finance_config"
+        name="配置"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="200"/>
+
+    <menuitem id="menu_tour_account_period"
+        name="会计期间"
+        parent="menu_tms_finance_config"
+        action="action_tour_account_period"
+        groups="tour_base.group_tour_finance"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_pay_channel"
+        name="支付渠道"
+        parent="menu_tms_finance_config"
+        action="action_tour_pay_channel"
+        groups="tour_base.group_tour_finance"
+        sequence="20"/>
+
+    <!-- 收付场景（字典，定义在 tour_product）挂到财务配置 -->
+    <record model="ir.ui.menu" id="tour_product.menu_tour_pay_way">
+        <field name="parent_id" ref="menu_tms_finance_config"/>
+        <field name="group_ids" eval="[(4, ref('tour_base.group_tour_finance'))]"/>
+        <field name="sequence">30</field>
+    </record>
+</odoo>

@@ -29,6 +29,16 @@ fi
 
 # 提交改动
 git add -A
+
+# [A0 安全] 敏感文件兜底黑名单：即使 .gitignore 漏配（2026-09-21 曾把 .env.bak.* 推上远端），
+# 也从暂存区剔除，不让凭据/数据库快照进入任何分支。文件本身留在磁盘上。
+SENSITIVE_RE='(^|/)\.env$|(^|/)\.env\.(bak|old|save|orig|swp)|(^|/)backup/|\.(dump|sql)(\.gz)?$|et_cookies\.json$'
+DIRTY=$(git -c core.quotePath=false diff --cached --name-only | grep -E "$SENSITIVE_RE" || true)
+if [ -n "$DIRTY" ]; then
+    printf '%s\n' "$DIRTY" | git update-index --force-remove --stdin
+    log "WARN: 已从本次提交剔除敏感文件（仅移出暂存区，磁盘未删）: $(printf '%s\n' "$DIRTY" | paste -sd' ' -)"
+fi
+
 if ! git commit -m "auto: snapshot $(date '+%F %T')" >>"$LOG_FILE" 2>&1; then
     log "提交失败或无改动"
 fi

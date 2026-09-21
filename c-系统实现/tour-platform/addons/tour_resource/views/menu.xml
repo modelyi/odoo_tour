@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 资源管理顶级菜单（独立入口，与「旅行社管理」平级） -->
+    <menuitem id="menu_tms_resource"
+        name="资源管理"
+        web_icon="tour_resource,static/description/icon.png"
+        sequence="20"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_guide_manager"/>
+
+    <menuitem id="menu_tour_guide"
+        name="导游档案"
+        parent="menu_tms_resource"
+        action="action_tour_guide"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_supplier"
+        name="供应商"
+        parent="menu_tms_resource"
+        action="action_tour_supplier"
+        sequence="30"/>
+
+    <menuitem id="menu_tour_shop_agreement"
+        name="购物协议"
+        parent="menu_tms_resource"
+        action="action_tour_shop_agreement"
+        sequence="40"/>
+</odoo>

@@ -186,6 +186,45 @@ proxy_set_header X-Odoo-Database $odoo_database;
 - [CFO 门户功能说明](./CFO门户功能说明.md)
 - [导游门户功能说明](./导游门户功能说明.md)
 
+## A0 基线加固新增的两处变更（2026-09-21）
+
+### A0-3：封掉数据库管理端点（`solepro.cloud.conf`，tms vhost）
+
+现网 `list_db = True`（`tour_saas` 建库功能需要），而 Cloudflare 后面公网可达，等于把
+`/web/database/manager` 摊开。因此在 tms 的 443 server 块内增加：
+
+```nginx
+location ~ ^/web/database/(manager|create|backup|duplicate|restore|destroy|list)$ {
+    deny all;
+    return 404;
+}
+```
+
+- 只封**管理页与列表接口**，`/web/database/selector` 不封 —— 多库登录流程依赖它选择数据库，
+  封掉会让租户库无法登录（已实测：selector 200、manager/list 404）。
+- Odoo 侧配套：`admin_passwd` 改为 PBKDF2-SHA512 哈希（600k rounds，不再存明文）、
+  `dbfilter = ^(tms|tms_tenant_[0-9]+)$`、`db_password` 从 conf 移除（改由 compose 的
+  `POSTGRES_PASSWORD` / `PGPASSWORD` 注入）。Nginx 这道封锁是纵深防御，不是唯一屏障。
+- 验证：`curl -k -o /dev/null -w '%{http_code}\n' https://tms.solepro.cloud/web/database/manager` → `404`。
+
+### A0-4：`tour.solepro.cloud` 停用页（独立文件 `tour.solepro.cloud.conf`）
+
+该域名原指向 20 源码 dev 实例，已收回。443 server 块内 `location / { return 503; }` +
+纯文本停用页指向 `https://tms.solepro.cloud`；原先的 `proxy_pass http://odoo20_app;` 整段
+保留为注释，便于一步回退。仓库副本：`/home/adai/odoo20/nginx-tour.solepro.cloud.conf`。
+
+- **为什么用 503 而不是 301**：301 会被浏览器长期缓存，而本域名将来要指向新的 20 生产实例，
+  缓存下来的永久重定向会造成回不去的用户侧现象。
+- 20 dev 实例仅监听 `127.0.0.1:28069`，需要时用 SSH 隧道访问。
+
+### DNS 待办（阻塞 A1 验收）
+
+`solepro.cloud` **没有泛解析**（实测 `nonexistent-xyz.solepro.cloud` 无记录），
+`tour-staging.solepro.cloud` / `tour20.solepro.cloud` 当前均不解析。A1 开始前需在 Cloudflare
+各加一条 A/CNAME 记录指向本机公网地址，否则平桥实例无法按域名验收。
+
 ## 配置历史
 
 - **2026-09-17**：添加 X-Odoo-Database 头支持 CFO 门户和导游门户直接访问
+- **2026-09-21 A0-3**：tms vhost 封 `/web/database/manager|create|backup|duplicate|restore|destroy|list`（保留 selector）
+- **2026-09-21 A0-4**：`tour.solepro.cloud` 从 20 dev 实例收回为停用页（503）

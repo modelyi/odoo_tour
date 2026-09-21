@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- res.partner 扩展已迁移至 tour.supplier 独立模型 (tour_supplier_views.xml) -->
+</odoo>

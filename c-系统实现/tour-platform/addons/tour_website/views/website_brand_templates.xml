@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        页脚版权：Copyright © Company name → Copyright © 联洋海螺角旅行社
+        priority 高于 website.footer_copyright_company_name(15)，确保覆盖默认占位。
+    -->
+    <template id="footer_copyright_brand" inherit_id="website.layout" priority="20">
+        <xpath expr="//footer//span[hasclass('o_footer_copyright_name')]" position="replace">
+            <span class="o_footer_copyright_name me-2 small">Copyright &amp;copy; 联洋海螺角旅行社</span>
+        </xpath>
+    </template>
+
+    <!--
+        页脚「Connect with us」联系电话/邮箱占位覆盖：
+        +1 555-555-5556 → 13877778888
+        info@yourcompany.example.com → info@layaconch.com
+        priority 30 > website.footer_custom(16)，在默认页脚插入后再替换。
+        仅替换 <a> 文本/href，保留 s_text_block / oe_structure 可编辑结构，不破坏页面编辑器。
+    -->
+    <template id="footer_contact_info" inherit_id="website.footer_custom" priority="30">
+        <xpath expr="//footer//a[contains(@href,'mailto:')]" position="replace">
+            <a href="mailto:info@layaconch.com">info@layaconch.com</a>
+        </xpath>
+        <xpath expr="//footer//a[contains(@href,'tel:')]" position="replace">
+            <a href="tel:13877778888"><span class="o_force_ltr">13877778888</span></a>
+        </xpath>
+    </template>
+
+    <!--
+        页头文字块占位覆盖（website.header_text_element 全部 5 个变体）：
+        电话 +1 555-555-5556 → 13877778888，邮箱 info@yourcompany.example.com → info@layaconch.com。
+        逐变体替换 <a>，保留 class / 图标 / o_force_ltr 等可编辑结构，不破坏页面编辑器。
+    -->
+    <template id="header_contact_info" inherit_id="website.header_text_element" priority="30">
+        <!-- phone_mail 变体：电话 -->
+        <xpath expr="//a[contains(@href,'tel:') and @class='nav-link o_nav-link_secondary']" position="replace">
+            <a href="tel:13877778888" class="nav-link o_nav-link_secondary">
+                <small>
+                    <i class="fa fa-1x fa-fw fa-phone me-1"/>&#847; <!-- Empty character needed to be able to delete the icon. -->
+                    <span class="o_force_ltr">13877778888</span>
+                </small>
+            </a>
+        </xpath>
+        <!-- phone_mail 变体：邮箱 -->
+        <xpath expr="//div[a[contains(@href,'tel:')]]/a[contains(@href,'mailto:')]" position="replace">
+            <a href="mailto:info@layaconch.com" class="nav-link o_nav-link_secondary">
+                <small>
+                    <i class="fa fa-1x fa-fw fa-envelope me-1"/>
+                    info@layaconch.com
+                </small>
+            </a>
+        </xpath>
+        <!-- mail 变体：仅邮箱 -->
+        <xpath expr="//div[not(a[contains(@href,'tel:')])]/a[contains(@href,'mailto:')]" position="replace">
+            <a href="mailto:info@layaconch.com" class="nav-link o_nav-link_secondary">
+                <small><i class="fa fa-1x fa-fw fa-envelope me-1"/> info@layaconch.com</small>
+            </a>
+        </xpath>
+        <!-- mail_stretched 变体：电话 -->
+        <xpath expr="//a[contains(@class,'o_navlink_background_hover')]" position="replace">
+            <a href="tel:13877778888" class="nav-link o_nav-link_secondary p-2 o_navlink_background_hover d-flex align-items-center h-100 text-reset">
+                <i class="fa fa-1x fa-fw fa-phone me-1"/>
+                <span class="o_force_ltr"><small>13877778888</small></span>
+            </a>
+        </xpath>
+        <!-- 默认变体（t-else，当前生效）：电话 -->
+        <xpath expr="//a[@class='nav-link o_nav-link_secondary p-2']" position="replace">
+            <a href="tel:13877778888" class="nav-link o_nav-link_secondary p-2">
+                <i class="fa fa-1x fa-fw fa-phone me-1"/>
+                <span class="o_force_ltr"><small>13877778888</small></span>
+            </a>
+        </xpath>
+    </template>
+
+    <!--
+        /contactus 页面正文「My Company」联系信息块覆盖（页面正文可编辑内容，非页头页脚）：
+        电话 +1 555-555-5556 → 13877778888，邮箱 info@yourcompany.example.com → info@layaconch.com。
+        直接继承 website.contactus 模板，仅替换 <span> 文本，保留 section/s_text_block/li/i 等可编辑结构。
+    -->
+    <template id="contactus_page_contact_info" inherit_id="website.contactus" priority="30">
+        <!-- 电话 -->
+        <xpath expr="//span[contains(@class, 'o_force_ltr') and contains(., '+1 555-555-5556')]" position="replace">
+            <span class="o_force_ltr">13877778888</span>
+        </xpath>
+        <!-- 邮箱 -->
+        <xpath expr="//span[contains(., 'info@yourcompany.example.com')]" position="replace">
+            <span>info@layaconch.com</span>
+        </xpath>
+    </template>
+
+    <!--
+        页脚「About us / We are a team of passionate people」默认营销文案覆盖为品牌介绍。
+        沿用 footer_contact_info 的继承方式（inherit website.footer_custom + //footer 前缀），
+        仅替换 <h5>/<p> 文本，保留 s_text_block / oe_structure 可编辑结构。
+    -->
+    <template id="footer_about_us" inherit_id="website.footer_custom" priority="25">
+        <xpath expr="//footer//div[contains(@class, 'col-lg-5')]//h5" position="replace">
+            <h5>关于我们</h5>
+        </xpath>
+        <xpath expr="//footer//div[contains(@class, 'col-lg-5')]//p" position="replace">
+            <p>联洋海螺角旅行社专注品质跟团游与定制出行，覆盖国内与境外热门线路，为您提供专业、安心、可靠的旅行服务。</p>
+        </xpath>
+    </template>
+</odoo>

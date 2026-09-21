@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_voucher_document">
+        <t t-set="o" t-value="o"/>
+        <t t-set="company" t-value="o.company_id"/>
+        <div class="page" t-attf-style="font-family: 'SimSun', serif;">
+            <!-- 凭证头部 -->
+            <div class="row" style="border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px;">
+                <div class="col-4 text-start">
+                    <span t-out="company.name" style="font-size: 14px;"/>
+                </div>
+                <div class="col-4 text-center">
+                    <h2 style="font-weight: bold; letter-spacing: 8px; margin: 0;">记 账 凭 证</h2>
+                </div>
+                <div class="col-4 text-end" style="font-size: 12px;">
+                    <span>凭证编号：<t t-out="o.name or '草稿'"/></span>
+                </div>
+            </div>
+
+            <!-- 日期行 -->
+            <div class="row" style="margin-bottom: 8px; font-size: 13px;">
+                <div class="col-6">
+                    <span>日期：</span>
+                    <t t-if="o.date">
+                        <span t-out="o.date" t-options='{"widget": "date"}'/>
+                    </t>
+                </div>
+                <div class="col-6 text-end">
+                    <span>附件 <u t-out="o.invoice_origin and '  ' or '  '"/> 张</span>
+                </div>
+            </div>
+
+            <!-- 凭证内容表格 -->
+            <table class="table table-sm table-bordered" style="font-size: 12px; margin-bottom: 0;">
+                <thead>
+                    <tr style="background-color: #f5f5f5;">
+                        <th class="text-center" style="width: 30%; vertical-align: middle;">摘 要</th>
+                        <th class="text-center" style="width: 30%; vertical-align: middle;">会计科目</th>
+                        <th class="text-center" style="width: 8%; vertical-align: middle;">级次</th>
+                        <th class="text-center" style="width: 16%; vertical-align: middle;">借方金额</th>
+                        <th class="text-center" style="width: 16%; vertical-align: middle;">贷方金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="total_debit" t-value="0.0"/>
+                    <t t-set="total_credit" t-value="0.0"/>
+                    <t t-foreach="o.line_ids" t-as="line">
+                        <t t-set="total_debit" t-value="total_debit + line.debit"/>
+                        <t t-set="total_credit" t-value="total_credit + line.credit"/>
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <t t-out="line.name or '/'"/>
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <t t-out="line.account_id.name or ''"/>
+                            </td>
+                            <td class="text-center" style="vertical-align: middle;">
+                                <t t-if="line.account_id.parent_id">
+                                    <span t-out="line.account_id.parent_id.name or ''" style="font-size: 10px; color: #666;"/>
+                                </t>
+                            </td>
+                            <td class="text-end" style="vertical-align: middle;">
+                                <t t-if="line.debit &gt; 0">
+                                    <t t-out="line.debit" t-options='{"widget": "float", "precision": 2}'/>
+                                </t>
+                            </td>
+                            <td class="text-end" style="vertical-align: middle;">
+                                <t t-if="line.credit &gt; 0">
+                                    <t t-out="line.credit" t-options='{"widget": "float", "precision": 2}'/>
+                                </t>
+                            </td>
+                        </tr>
+                    </t>
+                    <!-- 空行补齐（至少显示 5 行） -->
+                    <t t-set="line_count" t-value="len(o.line_ids)"/>
+                    <t t-foreach="range(max(0, 5 - line_count))" t-as="i">
+                        <tr>
+                            <td style="height: 24px;"> </td>
+                            <td> </td>
+                            <td> </td>
+                            <td> </td>
+                            <td> </td>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background-color: #f9f9f9;">
+                        <td class="text-center" colspan="3">合 计</td>
+                        <td class="text-end">
+                            <t t-out="total_debit" t-options='{"widget": "float", "precision": 2}'/>
+                        </td>
+                        <td class="text-end">
+                            <t t-out="total_credit" t-options='{"widget": "float", "precision": 2}'/>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- 金额大写 -->
+            <div class="row" style="margin-top: 8px; font-size: 12px; border-top: 1px solid #000; padding-top: 6px;">
+                <div class="col-12">
+                    <span>合计金额（大写）：</span>
+                    <span style="font-weight: bold; letter-spacing: 2px;">
+                        <t t-call="tour_accounting.amount_to_chinese">
+                            <t t-set="amount" t-value="total_debit"/>
+                        </t>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 签章栏 -->
+            <div class="row" style="margin-top: 15px; font-size: 12px; border-top: 1px solid #000; padding-top: 8px;">
+                <div class="col-3 text-center">
+                    <span>主管：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>审核：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>记账：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>制单：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_voucher">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tour_accounting.report_voucher_document" t-lang="o.company_id.partner_id.lang or 'zh_CN'"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- 金额转中文大写 -->
+    <template id="amount_to_chinese">
+        <t t-set="n" t-value="int(amount)"/>
+        <t t-set="decimals" t-value="round((amount - n) * 100)"/>
+        <t t-set="jiao" t-value="int(decimals / 10)"/>
+        <t t-set="fen" t-value="decimals % 10"/>
+        <t t-set="units" t-value="['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']"/>
+        <t t-set="big_units" t-value="['', '拾', '佰', '仟']"/>
+        <t t-set="section_units" t-value="['', '万', '亿', '兆']"/>
+
+        <t t-if="amount == 0">
+            <span>零元整</span>
+        </t>
+        <t t-else="">
+            <t t-set="result" t-value="''"/>
+            <t t-set="num_str" t-value="str(n)"/>
+            <t t-set="length" t-value="len(num_str)"/>
+            <t t-set="zero_flag" t-value="False"/>
+
+            <t t-foreach="range(length)" t-as="i">
+                <t t-set="digit" t-value="int(num_str[i])"/>
+                <t t-set="pos" t-value="length - 1 - i"/>
+                <t t-set="section" t-value="int(pos / 4)"/>
+                <t t-set="section_pos" t-value="pos % 4"/>
+
+                <t t-if="digit == 0">
+                    <t t-set="zero_flag" t-value="True"/>
+                    <t t-if="section_pos == 0 and section &gt; 0">
+                        <t t-set="result" t-value="result + section_units[section]"/>
+                        <t t-set="zero_flag" t-value="False"/>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-if="zero_flag">
+                        <t t-set="result" t-value="result + '零'"/>
+                        <t t-set="zero_flag" t-value="False"/>
+                    </t>
+                    <t t-set="result" t-value="result + units[digit] + big_units[section_pos]"/>
+                    <t t-if="section_pos == 0 and section &gt; 0">
+                        <t t-set="result" t-value="result + section_units[section]"/>
+                    </t>
+                </t>
+            </t>
+
+            <span t-out="result"/>
+            <span>元</span>
+
+            <t t-if="jiao == 0 and fen == 0">
+                <span>整</span>
+            </t>
+            <t t-else="">
+                <t t-if="jiao &gt; 0">
+                    <span t-out="units[jiao]"/>
+                    <span>角</span>
+                </t>
+                <t t-elif="fen &gt; 0">
+                    <span>零</span>
+                </t>
+                <t t-if="fen &gt; 0">
+                    <span t-out="units[fen]"/>
+                    <span>分</span>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

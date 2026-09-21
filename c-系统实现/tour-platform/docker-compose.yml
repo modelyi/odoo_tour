@@ -1,0 +1,87 @@
+# Tour Platform —— TMS 的 Odoo 19 平桥副本（迁移计划 Phase A1）
+# 与 tms-platform 的关系：**同一镜像 digest、同一 conf（除 dbfilter/端口/容器名）**，
+# 本阶段刻意不做任何配置演进，先证明"复制过来的东西和现网等价"。标准化项在 A2 逐项做。
+#
+# 访问：https://tour-staging.solepro.cloud（A1 验收）→ 本机 nginx → 127.0.0.1:8071
+# 切换日（A1 gate 通过）把 https://tour.solepro.cloud 的 upstream 指到本服务的 8071。
+name: tour
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tour-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-tour19}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - tour-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-odoo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    # 与 tms 保持一致地复制过来；社区版 19/20 没有 session redis（web_session_store 属 EE），
+    # 它是闲置资源，A2 会正式定性，本阶段不动。
+    image: redis:7-alpine
+    container_name: tour-redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - tour-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile.odoo
+    image: tour-odoo:a1
+    container_name: tour-odoo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD}
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:-odoo}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      ADMIN_PASSWD: ${ADMIN_PASSWD}
+      # 字段加密密钥必须与 tms **完全相同**，否则平桥后 104 行密文无法解密、
+      # 且新写入会静默降级明文（见 d-交付验收/A0-Gate基线加固报告 §4）
+      TMS_FIELD_ENCRYPT_KEY: ${TMS_FIELD_ENCRYPT_KEY:-}
+    ports:
+      - "127.0.0.1:8071:8069"
+      - "127.0.0.1:8074:8072"
+    volumes:
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ./addons:/mnt/extra-addons
+      - ./data/odoo:/var/lib/odoo
+    networks:
+      - tour-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/login >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+networks:
+  tour-net:
+    driver: bridge

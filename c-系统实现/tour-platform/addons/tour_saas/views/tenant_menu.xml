@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_tour_saas_root"
+              name="SaaS 管理"
+              parent="base.menu_administration"
+              sequence="100"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_tour_saas_tenant"
+              name="租户管理"
+              parent="menu_tour_saas_root"
+              action="action_tour_saas_tenant"
+              sequence="10"/>
+</odoo>

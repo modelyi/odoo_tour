@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- crm.lead 表单：旅行社字段分组 + 转团按钮 + 关联团队 smart button -->
+    <record id="view_crm_lead_tour_form" model="ir.ui.view">
+        <field name="name">crm.lead.tour.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- 转团按钮（header，仅销售角色可见） -->
+            <xpath expr="//header" position="inside">
+                <button name="action_convert_to_plan" type="object" string="转团"
+                        class="btn-primary" confirm="确认将该线索转成团队订单（草稿）？"
+                        groups="tour_base.group_tour_sales"
+                        invisible="plan_id or type == 'lead'"/>
+            </xpath>
+            <!-- 关联团队 smart button（仅销售角色可见） -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_plan" type="object" class="oe_stat_button"
+                        icon="fa-suitcase" groups="tour_base.group_tour_sales"
+                        invisible="not plan_id"
+                        help="查看转团生成的团队订单">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text"><field name="plan_id" string="团队"/></span>
+                    </div>
+                </button>
+            </xpath>
+            <!-- 旅行社字段 notebook page（仅销售角色可见） -->
+            <xpath expr="//notebook" position="inside">
+                <page string="旅行社信息" name="tour_info" groups="tour_base.group_tour_sales">
+                    <group>
+                        <group string="意向">
+                            <field name="line_id" domain="[('active', '=', True)]"/>
+                            <field name="biz_mode"/>
+                            <field name="begin_date"/>
+                            <field name="from_type"/>
+                        </group>
+                        <group string="转团结果">
+                            <field name="plan_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

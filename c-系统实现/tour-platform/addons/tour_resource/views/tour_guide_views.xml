@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_guide_search" model="ir.ui.view">
+        <field name="name">tour.guide.search</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <search string="导游搜索">
+                <field name="name"/>
+                <field name="guide_code"/>
+                <field name="mobile"/>
+                <field name="help_code"/>
+                <filter name="active" string="启用" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="停用" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <filter name="unaudited" string="未审核" domain="[('audit_chk','=',False)]"/>
+                <separator/>
+                <group name="group_by">
+                    <filter name="group_type" string="导游类型" context="{'group_by':'guide_type'}"/>
+                    <filter name="group_sex" string="性别" context="{'group_by':'sex'}"/>
+                    <filter name="group_star" string="星级" context="{'group_by':'guide_star'}"/>
+                    <filter name="group_area" string="服务区域" context="{'group_by':'area'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_guide" model="ir.actions.act_window">
+        <field name="name">导游档案</field>
+        <field name="res_model">tour.guide</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_guide_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_tour_guide_kanban" model="ir.ui.view">
+        <field name="name">tour.guide.kanban</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="photo"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <widget name="web_ribbon" title="已归档" bg_color="text-bg-danger" invisible="active"/>
+                        <aside class="o_kanban_aside_full">
+                            <field name="photo" widget="image" options="{'img_class': 'object-fit-contain'}"/>
+                        </aside>
+                        <main class="ps-2">
+                            <div class="mb-1">
+                                <field name="name" class="mb-0 fw-bold fs-5"/>
+                            </div>
+                            <div><field name="mobile"/></div>
+                            <div><field name="guide_type"/></div>
+                            <div><field name="grade"/></div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_guide_list" model="ir.ui.view">
+        <field name="name">tour.guide.list</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <list string="导游档案" sample="1" multi_edit="1">
+                <field name="photo" widget="image" options="{'size': [24, 24]}" width="30" nolabel="1"/>
+                <field name="name"/>
+                <field name="guide_code"/>
+                <field name="mobile"/>
+                <field name="grade"/>
+                <field name="job_id" optional="hide"/>
+                <field name="guide_star" optional="show"/>
+                <field name="sex" optional="hide"/>
+                <field name="language_name" optional="hide"/>
+                <field name="area"/>
+                <field name="is_tour_guide" optional="hide"/>
+                <field name="guide_leader" optional="hide"/>
+                <field name="audit_chk"/>
+                <field name="active" column_invisible="1"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_guide_form" model="ir.ui.view">
+        <field name="name">tour.guide.form</field>
+        <field name="model">tour.guide</field>
+        <field name="arch" type="xml">
+            <form string="导游档案" duplicate="false">
+                <header>
+                    <button name="action_audit_approve" string="审核通过" type="object"
+                        class="btn-primary" invisible="audit_chk == True" data-hotkey="g"/>
+                    <field name="audit_chk" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_employee" type="object"
+                            class="oe_stat_button" icon="fa-id-badge"
+                            help="查看/创建该导游的员工档案（劳动关系）">
+                            <div class="o_stat_info">
+                                <field name="employee_id" widget="statinfo" string="员工档案"/>
+                            </div>
+                        </button>
+                        <button name="action_view_loans" type="object"
+                            class="oe_stat_button" icon="fa-money"
+                            help="查看该导游的借款单">
+                            <div class="o_stat_info">
+                                <field name="loan_count" widget="statinfo" string="借款"/>
+                            </div>
+                        </button>
+                        <button name="action_view_real_pays" type="object"
+                            class="oe_stat_button" icon="fa-file-text-o"
+                            help="查看该导游的报账单">
+                            <div class="o_stat_info">
+                                <field name="real_pay_count" widget="statinfo" string="报账"/>
+                            </div>
+                        </button>
+                        <button name="action_view_evaluations" type="object"
+                            class="oe_stat_button" icon="fa-star"
+                            help="查看该导游的评价">
+                            <div class="o_stat_info">
+                                <field name="evaluation_count" widget="statinfo" string="评价"/>
+                            </div>
+                        </button>
+                        <button name="action_view_dispatches" type="object"
+                            class="oe_stat_button" icon="fa-calendar"
+                            help="查看该导游的派团日历">
+                            <div class="o_stat_info">
+                                <field name="dispatch_count" widget="statinfo" string="派团"/>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="已归档" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="d-flex flex-column flex-sm-row align-items-center">
+                        <div class="o_avatar ms-2 p-0">
+                            <field name="photo" widget="image" options="{'size': [128, 128]}"/>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-7 col-lg-8 px-4">
+                            <div class="oe_title mw-100 ps-0 pe-sm-2">
+                                <h1>
+                                    <field name="name" placeholder="导游姓名"/>
+                                </h1>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-phone fa-fw me-1 text-primary"/>
+                                    <field name="mobile" widget="phone" class="w-100 w-sm-75"/>
+                                </h5>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-id-badge fa-fw me-1 text-primary"/>
+                                    <field name="guide_code" class="w-100 w-sm-75"/>
+                                </h5>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-user fa-fw me-1 text-primary"/>
+                                    <field name="partner_id" placeholder="关联联系人" class="w-100 w-sm-75"/>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <group string="基础信息">
+                        <group>
+                            <field name="help_code"/>
+                            <field name="sex"/>
+                            <field name="nation"/>
+                            <field name="born_place"/>
+                            <field name="edu"/>
+                            <field name="marital_status"/>
+                            <field name="birthday"/>
+                        </group>
+                        <group>
+                            <field name="tel"/>
+                            <field name="id_num" groups="tour_base.group_tour_sensitive_data"/>
+                            <field name="zip_code"/>
+                            <field name="addr"/>
+                            <field name="job_no"/>
+                            <field name="guide_account"/>
+                        </group>
+                    </group>
+                    <group string="资质/等级">
+                        <group>
+                            <field name="licence"/>
+                            <field name="licence_type"/>
+                            <field name="guide_type"/>
+                            <field name="guide_lead_type"/>
+                            <field name="language_name"/>
+                        </group>
+                        <group>
+                            <field name="grade"/>
+                            <field name="recommend_class"/>
+                            <field name="guide_star"/>
+                            <field name="guide_leader"/>
+                            <field name="is_tour_guide"/>
+                            <field name="is_driver_guide"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="档期" name="schedule">
+                            <group>
+                                <group string="出团信息">
+                                    <field name="next_dispatch_date"/>
+                                    <field name="last_dispatch_date"/>
+                                    <field name="dispatch_count"/>
+                                </group>
+                                <group string="快速操作">
+                                    <button name="action_view_dispatches" type="object"
+                                        string="查看派团日历" icon="fa-calendar"
+                                        class="btn-link"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="从业经历" name="experience">
+                            <group>
+                                <group>
+                                    <field name="area"/>
+                                    <field name="power_area"/>
+                                    <field name="guide_group"/>
+                                    <field name="group_type"/>
+                                    <field name="shop_type"/>
+                                </group>
+                                <group>
+                                    <field name="entry_time"/>
+                                    <field name="working_date"/>
+                                    <field name="career_years"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="guide_advantage"/>
+                            </group>
+                        </page>
+                        <page string="结算信息" name="settlement">
+                            <group>
+                                <group>
+                                    <field name="account_bank"/>
+                                    <field name="account_name"/>
+                                    <field name="account_no" groups="tour_base.group_tour_sensitive_data"/>
+                                </group>
+                                <group>
+                                    <field name="loan_rate"/>
+                                    <field name="cw_code"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="司机兼导游" name="driver_guide">
+                            <group>
+                                <field name="driver_licence"/>
+                                <field name="driver_seat_num"/>
+                                <field name="driver_car_type"/>
+                                <field name="driver_car_name"/>
+                            </group>
+                        </page>
+                        <page string="审核与归属" name="audit">
+                            <group>
+                                <group>
+                                    <field name="audit_chk"/>
+                                    <field name="audit_user"/>
+                                    <field name="audit_date"/>
+                                </group>
+                                <group>
+                                    <field name="company_id"/>
+                                    <field name="department_id"/>
+                                    <field name="job_id"/>
+                                    <field name="employee_id"/>
+                                    <field name="active"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="audit_brief"/>
+                                <field name="remark"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

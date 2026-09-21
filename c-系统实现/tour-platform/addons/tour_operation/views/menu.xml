@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 计调中心：独立顶级应用入口（与业务管理、资源管理并列） -->
+    <menuitem id="menu_tms_operation"
+        name="计调中心"
+        web_icon="tour_operation,static/description/icon.png"
+        sequence="35"
+        groups="tour_base.group_tour_operator"/>
+
+    <!-- 7 类资源专属 Action（带 domain 过滤） -->
+    <record id="action_booking_guide" model="ir.actions.act_window">
+        <field name="name">派导</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','guide')]</field>
+        <field name="context">{'default_resource_type':'guide'}</field>
+    </record>
+
+    <record id="action_booking_vehicle" model="ir.actions.act_window">
+        <field name="name">派车</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','vehicle')]</field>
+        <field name="context">{'default_resource_type':'vehicle'}</field>
+    </record>
+
+    <record id="action_booking_hotel" model="ir.actions.act_window">
+        <field name="name">订房</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','hotel')]</field>
+        <field name="context">{'default_resource_type':'hotel'}</field>
+    </record>
+
+    <record id="action_booking_meal" model="ir.actions.act_window">
+        <field name="name">订餐</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','meal')]</field>
+        <field name="context">{'default_resource_type':'meal'}</field>
+    </record>
+
+    <record id="action_booking_scenic" model="ir.actions.act_window">
+        <field name="name">门票</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','scenic')]</field>
+        <field name="context">{'default_resource_type':'scenic'}</field>
+    </record>
+
+    <record id="action_booking_insurance" model="ir.actions.act_window">
+        <field name="name">保险</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','insurance')]</field>
+        <field name="context">{'default_resource_type':'insurance'}</field>
+    </record>
+
+    <record id="action_booking_ditch" model="ir.actions.act_window">
+        <field name="name">地接</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_project_task_booking_search"/>
+        <field name="domain">[('resource_type','=','ditch')]</field>
+        <field name="context">{'default_resource_type':'ditch'}</field>
+    </record>
+
+    <!-- 导游评价（模型在本模块，菜单挂到资源管理下） -->
+    <menuitem id="menu_tour_guide_evaluation"
+        name="导游评价"
+        parent="tour_resource.menu_tms_resource"
+        action="action_tour_guide_evaluation"
+        sequence="15"/>
+</odoo>

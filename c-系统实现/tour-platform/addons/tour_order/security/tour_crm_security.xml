@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 销售角色隐含 CRM 用户组：让销售看到 CRM 菜单并读写 crm.lead（own documents） -->
+    <record id="tour_base.group_tour_sales" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('crm.group_use_lead'))]"/>
+    </record>
+</odoo>

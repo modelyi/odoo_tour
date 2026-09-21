@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tour_saas_tenant_form" model="ir.ui.view">
+        <field name="name">tour.saas.tenant.form</field>
+        <field name="model">tour.saas.tenant</field>
+        <field name="arch" type="xml">
+            <form string="SaaS 租户">
+                <header>
+                    <button name="action_create_database"
+                            string="创建数据库"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_suspend"
+                            string="暂停服务"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state != 'active'"
+                            confirm="确定要暂停此租户的公开网站吗？"/>
+                    <button name="action_resume"
+                            string="恢复服务"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'suspended'"/>
+                    <button name="action_sync_params"
+                            string="同步参数"
+                            type="object"
+                            invisible="state not in ('active', 'suspended')"/>
+                    <button name="action_drop_database"
+                            string="销毁数据库"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('draft', 'creating', 'closed')"
+                            confirm="此操作不可恢复！确定要销毁租户数据库吗？"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,creating,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="租户名称"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="基本信息">
+                            <field name="slug" invisible="not slug"/>
+                            <field name="db_name" invisible="not db_name"/>
+                            <field name="company_name"/>
+                            <field name="country_code"/>
+                            <field name="lang"/>
+                        </group>
+                        <group string="SaaS 配置">
+                            <field name="limit_users"/>
+                            <field name="suspended"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="管理员账号" name="admin">
+                            <group>
+                                <field name="admin_login"/>
+                                <field name="admin_email"/>
+                                <field name="admin_password" password="True"/>
+                            </group>
+                        </page>
+                        <page string="状态信息" name="status">
+                            <group>
+                                <field name="db_created_at"/>
+                                <field name="last_sync_at"/>
+                            </group>
+                            <group string="备注">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tour_saas_tenant_tree" model="ir.ui.view">
+        <field name="name">tour.saas.tenant.list</field>
+        <field name="model">tour.saas.tenant</field>
+        <field name="arch" type="xml">
+            <list string="SaaS 租户"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'suspended'"
+                  decoration-muted="state in ('draft', 'closed')"
+                  decoration-info="state == 'creating'">
+                <field name="name"/>
+                <field name="db_name"/>
+                <field name="state"/>
+                <field name="limit_users"/>
+                <field name="suspended"/>
+                <field name="db_created_at"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_saas_tenant_search" model="ir.ui.view">
+        <field name="name">tour.saas.tenant.search</field>
+        <field name="model">tour.saas.tenant</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="db_name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tour_saas_tenant" model="ir.actions.act_window">
+        <field name="name">租户管理</field>
+        <field name="res_model">tour.saas.tenant</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                创建第一个 SaaS 租户
+            </p>
+            <p>
+                每个租户拥有独立的 Odoo 数据库，安装完整的 TMS 模块。
+                您可以通过此界面管理租户的生命周期：创建、暂停、恢复、销毁。
+            </p>
+        </field>
+    </record>
+</odoo>

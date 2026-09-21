@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================= hr.expense 旅行社扩展视图 ======================= -->
+
+    <!-- Form: 在标准 hr.expense 表单中添加旅行社字段 -->
+    <record id="view_hr_expense_form_tour" model="ir.ui.view">
+        <field name="name">hr.expense.form.tour</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='analytic_distribution']" position="after">
+                <separator string="旅行社信息"/>
+                <field name="x_report_type"/>
+                <field name="x_guide_id"/>
+                <field name="x_plan_id"/>
+                <field name="x_plan_code" invisible="not x_plan_id"/>
+                <field name="x_loan_id"/>
+                <field name="x_invoice_no"/>
+                <field name="x_deductible"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- List: 添加旅行社相关列 -->
+    <record id="view_hr_expense_list_tour" model="ir.ui.view">
+        <field name="name">hr.expense.list.tour</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.view_expenses_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="x_report_type" optional="show"/>
+                <field name="x_guide_id" optional="show"/>
+                <field name="x_plan_code" optional="show"/>
+                <field name="x_loan_id" optional="hide"/>
+                <field name="x_invoice_no" optional="hide"/>
+                <field name="x_deductible" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: 添加旅行社搜索条件 -->
+    <record id="view_hr_expense_search_tour" model="ir.ui.view">
+        <field name="name">hr.expense.search.tour</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="x_guide_id"/>
+                <field name="x_plan_id"/>
+                <field name="x_loan_id"/>
+                <field name="x_invoice_no"/>
+                <separator/>
+                <filter name="filter_expense" string="费用报销"
+                        domain="[('x_report_type','=','expense')]"/>
+                <filter name="filter_income" string="收入报账"
+                        domain="[('x_report_type','=','income')]"/>
+                <separator/>
+                <filter name="filter_deductible" string="差额征税可扣除"
+                        domain="[('x_deductible','=',True)]"/>
+                <filter name="filter_has_loan" string="有关联借款"
+                        domain="[('x_loan_id','!=',False)]"/>
+                <separator/>
+                <filter name="group_report_type" string="报账类型" context="{'group_by':'x_report_type'}"/>
+                <filter name="group_guide" string="导游" context="{'group_by':'x_guide_id'}"/>
+                <filter name="group_plan" string="团队" context="{'group_by':'x_plan_id'}"/>
+                <filter name="group_loan" string="关联借款" context="{'group_by':'x_loan_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action: 导游报账（指向 hr.expense）-->
+    <record id="action_tour_guide_expense" model="ir.actions.act_window">
+        <field name="name">导游报账</field>
+        <field name="res_model">hr.expense</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_guide_id', '!=', False)]</field>
+        <field name="context">{'default_x_guide_id': True}</field>
+        <field name="search_view_id" ref="hr_expense.hr_expense_view_search"/>
+    </record>
+
+    <!-- Action: 办公报账（不挂导游/团队）-->
+    <record id="action_office_expense" model="ir.actions.act_window">
+        <field name="name">办公报账</field>
+        <field name="res_model">hr.expense</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_guide_id', '=', False)]</field>
+        <field name="search_view_id" ref="hr_expense.hr_expense_view_search"/>
+    </record>
+</odoo>

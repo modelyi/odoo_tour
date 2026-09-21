@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tour_reconciliation_search" model="ir.ui.view">
+        <field name="name">tour.reconciliation.search</field>
+        <field name="model">tour.reconciliation</field>
+        <field name="arch" type="xml">
+            <search string="对账搜索">
+                <field name="name"/>
+                <field name="verify_type"/>
+                <field name="supplier_id"/>
+                <field name="period_begin"/>
+                <field name="period_end"/>
+                <separator/>
+                <filter name="group_type" string="对账类型" context="{'group_by':'verify_type'}"/>
+                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
+                <filter name="state_pending" string="待对账" domain="[('state','=','pending')]"/>
+                <filter name="state_verified" string="已对账" domain="[('state','=','verified')]"/>
+                <filter name="state_settled" string="已结清" domain="[('state','=','settled')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tour_reconciliation" model="ir.actions.act_window">
+        <field name="name">对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+    </record>
+
+    <!-- 按 verify_type 过滤的对账 action（供 tour_base 菜单引用） -->
+    <record id="action_recon_group_tour" model="ir.actions.act_window">
+        <field name="name">团款对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'group_tour')]</field>
+        <field name="context">{'default_verify_type': 'group_tour'}</field>
+    </record>
+    <record id="action_recon_ditch" model="ir.actions.act_window">
+        <field name="name">地接对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'ditch')]</field>
+        <field name="context">{'default_verify_type': 'ditch'}</field>
+    </record>
+    <record id="action_recon_vehicle" model="ir.actions.act_window">
+        <field name="name">车费对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'vehicle')]</field>
+        <field name="context">{'default_verify_type': 'vehicle'}</field>
+    </record>
+    <record id="action_recon_ticket" model="ir.actions.act_window">
+        <field name="name">票务对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'ticket')]</field>
+        <field name="context">{'default_verify_type': 'ticket'}</field>
+    </record>
+    <record id="action_recon_insurance" model="ir.actions.act_window">
+        <field name="name">保险对帐</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'insurance')]</field>
+        <field name="context">{'default_verify_type': 'insurance'}</field>
+    </record>
+    <record id="action_recon_meal" model="ir.actions.act_window">
+        <field name="name">餐费对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'meal')]</field>
+        <field name="context">{'default_verify_type': 'meal'}</field>
+    </record>
+    <record id="action_recon_hotel" model="ir.actions.act_window">
+        <field name="name">房费对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'hotel')]</field>
+        <field name="context">{'default_verify_type': 'hotel'}</field>
+    </record>
+    <record id="action_recon_scenic" model="ir.actions.act_window">
+        <field name="name">门票对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'scenic')]</field>
+        <field name="context">{'default_verify_type': 'scenic'}</field>
+    </record>
+    <record id="action_recon_visa" model="ir.actions.act_window">
+        <field name="name">签证对账</field>
+        <field name="res_model">tour.reconciliation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_reconciliation_search"/>
+        <field name="domain">[('verify_type', '=', 'visa')]</field>
+        <field name="context">{'default_verify_type': 'visa'}</field>
+    </record>
+
+    <record id="view_tour_reconciliation_list" model="ir.ui.view">
+        <field name="name">tour.reconciliation.list</field>
+        <field name="model">tour.reconciliation</field>
+        <field name="arch" type="xml">
+            <list string="对账">
+                <field name="name"/>
+                <field name="verify_type"/>
+                <field name="supplier_id"/>
+                <field name="period_begin"/>
+                <field name="period_end"/>
+                <field name="total_amount"/>
+                <field name="settled_amount"/>
+                <field name="unsettled_amount"/>
+                <field name="state" widget="badge" decoration-success="state=='settled'" decoration-info="state=='verified'" decoration-warning="state=='pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_reconciliation_form" model="ir.ui.view">
+        <field name="name">tour.reconciliation.form</field>
+        <field name="model">tour.reconciliation</field>
+        <field name="arch" type="xml">
+            <form string="对账">
+                <header>
+                    <button name="action_verify" string="核对" type="object" class="btn-primary"
+                        invisible="state != 'pending'"/>
+                    <button name="action_settle" string="结清" type="object" class="btn-primary"
+                        invisible="state != 'verified'"/>
+                    <button name="action_post_diff" string="差异落账" type="object"
+                        invisible="diff_move_id or not adjust_amount"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,verified,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="line_count" widget="statinfo" string="明细行"/>
+                        </button>
+                        <button name="action_view_diff_move" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="diff_move_count" widget="statinfo" string="差异凭证"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="对账单号"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="对账信息">
+                            <field name="verify_type"/>
+                            <field name="supplier_id"/>
+                            <field name="supplier_name"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </group>
+                        <group string="期间与账龄">
+                            <field name="period_begin"/>
+                            <field name="period_end"/>
+                            <field name="aging_days"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="金额" name="amounts">
+                            <group>
+                                <group string="金额（由凭证行派生）">
+                                    <field name="total_amount" widget="monetary" currency_field="currency_id"/>
+                                    <field name="settled_amount" widget="monetary" currency_field="currency_id"/>
+                                    <field name="unsettled_amount" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                                <group string="发票">
+                                    <field name="invoice_collected" widget="monetary" currency_field="currency_id"/>
+                                    <field name="invoice_gap" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                            </group>
+                            <group string="差异调整（经 account.move 落地）">
+                                <group>
+                                    <field name="adjust_amount" widget="monetary" currency_field="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="diff_move_id"/>
+                                    <field name="diff_move_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="明细行" name="lines">
+                            <field name="line_ids">
+                                <list string="对账明细行">
+                                    <field name="plan_id"/>
+                                    <field name="plan_code"/>
+                                    <field name="begin_date"/>
+                                    <field name="guest_count"/>
+                                    <field name="amount"/>
+                                    <field name="settled_amount"/>
+                                    <field name="unsettled_amount"/>
+                                    <field name="invoice_amount"/>
+                                    <field name="verify_state" widget="badge"
+                                           decoration-success="verify_state=='verified'"
+                                           decoration-warning="verify_state=='unverified'"
+                                           decoration-danger="verify_state=='diff'"/>
+                                    <field name="diff_reason"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="核对与确认" name="verification">
+                            <group>
+                                <group string="对账人">
+                                    <field name="verify_user_id" widget="many2one_avatar_user"/>
+                                    <field name="verify_date"/>
+                                </group>
+                                <group string="确认人">
+                                    <field name="confirm_user_id" widget="many2one_avatar_user"/>
+                                    <field name="confirm_date"/>
+                                </group>
+                            </group>
+                            <group string="归属">
+                                <group>
+                                    <field name="company_id"/>
+                                </group>
+                                <group>
+                                    <field name="department_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="备注" name="remark">
+                            <field name="remark" nolabel="1" placeholder="备注信息..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

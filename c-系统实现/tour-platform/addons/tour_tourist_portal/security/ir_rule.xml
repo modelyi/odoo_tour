@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 游客门户：只能看自己的数据（只读） -->
+
+    <!-- tour.plan.reg: 只能看自己 partner_id 的报名 -->
+    <record id="rule_plan_reg_tourist" model="ir.rule">
+        <field name="name">tour.plan.reg: tourist sees own regs</field>
+        <field name="model_id" ref="tour_order.model_tour_plan_reg"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_tourist_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.plan: 只能看自己报名关联的团队 -->
+    <record id="rule_plan_tourist" model="ir.rule">
+        <field name="name">tour.plan: tourist sees own plans</field>
+        <field name="model_id" ref="tour_order.model_tour_plan"/>
+        <field name="domain_force">[('reg_ids.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_tourist_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.plan.reg.passenger: 只能看自己报名的客人 -->
+    <record id="rule_passenger_tourist" model="ir.rule">
+        <field name="name">tour.plan.reg.passenger: tourist sees own passengers</field>
+        <field name="model_id" ref="tour_website.model_tour_plan_reg_passenger"/>
+        <field name="domain_force">[('reg_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_tourist_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- tour.payment.claim: 只能看自己团队关联的收款 -->
+    <record id="rule_payment_claim_tourist" model="ir.rule">
+        <field name="name">tour.payment.claim: tourist sees own claims</field>
+        <field name="model_id" ref="tour_accounting.model_tour_payment_claim"/>
+        <field name="domain_force">[('plan_id.reg_ids.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_tourist_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- account.move: 只能看自己的发票（out_invoice / out_refund） -->
+    <record id="rule_account_move_tourist" model="ir.rule">
+        <field name="name">account.move: tourist sees own invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id), ('move_type', 'in', ['out_invoice', 'out_refund'])]</field>
+        <field name="groups" eval="[(4, ref('group_tourist_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

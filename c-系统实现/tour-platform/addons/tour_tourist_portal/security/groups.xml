@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 游客门户用户组 -->
+    <record id="group_tourist_portal" model="res.groups">
+        <field name="name">游客门户用户</field>
+        <field name="comment">游客门户用户组，可以查看自己的订单、付款和行程</field>
+    </record>
+</odoo>

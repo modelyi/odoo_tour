@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CMO 门户布局模板 -->
+    <template id="portal_cmo_layout" name="CMO Portal Layout">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-3">
+                    <div class="row">
+                        <!-- 侧边栏 -->
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-line-chart me-2"/>增长官门户
+                                    </h5>
+                                </div>
+                                <div class="list-group list-group-flush">
+                                    <a href="/my/cmo"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'cmo_home' else '')">
+                                        <i class="fa fa-dashboard me-2"/>仪表盘
+                                    </a>
+                                    <a href="/my/cmo/leads"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name in ['cmo_leads', 'cmo_lead_detail'] else '')">
+                                        <i class="fa fa-handshake-o me-2"/>线索管理
+                                    </a>
+                                    <a href="/my/cmo/reports/channels"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'cmo_channels' else '')">
+                                        <i class="fa fa-pie-chart me-2"/>渠道分析
+                                    </a>
+                                    <a href="/my/cmo/reports/products"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'cmo_products' else '')">
+                                        <i class="fa fa-map me-2"/>线路分析
+                                    </a>
+                                    <a href="/my/cmo/reports/customers"
+                                       t-att-class="'list-group-item list-group-item-action' + (' active' if page_name == 'cmo_customers' else '')">
+                                        <i class="fa fa-users me-2"/>客户分析
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 主内容区 -->
+                        <div class="col-md-9">
+                            <t t-out="0"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 无权限页面 -->
+    <template id="portal_cmo_no_access" name="CMO No Access">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center py-5">
+                                    <i class="fa fa-lock fa-4x text-muted mb-3"/>
+                                    <h3>无权访问</h3>
+                                    <p class="text-muted">
+                                        您没有增长官门户的访问权限。<br/>
+                                        请联系系统管理员获取 CMO 角色。
+                                    </p>
+                                    <a href="/my" class="btn btn-primary mt-3">
+                                        <i class="fa fa-home me-2"/>返回我的门户
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

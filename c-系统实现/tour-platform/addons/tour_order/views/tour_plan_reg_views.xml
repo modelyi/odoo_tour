@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_plan_reg_search" model="ir.ui.view">
+        <field name="name">tour.plan.reg.search</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="arch" type="xml">
+            <search string="报名搜索">
+                <field name="reg_code"/>
+                <field name="plan_id"/>
+                <field name="supplier_id"/>
+                <field name="supplier_user"/>
+                <field name="sales_name"/>
+                <field name="contract_no"/>
+                <separator/>
+                <filter name="filter_draft" string="草稿" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="已确认" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="filter_cancelled" string="已取消" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
+                <filter name="group_biz_mode" string="业务模式" context="{'group_by':'biz_mode'}"/>
+                <filter name="group_plan_type" string="计划类型" context="{'group_by':'plan_type'}"/>
+                <filter name="group_sales" string="销售" context="{'group_by':'sales_name'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_plan_reg" model="ir.actions.act_window">
+        <field name="name">报名</field>
+        <field name="res_model">tour.plan.reg</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_plan_reg_search"/>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_tour_plan_reg_kanban" model="ir.ui.view">
+        <field name="name">tour.plan.reg.kanban</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" group_create="false" group_edit="false" group_delete="false">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="reg_code"/>
+                                    </strong>
+                                </div>
+                                <field name="state" widget="label_selection"
+                                       options="{'classes': {'draft': 'default', 'confirmed': 'success', 'cancelled': 'danger'}}"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><field name="plan_id"/></div>
+                                <div><field name="supplier_id"/></div>
+                                <div><field name="begin_date"/> - <field name="end_date"/></div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span>人数: <field name="guest_count"/></span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span class="text-muted">
+                                        <field name="in_com_quo_sum" widget="monetary"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_plan_reg_list" model="ir.ui.view">
+        <field name="name">tour.plan.reg.list</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="arch" type="xml">
+            <list string="报名" decoration-info="state == 'draft'"
+                  decoration-success="state == 'confirmed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="reg_code"/>
+                <field name="plan_id"/>
+                <field name="first_plan_id"/>
+                <field name="biz_mode"/>
+                <field name="plan_type"/>
+                <field name="supplier_id"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="guest_count"/>
+                <field name="in_com_quo_sum" sum="报价合计"/>
+                <field name="sum_pay_normal" sum="收款合计"/>
+                <field name="sum_un_pay" sum="未收款合计" decoration-danger="sum_un_pay > 0"/>
+                <field name="sales_name"/>
+                <field name="audit_chk"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_plan_reg_form" model="ir.ui.view">
+        <field name="name">tour.plan.reg.form</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="arch" type="xml">
+            <form string="报名">
+                <header>
+                    <button name="action_confirm" type="object" string="确认"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_cancel" type="object" string="取消"
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_reset_draft" type="object" string="重置草稿"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="reg_code"/>
+                        <h1>
+                            <field name="reg_code" placeholder="报名单号"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="first_plan_id"/>
+                            <field name="contract_no"/>
+                            <field name="out_code"/>
+                            <field name="plan_class"/>
+                        </group>
+                        <group>
+                            <field name="biz_mode"/>
+                            <field name="plan_type"/>
+                            <field name="from_type"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="日期与人数">
+                            <group>
+                                <group>
+                                    <field name="begin_date"/>
+                                    <field name="end_date"/>
+                                    <field name="order_date"/>
+                                    <field name="hotel_day_num"/>
+                                </group>
+                                <group>
+                                    <field name="guest_count"/>
+                                    <field name="adult_num"/>
+                                    <field name="child_num"/>
+                                    <field name="old_man_num"/>
+                                    <field name="baby_num"/>
+                                    <field name="student_num"/>
+                                    <field name="guide_num"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="客户/联系人">
+                            <group>
+                                <group>
+                                    <field name="supplier_id"/>
+                                    <field name="supplier_name"/>
+                                    <field name="supplier_user"/>
+                                    <field name="supplier_user_mobile"/>
+                                    <field name="supplier_user_tel"/>
+                                    <field name="supplier_user_fax"/>
+                                </group>
+                                <group>
+                                    <field name="guest_occupation"/>
+                                    <field name="nation"/>
+                                    <field name="province"/>
+                                    <field name="city_name"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="接送">
+                            <group>
+                                <group>
+                                    <field name="receive_place"/>
+                                    <field name="receive_traffic"/>
+                                    <field name="receive_tag"/>
+                                    <field name="left_place"/>
+                                    <field name="left_traffic"/>
+                                    <field name="actual_shuttle_time"/>
+                                </group>
+                                <group>
+                                    <field name="out_state"/>
+                                    <field name="in_state"/>
+                                    <field name="gather_chk"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="房型">
+                            <group>
+                                <field name="hotel_star"/>
+                                <field name="hotel_room_single"/>
+                                <field name="hotel_room_standard"/>
+                                <field name="hotel_room_triangle"/>
+                                <field name="hotel_room_accompany"/>
+                                <field name="hotel_room_additional"/>
+                            </group>
+                        </page>
+                        <page string="金额">
+                            <group string="报价/成本">
+                                <field name="in_com_quo_sum"/>
+                                <field name="out_price_quo_sum"/>
+                                <field name="pre_price_quo_sum"/>
+                                <field name="pre_cost_quo_sum"/>
+                            </group>
+                            <group string="收款/未收">
+                                <field name="sum_pay_normal"/>
+                                <field name="sum_un_pay" decoration-danger="sum_un_pay > 0"/>
+                            </group>
+                            <group string="代收代付">
+                                <field name="sum_money_delegate"/>
+                                <field name="sum_pay_delegate"/>
+                            </group>
+                            <group string="退款">
+                                <field name="sum_money_return"/>
+                                <field name="sum_pay_return"/>
+                            </group>
+                        </page>
+                        <page string="并团/溯源">
+                            <group>
+                                <field name="main_reg_id"/>
+                                <field name="main_reg_code"/>
+                                <field name="plan_id_main_reg"/>
+                            </group>
+                        </page>
+                        <page string="审核/归属">
+                            <group>
+                                <group>
+                                    <field name="audit_chk"/>
+                                    <field name="audit_chk0"/>
+                                    <field name="verify_chk"/>
+                                    <field name="verify_date"/>
+                                    <field name="reg_verification_chk"/>
+                                </group>
+                                <group>
+                                    <field name="sales_name"/>
+                                    <field name="in_user_id"/>
+                                    <field name="op_user_id"/>
+                                    <field name="update_user"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="remark"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

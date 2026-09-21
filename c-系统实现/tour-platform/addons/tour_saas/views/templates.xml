@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- The visitor is NOT told there is a payment problem: that is between
+       the provider and their customer, and telling the customer's OWN buyers
+       does damage that is not the provider's to cause. The provider is not
+       named either: the site belongs to the customer, and a visitor has no
+       reason to learn who hosts it. -->
+  <template id="page_service_closed" name="Temporarily unavailable">
+    <t t-call="website.layout">
+      <div id="wrap" class="oe_structure">
+        <section class="s_text_block pt64 pb64">
+          <div class="container text-center" style="max-width: 34rem;">
+            <h1 t-out="res_company.name or ''"/>
+            <p class="lead mt-4">
+              This site is not available right now.
+            </p>
+            <p class="text-muted">
+              Please try again later. If you need something urgently, you can
+              write to us directly.
+            </p>
+            <p t-if="res_company.email" class="mt-4">
+              <a t-attf-href="mailto:{{res_company.email}}" t-out="res_company.email"/>
+            </p>
+            <p t-if="res_company.phone" class="mb-0">
+              <a t-attf-href="tel:{{res_company.phone}}" t-out="res_company.phone"/>
+            </p>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

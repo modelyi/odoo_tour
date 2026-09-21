@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- 资产增减变动表向导视图 -->
+    <record id="asset_change_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">asset.change.report.wizard.view.form</field>
+        <field name="model">asset.change.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="资产增减变动表">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="category_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="打印报表" name="action_print_report" type="object" class="btn-primary"/>
+                    <button string="取消" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 资产增减变动表向导动作 -->
+    <record id="action_asset_change_report_wizard" model="ir.actions.act_window">
+        <field name="name">资产增减变动表</field>
+        <field name="res_model">asset.change.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="asset_change_report_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

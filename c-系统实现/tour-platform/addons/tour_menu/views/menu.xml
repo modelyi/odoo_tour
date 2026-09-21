@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 根菜单：业务管理（对齐 ET 系统，无根菜单直接显示，但保留 Odoo 应用入口） -->
+    <menuitem id="menu_tms_root"
+        name="业务管理"
+        web_icon="tour_base,static/description/icon.png"
+        action="tour_base.action_tour_dashboard"
+        sequence="10"/>
+
+    <!-- domain 过滤 action 定义在各自模块中：
+         散客单组 → tour_order.action_tour_plan_dss
+         9 类对账 → tour_accounting.action_recon_* -->
+
+    <!-- ================================================================
+         待实施功能占位 action 集中定义（仅超级用户可见）
+         每个 action 指向 /tutor/pending?name=XXX 提示页
+         各 menuitem 在下方对应章节引用
+    ================================================================ -->
+
+    <!-- 计调中心占位 (5) -->
+    <record id="action_tms_pending_order_booking" model="ir.actions.act_url">
+        <field name="name">订单预订安排</field>
+        <field name="url">/tutor/pending?name=订单预订安排</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_ops_hotel" model="ir.actions.act_url">
+        <field name="name">用房预订确认</field>
+        <field name="url">/tutor/pending?name=用房预订确认</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_ops_ticket" model="ir.actions.act_url">
+        <field name="name">门票预订确认</field>
+        <field name="url">/tutor/pending?name=门票预订确认</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_ops_settle" model="ir.actions.act_url">
+        <field name="name">二次结算操作</field>
+        <field name="url">/tutor/pending?name=二次结算操作</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_ops_audit" model="ir.actions.act_url">
+        <field name="name">二次结算审核</field>
+        <field name="url">/tutor/pending?name=二次结算审核</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--购物管理占位 (4) -->
+    <record id="action_tms_pending_shop_batch" model="ir.actions.act_url">
+        <field name="name">购物批量收款</field>
+        <field name="url">/tutor/pending?name=购物批量收款</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_shop_store" model="ir.actions.act_url">
+        <field name="name">按购物店统计</field>
+        <field name="url">/tutor/pending?name=按购物店统计</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_shop_item" model="ir.actions.act_url">
+        <field name="name">购物项目统计</field>
+        <field name="url">/tutor/pending?name=购物项目统计</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_shop_guide" model="ir.actions.act_url">
+        <field name="name">导游购物统计</field>
+        <field name="url">/tutor/pending?name=导游购物统计</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--查询统计占位 (3) -->
+    <record id="action_tms_pending_query_pickup" model="ir.actions.act_url">
+        <field name="name">订单接送查询</field>
+        <field name="url">/tutor/pending?name=订单接送查询</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_query_order_profit" model="ir.actions.act_url">
+        <field name="name">订单利润查询</field>
+        <field name="url">/tutor/pending?name=订单利润查询</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_query_ar" model="ir.actions.act_url">
+        <field name="name">应收团款统计</field>
+        <field name="url">/tutor/pending?name=应收团款统计</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--数据分析占位 (3) -->
+    <record id="action_tms_pending_analysis_cost" model="ir.actions.act_url">
+        <field name="name">分项成本分析</field>
+        <field name="url">/tutor/pending?name=分项成本分析</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_analysis_customer" model="ir.actions.act_url">
+        <field name="name">客户收客分析</field>
+        <field name="url">/tutor/pending?name=客户收客分析</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_analysis_route" model="ir.actions.act_url">
+        <field name="name">线路收客分析</field>
+        <field name="url">/tutor/pending?name=线路收客分析</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--协议中心占位 (2) -->
+    <record id="action_tms_pending_agree_cost" model="ir.actions.act_url">
+        <field name="name">成本采购协议</field>
+        <field name="url">/tutor/pending?name=成本采购协议</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_agree_hotel" model="ir.actions.act_url">
+        <field name="name">酒店用房协议</field>
+        <field name="url">/tutor/pending?name=酒店用房协议</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--购物协议占位 (3) -->
+    <record id="action_tms_pending_shop_agree_driver" model="ir.actions.act_url">
+        <field name="name">司陪导协议</field>
+        <field name="url">/tutor/pending?name=司陪导协议</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_shop_agree_avg" model="ir.actions.act_url">
+        <field name="name">导游人均线</field>
+        <field name="url">/tutor/pending?name=导游人均线</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_shop_agree_algo" model="ir.actions.act_url">
+        <field name="name">人均算法设置</field>
+        <field name="url">/tutor/pending?name=人均算法设置</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--基础数据占位 (3) -->
+    <record id="action_tms_pending_base_data" model="ir.actions.act_url">
+        <field name="name">基础数据</field>
+        <field name="url">/tutor/pending?name=基础数据</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_base_category" model="ir.actions.act_url">
+        <field name="name">基础数据分类</field>
+        <field name="url">/tutor/pending?name=基础数据分类</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_base_print" model="ir.actions.act_url">
+        <field name="name">打印账号</field>
+        <field name="url">/tutor/pending?name=打印账号</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--系统管理占位 (5) -->
+    <record id="action_tms_pending_sys_pwd" model="ir.actions.act_url">
+        <field name="name">修改密码</field>
+        <field name="url">/tutor/pending?name=修改密码</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_sys_dept" model="ir.actions.act_url">
+        <field name="name">部门设置</field>
+        <field name="url">/tutor/pending?name=部门设置</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_sys_qrcode" model="ir.actions.act_url">
+        <field name="name">二维码设置</field>
+        <field name="url">/tutor/pending?name=二维码设置</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_sys_query_cfg" model="ir.actions.act_url">
+        <field name="name">综合查询配置</field>
+        <field name="url">/tutor/pending?name=综合查询配置</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_sys_log" model="ir.actions.act_url">
+        <field name="name">操作日志</field>
+        <field name="url">/tutor/pending?name=操作日志</field>
+        <field name="target">self</field>
+    </record>
+
+    <!--产品导览占位 (2) -->
+    <record id="action_tms_pending_tutor_doc" model="ir.actions.act_url">
+        <field name="name">产品导览文档</field>
+        <field name="url">/tutor/pending?name=产品导览文档</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_tms_pending_tutor_menus" model="ir.actions.act_url">
+        <field name="name">角色菜单预览</field>
+        <field name="url">/tutor/pending?name=角色菜单预览</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- ==================== 1. 散客计划 ==================== -->
+    <menuitem id="menu_tms_group_plan"
+        name="散客计划"
+        parent="menu_tms_root"
+        sequence="10"/>
+    <menuitem id="menu_tms_group_plan_reg"
+        name="团期报名"
+        parent="menu_tms_group_plan"
+        action="tour_order.action_tour_plan_reg"
+        sequence="10"/>
+
+    <!-- ==================== 2. 常规业务 ==================== -->
+    <menuitem id="menu_tms_regular_business"
+        name="常规业务"
+        parent="menu_tms_root"
+        sequence="20"/>
+    <menuitem id="menu_tms_regular_team"
+        name="团队订单"
+        parent="menu_tms_regular_business"
+        action="tour_order.action_tour_plan_regular"
+        sequence="10"/>
+    <menuitem id="menu_tms_regular_local"
+        name="地接散拼"
+        parent="menu_tms_regular_business"
+        action="tour_order.action_tour_plan_fit"
+        sequence="20"/>
+    <menuitem id="menu_tms_regular_booking"
+        name="代订项目"
+        parent="menu_tms_regular_business"
+        action="tour_order.action_tour_plan_booking"
+        sequence="30"/>
+    <menuitem id="menu_tms_regular_scatter"
+        name="散客单组"
+        parent="menu_tms_regular_business"
+        action="tour_order.action_tour_plan_dss"
+        sequence="40"/>
+    <menuitem id="menu_tms_regular_query"
+        name="订单查询"
+        parent="menu_tms_regular_business"
+        action="tour_order.action_tour_plan"
+        sequence="50"/>
+
+    <!-- ==================== 3. 自由行 ==================== -->
+    <menuitem id="menu_tms_free_travel"
+        name="自由行"
+        parent="menu_tms_root"
+        sequence="30"/>
+    <menuitem id="menu_tms_free_reg"
+        name="订单报名"
+        parent="menu_tms_free_travel"
+        action="tour_order.action_tour_plan_independent"
+        sequence="10"/>
+    <menuitem id="menu_tms_free_merge"
+        name="订单并团"
+        parent="menu_tms_free_travel"
+        action="tour_order.action_tour_merge"
+        sequence="20"/>
+
+    <!-- ==================== 4. 计调中心子项（顶级入口在 tour_operation） ==================== -->
+    <menuitem id="menu_tms_booking_all"
+        name="预订安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_guide"
+        sequence="10"/>
+    <menuitem id="menu_tms_booking_order"
+        name="订单预订安排"
+        parent="tour_operation.menu_tms_operation"
+        action="action_tms_pending_order_booking"
+        sequence="20"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_booking_guide"
+        name="导游安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_guide"
+        sequence="30"/>
+    <menuitem id="menu_tms_booking_hotel"
+        name="用房安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_hotel"
+        sequence="40"/>
+    <menuitem id="menu_tms_booking_vehicle"
+        name="用车安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_vehicle"
+        sequence="50"/>
+    <menuitem id="menu_tms_booking_local"
+        name="地接安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_ditch"
+        sequence="60"/>
+    <menuitem id="menu_tms_booking_insurance"
+        name="保险安排"
+        parent="tour_operation.menu_tms_operation"
+        action="tour_operation.action_booking_insurance"
+        sequence="70"/>
+    <menuitem id="menu_tms_ops_hotel"
+        name="用房预订确认"
+        parent="tour_operation.menu_tms_operation"
+        action="action_tms_pending_ops_hotel"
+        sequence="80"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_ops_ticket"
+        name="门票预订确认"
+        parent="tour_operation.menu_tms_operation"
+        action="action_tms_pending_ops_ticket"
+        sequence="90"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_ops_settle"
+        name="二次结算操作"
+        parent="tour_operation.menu_tms_operation"
+        action="action_tms_pending_ops_settle"
+        sequence="100"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_ops_audit"
+        name="二次结算审核"
+        parent="tour_operation.menu_tms_operation"
+        action="action_tms_pending_ops_audit"
+        sequence="110"
+        groups="base.group_system"/>
+
+    <!-- ==================== 5. 购物管理子项（顶级入口在 tour_shopping） ==================== -->
+    <menuitem id="menu_tms_shopping_input"
+        name="购物数据录入"
+        parent="tour_shopping.menu_tms_shopping"
+        action="tour_shopping.action_tour_shop_record"
+        sequence="10"/>
+    <menuitem id="menu_tms_shopping_query"
+        name="购物信息查询"
+        parent="tour_shopping.menu_tms_shopping"
+        action="tour_shopping.action_tour_shop_record"
+        sequence="20"/>
+    <menuitem id="menu_tms_shopping_single"
+        name="单团购物查询"
+        parent="tour_shopping.menu_tms_shopping"
+        action="tour_shopping.action_tour_shop_single_query"
+        sequence="30"/>
+    <menuitem id="menu_tms_shopping_guide_perf"
+        name="导游业绩统计"
+        parent="tour_shopping.menu_tms_shopping"
+        action="tour_report.action_report_guide_performance"
+        sequence="40"/>
+    <menuitem id="menu_tms_shopping_commission"
+        name="佣金"
+        parent="tour_shopping.menu_tms_shopping"
+        action="tour_accounting.action_tour_commission"
+        sequence="45"/>
+    <menuitem id="menu_tms_shopping_batch"
+        name="购物批量收款"
+        parent="tour_shopping.menu_tms_shopping"
+        action="action_tms_pending_shop_batch"
+        sequence="50"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_shopping_store"
+        name="按购物店统计"
+        parent="tour_shopping.menu_tms_shopping"
+        action="action_tms_pending_shop_store"
+        sequence="60"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_shopping_item"
+        name="购物项目统计"
+        parent="tour_shopping.menu_tms_shopping"
+        action="action_tms_pending_shop_item"
+        sequence="70"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_shopping_guide"
+        name="导游购物统计"
+        parent="tour_shopping.menu_tms_shopping"
+        action="action_tms_pending_shop_guide"
+        sequence="80"
+        groups="base.group_system"/>
+
+    <!-- ==================== 6. 审核管理 ==================== -->
+    <menuitem id="menu_tms_audit"
+        name="审核管理"
+        parent="menu_tms_root"
+        sequence="70"/>
+    <menuitem id="menu_tms_audit_op"
+        name="计调审核"
+        parent="menu_tms_audit"
+        action="tour_order.action_tour_plan_operation_audit"
+        sequence="10"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_manager"/>
+    <menuitem id="menu_tms_audit_fin"
+        name="财务审核"
+        parent="menu_tms_audit"
+        action="tour_order.action_tour_plan_finance_audit"
+        sequence="20"
+        groups="tour_base.group_tour_finance,tour_base.group_tour_manager"/>
+    <menuitem id="menu_tms_audit_archive"
+        name="单团归档"
+        parent="menu_tms_audit"
+        action="tour_order.action_tour_plan_archive"
+        sequence="30"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_manager"/>
+
+    <!-- ==================== 7. 往来对帐（挂在财务管理下） ==================== -->
+    <menuitem id="menu_tms_reconciliation"
+        name="往来对帐"
+        parent="tour_accounting.menu_tour_finance"
+        sequence="80"/>
+    <menuitem id="menu_tms_recon_team"
+        name="团款对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_group_tour"
+        sequence="10"/>
+    <menuitem id="menu_tms_recon_local"
+        name="地接对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_ditch"
+        sequence="20"/>
+    <menuitem id="menu_tms_recon_vehicle"
+        name="车费对帐"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_vehicle"
+        sequence="30"/>
+    <menuitem id="menu_tms_recon_ticket"
+        name="票务对帐"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_ticket"
+        sequence="40"/>
+    <menuitem id="menu_tms_recon_insurance"
+        name="保险对帐"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_insurance"
+        sequence="50"/>
+    <menuitem id="menu_tms_recon_meal"
+        name="餐费对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_meal"
+        sequence="60"/>
+    <menuitem id="menu_tms_recon_hotel"
+        name="房费对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_hotel"
+        sequence="70"/>
+    <menuitem id="menu_tms_recon_scenic"
+        name="门票对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_scenic"
+        sequence="80"/>
+    <menuitem id="menu_tms_recon_visa"
+        name="签证对账"
+        parent="menu_tms_reconciliation"
+        action="tour_accounting.action_recon_visa"
+        sequence="90"/>
+
+    <!-- ==================== 8. 财务管理（已提升为顶级应用） ==================== -->
+    <!-- 财务管理现为独立顶级入口，由 tour_accounting/views/finance_menu.xml 管理 -->
+
+    <!-- ==================== 9. 发票管理（挂在财务管理下） ==================== -->
+    <menuitem id="menu_tms_invoice"
+        name="发票管理"
+        parent="tour_accounting.menu_tour_finance"
+        sequence="120"/>
+    <menuitem id="menu_tms_inv_apply"
+        name="开票申请"
+        parent="menu_tms_invoice"
+        action="tour_accounting.action_tour_invoice_apply"
+        sequence="10"/>
+    <menuitem id="menu_tms_inv_audit"
+        name="开票审核"
+        parent="menu_tms_invoice"
+        action="tour_accounting.action_tour_invoice_audit"
+        sequence="20"/>
+    <menuitem id="menu_tms_inv_issue"
+        name="发票开具"
+        parent="menu_tms_invoice"
+        action="tour_accounting.action_tour_invoice_issue"
+        sequence="30"/>
+    <menuitem id="menu_tms_inv_list"
+        name="发票列表"
+        parent="menu_tms_invoice"
+        action="tour_accounting.action_tour_invoice_list"
+        sequence="40"/>
+
+    <!-- ==================== 10. 查询统计 ==================== -->
+    <menuitem id="menu_tms_query"
+        name="查询统计"
+        parent="menu_tms_root"
+        sequence="130"/>
+    <menuitem id="menu_tms_query_pickup"
+        name="订单接送查询"
+        parent="menu_tms_query"
+        action="action_tms_pending_query_pickup"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_query_profit"
+        name="单团利润查询"
+        parent="menu_tms_query"
+        action="tour_report.action_report_plan_profit"
+        sequence="20"/>
+    <menuitem id="menu_tms_query_daily"
+        name="每日收支统计"
+        parent="menu_tms_query"
+        action="tour_report.action_report_daily_income_expense"
+        sequence="30"/>
+    <menuitem id="menu_tms_query_order_profit"
+        name="订单利润查询"
+        parent="menu_tms_query"
+        action="action_tms_pending_query_order_profit"
+        sequence="40"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_query_ar"
+        name="应收团款统计"
+        parent="menu_tms_query"
+        action="action_tms_pending_query_ar"
+        sequence="50"
+        groups="base.group_system"/>
+
+    <!-- ==================== 11. 数据分析 ==================== -->
+    <menuitem id="menu_tms_analysis"
+        name="数据分析"
+        parent="menu_tms_root"
+        sequence="140"/>
+    <menuitem id="menu_tms_analysis_cost"
+        name="分项成本分析"
+        parent="menu_tms_analysis"
+        action="action_tms_pending_analysis_cost"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_analysis_customer"
+        name="客户收客分析"
+        parent="menu_tms_analysis"
+        action="action_tms_pending_analysis_customer"
+        sequence="20"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_analysis_route"
+        name="线路收客分析"
+        parent="menu_tms_analysis"
+        action="action_tms_pending_analysis_route"
+        sequence="30"
+        groups="base.group_system"/>
+
+    <!-- ==================== 12. 产品中心子项（顶级入口在 tour_product） ==================== -->
+    <menuitem id="menu_tms_prod_departure"
+        name="团期计划"
+        parent="tour_product.menu_tms_product"
+        action="tour_product.action_tour_departure"
+        sequence="10"/>
+    <menuitem id="menu_tms_prod_category"
+        name="线路分类"
+        parent="tour_product.menu_tms_product"
+        action="tour_product.action_tour_product_category"
+        sequence="20"/>
+    <menuitem id="menu_tms_prod_template"
+        name="线路模板"
+        parent="tour_product.menu_tms_product"
+        action="tour_product.action_tour_line"
+        sequence="30"/>
+
+    <!-- ==================== 13. 资源管理子项（顶级入口在 tour_resource） ==================== -->
+    <menuitem id="menu_tms_res_customer"
+        name="客户档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier"
+        sequence="50"/>
+    <menuitem id="menu_tms_res_local"
+        name="地接社档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier"
+        sequence="60"/>
+    <menuitem id="menu_tms_res_scenic"
+        name="景区档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_scenic"
+        sequence="70"/>
+    <menuitem id="menu_tms_res_hotel"
+        name="酒店档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_hotel"
+        sequence="80"/>
+    <menuitem id="menu_tms_res_restaurant"
+        name="餐厅档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_meal"
+        sequence="90"/>
+    <menuitem id="menu_tms_res_vehicle_company"
+        name="车辆公司"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_vehicle_comp"
+        sequence="100"/>
+    <menuitem id="menu_tms_res_vehicle"
+        name="车辆档案"
+        parent="tour_resource.menu_tms_resource"
+        action="fleet.fleet_vehicle_action"
+        sequence="110"/>
+    <menuitem id="menu_tms_res_shop"
+        name="购物店档案"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_shop"
+        sequence="120"/>
+    <menuitem id="menu_tms_res_ticket_company"
+        name="票务公司"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_ticket"
+        sequence="130"/>
+    <menuitem id="menu_tms_res_insurance_company"
+        name="保险公司"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_insurance"
+        sequence="140"/>
+    <menuitem id="menu_tms_res_visa_company"
+        name="签证公司"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_visa"
+        sequence="150"/>
+    <menuitem id="menu_tms_res_self_company"
+        name="自费公司"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_self_fee"
+        sequence="160"/>
+    <menuitem id="menu_tms_res_ticket_list"
+        name="票务列表"
+        parent="tour_resource.menu_tms_resource"
+        action="tour_resource.action_tour_supplier_ticket_list"
+        sequence="170"/>
+
+    <!-- ==================== 14. 协议中心 ==================== -->
+    <menuitem id="menu_tms_agreement"
+        name="协议中心"
+        parent="menu_tms_root"
+        sequence="160"/>
+    <menuitem id="menu_tms_agree_cost"
+        name="成本采购协议"
+        parent="menu_tms_agreement"
+        action="action_tms_pending_agree_cost"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_agree_shop"
+        name="购物返佣协议"
+        parent="menu_tms_agreement"
+        action="tour_resource.action_tour_shop_agreement"
+        sequence="20"/>
+    <menuitem id="menu_tms_agree_hotel"
+        name="酒店用房协议"
+        parent="menu_tms_agreement"
+        action="action_tms_pending_agree_hotel"
+        sequence="30"
+        groups="base.group_system"/>
+
+    <!-- ==================== 15. 购物协议 ==================== -->
+    <menuitem id="menu_tms_shop_agreement"
+        name="购物协议"
+        parent="menu_tms_root"
+        sequence="170"/>
+    <menuitem id="menu_tms_shop_agree_rebate"
+        name="购物店返佣"
+        parent="menu_tms_shop_agreement"
+        action="tour_resource.action_tour_shop_agreement"
+        sequence="10"/>
+    <menuitem id="menu_tms_shop_agree_driver"
+        name="司陪导协议"
+        parent="menu_tms_shop_agreement"
+        action="action_tms_pending_shop_agree_driver"
+        sequence="20"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_shop_agree_avg"
+        name="导游人均线"
+        parent="menu_tms_shop_agreement"
+        action="action_tms_pending_shop_agree_avg"
+        sequence="30"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_shop_agree_algo"
+        name="人均算法设置"
+        parent="menu_tms_shop_agreement"
+        action="action_tms_pending_shop_agree_algo"
+        sequence="40"
+        groups="base.group_system"/>
+
+    <!-- ==================== 16. 基础数据 ==================== -->
+    <menuitem id="menu_tms_base_data"
+        name="基础数据"
+        parent="menu_tms_root"
+        sequence="180"/>
+    <menuitem id="menu_tms_base_data_main"
+        name="基础数据"
+        parent="menu_tms_base_data"
+        action="action_tms_pending_base_data"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_base_area"
+        name="区域维护"
+        parent="menu_tms_base_data"
+        action="tour_resource.action_tour_region"
+        sequence="20"/>
+    <menuitem id="menu_tms_base_category"
+        name="基础数据分类"
+        parent="menu_tms_base_data"
+        action="action_tms_pending_base_category"
+        sequence="30"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_base_settle"
+        name="结算方式"
+        parent="menu_tms_base_data"
+        action="tour_resource.action_tour_settlement_method"
+        sequence="40"/>
+    <menuitem id="menu_tms_base_pay_channel"
+        name="支付渠道"
+        parent="menu_tms_base_data"
+        action="tour_accounting.action_tour_pay_channel"
+        sequence="45"/>
+    <menuitem id="menu_tms_base_print"
+        name="打印账号"
+        parent="menu_tms_base_data"
+        action="action_tms_pending_base_print"
+        sequence="50"
+        groups="base.group_system"/>
+
+    <!-- ==================== 17. 系统管理 ==================== -->
+    <menuitem id="menu_tms_system"
+        name="系统管理"
+        parent="menu_tms_root"
+        sequence="190"/>
+    <menuitem id="menu_tms_sys_pwd"
+        name="修改密码"
+        parent="menu_tms_system"
+        action="action_tms_pending_sys_pwd"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_company"
+        name="公司信息"
+        parent="menu_tms_system"
+        action="base.action_res_company_form"
+        sequence="20"/>
+    <menuitem id="menu_tms_sys_dept"
+        name="部门设置"
+        parent="menu_tms_system"
+        action="action_tms_pending_sys_dept"
+        sequence="30"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_user"
+        name="用户管理"
+        parent="menu_tms_system"
+        action="base.action_res_users"
+        sequence="40"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_auth"
+        name="用户授权"
+        parent="menu_tms_system"
+        action="base.action_res_groups"
+        sequence="50"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_workbench"
+        name="我的工作台"
+        parent="menu_tms_system"
+        action="tour_base.action_tour_dashboard"
+        sequence="60"/>
+    <menuitem id="menu_tms_sys_qrcode"
+        name="二维码设置"
+        parent="menu_tms_system"
+        action="action_tms_pending_sys_qrcode"
+        sequence="70"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_query_cfg"
+        name="综合查询配置"
+        parent="menu_tms_system"
+        action="action_tms_pending_sys_query_cfg"
+        sequence="80"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_sys_log"
+        name="操作日志"
+        parent="menu_tms_system"
+        action="action_tms_pending_sys_log"
+        sequence="90"
+        groups="base.group_system"/>
+
+    <!-- ==================== 18. 产品导览 ==================== -->
+    <menuitem id="menu_tms_tutor"
+        name="产品导览"
+        parent="menu_tms_root"
+        sequence="200"/>
+    <menuitem id="menu_tms_tutor_doc"
+        name="产品导览文档"
+        parent="menu_tms_tutor"
+        action="action_tms_pending_tutor_doc"
+        sequence="10"
+        groups="base.group_system"/>
+    <menuitem id="menu_tms_tutor_menu"
+        name="角色菜单预览"
+        parent="menu_tms_tutor"
+        action="action_tms_pending_tutor_menus"
+        sequence="20"
+        groups="base.group_system"/>
+
+    <!-- ==================== 19. 银行账户（tour_base） ==================== -->
+    <menuitem id="menu_tour_bank_account"
+        name="银行账户"
+        parent="menu_tms_root"
+        action="tour_base.action_tour_bank_account"
+        sequence="90"/>
+</odoo>

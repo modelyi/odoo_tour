@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_departure_search" model="ir.ui.view">
+        <field name="name">tour.departure.search</field>
+        <field name="model">tour.departure</field>
+        <field name="arch" type="xml">
+            <search string="发团计划搜索">
+                <field name="line_id"/>
+                <field name="start_date"/>
+                <filter name="state_draft" string="草稿" domain="[('state','=','draft')]"/>
+                <filter name="state_published" string="已发布" domain="[('state','=','published')]"/>
+                <filter name="state_ended" string="已结束" domain="[('state','=','ended')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_departure" model="ir.actions.act_window">
+        <field name="name">发团计划</field>
+        <field name="res_model">tour.departure</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_departure_search"/>
+    </record>
+
+    <!-- Kanban View（按状态分列） -->
+    <record id="view_tour_departure_kanban" model="ir.ui.view">
+        <field name="name">tour.departure.kanban</field>
+        <field name="model">tour.departure</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile"
+                    group_create="false" group_delete="false" group_edit="false">
+                <field name="name"/>
+                <field name="line_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="seats"/>
+                <field name="booked_seats"/>
+                <field name="remain_seats"/>
+                <field name="price_adult"/>
+                <field name="price_child"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <field name="name" class="fw-bold text-truncate flex-grow-1"/>
+                            <field name="state" widget="badge"
+                                decoration-info="state == 'draft'"
+                                decoration-success="state == 'published'"
+                                decoration-muted="state == 'ended'"/>
+                        </div>
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">线路</span>
+                                <field name="line_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">出发日期</span>
+                                <field name="start_date"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">余位</span>
+                                <field name="remain_seats" decoration-danger="remain_seats &lt; 1"/>
+                            </div>
+                        </div>
+                        <footer class="pt-1 mt-1 border-top d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">成人价</span>
+                                <field name="price_adult" widget="monetary"/>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">儿童价</span>
+                                <field name="price_child" widget="monetary"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_departure_list" model="ir.ui.view">
+        <field name="name">tour.departure.list</field>
+        <field name="model">tour.departure</field>
+        <field name="arch" type="xml">
+            <list string="发团计划">
+                <field name="line_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="seats"/>
+                <field name="booked_seats"/>
+                <field name="remain_seats" decoration-danger="remain_seats &lt; 1"/>
+                <field name="price_adult" widget="monetary" sum="成人价合计"/>
+                <field name="price_child" widget="monetary" sum="儿童价合计"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'published'"
+                    decoration-muted="state == 'ended'"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_departure_form" model="ir.ui.view">
+        <field name="name">tour.departure.form</field>
+        <field name="model">tour.departure</field>
+        <field name="arch" type="xml">
+            <form string="发团计划">
+                <header>
+                    <button name="action_publish" string="发布" type="object"
+                        class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_end" string="结束" type="object"
+                        invisible="state != 'published'"/>
+                    <button name="action_draft" string="重置草稿" type="object"
+                        invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,published,ended"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="line_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="seats"/>
+                            <field name="booked_seats"/>
+                            <field name="remain_seats"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="price_adult"/>
+                            <field name="price_child"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

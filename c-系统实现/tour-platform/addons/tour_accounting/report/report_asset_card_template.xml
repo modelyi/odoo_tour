@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 固定资产卡片打印模板 -->
+    <template id="report_asset_card_document">
+        <t t-set="o" t-value="o"/>
+        <t t-set="company" t-value="o.company_id"/>
+        <div class="page" t-attf-style="font-family: 'SimSun', serif; font-size: 12px;">
+            <!-- 卡片头部 -->
+            <div class="row" style="border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px;">
+                <div class="col-4 text-start">
+                    <span t-out="company.name" style="font-size: 14px;"/>
+                </div>
+                <div class="col-4 text-center">
+                    <h2 style="font-weight: bold; letter-spacing: 6px; margin: 0;">固定资产卡片</h2>
+                </div>
+                <div class="col-4 text-end" style="font-size: 12px;">
+                    <span>卡片编号：<t t-out="o.code or o.id"/></span>
+                </div>
+            </div>
+
+            <!-- 基本信息 -->
+            <div style="margin-bottom: 10px;">
+                <table class="table table-sm table-bordered" style="margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">资产编号</td>
+                            <td style="width: 21%;"><t t-out="o.code or ''"/></td>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">资产名称</td>
+                            <td style="width: 21%;"><t t-out="o.name"/></td>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">资产类别</td>
+                            <td style="width: 22%;"><t t-out="o.category_id.name or ''"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center" style="background-color: #f5f5f5; font-weight: bold;">规格型号</td>
+                            <td colspan="2"><t t-out="o.note or ''"/></td>
+                            <td class="text-center" style="background-color: #f5f5f5; font-weight: bold;">存放地点</td>
+                            <td colspan="2"><t t-out="o.partner_id.name or ''"/></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center" style="background-color: #f5f5f5; font-weight: bold;">使用部门</td>
+                            <td colspan="2">-</td>
+                            <td class="text-center" style="background-color: #f5f5f5; font-weight: bold;">使用人</td>
+                            <td colspan="2">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 财务信息 -->
+            <div style="margin-bottom: 10px;">
+                <table class="table table-sm table-bordered" style="margin-bottom: 0;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th class="text-center" style="width: 14%;">原值</th>
+                            <th class="text-center" style="width: 12%;">预计净残值</th>
+                            <th class="text-center" style="width: 14%;">折旧方法</th>
+                            <th class="text-center" style="width: 12%;">使用年限</th>
+                            <th class="text-center" style="width: 12%;">已提折旧</th>
+                            <th class="text-center" style="width: 12%;">累计减值</th>
+                            <th class="text-center" style="width: 12%;">账面价值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-end">
+                                <t t-out="o.value" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="o.salvage_value" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-center">
+                                <t t-if="o.method == 'linear'">直线法</t>
+                                <t t-elif="o.method == 'degressive'">余额递减法</t>
+                                <t t-elif="o.method == 'double_degressive'">双倍余额递减法</t>
+                                <t t-elif="o.method == 'sum_of_years'">年数总和法</t>
+                                <t t-else="">-</t>
+                            </td>
+                            <td class="text-center">
+                                <t t-if="o.method_time == 'number'">
+                                    <t t-out="o.method_number"/>期
+                                </t>
+                                <t t-elif="o.method_time == 'end'">
+                                    至<t t-out="o.method_end" t-options='{"widget": "date"}'/>
+                                </t>
+                                <t t-else="">-</t>
+                            </td>
+                            <td class="text-end">
+                                <t t-set="accumulated_depreciation" t-value="sum(line.amount for line in o.depreciation_line_ids if line.move_posted_check)"/>
+                                <t t-out="accumulated_depreciation" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="o.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end" style="font-weight: bold;">
+                                <t t-out="o.value - accumulated_depreciation - o.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 购置信息 -->
+            <div style="margin-bottom: 10px;">
+                <table class="table table-sm table-bordered" style="margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">购置日期</td>
+                            <td style="width: 21%;">
+                                <t t-out="o.date" t-options='{"widget": "date"}'/>
+                            </td>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">供应商</td>
+                            <td style="width: 21%;"><t t-out="o.partner_id.name or ''"/></td>
+                            <td class="text-center" style="width: 12%; background-color: #f5f5f5; font-weight: bold;">发票号码</td>
+                            <td style="width: 22%;"><t t-out="o.invoice_id.name or ''"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 折旧明细表 -->
+            <div style="margin-top: 15px;">
+                <div style="font-weight: bold; margin-bottom: 5px; font-size: 13px;">折旧明细表</div>
+                <table class="table table-sm table-bordered" style="font-size: 11px;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th class="text-center" style="width: 8%;">期数</th>
+                            <th class="text-center" style="width: 15%;">折旧日期</th>
+                            <th class="text-center" style="width: 19%;">本期折旧额</th>
+                            <th class="text-center" style="width: 19%;">累计折旧</th>
+                            <th class="text-center" style="width: 19%;">净值</th>
+                            <th class="text-center" style="width: 20%;">凭证状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.depreciation_line_ids" t-as="line">
+                            <tr>
+                                <td class="text-center"><t t-out="line.sequence"/></td>
+                                <td class="text-center">
+                                    <t t-out="line.depreciation_date" t-options='{"widget": "date"}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="line.amount" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="line.depreciated_value" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="o.value - line.depreciated_value" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-center">
+                                    <t t-if="line.move_posted_check">
+                                        <span style="color: green;">已过账</span>
+                                    </t>
+                                    <t t-elif="line.move_check">
+                                        <span style="color: orange;">草稿</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color: #999;">未生成</span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                        <!-- 空行补齐（至少显示 6 行） -->
+                        <t t-set="line_count" t-value="len(o.depreciation_line_ids)"/>
+                        <t t-foreach="range(max(0, 6 - line_count))" t-as="i">
+                            <tr>
+                                <td style="height: 22px;"> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 减值信息 -->
+            <div t-if="o.impairment_line_ids" style="margin-bottom: 10px;">
+                <div style="font-weight: bold; margin-bottom: 5px; font-size: 13px;">减值记录</div>
+                <table class="table table-sm table-bordered" style="font-size: 11px;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th class="text-center" style="width: 20%;">编号</th>
+                            <th class="text-center" style="width: 20%;">日期</th>
+                            <th class="text-center" style="width: 20%;">减值金额</th>
+                            <th class="text-center" style="width: 40%;">减值原因</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.impairment_line_ids.filtered(lambda l: l.state == 'posted')" t-as="imp">
+                            <tr>
+                                <td class="text-center"><t t-out="imp.name"/></td>
+                                <td class="text-center">
+                                    <t t-out="imp.date" t-options='{"widget": "date"}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="imp.amount" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td><t t-out="imp.reason or ''"/></td>
+                            </tr>
+                        </t>
+                        <tr style="font-weight: bold; background-color: #f9f9f9;">
+                            <td colspan="2" class="text-center">累计减值</td>
+                            <td class="text-end">
+                                <t t-out="o.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td> </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 签章栏 -->
+            <div class="row" style="margin-top: 20px; font-size: 12px; border-top: 1px solid #000; padding-top: 8px;">
+                <div class="col-3 text-center">
+                    <span>制卡人：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>审核人：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>财务主管：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>日期：<u style="display: inline-block; width: 80px;"> </u></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_asset_card">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tour_accounting.report_asset_card_document" t-lang="o.company_id.partner_id.lang or 'zh_CN'"/>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 订单管理菜单已迁移到 tour_base/views/menu.xml（对齐 ET 系统结构） -->
+    <!-- 本文件仅保留 action 定义供其他模块引用 -->
+</odoo>

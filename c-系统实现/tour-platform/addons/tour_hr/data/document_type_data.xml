@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 中国证照类型（复用 oh_employee_documents_expiry 的 document.type） -->
+    <record id="document_type_guide_licence" model="document.type">
+        <field name="name">导游证</field>
+        <field name="notification_type">multi</field>
+        <field name="before_days">60</field>
+    </record>
+    <record id="document_type_health" model="document.type">
+        <field name="name">健康证</field>
+        <field name="notification_type">everyday</field>
+        <field name="before_days">30</field>
+    </record>
+    <record id="document_type_qualification" model="document.type">
+        <field name="name">资格证</field>
+        <field name="notification_type">multi</field>
+        <field name="before_days">60</field>
+    </record>
+    <record id="document_type_driver_licence" model="document.type">
+        <field name="name">驾驶证</field>
+        <field name="notification_type">multi</field>
+        <field name="before_days">60</field>
+    </record>
+    <record id="document_type_id_card" model="document.type">
+        <field name="name">身份证</field>
+        <field name="notification_type">everyday_after</field>
+        <field name="before_days">30</field>
+    </record>
+    <record id="document_type_passport" model="document.type">
+        <field name="name">护照</field>
+        <field name="notification_type">multi</field>
+        <field name="before_days">90</field>
+    </record>
+</odoo>

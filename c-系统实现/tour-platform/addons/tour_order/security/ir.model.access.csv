@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_plan_sales,tour.plan.sales,model_tour_plan,tour_base.group_tour_sales,1,1,1,0
+access_tour_plan_operator,tour.plan.operator,model_tour_plan,tour_base.group_tour_operator,1,1,0,0
+access_tour_plan_finance,tour.plan.finance,model_tour_plan,tour_base.group_tour_finance,1,0,0,0
+access_tour_plan_manager,tour.plan.manager,model_tour_plan,tour_base.group_tour_manager,1,1,1,1
+access_tour_plan_reg_sales,tour.plan.reg.sales,model_tour_plan_reg,tour_base.group_tour_sales,1,1,1,0
+access_tour_plan_reg_operator,tour.plan.reg.operator,model_tour_plan_reg,tour_base.group_tour_operator,1,1,0,0
+access_tour_plan_reg_finance,tour.plan.reg.finance,model_tour_plan_reg,tour_base.group_tour_finance,1,0,0,0
+access_tour_plan_reg_manager,tour.plan.reg.manager,model_tour_plan_reg,tour_base.group_tour_manager,1,1,1,1
+access_tour_merge_operator,tour.merge.operator,model_tour_merge,tour_base.group_tour_operator,1,1,1,0
+access_tour_merge_manager,tour.merge.manager,model_tour_merge,tour_base.group_tour_manager,1,1,1,1
+access_tour_plan_change_operator,tour.plan.change.operator,model_tour_plan_change,tour_base.group_tour_operator,1,1,1,0
+access_tour_plan_change_manager,tour.plan.change.manager,model_tour_plan_change,tour_base.group_tour_manager,1,1,1,1

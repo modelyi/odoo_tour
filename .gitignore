@@ -48,3 +48,10 @@ odoo-server.log
 # 备份文件（本地备份，不入库）
 backup/
 *.log
+
+# [A0 安全] 防止 .env 副本被 auto-snapshot 提交（2026-09-21 事故：.env.bak.* 曾被推送到远端）
+.env.bak*
+*.env.bak*
+.env.old*
+.env.save*
+c-系统实现/tms-platform/backup/

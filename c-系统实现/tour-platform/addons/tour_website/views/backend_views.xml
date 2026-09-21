@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================= tour.plan：展示发团计划回链 + 线上渠道过滤 ================= -->
+    <record id="view_tour_plan_form_inherit_website" model="ir.ui.view">
+        <field name="name">tour.plan.form.inherit.website</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_id']" position="after">
+                <field name="departure_id" groups="tour_base.group_tour_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_tour_plan_search_inherit_website" model="ir.ui.view">
+        <field name="name">tour.plan.search.inherit.website</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="from_type_online" string="线上官网" domain="[('from_type','=','6')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================= tour.plan.reg：客人证件子表 + 线上渠道过滤 ================= -->
+    <record id="view_tour_plan_reg_form_inherit_website" model="ir.ui.view">
+        <field name="name">tour.plan.reg.form.inherit.website</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_reg_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="客人证件">
+                    <field name="passenger_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="passenger_type"/>
+                            <field name="id_type"/>
+                            <field name="id_number_masked"/>
+                            <field name="price"/>
+                        </list>
+                        <form>
+                            <group>
+                                <field name="name"/>
+                                <field name="passenger_type"/>
+                                <field name="id_type"/>
+                                <field name="id_number"/>
+                                <field name="price"/>
+                                <field name="sequence"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_tour_plan_reg_search_inherit_website" model="ir.ui.view">
+        <field name="name">tour.plan.reg.search.inherit.website</field>
+        <field name="model">tour.plan.reg</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_reg_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="from_type_online" string="线上官网" domain="[('from_type','=','6')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

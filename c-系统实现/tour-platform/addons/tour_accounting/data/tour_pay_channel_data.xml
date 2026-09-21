@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- 支付渠道主数据：5 种（BS-05 §2.3.2） -->
+    <record id="pay_channel_bank_transfer" model="tour.pay.channel">
+        <field name="name">银行转账</field>
+        <field name="channel_type">bank_transfer</field>
+        <field name="fund_account_code">1002</field>
+        <field name="fund_account_name">银行存款</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="pay_channel_wechat" model="tour.pay.channel">
+        <field name="name">微信</field>
+        <field name="channel_type">wechat</field>
+        <field name="fund_account_code">1012</field>
+        <field name="fund_account_name">其他货币资金—微信</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="pay_channel_alipay" model="tour.pay.channel">
+        <field name="name">支付宝</field>
+        <field name="channel_type">alipay</field>
+        <field name="fund_account_code">1012</field>
+        <field name="fund_account_name">其他货币资金—支付宝</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="pay_channel_cash" model="tour.pay.channel">
+        <field name="name">现金</field>
+        <field name="channel_type">cash</field>
+        <field name="fund_account_code">1001</field>
+        <field name="fund_account_name">库存现金</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="pay_channel_other" model="tour.pay.channel">
+        <field name="name">其他</field>
+        <field name="channel_type">other</field>
+        <field name="fund_account_code"></field>
+        <field name="fund_account_name">视情况</field>
+        <field name="sequence">50</field>
+    </record>
+</odoo>

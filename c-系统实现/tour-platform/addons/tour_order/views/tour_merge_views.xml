@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_merge_search" model="ir.ui.view">
+        <field name="name">tour.merge.search</field>
+        <field name="model">tour.merge</field>
+        <field name="arch" type="xml">
+            <search string="并团记录搜索">
+                <field name="plan_id"/>
+                <field name="merge_type"/>
+                <field name="operator_id"/>
+                <field name="reg_ids"/>
+                <separator/>
+                <filter name="group_merge_type" string="并团类型" context="{'group_by':'merge_type'}"/>
+                <filter name="group_operator" string="操作人" context="{'group_by':'operator_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_merge" model="ir.actions.act_window">
+        <field name="name">并团记录</field>
+        <field name="res_model">tour.merge</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_merge_search"/>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_merge_list" model="ir.ui.view">
+        <field name="name">tour.merge.list</field>
+        <field name="model">tour.merge</field>
+        <field name="arch" type="xml">
+            <list string="并团记录">
+                <field name="plan_id"/>
+                <field name="merge_type"/>
+                <field name="operator_id"/>
+                <field name="merge_date"/>
+                <field name="reg_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_merge_form" model="ir.ui.view">
+        <field name="name">tour.merge.form</field>
+        <field name="model">tour.merge</field>
+        <field name="arch" type="xml">
+            <form string="并团记录">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="merge_type"/>
+                        </group>
+                        <group>
+                            <field name="operator_id"/>
+                            <field name="merge_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reg_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="快照">
+                        <field name="before_snapshot"/>
+                        <field name="after_snapshot"/>
+                    </group>
+                    <group>
+                        <field name="remark"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>
