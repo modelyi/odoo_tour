@@ -71,11 +71,20 @@
 - **F4 `odoo.service.db` 整体消失**：20 只剩 `common/model/server`，
   `tour_saas` 加载期 `ModuleNotFoundError: No module named 'odoo.service.db'`（5 处引用）。
   → 维持计划 §7 的决定：**tour_saas 本期停用**，多租户 SaaS 化正式移出范围。
-- **F5 `hr.leave.type` 模型消失**：20 全树 0 引用，`hr_holidays` 重构后只剩
+- **F5 `hr.leave.type` 模型消失**：20 全树 0 引用（已复核：`addons/` + `odoo/` 全源 grep = 0 命中），
+  `hr_holidays` 重构后只剩
   `hr.leave` / `hr.leave.allocation` / `hr.leave.accrual.*` / `hr.leave.mandatory.day` 等。
   → Webkul 的 4 个模块（hr_payroll_community、hr_payroll_account_community、ohrms_loan*、
   ohrms_salary_advance）报 `TypeError: Model 'hr.leave.type' does not exist in registry`。
-  **在假勤重构映射确定前，这 7 个 OHRMS 模块无法评估工作量。**
+  **替代概念已查明（2026-09-22）**：20 的"请假类型"就是 `hr.work.entry.type`，
+  `hr.leave.work_entry_type_id`（20 `hr_holidays/models/hr_leave.py:167`）取代了 `holiday_status_id`，
+  类型上的策略字段（是否扣假/计薪/需批准）改挂在 work entry type 上。
+  这不是改名而是**语义重构**：19 的 `hr.leave.type` 上有 ~40 个字段与 3 个策略方法，
+  Webkul 那些模块引用的是"类型"这层业务对象，映射到 20 需要逐点决定"落到 work entry type"
+  还是"落到一个自建模型"。⇒ **OHRMS 假勤链的移植工作量在签字前不要估算**（G-loan 同）。
+  B1 gate 的实际影响已量化：20 个 tour_* 里**只有 `tour_hr`** 通过
+  `hr_resignation/ohrms_loan/hr_reward_warning/oh_employee_documents_expiry` 拉进这条链，
+  其余 19 个可以在空库上单独跑 gate（见 §5.7）。
 - **F6 前端与报表**：`publicWidget` 注册表已移除 → `tour_website_sale/tour_website_sale.js`
   （3 处）必须 OWL 重写；`tour_accounting` 的 6 个 JS 已是 `@odoo-module`，可平移。
   20 社区版 `account/report/` 仍**没有**总账/余额表 → 报表层必须保留（计划 §7 判定成立）。
@@ -316,7 +325,7 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
   `_tour_write_brand_name`：`search([], limit=1, order='sequence, id')`）。
 
 
-### 5.6 财务链路单测驱动测出的 19→20 语义变更（2026-09-22）
+### 5.6 单测驱动测出的 19→20 语义变更（两批：财务链路 + 资源/车队，2026-09-22）
 
 判据来源：`b1tour1`（20 空库装 19 个 tour_*，121 模块）**一次性跑 `--test-tags /tour_accounting`**。
 起点 78 测试 / 27 错，终态 **82 测试 / 0 错**。逐个错都是"实测出来的差异"，不是猜测：
@@ -335,8 +344,22 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 | 10 | `account.move.invoice_currency_id` | **字段没了**，统一用 `currency_id` | 同上，属 B2 映射表条目 |
 | 11 | — | `UPPER(jsonb)` 在 PG 里不存在 | `report_aged_partner.py` 的 `UPPER(res_partner.name)` **在 19 现网同样是死代码**（`name` 两侧都是 jsonb），是 Cybrosys fork 带进来的潜伏缺陷，只有单测打到它才暴露。已改成 `UPPER(coalesce(name->>'en_US', name #>> '{}'))`（该表达式在 19 现网数据上实测可跑）。**建议同步回 19 生产**：账龄分析 xlsx 只要走到这条 SQL 就会报错 |
 
+第二批判据来源：同一 `b1tour1` 跑 `--test-tags /tour_fleet,/tour_resource`（39 测试），
+起点 **32 错** → 修完两组语义变更后 **0 failed / 0 error of 39**。这一批暴露的是**财务链路之外**的问题：
+
+| # | 19 的行为 | 20 的行为（实测证据） | 影响与处置 |
+|---|---|---|---|
+| 12 | `BaseCommon` 用 admin 跑用例（19 `base/tests/common.py` 只有 `cls.env.user.group_ids += cls.get_default_groups()`，而 admin 本身已在全部组） | `BaseCommon` 声明 `_test_user_groups = ('base.group_user',)`（`odoo/addons/base/tests/common.py:18`），`_callSetUp` 把 `self.env` 重绑到一个**只有内部用户组的 Test User** | 表现为 32 个 `AccessError`（tour.guide/supplier/driver、resource.resource 的读写）。**这不是产品缺陷，是测试夹具变更**；但顺带暴露了真实事实：19 现网的 admin 是被**手工**加进 计调/导游管理/财务 三组的（`tour_accounting/security/security.xml:41,49` 还把 `user_root/user_admin` 加进两个会计组），所以"19 测试能过"依赖的是生产数据里的组关系 → **B2 必须把 `res_groups_users_rel` + `res_groups_implied_rel` 当迁移数据搬**，否则 20 上业务角色照常缺权。已按最小授权给三个测试类补 `_test_user_groups = ('base.group_user','tour_base.group_tour_manager','hr.group_hr_user')` |
+| 13 | `read_group(domain, fields, groupby, orderby=…, lazy=…)` → **`list[dict]`**（19 `orm/models.py:2749` 文档串里就写着 "Deprecated"） | `read_group` 与 `_read_group` **同形状**：`(domain, groupby=(), aggregates=(), having=(), order=…)` → **`list[tuple]`**（值序 = groupby 后接 aggregates，m2o 分组给 `id`、m2o 聚合给 `ids`；aggregates 必须带聚合函数 `'x:sum'`，裸名里**只有 `__count` 合法**（`'recordset'` 也得写成 `'x:recordset'`），否则 `ValueError: Aggregate method is mandatory for 'x'`，`orm/models.py:1931-1995 / 2086-2103`） | **本会话最高危**：`fields=`/`orderby=` 已不存在（关键字写法必 `TypeError`），但**位置写法不报错、只是数错**——第三个位置参数被当成 `aggregates`，`g['x_count']` 全部取不到。实测调用点 **19 处 = tour_\* 18 + Webkul 1**（tour_cmo_portal 9、tour_base/tour_dashboard 3、tour_resource/tour_guide 3、tour_product/tour_line 2、tour_pm_portal 1；Webkul 那处在 `hr_payroll_community/models/hr_employee.py`，等 payroll 范围决定）。tour_* 已全部改为 `_read_group(domain, groupby, aggregates)` 元组解包；`check_legacy_api.py` 加了 4 条**必须跨行匹配**的检测规则（19 关键字 `fields=/orderby=/lazy=` ／ aggregates 位是裸字段 ／ 结果按字符串 key 取值 ／ `<groupby>_count`），对照验证：未改树 31 条调用+取值命中、已改树 tour_* 归零（只剩 Webkul 那 1 处）。按行匹配曾在 18 个真实缺陷上报 **0**，这类"检查器说没事"比没检查更危险，故规则单独走 `_scan_read_group`。**20 规范写法**见 core：`Model._read_group(dom, ['field_id'], ['__count'])` + `for rec, count in ...` |
+| 13b | 同上，`tour_pm_portal/controllers/portal.py:172` 的分组串写成 `'month:begin_date'`，取值用 `item.get('begin_date:month')` | — | **19 现网潜伏缺陷**：键名写反，`get` 恒为缺失 → 项目经理门户的"月度趋势"**月份列一直为空**（数字也拿不到）。改 20 API 时顺手写成 `['begin_date:month']` + `order='begin_date:month asc'` 并保留注释。**建议同步回 19 生产**，别等 B3 |
+| 14 | `tour.line` 用 `_inherits` 委托 `product.template`；计调/经理账号在建线路、建项目时**依赖手工授予的管理员组** | 19/20 上游一致：`product.template` 的 create 只给 `product.group_product_manager`（19 csv 里 `access_product_template_user,…,base.group_user,1,0,0,0` = 只读；20 侧 product.template **唯一**的无组 `ir_access` 行是 `product.product_comp_rule` 多公司记录规则，不是授权），`project.project` 的 create 只给 `project.group_project_manager` | 空库 + 最小 Test User 跑出来的 **3 个 AccessError 全在这里**，与 19→20 无关（19 DB 里产品模型也没有任何 `group_id is null` 的授权行，已实测比对）。但它坐实了 #12：**"现网计调能新增线路"不是模块授权，是 admin 被手工加进了产品管理员/项目经理组**。⇒ ① `res_groups_users_rel` 属 B2 必搬数据；② 20 的授权矩阵要么补一条 product/project create 给 tour 经理组（业务签字，属功能变更），要么在切换后由管理员重新手工加组 —— 二者都必须在 runbook 里有名字，否则切过去就是"线路不能新建"这种看起来像迁移事故的现象。测试夹具已按上游事实补 `product.group_product_manager` / `project.group_project_manager` 并注明理由 |
+
 结论：**"财务先做"是对的**——这一串里 5/6/7/9/10/11 都只有真跑单测才看得见，静态 diff（§5.4）看不见，
 它们分别落在 ETL 判据、权限决定和报表可用性上，越晚发现越贵。
+第二批（#12/#13）进一步说明：**只测财务不够**。#13 是"静默数错"型，18 处分散在门户看板和 dashboard 计算字段里，
+单测只覆盖了其中 4 处，其余靠静态检查器全仓扫；#12 则把"19 测试为什么能过"这个隐含前提
+（生产库里 admin 的手工组关系）暴露成一条 **B2 迁移数据规则**。
+#14 是这条规则的第二次独立命中：产品/项目创建权限同样靠手工组，且**必须落成签字决定**，不能只当测试夹具问题改掉。
 
 
 ## 6. 11 个「20 社区版已删除」的官方模块

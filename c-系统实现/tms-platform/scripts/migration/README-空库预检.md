@@ -16,8 +16,12 @@
 | `check_xmlid_order.py` | xid 引用顺序 / 环 / 无 `name` 的 menu | `External ID not found`、`null value in column "name"` |
 | `check_model_refs.py` | XML 里的模型名是否还存在 | `Model not found: xxx` |
 | `check_field_refs.py` | XML `<field name>` 是否是真实字段 | `Invalid field 'xxx' in 'yyy'` |
-| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法 | registry 建模期 `AttributeError`（连数据都装不到） |
+| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法 + **服务端 QWeb 模板**的已删指令 | registry 建模期 `AttributeError`（连数据都装不到）／模板内容静默不渲染 |
 | `check_view_xpaths.py` | 视图继承的 `<xpath expr>` 锚点是否还在 | `Element '<xpath …>' cannot be located in parent view` |
+
+`check_legacy_api.py` 里的 `read_group` 四条规则**不能按行匹配**（真实调用几乎都是跨行的），
+单独走 `_scan_read_group`；对照实测：未改的 19 树命中 19 个调用点 + 47 处取值，
+改完的 20 适配树 tour_* 归零。详见 TDS-30 §5.6 第 13 行。
 
 三个 XML 检查器在 `/tmp/b0/b1addons`（40 模块 / 299 个 XML）上跑出来 **0 命中**，
 即 tour_* 的 XML 层已全清；剩余命中全在 Webkul（`hr.leave.type`、`report_file`）。
@@ -75,6 +79,17 @@ python3 scripts/migration/security_19to20/check_domains.py \
   而真机 `-i` 装过了 —— 因为 20 的 `div#footer` 挂在 `<body>` 下、`<footer>` 元素在别处。
   反过来 `website.contactus` 那两个锚点是真死了（安装当场炸）。所以：默认不计失败，
   候选清单交给"能不能换成不依赖容器元素的锚"这道人工判断。
+* **`t-esc` / `t-raw` 在 20 的服务端 QWeb 里已经没有了，而且不报错**。19 的
+  `_compile_directive_esc`/`_compile_directive_raw`（19 `ir_qweb.py:2487/2497`）在 20 全文找不到，
+  指令分发是 `getattr(self, "_compile_directive_%s")`（20 `:1924`）→ 取不到就跳过，
+  只在 `:2031` 打一条 "Unknown directives or unused attributes" 警告，**那块内容直接消失**。
+  所以这一类和 `read_group` 一样是"静默型"，只能靠静态扫。规则**必须排除 `static/` 目录**：
+  OWL 的 JS 模板编译器仍支持 `t-esc`（20 core 剩下的 3 处 `t-esc` 全在 `static/src/**.xml`）。
+  `t-esc`→`t-out` 等价（都转义）可机械替换；`t-raw` 不等价（`t-out` 只在值是 Markup 时不转义），
+  只有"填空槽位"惯用法 `t-raw="0"` 可以机械换成 `t-out="0"`，其余必须人工判。
+* 静态规则的**误报要显式承认**：`read_group` 规则会命中写在文档串里的 19 写法示例
+  （我们自己的 `tests/test_tour_line_counts.py` 第 4 行就命中一次）。不改成 AST 级过滤是
+  有意的——"把命中过滤掉"比"保留一条可解释的噪音"更危险（见 TDS-30 §5.6 第 13 行的教训）。
 
 ## 实测到的缺陷数量（19 源码 → 20 空库）
 
@@ -89,3 +104,10 @@ python3 scripts/migration/security_19to20/check_domains.py \
 * 真被 20 删掉的字段：`ir.actions.report.report_file`（tour_accounting 19 处 / 5 文件）。
 * 消失的核心 xid menu：`account.root_payment_menu`、`account.account_logs_menu`、
   `account_payment.*_menu`、`hr_expense.menu_hr_expense_account_employee_expenses`。
+* 服务端 QWeb 已删指令（`check_legacy_api.py` 全树 37 个模块）：**`t-esc` 440 处**
+  （tour_* 418 / 其余 22）+ **`t-raw="0"` 2 处**（tour_guide_portal、tour_pm_portal 各 1），
+  非 0 的 `t-raw` **0 处** —— 也就是说这一大片的转换是纯机械等价的。
+  已适配树（`/tmp/b0/b1addons`）现在 `t-esc`/`t-raw` **归零**。
+* `read_group` 回归网：`tour_fleet + tour_resource + tour_product` 三模块
+  **47 个用例 0 failed 0 error**（2026-09-22，`/tmp/b0/rg_tests_4.log`）。里面 8 个是本轮新增的
+  "非零分组"用例（每条都配 `search_count` 交叉核对），专打 20 那个"位置写反不报错只数错"的变更。
