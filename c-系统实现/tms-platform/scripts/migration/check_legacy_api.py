@@ -51,13 +51,20 @@ PATTERNS = [
     ('SQL.code/.params',
      re.compile(r'\b(from_sql|where_sql|from_clause|where_clause)\.(code|params)\b'),
      False, None),
+    # portal 的 `pager()`（真名 `odoo.addons.portal.controllers.portal.pager`）返回字典
+    # **两版都没有 `limit` 键**（实测 19/20 的返回体只有 page_count / offset / page /
+    # page_first / page_previous / page_next / page_last）。`pager['limit']` 不是 19→20
+    # 变更，是 19 现网潜伏缺陷（`KeyError: 'limit'` 直接 500）；页长本来就是调用方自己
+    # 传进去的 `step=`，所以正确写法是用那个常量，不是从返回值里取。
+    ('portal pager 无 limit 键(19/20 同)',
+     re.compile(r'''\bpager\[\s*['"]limit['"]\s*\]'''), False, None),
     # 20 换了 read_group / _read_group 的**签名和返回**（两者同形状，只差 m2o 后处理）：
     #   19: read_group(domain, fields, groupby, offset, limit, orderby, lazy) -> list[dict]
     #   20: read_group(domain, groupby, aggregates, having, offset, limit, order) -> list[tuple]
     # 位置参数从第 2 个起就对调，且 20 的 aggregates 必须带聚合函数（`f:sum`，裸名只有 `__count`，
     # `orm/models.py:2086-2103`）。危险在于**多数情况下不报错、只是数错**。
-    # 这三条**必须跨行匹配**（真实调用几乎都是 `read_group(\n domain,\n ['f'],\n ['f'])`），
-    # 所以不在 PATTERNS 里，见 `_scan_read_group`（按行扫曾在 18 个真实缺陷上报 0，实测踩到）。
+    # 这几条**必须跨行匹配**（真实调用几乎都是 `read_group(\n domain,\n ['f'],\n ['f'])`），
+    # 所以不在上表里，见 `_scan_read_group`（按行扫曾在 18 个真实缺陷上报 0，实测踩到）。
 ]
 
 
@@ -315,10 +322,26 @@ def py_files(mod_dir):
 #
 # `t-esc` → `t-out` 是**等价替换**（两者都转义）；`t-raw` 不是（`t-out` 只在值是
 # Markup 时不转义），所以只有 `t-raw="0"` 这个"填空槽位"惯用法可以机械替换。
+# 下面三条**不是 19→20 变更**，而是"19 现网同样会炸、只是没人访问到"的潜伏缺陷：
+# 两条规则都经实测在 19 与 20 的 `ir_qweb.py` 里字节级等价（19 `:2532/:2550`、
+# 20 `:2640/:2658`），所以放在这里一起扫，好处是**同一份补丁两版都能回落**。
+#
+#   * `<div t-call="…">` —— 两版都 `raise SyntaxError("t-call must be on a <t> element")`。
+#     正则要求 `<tag` 与 `t-call=` 之间不出现引号，避免把
+#     `<xpath expr="//t[@t-call='…']"` 这种继承定位误报成违规。
+#   * `context_today()` 出现在 **`t-att-*` 表达式**里 —— 服务端 QWeb 的渲染上下文
+#     （19 `ir_qweb.py:1303-1327` / 20 `:1373-1397`）两版都**不注入** `context_today`，
+#     运行时 `KeyError`。而后端表单视图的 `domain="[('x','=',context_today()…)]"`
+#     走的是客户端 `expression_eval_context`（`tools/view_validation.py:27` 白名单里有），
+#     合法。所以只用 `t-att-` 前缀做判据。
 QWEB_XML_PATTERNS = [
     ('qweb t-esc(19)', re.compile(r'\bt-esc\s*='), True, 't-out='),
     ('qweb t-raw=0(19)', re.compile(r'\bt-raw="0"'), True, 't-out="0"'),
     ('qweb t-raw(19)', re.compile(r'\bt-raw\s*=(?!\s*"0")'), False, None),
+    ('qweb t-call 非 <t> 元素(19/20 同)',
+     re.compile(r'<(?!(?:t|t:)[\s/>])[\w.:_-]+(?:\s+[^<>"\']*)?\bt-call\s*='), False, None),
+    ('qweb t-att 里 context_today(19/20 同)',
+     re.compile(r'\bt-att-[\w.:_-]+\s*=\s*"[^"]*\bcontext_today\s*\('), False, None),
 ]
 
 
@@ -328,6 +351,38 @@ def xml_files(mod_dir):
             continue
         for fn in sorted(fns):
             if fn.endswith('.xml'):
+                yield os.path.join(dp, fn)
+
+
+# 前端 JS（`static/src/**/*.js`）：20 **整层删掉了 `web.public.widget`**，实测
+# `addons/web/static/src/` 全树已无 `public.widget`（19 还留着 legacy 层）。
+# 后果和 `t-esc` 那类一样是"不报错、只是不工作"，但更隐蔽：
+# Python 装载期不 import JS，页面 HTTP 状态码也照样 200，**只有浏览器控制台看得见**，
+# 所以装载全绿 + 冒烟 0 个 500 都不能证明前端没坏 —— 必须单独静态扫。
+# `odoo.define(...)` 是旧的 AMD 包装，20 全面改成 ES module（`import`/`export`）。
+# 移植说明本身会提到这些旧名字，所以扫描前先剥掉 `//` 行注释（`://` 里的斜杠不算注释；
+# 块注释 `/* */` 未处理 —— 别把命中写在块注释里）。
+JS_PATTERNS = [
+    ('js web.public.widget(20 已删)',
+     re.compile(r"""['"]web\.public\.widget['"]|\bpublicWidget\b"""), False, None),
+    ('js odoo.define AMD 包装(20 已改 ES module)',
+     re.compile(r'\bodoo\.define\('), False, None),
+    ('js 旧 jQuery 插件式 $.fn',
+     re.compile(r'\bjQuery\.fn\.|\$\.fn\.'), False, None),
+]
+
+
+JS_LINE_COMMENT = re.compile(r'(?<!:)//.*')
+
+
+def js_files(mod_dir):
+    for dp, dn, fns in os.walk(mod_dir):
+        if '__pycache__' in dp or '.git' in dp or os.sep + 'tests' in dp:
+            continue
+        if 'static' + os.sep not in dp + os.sep:
+            continue
+        for fn in sorted(fns):
+            if fn.endswith('.js'):
                 yield os.path.join(dp, fn)
 
 
@@ -397,6 +452,22 @@ def main(argv):
                 if new != src:
                     open(path, 'w', encoding='utf-8').write(new)
                     changed_files += 1
+
+        # 前端 JS（static/src/**/*.js）：装载与 HTTP 冒烟都看不见这一类，只能静态扫。
+        # 三条规则都不是零风险机械替换（改法取决于组件怎么写），所以 --apply 不动 JS。
+        for path in js_files(os.path.join(addons, mod)):
+            src = open(path, encoding='utf-8').read()
+            hits = [(i, name, line.rstrip())
+                    for i, line in enumerate(src.splitlines(True), 1)
+                    for name, rx, auto, repl in JS_PATTERNS
+                    if rx.search(JS_LINE_COMMENT.sub('', line))]
+            if not hits:
+                continue
+            for _, name, _l in hits:
+                total[name] = total.get(name, 0) + 1
+            print('%s/%s' % (mod, os.path.relpath(path, os.path.join(addons, mod))))
+            for i, name, line in hits:
+                print('    %4d  %-18s %s' % (i, name, line.strip()[:110]))
 
     print('---- 合计（模块 %d 个）----' % len(mods))
     for name in sorted(total):

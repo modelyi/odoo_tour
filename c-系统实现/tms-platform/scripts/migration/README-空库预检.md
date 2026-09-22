@@ -1,6 +1,6 @@
 # 空库装载预检：B1 静态检查器清单
 
-## 为什么要这三个脚本
+## 为什么要这些脚本
 
 19 现网库是十几年 `-u` 增量演化出来的，很多**坏数据从来没被暴露过**：
 前向引用（文件 A 引用的 xid 由后面才装载的文件 B 定义）、`ir.ui.menu` 只挂父不带
@@ -9,14 +9,14 @@
 
 如果只靠"装一次报一个错、改一个再装一次"，每个缺陷一轮 1–3 分钟，且报错点往往离
 真实原因很远（converter 会吞掉内层异常，要 `--log-handler odoo.tools.convert:DEBUG`
-才看得见）。三个静态检查器把这件事从"逐个试错"变成"一次列全"：
+才看得见）。这些静态检查器把这件事从"逐个试错"变成"一次列全"：
 
 | 脚本 | 检查什么 | 空库装载后果 |
 |---|---|---|
 | `check_xmlid_order.py` | xid 引用顺序 / 环 / 无 `name` 的 menu | `External ID not found`、`null value in column "name"` |
 | `check_model_refs.py` | XML 里的模型名是否还存在 | `Model not found: xxx` |
 | `check_field_refs.py` | XML `<field name>` 是否是真实字段 | `Invalid field 'xxx' in 'yyy'` |
-| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法（含 `odoo.http` 导出收缩）+ **服务端 QWeb 模板**的已删指令 | registry 建模期 `AttributeError`（连数据都装不到）／`ImportError` 装不上／模板内容静默不渲染 |
+| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法（含 `odoo.http` 导出收缩）+ **服务端 QWeb 模板**的已删指令 + **前端 JS**（`static/src/**/*.js`）里 20 已删的注册表 | registry 建模期 `AttributeError`（连数据都装不到）／`ImportError` 装不上／模板内容静默不渲染／**JS 那一段装载和 HTTP 状态码都不报，只有浏览器控制台看得见** |
 | `check_view_xpaths.py` | 视图继承的 `<xpath expr>` 锚点是否还在 | `Element '<xpath …>' cannot be located in parent view` |
 
 `check_legacy_api.py` 里的 `read_group` 四条规则**不能按行匹配**（真实调用几乎都是跨行的），
@@ -120,6 +120,32 @@ python3 scripts/migration/security_19to20/check_domains.py \
 * `odoo.http` 导出收缩：19 生产树 **2 处**（同一个文件
   `tour_accounting/controllers/statement_report.py`：24 行 `from odoo.http import content_disposition`
   装不上，47 行 `http.serialize_exception` 只在 xlsx 下载报错时才走到）；已适配树 **0 处**。
+* 前端 JS（`static/src/**/*.js`，两版树各 **30 个文件**）：20 **整层删掉了 `web.public.widget`**
+  （实测 `odoo20/addons/web/static/src/` 全树已无该符号，19 还留着 legacy 层），`odoo.define()`
+  的 AMD 包装也全面改成 ES module。19 生产树命中 **3 处、集中在一个文件**
+  `tour_website_sale/static/src/js/tour_website_sale.js`（1 × `odoo.define` + 2 × `publicWidget`）；
+  已适配树 **0 处**（该文件已重写为普通 ES 模块，`node --check` 通过）。
+  **这一类装载全绿和冒烟 0 个 500 都不能证明没坏** —— JS 不被 Python import，页面状态码照样 200，
+  所以必须靠静态扫；代价是它只证明"旧写法没了"，**新写法是否真的能点动还得在浏览器里核**（B1 待办）。
 * **Gate B1 全装判据（权威）**：`b1gate4` 空库 `-i` 19 个 tour_*（+ `purchase`）→
   **125 模块 / `Modules loaded.` / `0 failed, 0 error(s) of 129 tests`**，
   `tour_hr` 是唯一未装（F5 的 `hr.leave.type`）。逐条 WARNING 定性和复现命令见 TDS-30 §5.7。
+  门户修复之后又在全新库 `b1gate5` 重跑一次，逐项相同（`/tmp/b0/gate_b1_5.log`）→
+  说明这轮的模板/控制器改动没有动坏装载面。
+
+* 门户运行时冒烟（装载 + 单测都不覆盖 `type='http'` 的控制器）：首轮
+  `15×200 / 29×500 / 50 Traceback`，修完 4 类后 **`44×200 / 0 traceback / 0 ERROR`**，
+  剩余非 200 全是"探针用的 `id=1` 不存在"和 1 个正确的 403。
+  **假绿陷阱**：20 的 `/web/login` POST 不带 `csrf_token` 就 `login=400`，此时所有探针都在匿名会话上，
+  而每个门户控制器都渲染自家 "No Access" 模板 —— 0 个 500 什么都不证明。
+  所以测试账号必须①真登录 ②逐个显式授予门户组（`group in user.group_ids` 只认显式成员）
+  ③有 `partner_id` 对得上的 `tour.guide` 记录。详见 TDS-30 §5.8。
+
+* 冒烟顺带查出的 **19 现网潜伏缺陷**（两版核心代码逐字等价，不是 delta）：
+  `<div t-call="portal.pager"/>` **14 处**（在 19 生产库上实测渲染 → 同样 `SyntaxError`，
+  即这 14 个门户列表页今天就 500）、`t-att-*` 里的 `context_today()` **1 处**
+  （服务端 QWeb 的注入名单两版都没有它）、`pager['limit']` **3 处**
+  （`pager()` 的返回字典两版都没有 `limit`）。三条修法都是**两版等价**，可原样回落 19。
+  `check_legacy_api.py` 新增 3 条规则（`t-call` 非 `<t>`、`t-att` 里 `context_today`、`pager['limit']`）：
+  19 生产树报 **14 + 1 + 3**，已适配树报 **0**。
+

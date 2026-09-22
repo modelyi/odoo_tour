@@ -406,16 +406,78 @@ WARNING 分类（125 模块全装一轮，共 17 类；逐类定性，不靠"看
 | 32 | `tour.plan.account: inconsistent 'compute_sudo' / 'store' for computed fields` | **19 同源**（`odoo/orm/registry.py:557,574` 两版都有）→ 非 delta，是既有代码味道：同模型内 compute 字段的 `store`/`compute_sudo` 不一致。归 B1 收尾的清理清单，不阻塞 gate |
 | 63 | `Translated stored related field (res.company.name / res.partner.commercial_company_name / project.task.partner_name / partner_company_name) will not be computed correctly` | **20 新增校验**（`odoo/orm/fields_textual.py:53`），但报的 4 个字段**全在上游自己的定义上**（19 的 `res.company.name` 同样是 `related='partner_id.name', store=True`），tour_* 无一重声明 → 接受为上游噪音，不动 core |
 | 18 | `Index attribute on 'res.partner.name' ignored, only trigram index…` | 上游字段、19 同源（`registry.py:863` vs 19 `:557+`）→ 噪音 |
-| 6 | `Model attribute '_sql_constraints' is no longer supported, please define models.Constraint` | **20 新弃用**：还能用（约束照样建），但要迁。tour_* 仅 3 个文件用到（`tour_accounting/models/account_period.py`、`tour_base/models/tour_bank_account.py`、`tour_fleet/models/fleet_vehicle.py`），而 `models.Constraint` 我们已在 `tour_accounting` 里用了 7 处 → 有现成范式，属**低风险收尾项**，且 `Constraint` 是 20-only，不能回落到 19 |
-| 6 | `Two fields (plan_class, plan_category) of tour.plan() have the same label` | 真重复（另有 `note`/`dunning_id`），改 label 即可，B1 收尾 |
-| 4 | `tour.plan.account.report_from_type: selection attribute will be ignored as the field is not a selection` | 真死属性（字段已改类型但留着 `selection=`），删即可 |
-| 3 | `Field tour.account.period.state: unknown parameter 'tracking'` | 真无效参数（该字段类型不支持 `tracking`）→ 该字段**不会**进变更历史，需业务确认是否本来就想要 |
+| 6 | `Model attribute '_sql_constraints' is no longer supported, please define models.Constraint` | **20 新弃用**：还能用（约束照样建），但要迁。tour_* 仅 3 个文件用到（`tour_accounting/models/account_period.py`、`tour_base/models/tour_bank_account.py`、`tour_fleet/models/fleet_vehicle.py`），而 `models.Constraint` 我们已在 `tour_accounting` 里用了 7 处 → 有现成范式，属**低风险收尾项**，且 `Constraint` 是 20-only，不能回落到 19。**已迁**：三个约束改为 `_uniq_code` / `_uniq_acc_number` / `_uniq_licence`，实测目标库里约束以新名字存在（`tour_account_period_uniq_code`、`tour_bank_account_uniq_acc_number`、`fleet_vehicle_uniq_licence`），旧名字已消失 → **行为等价、约束名变了**，B2 ETL 报错文本按新名字认 |
+| 6 | `Two fields (plan_class, plan_category) of tour.plan() have the same label` | **已修**。实测两者不是同一件事：`plan_category` 是按业务模式自动归类的 Selection（现网 regular 59139 / fit 23372 / booking 4410 / independent 6），`plan_class` 是源系统原文 Char（散客 730 / 团队 33 / 购物 4 / 单订 1，其余 86157 行为空）→ 把 `plan_class` 的 label 改成「源系统分类」并加 help，**不动数据也不动 `plan_category`**。同样的 label 也出现在 `tour.plan.reg`，一并改 |
+| 2 | `Two fields (note, dunning_id) of tour.dunning.action() have the same label: 催收记录` | **已修**：`dunning_id`（m2o 指向 `tour.dunning`）改叫「催收单」，`note` 保留「催收记录」 |
+| 4 | `tour.plan.account.report_from_type: selection attribute will be ignored as the field is not a selection` | **已修**：该字段是 `related='plan_id.from_type'`，`selection=` 死属性（取值由被关系字段决定）→ 删列表，装/升两轮实测字段仍可选、无新 WARNING |
+| 3 | `Field tour.account.period.state: unknown parameter 'tracking'` | **已修，且是 19 同源**：`tour.account.period` 不是 mail thread 模型，`tracking=True` 在两版都不生效（20 只是开始报 WARNING）→ 直接删参数。**不存在"丢了变更历史"的问题**（19 从来没有过） |
 | 2 | `Missing not-null constraint on project.task.resource_type` | 见 #16，非 delta 但产生 B2 判据 |
 | 3 | `Error-prone use of @class in view header_contact_info` | 19 同源（`ir_ui_view.py:416/430`）→ 既有 |
 | 1 | `tour_website` 一处 RST docstring「Title underline too short」；1 处 `markdown is not installed` | 前者纯文档；后者 **19 容器同样没装 `markdown`** → 非 delta，但 20 的 mail 更多走 markdown 渲染，记进 `Dockerfile.odoo` 的 pin 待办（A0-5 同一处） |
 
 **与 §7 计划的差异**：计划写的是"tour_* 21 个去掉 tour_saas"。实测口径是 **20 个 tour_ 前缀模块**（`tour_saas` 不在适配树内，`tour_hr` 被 F5 挡住），
 且必须带上 `purchase` 才能覆盖 19 现网的模块面。这条差异本身要写进 B1 签字页。
+
+**复测（§5.8 的门户修复之后）**：门户修复后又跑了**两次**全新库 ——
+`b1gate5`（只含 §5.8 的模板/控制器修复）与 `b1gate6`（再加 §5.7 表里那 4 类 WARNING 的清理），
+逐项与权威列相同：125 模块 / `Modules loaded.` / **`0 failed, 0 error(s) of 129 tests`** / `tour_hr` 仍未装
+（日志 `/tmp/b0/gate_b1_5.log`、`/tmp/b0/gate_b1_6.log`）。
+⇒ 这些修复**没有把装载面改坏**，这条是本节作为 gate 判据的自洽性检查；
+B1 签字页引用 `gate_b1_6`（最新一次全装 + 单测），`gate_b1_4` 作为首次达成记录保留。
+
+
+### 5.8 第三段判据：门户运行时冒烟（2026-09-22）+ 顺带查出的 19 现网潜伏缺陷
+
+装载全绿 + 单测 0 失败，**仍不等于门户可用**：tour_* 的门户页面是 `type='http'` 的控制器 +
+服务端 QWeb，单测里一条都没覆盖（19 现网总共只有 17 个单测）。所以在 `b1gate4` 上起 28169 服务，
+登录一个真实账号，把 `tour_*/controllers/**` 里所有 GET 路由逐个 curl。
+
+**方法论（否则必得假绿）**：① 20 的 `/web/login` POST **必须带 csrf_token**（从登录页抓），
+否则 `login=400`、所有探针都落在匿名会话上；② 门户组的判定是
+`group in request.env.user.group_ids`，**只认显式成员**（implied 组不算），所以测试账号要逐个
+授予 5 个门户组；③ 导游门户靠 `tour.guide.partner_id == user.partner_id` 认身份，
+没有这条记录时每个控制器都渲染自家 "No Access" 模板 —— **0 个 500 是假绿**。
+首轮诚实结果：`15×200 / 29×500 / 50 个 Traceback`。
+
+修完四类后：`44×200 / 0 traceback / 0 ERROR`；剩余非 200 全部是"探针用的 `id=1` 记录不存在"
+（404，属数据）和 1 个 403（`/my/guide/dispatches/1` 越权保护，属**正确行为**）。
+
+| # | 现象 | 实测证据 | 定性与处置 |
+|---|---|---|---|
+| 18 | `/my/{cfo,coo,guide,tourist}/*` 列表页 500：`QWebError: SyntaxError: t-call must be on a <t> element (actually on <div>)` | 抛点在 19 `ir_qweb.py:2550` 与 20 `:2658`，**两版逐字相同**；源码树里 `<div t-call="portal.pager"/>` **14 处**（tour_guide 4 / tour_coo 4 / tour_cfo 3 / tour_tourist 3）。**19 现网实测**：`odoo shell -d tms` 里 `env['ir.qweb']._render(生产 view id)` → 同样 `SyntaxError`，命中 14 个生产视图（4208/4210/4211、4223/4224/4225/4226、4196/4198/4200/4202、4231/4233/4235） | **不是 19→20 delta，是 19 现网今天就坏的潜伏缺陷**：这些门户列表页一旦渲染就 500。⇒ 已改 `<t t-call>`（双兼容，可原样回落 19），并给 `check_legacy_api.py` 加规则（正则要求 `<tag` 与 `t-call=` 之间无引号，避开 `<xpath expr="//t[@t-call=…]">` 误报）。19 树报 14、适配树报 0。**这类缺陷列级 diff、装载、单测三层都看不见，只有渲染看得见** |
+| 19 | `/my/guide/expenses/new` 500：`KeyError: 'context_today'`（编译后的模板行里抛，view 2694 = `tour_guide_portal.portal_expense_new`） | 服务端 QWeb 的注入名单 19 `ir_qweb.py:1303-1327` / 20 `:1373-1397` **两版都没有 `context_today`**（有 `time/datetime/relativedelta/json/env/user_id/…`）；`context_today` 只出现在 `tools/view_validation.py:27` 的**客户端表达式白名单**里 | 同类 **19 潜伏缺陷**。修法分面：`t-att-*` 表达式里 → 改 `datetime.date.today()`；后端表单 `domain="[('x','=',context_today()…)]"` → **合法不动**（Webkul `oh_employee_documents_expiry` 那 3 处一度被我批量替换掉，已回退）。规则判据因此只用 `t-att-` 前缀 |
+| 20 | `/my/cfo/{expenses,commissions,loans}` 500：`KeyError: 'limit'` | 真符号是 `portal.controllers.portal.pager`（**没有 `portal_pager` 这个东西**），其返回字典 19/20 都只有 `page_count/offset/page/page_first/page_previous/page_next/page_last`，**无 `limit`**；同仓其余门户模块本来就写 `pager['offset'] + 20` | 同类 **19 潜伏缺陷**，3 处已改成 `+ 20`；`check_legacy_api.py` 加 `pager['limit']` 规则（不可机械替换，页长是调用方自己传的 `step=`） |
+| 21 | `/my/coo`、`/my/coo/dispatches` 500：`TypeError: PortalGuide._get_dispatch_domain() missing 1 required positional argument: 'guide'` —— 调用点在**另一个模块** `tour_coo_portal/controllers/portal.py:73` | 20 的 `routing_map.py:268-279` 与 19 的 `http.py:887-899` 的 `build_controllers()` **逐字相同**：所有从 `CustomerPortal` 派生的控制器被 `type(name, tuple(reversed(leaf_controllers)), {})` **合并成一个类**。于是 `tour_guide_portal.PortalGuide._get_dispatch_domain(self, guide)` 遮蔽了 `tour_coo_portal.PortalCOO._get_dispatch_domain(self)` | **架构事实，两版一致**（19 同样会中，只是没人访问 `/my/coo`）。规则：门户控制器的私有 helper **必须带模块前缀**（已把 COO 侧改名 `_get_coo_dispatch_domain`）。顺手做了跨模块重名扫描（AST，`tour_*/controllers/*.py`）：修完只剩 `_int`（两模块各自私有）和 `_prepare_home_portal_values`（靠 `super()` 链，是设计用法）→ 这条扫描要进 B1 收尾清单 |
+| 22 | `/tours`（官网线路列表）500：`ValueError: Cannot convert product.category.complete_name to SQL because it is not stored` | 19：`complete_name = …, store=True, recursive=True` + `_order = 'complete_name'`；20：`compute=…, search='_search_complete_name', recursive=True`，**没有 `store=True`**，`_order` 改成 `'parent_id desc, name asc'`（`product/models/product_category.py`）。列还在，**所以 §5.4 的列级 diff 完全看不见** | 真 19→20 delta，且只在运行时暴露。已删掉控制器里的 `order='complete_name'`，交给模型默认 `_order`（两版都能排出可接受的顺序）。⇒ 加进 B2 规则：**任何 `order=`／裸 SQL 都不能引用下面这 15 个字段** |
+| 23 | — | 由 #22 造出第二台"列级 diff 之外的探测器"：比对两侧 `ir_model_fields.store`（19 现网 vs 20 空库），取"字段仍在 20 存在但 store 由 true→false"，再排除 o2m/m2m 与噪音 | **15 个真业务字段翻成非存储**：`product.category.complete_name`、`res.company.expense_account_id`、`res.company.income_account_id`、`res.partner.global_location_number`、`account.report.active`、`hr.resume.line.department_id`、`hr.version.departure_date/departure_description/departure_reason_id`、`iap.account.balance`、`product.pricelist.item.price_markup`、`res.device.browser/device_type/platform`、`website.menu.url`。前三个直接命中我们的报表 SQL 与按公司筛科目的写法 → 写进 §8 的 B2 判据（ETL 侧同理：这些列不在表上，`INSERT/SELECT` 带它们必错） |
+
+**这批"只有渲染才看得见"的缺陷有三条（#18/#19/#20）在 19 现网同样是坏的**，
+所以修法都选了两版等价写法（`<t t-call>`／`datetime.date.today()`／`+ 20`），**可以原样回落到 19 分支**，
+不必等 B3；回落与否是业务决定（见 §12 的待签字清单），但它们今天的 500 是真的。
+
+**同一轮还顺手清掉了 §5.7 表里的 4 类 WARNING**（都在 `-u` + 全新库 `-i` 两轮实测归零）：
+字段同名 label（`plan_class`→「源系统分类」，实测它与 `plan_category` 本来就不是同一件事：
+现网 `plan_class` 只有 散客730/团队33/购物4/单订1，其余 86157 行为空，而 `plan_category` 是自动归类的
+regular/fit/booking/independent）、`dunning_id`→「催收单」、`report_from_type` 的死 `selection=`、
+`tour.account.period.state` 的死 `tracking=`（**该模型没有 mail thread，两版都不生效**，
+所以"删参数"不丢功能）、`_sql_constraints` → `models.Constraint` ×3
+（**约束名随属性名变**：`tour_account_period_uniq_code` / `tour_bank_account_uniq_acc_number` /
+`fleet_vehicle_uniq_licence`，旧的 `code_unique`/`acc_number_uniq`/`unique_licence` 已不在库里
+→ B2 ETL 撞唯一键时的报错文本按新名字认）。
+门户 `<title>` 露 xmlid 的根因也查明：**`tour_guide_portal` 的 12 个模板从来没写 `name=`**，
+`ir_ui_view.name` 因此回落成 xmlid（19 生产库里实测同样是 `portal_guide_home`，**非 delta**）→ 补中文名。
+清理后重跑全新库 `b1gate6`：**125 模块 / `Modules loaded.` / `0 failed, 0 error(s) of 129 tests`**，
+剩余 WARNING 全是 §5.7 定性过的"上游同源噪音 + `compute_sudo` 代码味道"两类。
+
+**判据还差第四段（浏览器）**：门户冒烟探针只看 HTTP 状态码，而 20 删掉 `web.public.widget`
+之后，前端坏掉**不影响状态码**（JS 不被 Python import，页面照样 200）。所以给
+`check_legacy_api.py` 加了第三个分支（`.py` → 服务端 `.xml` → `static/src/**/*.js`，
+两条规则：`web.public.widget`/`publicWidget`、`odoo.define(`，另加 `$.fn.` 旧 jQuery 插件式）。
+实测：**两版树各 30 个前端 JS 文件**，19 生产树命中 **3 处、全在
+`tour_website_sale/static/src/js/tour_website_sale.js`**（1 × `odoo.define` + 2 × `publicWidget`），
+已适配树 **0 处**（该文件已重写为普通 ES 模块）。但这只能证明"旧写法没了"，
+**不能证明新写法能点动** —— 预订页的人数→预估合计要在浏览器里核（需一个已发布产品 +
+`tour.departure` 行），这项挂在必签字的 B1 收尾清单上，不算已验。
 
 
 ## 6. 11 个「20 社区版已删除」的官方模块
