@@ -249,3 +249,30 @@ python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --also-custom-gr
    另一个未处理项：`owner20` 参考库（`b0snap20`）只装了官方依赖闭包，
    它没有的模型会回落到 19 归属 —— 对 tour_* 自有模型正确，对"20 里换了归属的官方模型"
    会算错（本轮 7 行失败即此类），所以 `--target-models` 是**必需**而非可选。
+
+## 规则域在 20 是装载期校验（`check_domains.py`，实测 2026-09-22）
+
+19 的 `ir.rule.domain_force` 装载期**不求值**，写错的字段名可以躺平几年；20 的 `ir.access`
+CSV 装载期就用真实 registry 求值域，一个坏域让**整批授权行装载失败**，表现是
+`Invalid domain [...]: Invalid field tour.plan.reg.partner_id` 加一句
+`Module loading tour_accounting failed`。本目录的 `check_domains.py` 做静态预检：
+
+```bash
+# 目标库字段目录（含 relation，用于点号跳）
+docker exec odoo20-db psql -U odoo -d b1tour1 -AtF'|' -c \
+  "select m.model, f.name, coalesce(f.relation,'') from ir_model_fields f join ir_model m on m.id=f.model_id" \
+  > /tmp/b0/sec20/fields_b1tour1.psv
+python3 check_domains.py <dir>/security/ir.access.csv --fields /tmp/b0/sec20/fields_b1tour1.psv [--split]
+```
+
+* 域用 `ast.parse(mode='eval')` + `ast.walk` 抽三元组，**从不 eval** 域文本。
+* `--split` 把坏行隔离到 `<csv>.baddomains.csv`（先 `.bak`），好行留原文件，便于逐条定性。
+* **判读**：坏域有两类，处置完全不同 ——
+  (a) 字段在 20 真没了 → 删或改域；
+  (b) 字段由**非依赖模块**追加（本轮：`tour.plan.reg.partner_id` 由 `tour_website` 加，
+      而授权行在 `tour_accounting`）→ 装载期 registry 里没有它，必须把这一行移到
+      "依赖两边"的桥接模块（本轮 scratch 里新建 `tour_sec_bridge7` 只装这一行）。
+  这类不是死域，是**装载顺序问题**，所以 (b) 的成立前提是"该模块单独装"。
+* **已知局限**：`--fields` 传的是**整库**字段目录，看不见"模块自身装载期还没有这个字段"的
+  情况 —— 即上面 (b) 只能靠真跑 `-i` 才暴露，或人工看域里的模型是否出自非依赖模块。
+  全库目录能查出的是 (a)。

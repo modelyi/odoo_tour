@@ -316,6 +316,29 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
   `_tour_write_brand_name`：`search([], limit=1, order='sequence, id')`）。
 
 
+### 5.6 财务链路单测驱动测出的 19→20 语义变更（2026-09-22）
+
+判据来源：`b1tour1`（20 空库装 19 个 tour_*，121 模块）**一次性跑 `--test-tags /tour_accounting`**。
+起点 78 测试 / 27 错，终态 **82 测试 / 0 错**。逐个错都是"实测出来的差异"，不是猜测：
+
+| # | 19 的行为 | 20 的行为（实测证据） | 影响与处置 |
+|---|---|---|---|
+| 1 | `ir.model.access` + `ir.rule` 两张表 | 合并成 `ir.access`（表 `ir_access`），4 个 `perm_*` 位 → 一个 `operation` 串 | 已建的 `security_19to20/` 转换必须**以目标库真实 registry 为唯一装载判据**：早先那次用小的 target-models 清单生成，tour_accounting 100 行只剩 52 行，报表向导的授权全被"延后"，直接表现为 17 个 `You are not allowed to create …` |
+| 2 | 规则域 `domain_force` **装载期不校验字段** | `ir.access` CSV 装载期就用真实 registry 求值域 | 19 里躺平的死域（`tour.plan.reg.partner_id` 由 `tour_website` 追加，而授权行在 `tour_accounting`）在 20 变成**整批装载失败**。新增 `security_19to20/check_domains.py` 做静态预检；跨模块的域规则只能落到"依赖两边"的桥接模块（本次新建 `tour_sec_bridge7`） |
+| 3 | `SQL.code` / `SQL.params` | 合成 `SQL._sql_tuple = (code, params, to_flush)`（`tools/sql.py:96`） | 全仓 1 处（`account_move_line._query_get`）；已加进 `check_legacy_api.py` 规则表 |
+| 4 | `ir.config_parameter.get_param/set_param` | **只有带类型的** `get_str/get_bool/get_int/get_float` + `set_*`（`base/models/ir_config_parameter.py:66-131`） | tour_* 23 处已全部改写；剩余 13 处全在 Webkul 包（等 payroll/loan 范围决定）。**ETL 好消息**：20 的 `value` 仍是「字符串化 Text + 读时 `_convert`」，19 搬来的 `'True'`/`'5000.0'` 无需改写 |
+| 5 | 汇率按 `name <= date` 取 | 按 **`name < date`** 取（`base/models/res_currency.py:186` vs 19 的 `:127`） | **业务语义变更，不只是代码问题**：某天发布的汇率当天不生效，次日才生效。月末重估、"当天录汇率当天开单"都会差一天。测法：`_convert(100, …, '2020-06-01')` 在只有 06-01 汇率时 19 给 25、20 给 50。→ 写进 UAT 已知问题；`res.currency.rate` 象限 3 搬迁时要不要整体前移一天，需业务确认 |
+| 6 | `account.move.line.name` 由 `_compute_name` 用产品名填充 | 同样有 compute，但**实测为 `False`**（`display_type='product'`、`product_id` 有值时仍空） | 不是测试问题：`asset_create` 拿 `record.name` 当资产名（NOT NULL）→ 「采购发票自动生成固定资产」在 20 必炸。已在模型侧改为 说明 → 产品名 → 单据号 三级兜底 |
+| 7 | m2m 写入不校验目标模型权限 | 写入后对**新增记录** `check_access('read')`（`orm/fields_relational.py:1574-1582`），失败即 `Failed to write field …` | `account.move.tour_plan_ids` 在冲销（`_reverse_moves`→`copy`）时被复制 → 会计组需要 `tour.plan` 的 **read**（19 现网确实没有这条授权）。已补 3 行到 `tour_accounting/security/ir.access.csv`，**属权限面扩大的范围决定，待业务签字** |
+| 8 | m2m 带 `comodel_domain` | 20 起 `invoice_line_ids` 限定 `display_type in (product, line_section, line_subsection, line_note)` | 任何手工构造发票行的脚本/ETL 都要显式给 `display_type`，否则报 `Cannot link inaccessible records` |
+| 9 | `account.account.company_id` | **字段没了**，改成 `company_ids`（m2m） | 所有按公司筛科目的裸 SQL/域都要改；ETL 象限 3 的 `account_account` 需带 `account_company_rel` |
+| 10 | `account.move.invoice_currency_id` | **字段没了**，统一用 `currency_id` | 同上，属 B2 映射表条目 |
+| 11 | — | `UPPER(jsonb)` 在 PG 里不存在 | `report_aged_partner.py` 的 `UPPER(res_partner.name)` **在 19 现网同样是死代码**（`name` 两侧都是 jsonb），是 Cybrosys fork 带进来的潜伏缺陷，只有单测打到它才暴露。已改成 `UPPER(coalesce(name->>'en_US', name #>> '{}'))`（该表达式在 19 现网数据上实测可跑）。**建议同步回 19 生产**：账龄分析 xlsx 只要走到这条 SQL 就会报错 |
+
+结论：**"财务先做"是对的**——这一串里 5/6/7/9/10/11 都只有真跑单测才看得见，静态 diff（§5.4）看不见，
+它们分别落在 ETL 判据、权限决定和报表可用性上，越晚发现越贵。
+
+
 ## 6. 11 个「20 社区版已删除」的官方模块
 
 | 模块 | 已装 | 20 侧事实 | 处置 |

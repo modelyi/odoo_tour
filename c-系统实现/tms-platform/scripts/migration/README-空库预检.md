@@ -51,6 +51,12 @@ python3 scripts/migration/check_legacy_api.py /tmp/b0/b1addons hr_custody hrms_d
 /home/adai/odoo20/.venv/bin/python scripts/migration/check_view_xpaths.py /tmp/b0/b1addons b1tour1
 /home/adai/odoo20/.venv/bin/python scripts/migration/check_view_xpaths.py /tmp/b0/b1addons b1tour1 tour_website --strict
 #   需要 lxml，所以用 20 的解释器跑；默认只列候选（退出码 0），--strict 才把命中数当失败
+# 6) 权限行的规则域（20 装载期就用真实 registry 求值，19 不校验）：见 security_19to20/check_domains.py
+docker exec odoo20-db psql -U odoo -d b1tour1 -AtF'|' -c \
+  "select m.model, f.name, coalesce(f.relation,'') from ir_model_fields f join ir_model m on m.id=f.model_id" \
+  > /tmp/b0/sec20/fields_b1tour1.psv
+python3 scripts/migration/security_19to20/check_domains.py \
+  /tmp/b0/b1addons/tour_accounting/security/ir.access.csv --fields /tmp/b0/sec20/fields_b1tour1.psv --split
 ```
 
 ## 已知判读要点
