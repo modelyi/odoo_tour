@@ -126,8 +126,23 @@ cd <本目录> && PYTHONPATH=/home/adai/odoo20:. SEC20=/tmp/b0/sec20 \
 
 ```bash
 # 4) 装载 + 行为验证（scratch 库，勿在生产 addons/库上跑）
-python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --out $SEC20/eff/ir.access.<scope>.csv
-#   → 拷进 <addons>/tour_sec_bridge3/security/ir.access.csv 后 odoo-bin -i tour_sec_bridge3
+#    三道门一起给：模型注册表 / 组 xmlid / 已装模块，产物即"目标库现在能装的那一份"
+#    另需 20 侧 model→module 归属表（默认读 $SEC20/model_owner20.psv）：
+docker exec <20-ref-db> psql -U odoo -d <refdb> -c "COPY (
+select m.model||'|'||coalesce(min(d.module) filter (where d.name like 'model\_%'), min(d.module))
+from ir_model m join ir_model_data d on d.res_id=m.id and d.model='ir.model'
+group by m.model) TO STDOUT" > model_owner20.psv
+#   注意 20 里 ir_model_data.model 存的是**完整技术名** 'ir.model'（不是 'model'），写错查不出行
+docker exec <20-db> psql -U odoo -d <db> -tAc "select model from ir_model"       > models.txt
+docker exec <20-db> psql -U odoo -d <db> -tAc \
+  "select d.module||'.'||d.name from ir_model_data d where d.model='res.groups'" > groups.txt
+docker exec <20-db> psql -U odoo -d <db> -tAc \
+  "select name from ir_module_module where state='installed'"                    > installed.txt
+python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --also-custom-groups <...> \
+  --target-models models.txt --target-groups groups.txt --installed-modules installed.txt \
+  --out ir.access.<scope>.csv --manifest-out <addons>/tour_security_bridge/__manifest__.py
+#   → ir.access.<scope>.csv 拷进 <addons>/tour_security_bridge/security/ir.access.csv
+#   → odoo-bin -i tour_security_bridge（--without-demo 不要再写 =all）
 #   → odoo-bin shell … < probe_bridge.py   打印可见性矩阵；shell 退出即回滚，不留测试数据
 ```
 
@@ -183,13 +198,41 @@ python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --out $SEC20/eff
 `sanitized_acc_number→sanitized_account_number`、`acc_holder_name→holder_name`，
 `bank_id`/`currency_id` 消失、改为内联地址列；`--without-demo=all` 自 19 起是非法布尔值。
 
+### 第二轮：整条生成链自动装载（同一天）
+
+把手工裁剪换成 `gen_ir_access.py` 的自动作用域/依赖后，又抓到一条**方法级**事实：
+
+* **`model → module` 的归属推断不足以判定"这行装得上"**。第一版自动 depends 用
+  「20 参考库归属，查无则回落 19 归属」，结果 178 行里有 7 行装载失败
+  （`null value in column "model_id" violates not-null`）—— 涉及
+  `hr.contract.type` / `hr.version.wizard` / `applicant.send.mail` / `hr.expense.post.wizard`：
+  19 把这些模型的 XMLID 记在 `hr`/`hr_expense` 名下，20 里要么模块独立（`hr_contract`）、
+  要么向导已删，于是"依赖已装"的判断是假的。
+* → 判据换成**目标库实际的 `ir_model` 注册表**（`--target-models`，取自
+  `psql -tAc "select model from ir_model"`）。不在注册表里的行一律进
+  `*.deferred.csv`（附原因，**不是丢弃**），依赖就位后重跑即回收。
+* 复测：作用域内 307 行 → 172 行可装 + 135 行延后 → 自动 manifest（depends 21，全部真实存在）
+  → `-i tour_sec_bridge5` **0 ERROR**、`count(*)=172`、带 domain 40 行。
+  至此"导出 → 重建有效权限 → 裁剪 → 生成 manifest → 真实装载"整条链无需人工判读。
+* 顺带修正 §用法 里那句"故意让它失败"：装载失败不再是设计意图，而是被 `--target-models`
+  挡在前面的可预期延后。
+* **第三道门是 same-day 补的**：只给 `--target-models`（不给 `--installed-modules`）时
+  188 行"模型都存在"，但自动 depends 里出现 `tour_website_sale` —— 它在 20 侧还装不上
+  （被 `res.bank`/OWL 卡住），于是 `-i tour_sec_bridge6` 直接 `Failed to load registry`。
+  **这正是 v2 桥接模块（depends 66、含 `tour_accounting`）永远装不起来的原因**，
+  现在被工具挡住了：`--installed-modules` 会把"依赖模块本身还没就位"的行也延后，
+  三门齐用（models + groups + installed）产出的 172 行 = 已验证可装的那一份。
+* 引用不存在的组 xmlid 同样会让整批 `ir.access.csv` 失败 → `--target-groups`。
+  推荐用法：**三道门一起给**，产物与目标库状态一一对应，缺什么在 `.deferred.csv` 里看得见。
+
 ## 已知边界（不要当成成品）
 
 
 1. `grant_gap` 是**复核清单**，不是自动补权限：20 core 只保留了 19 里 61%（687/1131）的
    官方 access XMLID，其余是官方主动改小或改名。无脑回填会把官方收紧的权限再放开。
 2. 模型名解析依赖 19 现网 `ir_model`，20 里被删的模型（`res.bank`、`hr.leave.type` 等）
-   会产生悬空行，需要按 TDS-30 §4/§5 的处置结论先清理。
+   会产生悬空行。**现已有机械判据**：`--target-models` 传目标库实际注册表，
+   查无此模型即延后（见「第二轮」），不再需要靠 §4/§5 的清单人工比对。
 3. 无组授权行（19 里 31 条，如匿名可读）在 20 没有等价写法 —— 无组行是"限制"不是"授权"，
    必须显式改成 `base.group_public` / `base.group_portal`，逐条签字。
    v3 的 `NO_GRANT_POP`（32 条）与这类同源，都属"20 无等价载体"。
@@ -199,8 +242,10 @@ python3 gen_ir_access.py --eff $SEC20/eff --scope-modules <...> --out $SEC20/eff
 6. v3 只重建**数据可见性**，不覆盖 20 新引入的 `ir.access` 计算字段口径（`for_read/write/…`）。
    **装载 + 单点行为验证已做**（见上一节，含 domain 收窄与 AccessError 两个方向），
    但那只是合成数据；A1 报告 §5 的登录/权限矩阵在**迁移后的真实数据**上回归仍是必做项。
-7. 桥接模块的 `depends` 目前靠 `--scope-modules` 人工给：真正落地要按"每行的 `model_id`
-   由哪个模块声明"自动求依赖闭包，否则装到部分模块的库上会因解析不到 `ir.model` 整批失败
-   （本次 129→46→188 行的三次裁剪就是这个现象）。
-   同时 v2 原型 `tour_security_bridge` 的 depends 有 66 个模块（含装不上的 `tour_accounting`），
-   那份产物已作废，仅留作对照。
+7. 桥接模块的 `depends` 已由 `--owner20` + 三道门自动算出（见「第二轮」），v2 手写的
+   `tour_security_bridge`（depends 66、含装不上的 `tour_accounting`）已作废。
+   仍待办的是**终局形态**：现网全模块就位后应只出一份 depends 完整的桥接层，
+   而不是按库状态切多份；`.deferred.csv` 就是要随 B1 进度逐批回收的队列。
+   另一个未处理项：`owner20` 参考库（`b0snap20`）只装了官方依赖闭包，
+   它没有的模型会回落到 19 归属 —— 对 tour_* 自有模型正确，对"20 里换了归属的官方模型"
+   会算错（本轮 7 行失败即此类），所以 `--target-models` 是**必需**而非可选。

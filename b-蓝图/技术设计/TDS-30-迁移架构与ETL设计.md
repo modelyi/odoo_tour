@@ -293,6 +293,11 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
    （`partner_id.employee_ids = False`）在 20 也可用。
    这一轮同时抓出 §3-F2 说的 `operation` Selection 顺序缺陷（修复前 959/1,524 行装不进去）：
    **文本层面完全看不出来，转换层必须过一次真实装载才算验证。**
+   生成器已补三道门（`--target-models` / `--target-groups` / `--installed-modules`），
+   按**目标库实际状态**把行分成"现在可装 / 延后"两份并自动算 depends + 写 manifest：
+   只按 model→module 归属推断会误判（19 把 `hr.contract.type` 记在 `hr` 名下、20 归独立的
+   `hr_contract`），只按模型存在也不够（depends 里出现尚未就位的 `tour_website_sale`
+   → `Failed to load registry`）。v2 桥接层装不起来正是栽在第二条。
    验收判据：A1 用的登录/权限矩阵（`d-交付验收/A1-平桥验收报告_2026-09-21.md` §5）在 20 上结果一致。
 2. **象限 1 的 `account_move*` 需两处列映射**：`checked→review_state`、
    `deductible_amount→deductible_percentage`。**禁止默认换算**：先在 staging 上重算并与 19 报表逐户比对，

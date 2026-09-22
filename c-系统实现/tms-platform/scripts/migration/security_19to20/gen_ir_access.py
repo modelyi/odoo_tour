@@ -10,9 +10,10 @@
     `crud`（`rud` 合法、`rucd` 不合法），不是任意排列；
   * `group_id/id` 留空 = restriction（对全体用户 AND 生效），填组 xmlid = permission（彼此 OR）。
 
-作用域由 `--scope-models` 决定，只输出这些模型上的行 —— 装载到只装了部分模块的库时，
-越界的 `model_id` 会让 ir.access 解析不到 `ir.model` 而整批失败，这是**故意让它失败**：
-桥接模块必须按"随包依赖可选"切分，不能一把梭。
+作用域由 `--scope-modules` 决定，只输出这些模型上的行。装载判据**不能**靠 model→module
+归属推断（19 的归属在 20 会失配：`hr.contract.type` 在 19 记在 `hr` 名下、20 归独立的
+`hr_contract`），必须传目标库实际的 `ir_model` 清单 `--target-models`；
+不在其中的行写进 `<out>.deferred.csv` 并附原因 —— 是延后，不是丢弃，依赖就位后重跑即回收。
 """
 import argparse
 import csv
@@ -47,6 +48,12 @@ def main():
                     help='20 侧 model|declaring module（`ir_model × ir_model_data(model=\'ir.model\')`）。'
                          '给定时自动算 depends 并写 manifest；核心模型的归属两侧会变'
                          '（如 res.partner.bank 在 19 属 base、20 属 account），只能以 20 为准')
+    ap.add_argument('--target-models', default='',
+                    help='目标库实际的 ir_model.model 清单（每行一个）。给定时作为唯一装载判据：'
+                         '不在其中的行一律延后，因为 model→module 的归属推断在 20 会失配')
+    ap.add_argument('--target-groups', default='',
+                    help='目标库实际存在的组 xmlid 清单（module.name，每行一个）。'
+                         '引用不存在的 group_id/id 会让整个 CSV 装载失败，所以同样要门控')
     ap.add_argument('--manifest-out', default='',
                     help='写出桥接模块 __manifest__.py 的路径（需 --owner20 可用）')
     ap.add_argument('--installed-modules', default='',
@@ -119,16 +126,33 @@ def main():
             need.add(r['group_id/id'].split('.')[0])
         return need, mod
 
+    # 归属推断不足以判定"装得上"：19 的 model→module 映射在 20 会失配
+    # （`hr.contract.type` 在 19 属 hr、20 里 hr_contract 独立；`applicant.send.mail` 在 20 已删）。
+    # 唯一可靠的判据是目标库**实际的 ir_model 注册表**，所以可选传入。
+    target_models = None
+    if args.target_models:
+        target_models = {x for x in open(args.target_models).read().split() if x}
+        print(f'目标库注册表 {len(target_models)} 个模型（作为唯一装载判据）')
+    target_groups = None
+    if args.target_groups:
+        target_groups = {x for x in open(args.target_groups).read().split() if x}
+        print(f'目标库现有组 {len(target_groups)} 个')
+
     keep, defer = rows, []
-    if args.installed_modules:
-        installed = {x for x in open(args.installed_modules).read().split() if x}
+    if args.installed_modules or target_models is not None or target_groups is not None:
+        installed = ({x for x in open(args.installed_modules).read().split() if x}
+                     if args.installed_modules else None)
         keep, defer = [], []
         for r in rows:
             need, mod = req(r)
-            miss = sorted(need - installed)
-            if mod is None:
-                r['_why'] = '模型在 20 侧查无归属（多半已删，按 TDS-30 §4/§5 处置）'
-            elif miss:
+            grp = r['group_id/id']
+            if target_models is not None and r['model_id'] not in target_models:
+                r['_why'] = '目标库 ir_model 无此模型（20 已删/改名，或声明模块未装）'
+            elif target_groups is not None and grp and grp not in target_groups:
+                r['_why'] = '目标库无此组 xmlid（引用不存在的组会整批失败）'
+            elif mod is None:
+                r['_why'] = '模型在 20 侧查无归属（按 TDS-30 §4/§5 处置）'
+            elif installed is not None and (miss := sorted(need - installed)):
                 r['_why'] = '依赖未装：' + ','.join(miss)
             (defer if r.get('_why') else keep).append(r)
 
