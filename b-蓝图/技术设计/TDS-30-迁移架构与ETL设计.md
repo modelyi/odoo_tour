@@ -451,6 +451,9 @@ B1 签字页引用 `gate_b1_6`（最新一次全装 + 单测），`gate_b1_4` �
 | 22 | `/tours`（官网线路列表）500：`ValueError: Cannot convert product.category.complete_name to SQL because it is not stored` | 19：`complete_name = …, store=True, recursive=True` + `_order = 'complete_name'`；20：`compute=…, search='_search_complete_name', recursive=True`，**没有 `store=True`**，`_order` 改成 `'parent_id desc, name asc'`（`product/models/product_category.py`）。列还在，**所以 §5.4 的列级 diff 完全看不见** | 真 19→20 delta，且只在运行时暴露。已删掉控制器里的 `order='complete_name'`，交给模型默认 `_order`（两版都能排出可接受的顺序）。⇒ 加进 B2 规则：**任何 `order=`／裸 SQL 都不能引用下面这 15 个字段** |
 | 23 | — | 由 #22 造出第二台"列级 diff 之外的探测器"：比对两侧 `ir_model_fields.store`（19 现网 vs 20 空库），取"字段仍在 20 存在但 store 由 true→false"，再排除 o2m/m2m 与噪音 | **15 个真业务字段翻成非存储**：`product.category.complete_name`、`res.company.expense_account_id`、`res.company.income_account_id`、`res.partner.global_location_number`、`account.report.active`、`hr.resume.line.department_id`、`hr.version.departure_date/departure_description/departure_reason_id`、`iap.account.balance`、`product.pricelist.item.price_markup`、`res.device.browser/device_type/platform`、`website.menu.url`。前三个直接命中我们的报表 SQL 与按公司筛科目的写法 → 写进 §8 的 B2 判据（ETL 侧同理：这些列不在表上，`INSERT/SELECT` 带它们必错） |
 
+| 24 | `/shop/tour/add` POST 500：`AttributeError: 'Request' object has no attribute 'website'`（`tour_website_sale/controllers/main.py:30`） | 19 在 `website/models/ir_http.py:265` 赋 `request.website = …`；20 全树没有这个赋值，改由 Environment 提供同名属性（`odoo/orm/environments.py:303`：`self['website'].browse(context['website_id'])`）。实测 19 的 Environment **没有** `website` 属性 | 真 19→20 delta，已改 `request.env.website._create_cart()`；**这条不能回落到 19**。同时把整棵适配树里用到的 `request.*` 名字**穷举比对**了一遍：只有 10 个（`cart/env/httprequest/session/render/redirect/not_found/make_response/geoip/website`），除 `website` 外 20 都还在（`cart` 由 20 的 `website_sale/models/ir_http.py:25` 继续挂）。`check_legacy_api.py` 加 `request.website` 规则（19 树 1 处、适配树 0 处） |
+| 25 | 「未选班期」和「人数全 0」两种非法提交**返回 303 加购成功**，购物车里静默多出一行 `departure_id = NULL`、单价 = 商品模板 `list_price` 的线路产品（实测留在 `b1shop1` 的 order 4 / line 4） | 判据不在 20 里变：`_prepare_order_line_values` 对 `departure_id` 为空是"当普通产品行放行"（普通商品要走同一个 `_inherit`），而 `quantity=0` 在 20 的 `_cart_update` 里是删行/无操作，两条路都**不进** `_validate_tour_booking`。⇒ GET 冒烟和"正向一条链路"永远看不见 | **两版同源的校验洞**（19 现网同样能提交），已在**控制器侧**补前置判据（缺班期 / 人数 ≤0 → `?tour_error=`），并抽出 `_tour_booking_error` helper（按 #21 的规则带模块前缀）。4 条负例现在全部落到正确提示、正例合计不变。**教训写进判据**：门户/电商冒烟必须带负例，"没有 500"不等于"校验在工作" |
+
 **这批"只有渲染才看得见"的缺陷有三条（#18/#19/#20）在 19 现网同样是坏的**，
 所以修法都选了两版等价写法（`<t t-call>`／`datetime.date.today()`／`+ 20`），**可以原样回落到 19 分支**，
 不必等 B3；回落与否是业务决定（见 §12 的待签字清单），但它们今天的 500 是真的。
@@ -469,15 +472,34 @@ regular/fit/booking/independent）、`dunning_id`→「催收单」、`report_fr
 清理后重跑全新库 `b1gate6`：**125 模块 / `Modules loaded.` / `0 failed, 0 error(s) of 129 tests`**，
 剩余 WARNING 全是 §5.7 定性过的"上游同源噪音 + `compute_sudo` 代码味道"两类。
 
-**判据还差第四段（浏览器）**：门户冒烟探针只看 HTTP 状态码，而 20 删掉 `web.public.widget`
-之后，前端坏掉**不影响状态码**（JS 不被 Python import，页面照样 200）。所以给
-`check_legacy_api.py` 加了第三个分支（`.py` → 服务端 `.xml` → `static/src/**/*.js`，
-两条规则：`web.public.widget`/`publicWidget`、`odoo.define(`，另加 `$.fn.` 旧 jQuery 插件式）。
-实测：**两版树各 30 个前端 JS 文件**，19 生产树命中 **3 处、全在
-`tour_website_sale/static/src/js/tour_website_sale.js`**（1 × `odoo.define` + 2 × `publicWidget`），
-已适配树 **0 处**（该文件已重写为普通 ES 模块）。但这只能证明"旧写法没了"，
-**不能证明新写法能点动** —— 预订页的人数→预估合计要在浏览器里核（需一个已发布产品 +
-`tour.departure` 行），这项挂在必签字的 B1 收尾清单上，不算已验。
+**判据还差第四段：前端 JS（20 删了 `web.public.widget`，2026-09-22 补做）**。门户冒烟只看
+HTTP 状态码，而前端坏掉**不影响状态码**（JS 不被 Python import，页面照样 200）。分三步做：
+
+1. **静态扫**：给 `check_legacy_api.py` 加第三个分支（`.py` → 服务端 `.xml` → `static/src/**/*.js`），
+   规则 `web.public.widget`/`publicWidget`、`odoo.define(`、`$.fn.`；扫描前剥 `//` 行注释
+   （`://` 不算注释），否则移植说明自己会被报成命中。实测：**两版树各 30 个前端 JS 文件**，
+   19 生产树命中 3 处（全在 `tour_website_sale/static/src/js/tour_website_sale.js`），适配树 0 处。
+2. **真渲染**：克隆 `b1gate6` → `b1shop1`（**gate 证据库保持原样不动**），用 `odoo-bin shell`
+   造夹具（线路产品 + 已发布班期五档价）。踩到一条：**20 的 `shell` 从 stdin 跑脚本默认回滚**，
+   不加 `env.cr.commit()` 会得到"脚本自己都打印成功了、库里却没有"的幻影。
+   然后 GET `/shop/<slug>` → 200，且 DOM 契约逐项对上：`#tour_booking_wrap`、
+   5 个 `name="{adult,child,old_man,student,baby}_num"` 的 `.tour_count`、
+   `option[data-prices]`（jsonb 转义后浏览器解回合法 JSON）、`#tour_total_preview`；
+   再到 `web.assets_frontend_lazy.min.js` 里确认**重写后的模块确实被打包进去了**
+   （含 `PRICE_KEYS`/`tour_booking_wrap`，不含 `publicWidget`）。
+   三边命名一致性也核了：模板 `name` ↔ JS 去 `_num` 后的 key ↔ `get_online_prices()` 的 key
+   ↔ 服务端 `TOUR_COUNT_FIELDS`，四者同一套五档名。
+3. **计算与接线**：`/tmp/b0/js_harness.mjs` 用最小 DOM 桩（`querySelector(All)`/`dataset`/
+   `addEventListener`/`fire`）在 node 里**跑真实文件**，7 个断言全过：初次 refresh、
+   `input` 改人数重算、`change` 切班期重算、档位**按 name 不按位置**（乱序 + 未知档 + 非数字）、
+   未选班期显示 `—` 而不是 `NaN`、`data-prices` 坏 JSON 不抛、缺元素静默返回。
+   这条正是打 19 版"靠 `.tour_count` 的位置对 `KEYS[i]`"那个静默算错钱的耦合。
+4. **加购闭环**：`/tmp/b0/shop_add_smoke.py`（带 csrf + 保持 cookie）POST 2/1/0/0/3 →
+   `/shop/cart` 显示 **3,310.00**，与前端预览算法**逐分一致**；库里落
+   `departure_id=8 / product_uom_qty=6 / 五档人数分列`。这一步当场抓出 #24 的 500。
+   **仍未做的**：真浏览器里点一次（OWL 之外的执行时序、`type="module"` 的加载顺序）——
+   桩件能证明"逻辑对、监听接上了"，不能证明"浏览器引擎里也这样"。这项挂在 B1 签字页的
+   已知残留里，不假装已验。
 
 
 ## 6. 11 个「20 社区版已删除」的官方模块

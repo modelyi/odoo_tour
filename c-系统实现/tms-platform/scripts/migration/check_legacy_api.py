@@ -51,6 +51,12 @@ PATTERNS = [
     ('SQL.code/.params',
      re.compile(r'\b(from_sql|where_sql|from_clause|where_clause)\.(code|params)\b'),
      False, None),
+    # 20 删掉了 `request.website`（19 由 website/models/ir_http.py:265 赋在 Request 上），
+    # 改由 Environment 提供同名属性（20 `odoo/orm/environments.py:303`）→ 写法是
+    # `request.env.website`。**这条是 20-only，不能回落到 19**（实测 19 的 Environment
+    # 没有 website 属性）。装载与 GET 冒烟都看不见，只有真正走到那行的请求会 500。
+    ('request.website(20 已删)',
+     re.compile(r'\brequest\.website\b'), False, None),
     # portal 的 `pager()`（真名 `odoo.addons.portal.controllers.portal.pager`）返回字典
     # **两版都没有 `limit` 键**（实测 19/20 的返回体只有 page_count / offset / page /
     # page_first / page_previous / page_next / page_last）。`pager['limit']` 不是 19→20

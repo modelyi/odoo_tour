@@ -126,7 +126,20 @@ python3 scripts/migration/security_19to20/check_domains.py \
   `tour_website_sale/static/src/js/tour_website_sale.js`（1 × `odoo.define` + 2 × `publicWidget`）；
   已适配树 **0 处**（该文件已重写为普通 ES 模块，`node --check` 通过）。
   **这一类装载全绿和冒烟 0 个 500 都不能证明没坏** —— JS 不被 Python import，页面状态码照样 200，
-  所以必须靠静态扫；代价是它只证明"旧写法没了"，**新写法是否真的能点动还得在浏览器里核**（B1 待办）。
+  所以必须靠静态扫。静态扫只证明"旧写法没了"，所以又补了三步（详见 TDS-30 §5.8 第 4 段）：
+  真渲染商品页核对 DOM 契约 → 在打包后的 `assets_frontend` 里确认新模块确实进包 →
+  `js_harness.mjs` 用最小 DOM 桩在 node 里跑真实文件（7 个断言：档位按 `name` 不按位置、
+  坏 JSON/未选班期不抛、`input`/`change` 监听真的接上）。**唯一没做的**是真浏览器点一次，
+  记在 B1 签字页的已知残留里。
+* `request.website` 在 20 已删（19 由 `website/models/ir_http.py:265` 赋在 Request 上，
+  20 改成 `env.website`，`odoo/orm/environments.py:303`）：**修前两版树各 1 处**（同一个文件的
+  `_create_cart()` 兜底），装载期不报、GET 冒烟也不报，**POST `/shop/tour/add` 才炸 500**。
+  已修（**20-only，不能回落到 19**）。顺手穷举了适配树用到的 10 个 `request.*` 名字，
+  除 `website` 外 20 都还在。
+* **负例冒烟**（`shop_neg_smoke.py`，4 条）当场抓出一个两版同源的校验洞：非法提交
+  （缺班期 / 人数全 0）**返回"加购成功"**，购物车里静默多出一行 `departure_id=NULL`、
+  单价 = 模板 `list_price` 的线路产品。⇒ 已把这两条判据提到控制器；
+  并记下方法论：**"0 个 500"不等于"校验在工作"**。
 * **Gate B1 全装判据（权威）**：`b1gate4` 空库 `-i` 19 个 tour_*（+ `purchase`）→
   **125 模块 / `Modules loaded.` / `0 failed, 0 error(s) of 129 tests`**，
   `tour_hr` 是唯一未装（F5 的 `hr.leave.type`）。逐条 WARNING 定性和复现命令见 TDS-30 §5.7。
