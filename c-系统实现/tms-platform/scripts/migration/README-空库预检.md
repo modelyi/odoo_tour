@@ -16,12 +16,18 @@
 | `check_xmlid_order.py` | xid 引用顺序 / 环 / 无 `name` 的 menu | `External ID not found`、`null value in column "name"` |
 | `check_model_refs.py` | XML 里的模型名是否还存在 | `Model not found: xxx` |
 | `check_field_refs.py` | XML `<field name>` 是否是真实字段 | `Invalid field 'xxx' in 'yyy'` |
-| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法 + **服务端 QWeb 模板**的已删指令 | registry 建模期 `AttributeError`（连数据都装不到）／模板内容静默不渲染 |
+| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法（含 `odoo.http` 导出收缩）+ **服务端 QWeb 模板**的已删指令 | registry 建模期 `AttributeError`（连数据都装不到）／`ImportError` 装不上／模板内容静默不渲染 |
 | `check_view_xpaths.py` | 视图继承的 `<xpath expr>` 锚点是否还在 | `Element '<xpath …>' cannot be located in parent view` |
 
 `check_legacy_api.py` 里的 `read_group` 四条规则**不能按行匹配**（真实调用几乎都是跨行的），
 单独走 `_scan_read_group`；对照实测：未改的 19 树命中 19 个调用点 + 47 处取值，
 改完的 20 适配树 tour_* 归零。详见 TDS-30 §5.6 第 13 行。
+
+`odoo.http` 规则（`_scan_http`）的判据是**运行时白名单**，不是猜的：20 把 `odoo/http.py` 拆成包，
+`odoo/http/__init__.py` 只剩 21 行，`dir(odoo.http)` 实测只有 `Controller/Response/request/route`
+四个旧 API 加子模块名。19 的 131 个公开名里 126 个取不到 → `from odoo.http import X` 当场
+`ImportError`，`http.X` 则往往躲在 `except` 分支里（我们那处 `http.serialize_exception` 就是这样）。
+两种写法都查。**这条改法不能回落到 19**（19 没有 `odoo.http.dispatcher`），所以它只属于 20 分支。
 
 三个 XML 检查器在 `/tmp/b0/b1addons`（40 模块 / 299 个 XML）上跑出来 **0 命中**，
 即 tour_* 的 XML 层已全清；剩余命中全在 Webkul（`hr.leave.type`、`report_file`）。
@@ -111,3 +117,9 @@ python3 scripts/migration/security_19to20/check_domains.py \
 * `read_group` 回归网：`tour_fleet + tour_resource + tour_product` 三模块
   **47 个用例 0 failed 0 error**（2026-09-22，`/tmp/b0/rg_tests_4.log`）。里面 8 个是本轮新增的
   "非零分组"用例（每条都配 `search_count` 交叉核对），专打 20 那个"位置写反不报错只数错"的变更。
+* `odoo.http` 导出收缩：19 生产树 **2 处**（同一个文件
+  `tour_accounting/controllers/statement_report.py`：24 行 `from odoo.http import content_disposition`
+  装不上，47 行 `http.serialize_exception` 只在 xlsx 下载报错时才走到）；已适配树 **0 处**。
+* **Gate B1 全装判据（权威）**：`b1gate4` 空库 `-i` 19 个 tour_*（+ `purchase`）→
+  **125 模块 / `Modules loaded.` / `0 failed, 0 error(s) of 129 tests`**，
+  `tour_hr` 是唯一未装（F5 的 `hr.leave.type`）。逐条 WARNING 定性和复现命令见 TDS-30 §5.7。

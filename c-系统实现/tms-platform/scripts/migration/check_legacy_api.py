@@ -73,6 +73,46 @@ RG_BARE_NAME = re.compile(r'^[a-z_][a-z0-9_.]*$')
 RG_DEF = re.compile(r'^\s*(?:async\s+)?def\s', re.M)
 
 
+# 20 把 `odoo/http.py`（单文件，19 里 131 个公开名）拆成包 `odoo/http/`，
+# `__init__.py` 只有 21 行，**不再重新导出**绝大多数旧名字。实测 20 运行时
+# `odoo.http` 上可用的属性就是下面这些（`dir(odoo.http)` 去掉 dunder）：
+#   Controller / Response / request / route            ← 唯一的四个"旧公开 API"
+#   dispatcher / geoip / requestlib / response / retrying / router /
+#   routing_map / server / server_log / session / stream  ← 子模块
+# 其余一律 `ImportError` 或 `AttributeError`，例如 19 的
+# `from odoo.http import content_disposition`、`http.serialize_exception(...)`
+# 在 20 必须改成 `from odoo.http.stream import ...` /
+# `from odoo.http.dispatcher import serialize_exception`（上游 20 自己就这么写，
+# 见 `addons/web/controllers/report.py:10`）。
+# 这类改法**只能在 20 分支做，不能回落到 19**（19 没有 odoo.http.dispatcher）。
+HTTP20_OK = {
+    'Controller', 'Response', 'request', 'route',
+    'dispatcher', 'geoip', 'requestlib', 'response', 'retrying', 'router',
+    'routing_map', 'server', 'server_log', 'session', 'stream',
+}
+HTTP_ATTR = re.compile(r'\bhttp\.([A-Za-z_][A-Za-z0-9_]*)')
+HTTP_IMPORT = re.compile(r'\bfrom\s+odoo\.http\s+import\s+([^\n#]+)')
+
+
+def _scan_http(src):
+    hits = []
+    for line_no, line in enumerate(src.splitlines(), 1):
+        code = line.split('#', 1)[0]
+        m = HTTP_IMPORT.search(code)
+        if m:
+            for nm in m.group(1).replace('(', '').replace(')', '').split(','):
+                nm = nm.strip().split(' as ')[0].strip()
+                if nm and nm not in HTTP20_OK:
+                    hits.append((line_no, 'odoo.http 导出变更(19)',
+                                 'from odoo.http import %s → 20 需改子模块路径' % nm))
+        for attr in HTTP_ATTR.findall(code):
+            if attr in HTTP20_OK:
+                continue
+            hits.append((line_no, 'odoo.http 导出变更(19)',
+                         'http.%s → 20 的 odoo.http 不再导出该名字' % attr))
+    return hits
+
+
 def _call_args(src, open_idx):
     """从 '(' 之后按括号配平取参数文本，并按顶层逗号切开。
 
@@ -318,6 +358,7 @@ def main(argv):
                         if name in ('other._cr',) and 'self._cr' in code:
                             pass
             hits += _scan_read_group(src)
+            hits += _scan_http(src)
             hits.sort()
             if not hits:
                 continue

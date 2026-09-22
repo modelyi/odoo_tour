@@ -353,6 +353,9 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 | 13 | `read_group(domain, fields, groupby, orderby=…, lazy=…)` → **`list[dict]`**（19 `orm/models.py:2749` 文档串里就写着 "Deprecated"） | `read_group` 与 `_read_group` **同形状**：`(domain, groupby=(), aggregates=(), having=(), order=…)` → **`list[tuple]`**（值序 = groupby 后接 aggregates，m2o 分组给 `id`、m2o 聚合给 `ids`；aggregates 必须带聚合函数 `'x:sum'`，裸名里**只有 `__count` 合法**（`'recordset'` 也得写成 `'x:recordset'`），否则 `ValueError: Aggregate method is mandatory for 'x'`，`orm/models.py:1931-1995 / 2086-2103`） | **本会话最高危**：`fields=`/`orderby=` 已不存在（关键字写法必 `TypeError`），但**位置写法不报错、只是数错**——第三个位置参数被当成 `aggregates`，`g['x_count']` 全部取不到。实测调用点 **19 处 = tour_\* 18 + Webkul 1**（tour_cmo_portal 9、tour_base/tour_dashboard 3、tour_resource/tour_guide 3、tour_product/tour_line 2、tour_pm_portal 1；Webkul 那处在 `hr_payroll_community/models/hr_employee.py`，等 payroll 范围决定）。tour_* 已全部改为 `_read_group(domain, groupby, aggregates)` 元组解包；`check_legacy_api.py` 加了 4 条**必须跨行匹配**的检测规则（19 关键字 `fields=/orderby=/lazy=` ／ aggregates 位是裸字段 ／ 结果按字符串 key 取值 ／ `<groupby>_count`），对照验证：未改树 31 条调用+取值命中、已改树 tour_* 归零（只剩 Webkul 那 1 处）。按行匹配曾在 18 个真实缺陷上报 **0**，这类"检查器说没事"比没检查更危险，故规则单独走 `_scan_read_group`。**20 规范写法**见 core：`Model._read_group(dom, ['field_id'], ['__count'])` + `for rec, count in ...` |
 | 13b | 同上，`tour_pm_portal/controllers/portal.py:172` 的分组串写成 `'month:begin_date'`，取值用 `item.get('begin_date:month')` | — | **19 现网潜伏缺陷**：键名写反，`get` 恒为缺失 → 项目经理门户的"月度趋势"**月份列一直为空**（数字也拿不到）。改 20 API 时顺手写成 `['begin_date:month']` + `order='begin_date:month asc'` 并保留注释。**建议同步回 19 生产**，别等 B3 |
 | 14 | `tour.line` 用 `_inherits` 委托 `product.template`；计调/经理账号在建线路、建项目时**依赖手工授予的管理员组** | 19/20 上游一致：`product.template` 的 create 只给 `product.group_product_manager`（19 csv 里 `access_product_template_user,…,base.group_user,1,0,0,0` = 只读；20 侧 product.template **唯一**的无组 `ir_access` 行是 `product.product_comp_rule` 多公司记录规则，不是授权），`project.project` 的 create 只给 `project.group_project_manager` | 空库 + 最小 Test User 跑出来的 **3 个 AccessError 全在这里**，与 19→20 无关（19 DB 里产品模型也没有任何 `group_id is null` 的授权行，已实测比对）。但它坐实了 #12：**"现网计调能新增线路"不是模块授权，是 admin 被手工加进了产品管理员/项目经理组**。⇒ ① `res_groups_users_rel` 属 B2 必搬数据；② 20 的授权矩阵要么补一条 product/project create 给 tour 经理组（业务签字，属功能变更），要么在切换后由管理员重新手工加组 —— 二者都必须在 runbook 里有名字，否则切过去就是"线路不能新建"这种看起来像迁移事故的现象。测试夹具已按上游事实补 `product.group_product_manager` / `project.group_project_manager` 并注明理由 |
+| 15 | `odoo/http.py` 是**单文件模块**，公开名 131 个（`content_disposition`、`serialize_exception`、`Session`、`db_list`、`werkzeug` … 全在 `odoo.http` 命名空间里） | 20 把它拆成**包** `odoo/http/`（`__init__.py` 只有 21 行），**不再重新导出**旧名字：`dir(odoo.http)` 实测只剩 `Controller / Response / request / route` 四个旧 API + 子模块名（`dispatcher / geoip / requestlib / response / retrying / router / routing_map / server / server_log / session / stream`）。⇒ `from odoo.http import content_disposition` **ImportError**（装载期硬失败，看得见）；`http.serialize_exception(e)` **AttributeError**（只在异常分支里跑到，平时看不见） | 命中 2 处，都在 `tour_accounting/controllers/statement_report.py`（xlsx 报表下载控制器）：24 行 import、47 行 except 分支。20 的正解就是上游自己的写法（`addons/web/controllers/report.py:10` → `from odoo.http.dispatcher import serialize_exception`；`odoo/http/stream.py:34`）。**这两处不能回落到 19**（19 没有 `odoo.http.dispatcher`），与 #4/#11 那类双兼容修复不同，必须留在 20 分支。已在 `check_legacy_api.py` 加规则 `odoo.http 导出变更(19)`（内置 20 白名单，`from odoo.http import X` 与 `http.X` 两种写法都查）：19 生产树报 2、已适配树报 0 |
+| 16 | 19 现网 `project_todo` = **uninstalled**，`project_task` 表 **0 行** | 20 的 `project_todo` 是 `'auto_install': True` 且只依赖 `project`（19 的 manifest 同标志，但现网当年没被拉起）⇒ 空库装 `project` 就连带装它，而它装机即给每个用户建一条 **`Welcome <用户名>!`** 任务（`project_todo/models/res_users.py:_generate_onboarding_todo`，两版都有这段代码） | **这条修正了本轮先前的一个误判**。之前把"`project_task.resource_type` 的 NOT NULL 没建上"判成非 delta（依据：两版字段定义逐字相同、19 库无该 SQL 约束、19 表 0 行）。真因是 20 装机时表里**已经有 1 行 null**：`tour_operation/models/project_task.py:19` 的 `resource_type` 是 `required=True` 的 Selection，NOT NULL 撞已有行 → 日志 `Missing not-null constraint on project.task.resource_type` ×2（12:12:26 那条 ERROR 同源）。后果评估：① 功能不破（ORM 仍在 create 时强制），但 **DB 层没有 NOT NULL**，裸 SQL/ETL 写 null 不会被拦 → 记进 B2 校验判据；② `tour.dashboard._get_pending_bookings()` 按 `resource_type` 分组，该 welcome 行 `state='01_in_progress'` 会以 `False` 组冒出来 → 分组要容忍 False（单测已按"缺项显式给 0"写死）；③ 切换后用户会看到"我的待办"菜单和一条欢迎任务，**属可见变更，要么业务确认，要么装完 `project_todo` 卸掉** |
+| 17 | — | 空库装这 19 个 tour_*（+ `purchase`）连带引入 **12 个 19 现网没装的模块**：`project_todo`（见 #16）、`account_payment_custom`、`portal_discuss`、`base_address_extended`、`mysubscription`、`website_sale_project`、`account_qr_code_sepa`、`base_report_wkhtmltox`、`crm_mail_plugin`、`mail_plugin`、`project_mail_plugin`（后 6 个 + `mysubscription` 都是 20 的 `auto_install` 连锁） | 逐个都是"20 比 19 多出来的界面/数据面"，B3 切换前的模块清单比对必须以此为准：**目标不是"和 19 一模一样"，而是"差异都有名字"**。`account_payment_custom` / `portal_discuss` / `base_address_extended` 三个非 auto，说明是被真实 depends 链拉进来的，B1 收尾时要定位链条归属再决定收不收敛 |
 
 结论：**"财务先做"是对的**——这一串里 5/6/7/9/10/11 都只有真跑单测才看得见，静态 diff（§5.4）看不见，
 它们分别落在 ETL 判据、权限决定和报表可用性上，越晚发现越贵。
@@ -360,6 +363,59 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 单测只覆盖了其中 4 处，其余靠静态检查器全仓扫；#12 则把"19 测试为什么能过"这个隐含前提
 （生产库里 admin 的手工组关系）暴露成一条 **B2 迁移数据规则**。
 #14 是这条规则的第二次独立命中：产品/项目创建权限同样靠手工组，且**必须落成签字决定**，不能只当测试夹具问题改掉。
+
+#15/#16 则是"空库全模块 `-i`"这一步（§5.7）才浮出来的：前者是 20 把 `odoo/http.py` 拆包后的导出收缩
+（半硬半隐：import 炸在装载期、`http.X` 炸在异常分支），后者推翻了我自己对一条 ERROR 的"非 delta"判定——
+两版代码逐字相同并不代表行为相同，**装机时表里已经有什么行**才是差异。
+#17 是它的副产物：目标库比 19 多 12 个模块，B3 的比对基准因此不能是"和 19 一致"，只能是"差异都有名字"。
+
+### 5.7 Gate B1 空库全模块 `-i` 实录（2026-09-22，基线 20.1a1）
+
+判据（计划 §7）：**20 空库 `-i` 全绿 + 单测通过**。两次独立全装，结论一致：
+
+| 项 | `b1gate3`（纯装载） | `b1gate4`（装载 + 单测，权威） |
+|---|---|---|
+| 命令 | 同上，去掉 `--test-enable` | 见下方"复现" |
+| 安装模块数 | 121 | **125**（多出的 4 个来自 `purchase` 链） |
+| tour_* 结果 | 19 装绿 / `tour_hr` 未装 | **19 installed / `tour_hr` uninstalled**（逐个已核对 `ir_module_module`） |
+| 装载结论 | `odoo.modules.loading: Modules loaded.` | `Modules loaded.` ×2（装载 + 测试后重建 registry） |
+| 单测 | — | **`0 failed, 0 error(s) of 129 tests`**（`--test-tags /tour_accounting,/tour_fleet,/tour_product,/tour_resource`） |
+| ERROR | 1 条（#16 的 `Constraint not added: resource_type … null values`） | 5 条：1 条同源 + 4 条**断言型负例**（`duplicate key … tour_guide_uniq_guide_code`、`null value … tour_supplier.name` —— 唯一性/必填用例故意触发的 `sql_db: bad query`） |
+
+复现（**端口与 addons-path 是指定值，不要改成 8069**）：
+
+```bash
+docker exec odoo20-db psql -U odoo -d postgres -c "CREATE DATABASE b1gate4 OWNER odoo TEMPLATE template0;"
+cd /home/adai/odoo20 && PYTHONPATH=/tmp/b0/pylibs ./odoo-bin -c odoo.conf -d b1gate4 \
+  --addons-path="odoo/addons,addons,/tmp/b0/b1addons" --http-port=28169 --no-http \
+  --stop-after-init --without-demo \
+  -i tour_base,tour_accounting,tour_budget,tour_cfo_portal,tour_cmo_portal,tour_coo_portal,\
+tour_fleet,tour_guide_portal,tour_menu,tour_operation,tour_order,tour_pm_portal,tour_product,\
+tour_report,tour_resource,tour_shopping,tour_tourist_portal,tour_website,tour_website_sale,purchase \
+  --test-enable --test-tags /tour_accounting,/tour_fleet,/tour_product,/tour_resource
+```
+
+**唯一的 gate 阻塞项是 `tour_hr`**：它经 `hr_resignation / ohrms_loan / hr_reward_warning /
+oh_employee_documents_expiry` 拉进 Webkul 链，装载期 `TypeError: Model 'hr.leave.type' does not
+exist in registry`（F5）。19 个 tour_* 与它无 depends 关系，所以 gate 可以先于 payroll 范围决定通过。
+
+WARNING 分类（125 模块全装一轮，共 17 类；逐类定性，不靠"看起来无害"）：
+
+| 计数 | 内容 | 定性 |
+|---|---|---|
+| 32 | `tour.plan.account: inconsistent 'compute_sudo' / 'store' for computed fields` | **19 同源**（`odoo/orm/registry.py:557,574` 两版都有）→ 非 delta，是既有代码味道：同模型内 compute 字段的 `store`/`compute_sudo` 不一致。归 B1 收尾的清理清单，不阻塞 gate |
+| 63 | `Translated stored related field (res.company.name / res.partner.commercial_company_name / project.task.partner_name / partner_company_name) will not be computed correctly` | **20 新增校验**（`odoo/orm/fields_textual.py:53`），但报的 4 个字段**全在上游自己的定义上**（19 的 `res.company.name` 同样是 `related='partner_id.name', store=True`），tour_* 无一重声明 → 接受为上游噪音，不动 core |
+| 18 | `Index attribute on 'res.partner.name' ignored, only trigram index…` | 上游字段、19 同源（`registry.py:863` vs 19 `:557+`）→ 噪音 |
+| 6 | `Model attribute '_sql_constraints' is no longer supported, please define models.Constraint` | **20 新弃用**：还能用（约束照样建），但要迁。tour_* 仅 3 个文件用到（`tour_accounting/models/account_period.py`、`tour_base/models/tour_bank_account.py`、`tour_fleet/models/fleet_vehicle.py`），而 `models.Constraint` 我们已在 `tour_accounting` 里用了 7 处 → 有现成范式，属**低风险收尾项**，且 `Constraint` 是 20-only，不能回落到 19 |
+| 6 | `Two fields (plan_class, plan_category) of tour.plan() have the same label` | 真重复（另有 `note`/`dunning_id`），改 label 即可，B1 收尾 |
+| 4 | `tour.plan.account.report_from_type: selection attribute will be ignored as the field is not a selection` | 真死属性（字段已改类型但留着 `selection=`），删即可 |
+| 3 | `Field tour.account.period.state: unknown parameter 'tracking'` | 真无效参数（该字段类型不支持 `tracking`）→ 该字段**不会**进变更历史，需业务确认是否本来就想要 |
+| 2 | `Missing not-null constraint on project.task.resource_type` | 见 #16，非 delta 但产生 B2 判据 |
+| 3 | `Error-prone use of @class in view header_contact_info` | 19 同源（`ir_ui_view.py:416/430`）→ 既有 |
+| 1 | `tour_website` 一处 RST docstring「Title underline too short」；1 处 `markdown is not installed` | 前者纯文档；后者 **19 容器同样没装 `markdown`** → 非 delta，但 20 的 mail 更多走 markdown 渲染，记进 `Dockerfile.odoo` 的 pin 待办（A0-5 同一处） |
+
+**与 §7 计划的差异**：计划写的是"tour_* 21 个去掉 tour_saas"。实测口径是 **20 个 tour_ 前缀模块**（`tour_saas` 不在适配树内，`tour_hr` 被 F5 挡住），
+且必须带上 `purchase` 才能覆盖 19 现网的模块面。这条差异本身要写进 B1 签字页。
 
 
 ## 6. 11 个「20 社区版已删除」的官方模块
