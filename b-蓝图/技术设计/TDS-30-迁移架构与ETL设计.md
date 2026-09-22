@@ -230,10 +230,49 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 2. **Webkul 视图继承断裂**：上游 20 把 `contract_type_id` 一类的字段从 `hr.employee` 表单移走，
    Webkul 的 xpath 失去锚点。G-HR 其余 7 件的"只需重写 security"结论**偏乐观**，
    需按视图逐个复核继承点（`hr_employee_updation`、`hr_custody` 已各中一处）。
-3. **遗留 API**：`self._cr` 在 20 的模型上彻底消失（19 仍可用且带 deprecation 警告）。
-   自有代码 **61 处 / 6 模块**（tour_resource、tour_accounting、tour_website、tour_fleet、
-   hrms_dashboard、hr_custody）需改 `self.env.cr`；另有 `from odoo.http import content_disposition`
-   → 20 移到 `odoo.http.stream`（现网仅 `tour_accounting/controllers/statement_report.py` 2 处，已在副本中改通）。
+3. **遗留 API**：`self._cr / _uid / _context` 在 20 的模型上彻底消失
+   （实测：19 `hasattr(AbstractModel,'_cr')=True`，20 = False；`api.Self`、`api.deprecated`
+   同样只在 19 存在）。**本节结论按 `scripts/migration/check_legacy_api.py` 重测修正**：
+   自有 tour_* 代码 **0 处**，全部 19 处（`self._cr` 13 + `self._context` 6）都在 Webkul 的
+   `hr_custody`（3 文件）与 `hrms_dashboard`（2 文件）里 —— 早先记的"自有代码 61 处 / 6 模块"
+   是把 `self.env.cr`（现网 96 处）一起 grep 进去了，作废。
+   这些替换（`self._cr` → `self.env.cr`）在 19 里同样合法，属**双兼容改动**，可先回落 19 分支当天回归。
+   另有 `from odoo.http import content_disposition` → 20 移到 `odoo.http.stream`
+   （现网仅 `tour_accounting/controllers/statement_report.py` 2 处，已在副本中改通）。
+
+### 5.4 空库装载阶段新增的硬事实（2026-09-22，`tour_accounting` 首个装绿）
+
+`tour_accounting` 连同 5 个依赖在 20 空库 `-i` **全绿**，过程中确认 4 条此前未知的行为差异，
+每条都会影响 B2 的 ETL 写法：
+
+* **20 会在建科目时自动建日记账**：`account.account.create()` → `_create_default_journals()`
+  （`account_account.py:1141`）对 `asset_cash` / `liability_credit_card` 造 bank/cash journal，
+  多个现金科目会撞 `mail.alias` 唯一约束（`Alias bank-none … already linked with Journal`）。
+  19 无此逻辑。**ETL 硬规则：科目必须走 SQL 直插，不能走 ORM `create()`**，
+  否则 20 会凭空造出生产上不存在的日记账；模块自带种子数据统一挂
+  `context="{'skip_auto_account_journal_creation': True}"`（`tools/convert.py` 的
+  `get_env()` 支持节点上的 `context`，可写在 `<odoo>` / `<data>` 根节点上按文件生效）。
+* **`post_init_hook` 签名**：19 与 20 的 `loading.py` 都是 `post_init(py_module)(env)` —— 传的是
+  **Environment 不是 cursor**。`tour_accounting/hooks.py` 用 `hasattr(x,'cursor')` 嗅探，两版都恒为
+  False，落到 `api.Environment(env, …)` 后撞 20 新增的 `assert isinstance(cr, BaseCursor)`。
+  改成 `isinstance(x, api.Environment)`（也是双兼容写法）。
+  副作用记录：该 hook 在 19 现网确实产出过 7 个 `CC-*` + 213 个 `PC-*` 分析账户，
+  而 20 空库新装时部门和线路都为空 → hook 是 no-op，这批数据必须由 ETL 带（象限 2/3）。
+* **翻译列 jsonb/varchar 血统**：`orm/fields.py:891` 对 `translate`/`company_dependent` 字段返回
+  `('jsonb','jsonb')`，但**已存在的列不会被改类型**。从早期 scratch 库克隆出来的库是 varchar，
+  装 tour_* 时 `ORDER BY res_company.name->>'en_US'` 直接报
+  `operator does not exist: character varying ->> unknown`。
+  **方法规则（不是可选项）：B1 的度量库必须由"同一条命令新建"，不许从旧 dev 库克隆。**
+* **20 删掉的对象补充确认**：`account.group`（19 现网表 0 行，fork 自己也没声明过该模型，
+  其 `data/account_account_tour.xml` 甚至注明"无 account.group 时科目为平铺"）、`res.bank`、
+  `hr.leave.type`（20 `hr_holidays` 只有 `hr.leave`/`hr.leave.allocation`/`hr.leave.accrual.level`/
+  `hr.leave.mandatory.day`）、`ir.actions.report.report_file` 字段（非存储 → 列级 diff 看不见）。
+  消失的核心 menu xid：`account.root_payment_menu`、`account.account_logs_menu`、
+  `account_payment.{payment_token,payment_method,payment_transaction}_menu`、
+  `hr_expense.menu_hr_expense_account_employee_expenses`。
+
+配套的三个静态预检脚本（`check_xmlid_order.py` / `check_model_refs.py` / `check_field_refs.py`）
+与新加的 `check_legacy_api.py` 用法见 `c-系统实现/tms-platform/scripts/migration/README-空库预检.md`。
 
 **未通过 Gate B1 的部分**：`tour_accounting`（卡在上面 R4 的数据修复函数）、其下游 7 个 portal 模块、
 `tour_website_sale` 尚未跑到；`hr.leave.type` 相关的 G-loan/G-payroll 仍按 §5.1 结论阻塞；

@@ -16,6 +16,10 @@
 | `check_xmlid_order.py` | xid 引用顺序 / 环 / 无 `name` 的 menu | `External ID not found`、`null value in column "name"` |
 | `check_model_refs.py` | XML 里的模型名是否还存在 | `Model not found: xxx` |
 | `check_field_refs.py` | XML `<field name>` 是否是真实字段 | `Invalid field 'xxx' in 'yyy'` |
+| `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法 | registry 建模期 `AttributeError`（连数据都装不到） |
+
+三个 XML 检查器在 `/tmp/b0/b1addons`（40 模块 / 299 个 XML）上跑出来 **0 命中**，
+即 tour_* 的 XML 层已全清；剩余命中全在 Webkul（`hr.leave.type`、`report_file`）。
 
 三者都用 19 源码做过对照验证（对照组必须报出已知的真实缺陷，否则检查器不可信）。
 
@@ -30,16 +34,18 @@ python3 scripts/migration/check_xmlid_order.py addons tour_accounting
 # --missing 会把"完全查不到定义的 xid"也升级为失败
 python3 scripts/migration/check_xmlid_order.py /tmp/b0/b1addons tour_accounting --missing
 
-# 2) 模型存在性：known = 导出 ir_model ∪ Python _name
-docker exec odoo20-db psql -U odoo -d b1fresh -qAt \
-  -c "select model from ir_model" > /tmp/b0/models20.txt
-python3 scripts/migration/check_model_refs.py /tmp/b0/b1addons --known /tmp/b0/models20.txt
+# 2) 模型存在性：第 2 个位置参数 = 目标库已有模型清单（位置参数，不是 --known）
+docker exec odoo20-db psql -U odoo -d b1fresh -Atc "select model from ir_model" | sort -u > /tmp/b0/models20.txt
+python3 scripts/migration/check_model_refs.py /tmp/b0/b1addons /tmp/b0/models20.txt
 
 # 3) 字段存在性：必须用 ir_model_fields，不能用 information_schema
-docker exec odoo20-db psql -U odoo -d b1fresh -qAt -c "
-  select m.model || '.' || f.name from ir_model_field f join ir_model m on m.id=f.model_id" \
-  > /tmp/b0/fields20.txt
-python3 scripts/migration/check_field_refs.py /tmp/b0/b1addons --fields /tmp/b0/fields20.txt
+docker exec odoo20-db psql -U odoo -d b1fresh -Atc \
+  "select model||'|'||name from ir_model_fields" | sort -u > /tmp/b0/fields20.txt
+python3 scripts/migration/check_field_refs.py /tmp/b0/b1addons /tmp/b0/fields20.txt
+
+# 4) 旧 API：只报"实测 19 有 / 20 无"的写法；--apply 只做零风险的 self._cr/_uid/_context 替换
+python3 scripts/migration/check_legacy_api.py addons
+python3 scripts/migration/check_legacy_api.py /tmp/b0/b1addons hr_custody hrms_dashboard --apply
 ```
 
 ## 已知判读要点
