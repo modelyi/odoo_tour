@@ -286,6 +286,36 @@ R4 之前 **`tour_base`、`tour_budget`、`tour_product`、`tour_resource`、`to
 （`data/data_fixes.xml` 的 `_fix_financial_report_data` + `report/report_financial.py`）。
 
 
+### 5.5 Webkul OHRMS 在 20 的可装性实测（2026-09-22）
+
+14 件 OHRMS + web_responsive 逐个在 20 空库试装，结论不是"整块不行"，而是**单一结构性阻塞点**：
+
+| 结论 | 模块 |
+|---|---|
+| 20 空库可装（仅需遗留 API 机械改写） | `hr_employee_updation`、`oh_employee_documents_expiry`、`hr_reward_warning`、`hrms_dashboard`、`hr_custody`、`html_editor`、`html_builder`、`web_responsive` … |
+| **阻塞** | `hr_payroll_community` —— 视图引用 19 的 `hr_holidays.edit_holiday_status_form`，而 20 把 `hr.leave.type` **整个模型删了**（不是改名：20 全树零引用），`hr.leave` 也去掉了 `holiday_status_id`，换成 `work_entry_type_id` |
+| 被上面连带阻塞 | `ohrms_loan`、`hr_resignation`（`depends` 里有 `hr_payroll_community`）→ 连带 `tour_hr` |
+
+**关键判据 —— 要移植的不是代码，是"根本没有的锚点"**：19 现网 `hr_leave_type` 73 行有值，
+但 `hr_leave` / `hr_payslip` / `ohrms_loan` / `hr_resignation` / `hr_custody` 的业务行**全为 0**。
+即工资单的"请假→薪资"逻辑在 20 侧既无模型可挂、也无数据要迁。
+→ 移植 = 在 20 上重写一个不存在的字段语义，**砍掉 payroll/loan/resignation 的实际业务损失为 0**；
+保留 `hr_custody`（可装）与考勤/文档/奖惩类（可装）。**此为待业务签字的范围决定**，不由技术侧单方判定。
+
+配套的两条工具结论（已写进预检脚本）：
+
+* QWeb **模板子树**里的 `groups=` / `t-out` 引用是**渲染期**解析，判成装载期缺陷是误报
+  （`report/multiple_invoice_report_template.xml:115` 那两个
+  `account.group_show_line_subtotals_tax_{excluded,included}` 实测在 **19 现网和 20 都不存在**，
+  是从 Cybrosys fork 继承来的死分支，不是 19→20 回归）；
+  但 `<template inherit_id="…">` 例外 —— `_tag_template` 把它转成
+  `<field name="inherit_id" ref="…">`（`tools/convert.py:529`），是**装载期**解析。
+* `website.default_website` 在 20 变成 `base.default_website`，且由
+  `website._ensure_default_website_consistency`（`website.py:468`）**惰性登记**
+  → 任何直接 `ref()` 它的种子数据都必须改成容错写入（本次用 `tour_website` 新增的
+  `_tour_write_brand_name`：`search([], limit=1, order='sequence, id')`）。
+
+
 ## 6. 11 个「20 社区版已删除」的官方模块
 
 | 模块 | 已装 | 20 侧事实 | 处置 |

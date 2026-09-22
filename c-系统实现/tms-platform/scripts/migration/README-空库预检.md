@@ -1,4 +1,4 @@
-# 空库装载预检三件套（B1 静态检查器）
+# 空库装载预检：B1 静态检查器清单
 
 ## 为什么要这三个脚本
 
@@ -17,6 +17,7 @@
 | `check_model_refs.py` | XML 里的模型名是否还存在 | `Model not found: xxx` |
 | `check_field_refs.py` | XML `<field name>` 是否是真实字段 | `Invalid field 'xxx' in 'yyy'` |
 | `check_legacy_api.py` | Python 里 20 已删除的旧 API 写法 | registry 建模期 `AttributeError`（连数据都装不到） |
+| `check_view_xpaths.py` | 视图继承的 `<xpath expr>` 锚点是否还在 | `Element '<xpath …>' cannot be located in parent view` |
 
 三个 XML 检查器在 `/tmp/b0/b1addons`（40 模块 / 299 个 XML）上跑出来 **0 命中**，
 即 tour_* 的 XML 层已全清；剩余命中全在 Webkul（`hr.leave.type`、`report_file`）。
@@ -46,6 +47,10 @@ python3 scripts/migration/check_field_refs.py /tmp/b0/b1addons /tmp/b0/fields20.
 # 4) 旧 API：只报"实测 19 有 / 20 无"的写法；--apply 只做零风险的 self._cr/_uid/_context 替换
 python3 scripts/migration/check_legacy_api.py addons
 python3 scripts/migration/check_legacy_api.py /tmp/b0/b1addons hr_custody hrms_dashboard --apply
+# 5) 视图继承锚点：第 2 个参数 = 目标库名（脚本自己 docker exec psql）或事先导出的清单文件
+/home/adai/odoo20/.venv/bin/python scripts/migration/check_view_xpaths.py /tmp/b0/b1addons b1tour1
+/home/adai/odoo20/.venv/bin/python scripts/migration/check_view_xpaths.py /tmp/b0/b1addons b1tour1 tour_website --strict
+#   需要 lxml，所以用 20 的解释器跑；默认只列候选（退出码 0），--strict 才把命中数当失败
 ```
 
 ## 已知判读要点
@@ -58,8 +63,19 @@ python3 scripts/migration/check_legacy_api.py /tmp/b0/b1addons hr_custody hrms_d
 * `check_xmlid_order.py` 的事件顺序里 `no_name` 必须排在自身 `def` 之前，否则
   "此前已定义"会把自己算进去，检查永远不触发（这个坑踩过一次）。
 * 跨模块引用只报不计错：装载顺序由依赖图决定，真正会炸的是**同模块内**的前向引用。
+* `check_view_xpaths.py` **只能当排序清单，不能当判据**：它按 (priority, id) 重放继承来合成
+  父视图 arch，但 Odoo 的合并 arch 还有没建模的环节（qweb `t-call` 展开等）。实测
+  `//footer//a[contains(@href,'mailto:')]`（继承 `website.footer_custom`）被判定位不到，
+  而真机 `-i` 装过了 —— 因为 20 的 `div#footer` 挂在 `<body>` 下、`<footer>` 元素在别处。
+  反过来 `website.contactus` 那两个锚点是真死了（安装当场炸）。所以：默认不计失败，
+  候选清单交给"能不能换成不依赖容器元素的锚"这道人工判断。
 
 ## 实测到的缺陷数量（19 源码 → 20 空库）
+
+* 视图继承锚点：tour_* 77 个锚点里，静态报 13 处，其中 `tour_website` 的
+  `/contactus` 页正文 2 处是真失效（20 的该页只剩表单），已删该记录并把
+  `//footer//…` 前缀改成按文本锚定（`//a[@href='mailto:…']`、`//h5[text()='About us']`），
+  这样两版都成立；另 2 处 `tour_accounting` 报的经实测是误报（模块已装绿）。
 
 * 装载顺序 / 无 name menu：25 处（tour_accounting），其中 14 处是仅用于改父级的
   `ir.ui.menu`，`name` 只能从 19 现网取回。

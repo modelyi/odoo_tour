@@ -37,6 +37,20 @@ PATTERNS = [
     ('X._context', re.compile(r'(?<!\.)\b(?!self\b)\w+\._context\b'), False, None),
     ('api.Self', re.compile(r'\bapi\.Self\b'), False, None),
     ('api.deprecated', re.compile(r'\bapi\.deprecated\b'), False, None),
+    # 20 把 ir.config_parameter 改成带类型读写：get_str/get_bool/get_int/get_float
+    # + set_*（`base/models/ir_config_parameter.py:66-131`），get_param/set_param 全删。
+    # 不可机械替换：选哪个类型取决于**调用点**语义（值可能是布尔开关也可能是字符串）。
+    # 好消息：20 的 value 仍是「字符串化后存 Text」，读时 _convert，所以 19 搬过来的
+    # 'True'/'5000.0' 这类值仍能被 get_bool/get_float 正确解释（ETL 不需要改写）。
+    ('ir.config_parameter.get_param',
+     re.compile(r'\.get_param\('), False, None),
+    ('ir.config_parameter.set_param',
+     re.compile(r'\.set_param\('), False, None),
+    # 20 的 odoo.tools.SQL 去掉 .code/.params，合并成 `_sql_tuple=(code,params,to_flush)`
+    # （`tools/sql.py:96`）。19 里 `Query.from_clause`/`where_clause` 返回的就是这个对象。
+    ('SQL.code/.params',
+     re.compile(r'\b(from_sql|where_sql|from_clause|where_clause)\.(code|params)\b'),
+     False, None),
 ]
 
 
