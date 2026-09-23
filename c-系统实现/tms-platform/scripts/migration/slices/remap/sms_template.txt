@@ -1,0 +1,2 @@
+@ref ir_model model
+update __stg_sms_template c set model_id = (select d.id from ir_model d join __ref_ir_model r on r.key = d.model where r.id = c.model_id) where c.model_id is not null;

@@ -1,0 +1,7 @@
+# 19 的 utm_source/utm_medium 与 20 各自装模块生成的同名不同 id（实测撞 utm_source_unique_name，
+# 且 crm_lead.source_id=15 在 20 不存在 → 80 条线索整表落不进去）。按 name 重映射。
+# 解析不到的（19 有、20 无同名）scalar 子查询返回 NULL → 该 lead 丢来源但不阻塞整表。
+@ref utm_source name
+@ref utm_medium name
+update __stg_crm_lead c set source_id = (select d.id from utm_source d join __ref_utm_source r on r.key = d.name where r.id = c.source_id) where c.source_id is not null;
+update __stg_crm_lead c set medium_id = (select d.id from utm_medium d join __ref_utm_medium r on r.key = d.name where r.id = c.medium_id) where c.medium_id is not null;

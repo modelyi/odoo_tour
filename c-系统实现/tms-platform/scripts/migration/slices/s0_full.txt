@@ -1,16 +1,11 @@
 # 由 etl_order.py 自动生成（外键拓扑，父在前）—— 不要手改顺序，改 seeds
 # 模式：upsert=按 id 覆盖 | insertignore=违约则跳过 | wipe=先按 id 删再插
-upsert mail_alias_domain
-upsert mail_alias
 upsert res_currency
 upsert res_country
 upsert res_country_group
 upsert account_fiscal_position
 upsert account_incoterms
-upsert report_paperformat
-upsert ir_act_report_xml
 upsert account_followup
-upsert ir_act_window
 upsert ir_mail_server
 upsert mail_template
 upsert followup_line
@@ -33,13 +28,12 @@ upsert crm_lost_reason
 upsert crm_recurring_plan
 upsert crm_stage
 upsert mail_activity_type
+upsert mail_alias_domain
 upsert mail_guest
-upsert mail_message_subtype
+insertignore mail_message_subtype
 upsert mail_message
-upsert res_groups_privilege
-upsert res_groups
 upsert website_visitor
-upsert discuss_channel
+skip discuss_channel
 upsert product_category
 upsert product_ribbon
 upsert uom_uom
@@ -47,8 +41,8 @@ upsert product_template
 upsert tour_line
 upsert utm_stage
 upsert utm_campaign
-upsert utm_medium
-upsert utm_source
+insertignore utm_medium
+insertignore utm_source
 upsert crm_lead
 upsert hr_departure_reason
 upsert hr_job
@@ -97,7 +91,7 @@ upsert fleet_vehicle_state
 upsert tour_guide
 upsert tour_driver
 upsert tour_supplier
-upsert fleet_vehicle
+insertignore fleet_vehicle
 upsert tour_account_period
 upsert tour_guide_loan
 upsert hr_expense
@@ -111,6 +105,7 @@ upsert project_milestone
 upsert project_task_recurrence
 upsert project_task_type
 upsert project_task
+upsert report_paperformat
 upsert res_company
 upsert crm_team
 upsert res_users

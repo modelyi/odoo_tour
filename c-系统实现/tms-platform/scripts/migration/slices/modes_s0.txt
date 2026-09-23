@@ -1,0 +1,8 @@
+# 源侧本身就有违反 20 唯一键的行 —— 用 insertignore 先灌能灌的，违约行进"待定性"报告
+ir_config_parameter insertignore
+fleet_vehicle insertignore
+tour_bank_account insertignore
+utm_source insertignore
+utm_medium insertignore
+mail_message_subtype insertignore
+discuss_channel skip

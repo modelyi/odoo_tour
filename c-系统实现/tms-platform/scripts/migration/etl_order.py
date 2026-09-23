@@ -16,11 +16,15 @@ DST = ('odoo20-db', 's0tour')
 
 # 20 侧自己拥有、**绝对不能被 19 覆盖**的元数据表（注册表、视图、动作、模块状态）。
 # 闭包碰到它们时必须剪掉，否则 upsert 会把 20 的界面定义改回 19 的样子 —— 那是整站白屏级别的事故。
-DENY_PREFIX = ('ir_model', 'ir_ui_view', 'ir_actions', 'ir_module', 'ir_logging',
+DENY_PREFIX = ('ir_model', 'ir_ui_view', 'ir_actions', 'ir_act_', 'ir_module', 'ir_logging',
                'ir_http', 'ir_rule', 'ir_model_access', 'ir_model_constraint',
                'ir_model_relation', 'ir_translation', 'ir_attachment_backup')
 DENY = {'ir_config_parameter', 'ir_cron', 'ir_sequence', 'ir_property', 'ir_qweb_field',
-        'bus_bus', 'decimal_precision', 'ir_demo', 'ir_demo_failure'}
+        'bus_bus', 'decimal_precision', 'ir_demo', 'ir_demo_failure',
+        # 权限组与邮件别名同样是"20 装载模块时自己生成"的基数据：res_groups.privilege_id /
+        # res_groups_privilege.category_id 指向 ir_module_category，两侧 id 不同 → 整表必炸。
+        # 门户组在 20 侧由模块自己建好，S0 冒烟靠 grant_smoke_portals.py 显式授予（TDS-30 §5.8）。
+        'res_groups', 'res_groups_privilege', 'mail_alias'}
 # 明确排除的"19 遗留备份表"（一次性修复脚本留下的 2×86,927 行死重，也是 tms 体积偏大的原因之一）
 DENY_EXACT = {'bak_tour_plan_channel', 'bak_tour_plan_income_move'}
 

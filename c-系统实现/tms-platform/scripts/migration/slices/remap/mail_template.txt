@@ -1,0 +1,3 @@
+# model_id 指向 ir_model —— 注册表由 20 自己装载模块生成，两侧同 id 不同模型，必须按 model 名重映射
+@ref ir_model model
+update __stg_mail_template c set model_id = (select d.id from ir_model d join __ref_ir_model r on r.key = d.model where r.id = c.model_id) where c.model_id is not null;
