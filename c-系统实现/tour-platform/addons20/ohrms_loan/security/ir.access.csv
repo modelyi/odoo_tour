@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+hr_loan_rule_employee,User: Modify own loan only (hr.loan),hr.loan,base.group_user,cru,"[('employee_id.user_id','=',user.id)]
+            "
+hr_loan_rule_user,Loan Forms Modification Accounts and Hr (hr.loan),hr.loan,hr.group_hr_manager,crud,

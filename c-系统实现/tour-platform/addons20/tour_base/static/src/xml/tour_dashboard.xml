@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="tour_base.TourDashboard">
+        <div class="o_tour_dashboard">
+            <t t-if="state.loading">
+                <div class="o_dashboard_loading">
+                    <div class="o_dashboard_spinner">
+                        <i class="fa fa-circle-o-notch fa-spin fa-3x"/>
+                    </div>
+                    <p>正在加载工作台...</p>
+                </div>
+            </t>
+            <t t-else="">
+                <!-- KPI Summary Row -->
+                <div class="o_kpi_row" t-if="state.data.kpi.length > 0">
+                    <t t-foreach="state.data.kpi" t-as="kpi" t-key="kpi.label">
+                        <div class="o_kpi_card" t-attf-data-color="#{kpi.color}">
+                            <div class="o_kpi_icon">
+                                <i t-attf-class="fa #{kpi.icon}"/>
+                            </div>
+                            <div class="o_kpi_content">
+                                <span class="o_kpi_value">
+                                    <t t-out="kpi.value"/>
+                                    <t t-if="kpi.amount">
+                                        <small class="o_kpi_amount"><t t-out="this.formatAmount(kpi.amount)"/></small>
+                                    </t>
+                                </span>
+                                <span class="o_kpi_label"><t t-out="kpi.label"/></span>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Section 1: Tour States -->
+                <div class="o_dashboard_section" t-if="state.data.tour_states.length > 0">
+                    <div class="o_section_header">
+                        <h3 class="o_section_title">
+                            <i class="fa fa-users"/> 团队状态概览
+                        </h3>
+                    </div>
+                    <div class="o_dashboard_cards">
+                        <t t-foreach="state.data.tour_states" t-as="item" t-key="item.state">
+                            <div class="o_state_card"
+                                 t-attf-data-color="#{item.color}"
+                                 t-on-click="() => this.navigateToTours(item.state)">
+                                <div class="o_state_icon">
+                                    <i t-attf-class="fa #{item.icon}"/>
+                                </div>
+                                <div class="o_state_info">
+                                    <span class="o_state_count"><t t-out="item.count"/></span>
+                                    <span class="o_state_label"><t t-out="item.label"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Section 2: Pending Bookings -->
+                <div class="o_dashboard_section" t-if="state.data.pending_bookings.length > 0">
+                    <div class="o_section_header">
+                        <h3 class="o_section_title">
+                            <i class="fa fa-calendar-check-o"/> 待确认预订
+                        </h3>
+                    </div>
+                    <div class="o_dashboard_cards">
+                        <t t-foreach="state.data.pending_bookings" t-as="item" t-key="item.type">
+                            <div class="o_booking_card"
+                                 t-on-click="() => this.navigateToBookings(item.type)">
+                                <div class="o_booking_icon">
+                                    <i t-attf-class="fa #{item.icon}"/>
+                                </div>
+                                <span class="o_booking_count"><t t-out="item.count"/></span>
+                                <span class="o_booking_label"><t t-out="item.label"/></span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Section 3: Financial Pending -->
+                <div class="o_dashboard_section">
+                    <div class="o_section_header">
+                        <h3 class="o_section_title">
+                            <i class="fa fa-money"/> 待处理财务
+                        </h3>
+                    </div>
+                    <div class="o_dashboard_cards o_finance_cards">
+                        <t t-foreach="state.data.financial_pending.pay_requests" t-as="item" t-key="'pr'">
+                            <div class="o_finance_card o_finance_pay"
+                                 t-on-click="() => this.navigateToPayRequests()">
+                                <div class="o_finance_icon">
+                                    <i class="fa fa-file-text-o"/>
+                                </div>
+                                <div class="o_finance_info">
+                                    <span class="o_finance_count"><t t-out="item.count"/></span>
+                                    <span class="o_finance_label"><t t-out="item.label"/></span>
+                                    <span class="o_finance_amount" t-if="item.amount">
+                                        <t t-out="this.formatAmount(item.amount)"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-foreach="state.data.financial_pending.claims" t-as="item" t-key="'cl'">
+                            <div class="o_finance_card o_finance_claim"
+                                 t-on-click="() => this.navigateToClaims()">
+                                <div class="o_finance_icon">
+                                    <i class="fa fa-check-circle"/>
+                                </div>
+                                <div class="o_finance_info">
+                                    <span class="o_finance_count"><t t-out="item.count"/></span>
+                                    <span class="o_finance_label"><t t-out="item.label"/></span>
+                                </div>
+                            </div>
+                        </t>
+                        <div class="o_finance_empty"
+                             t-if="state.data.financial_pending.pay_requests.length === 0 and state.data.financial_pending.claims.length === 0">
+                            <i class="fa fa-check-circle fa-2x"/>
+                            <p>暂无待处理事项</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Quick Navigation -->
+                <div class="o_dashboard_section">
+                    <div class="o_section_header">
+                        <h3 class="o_section_title">
+                            <i class="fa fa-compass"/> 快捷入口
+                        </h3>
+                    </div>
+                    <div class="o_nav_cards">
+                        <div class="o_nav_card" t-on-click="() => this.navigateToTours('all')">
+                            <i class="fa fa-list-alt"/>
+                            <span>团队订单</span>
+                        </div>
+                        <div class="o_nav_card" t-on-click="() => this.navigateToKanban()">
+                            <i class="fa fa-th-large"/>
+                            <span>计调看板</span>
+                        </div>
+                        <div class="o_nav_card" t-on-click="() => this.navigateToPayRequests()">
+                            <i class="fa fa-money"/>
+                            <span>请款单</span>
+                        </div>
+                        <div class="o_nav_card" t-on-click="() => this.navigateToClaims()">
+                            <i class="fa fa-check-circle"/>
+                            <span>收款认领</span>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

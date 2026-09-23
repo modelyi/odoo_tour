@@ -1,0 +1,223 @@
+/* TMS 官网 - 浅色主题（联洋海螺角旅行社） */
+:root {
+    --tour-primary: #0e7490;      /* teal-700 */
+    --tour-primary-dark: #155e75; /* cyan-800 */
+    --tour-accent: #f59e0b;       /* amber-500 */
+    --tour-ink: #0f172a;          /* slate-900 */
+    --tour-muted: #64748b;        /* slate-500 */
+    --tour-bg-soft: #f0f9ff;      /* sky-50 */
+    --tour-border: #e2e8f0;       /* slate-200 */
+}
+
+/* ---------- 首页 banner ---------- */
+.tour-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 45%, #cffafe 100%);
+    color: var(--tour-ink);
+    padding: 88px 0 80px;
+}
+.tour-hero::after {
+    content: "";
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: rgba(14, 116, 144, 0.08);
+}
+.tour-hero::before {
+    content: "";
+    position: absolute;
+    left: -90px;
+    bottom: -140px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(245, 158, 11, 0.10);
+}
+.tour-hero__badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--tour-primary);
+    border: 1px solid var(--tour-border);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .5px;
+}
+.tour-hero__title {
+    font-size: clamp(30px, 5vw, 52px);
+    font-weight: 800;
+    margin: 18px 0 14px;
+    letter-spacing: 1px;
+}
+.tour-hero__title em {
+    font-style: normal;
+    color: var(--tour-primary);
+}
+.tour-hero__subtitle {
+    font-size: 17px;
+    color: var(--tour-muted);
+    max-width: 620px;
+    line-height: 1.7;
+}
+.tour-hero__actions { margin-top: 28px; }
+
+/* ---------- 通用 section ---------- */
+.tour-section { padding: 56px 0; }
+.tour-section--soft { background: var(--tour-bg-soft); }
+.tour-section__title {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.tour-section__lead {
+    text-align: center;
+    color: var(--tour-muted);
+    margin-bottom: 32px;
+}
+
+/* ---------- 线路卡片 ---------- */
+.tour-card {
+    display: block;
+    height: 100%;
+    border: 1px solid var(--tour-border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    transition: transform .18s ease, box-shadow .18s ease;
+    color: var(--tour-ink);
+    text-decoration: none;
+}
+.tour-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .10);
+    color: var(--tour-ink);
+    text-decoration: none;
+}
+.tour-card__media {
+    height: 130px;
+    background: linear-gradient(135deg, #e0f2fe, #cffafe, #a5f3fc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tour-primary);
+    font-size: 40px;
+}
+.tour-card__body { padding: 16px 18px 18px; }
+.tour-card__title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 44px;
+    margin-bottom: 8px;
+}
+.tour-card__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    color: var(--tour-muted);
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+.tour-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #ecfeff;
+    color: var(--tour-primary);
+    border: 1px solid #a5f3fc;
+}
+.tour-tag--accent { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+.tour-card__foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px dashed var(--tour-border);
+}
+.tour-price { color: #e11d48; font-weight: 800; font-size: 18px; }
+.tour-price small { font-weight: 600; font-size: 12px; color: var(--tour-muted); }
+.tour-price--na { color: var(--tour-muted); font-weight: 600; font-size: 14px; }
+
+/* ---------- 品牌介绍 ---------- */
+.tour-brand { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
+.tour-brand h3 { font-size: 24px; font-weight: 700; margin-bottom: 14px; }
+.tour-brand p { color: var(--tour-muted); line-height: 1.8; }
+.tour-contact-list { list-style: none; padding: 0; margin: 0; }
+.tour-contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--tour-border);
+    color: var(--tour-ink);
+}
+.tour-contact-list li:last-child { border-bottom: none; }
+.tour-contact-list i {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    background: #ecfeff; color: var(--tour-primary);
+}
+
+/* ---------- 详情页 ---------- */
+.tour-detail-head {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--tour-border);
+}
+.tour-detail-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.tour-detail-sub { color: var(--tour-muted); }
+.tour-detail-sub .badge { margin-left: 6px; }
+.tour-panel {
+    border: 1px solid var(--tour-border);
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+}
+.tour-panel__head {
+    padding: 14px 20px;
+    background: var(--tour-bg-soft);
+    font-weight: 700;
+    border-bottom: 1px solid var(--tour-border);
+}
+.tour-panel__body { padding: 20px; }
+.tour-itinerary-item {
+    border-left: 3px solid var(--tour-primary);
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-top: 1px solid var(--tour-border);
+    border-right: 1px solid var(--tour-border);
+    border-bottom: 1px solid var(--tour-border);
+}
+.tour-departure-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--tour-border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+.tour-departure-row:hover { border-color: var(--tour-primary); }
+.tour-seats { color: var(--tour-primary); font-weight: 700; }
+.tour-seats--full { color: #e11d48; }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 768px) {
+    .tour-hero { padding: 56px 0; }
+    .tour-brand { grid-template-columns: 1fr; gap: 24px; }
+    .tour-section { padding: 40px 0; }
+}

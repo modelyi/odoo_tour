@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_cash_flow">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <h2>现金流量表</h2>
+                        <div class="row mt16 mb16">
+                            <div class="col-4">
+                                <strong>编制单位：</strong>
+                                <span t-out="env.company.name"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>期间：</strong>
+                                <span t-out="data['date_from']"/>
+                                <span> 至 </span>
+                                <span t-out="data['date_to']"/>
+                            </div>
+                            <div class="col-4 text-end">
+                                <strong>单位：元</strong>
+                            </div>
+                        </div>
+                        <div class="row mb8">
+                            <div class="col-6">
+                                <span>凭证范围：</span>
+                                <span t-if="data['target_move'] == 'all'">全部凭证</span>
+                                <span t-if="data['target_move'] == 'posted'">已过账凭证</span>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-reports">
+                            <thead>
+                                <tr>
+                                    <th>项目</th>
+                                    <th class="text-end">金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="get_account_lines" t-as="a">
+                                    <t t-if="a['level'] != 0">
+                                        <t t-set="is_bold" t-value="a.get('type') in ('section', 'subtotal', 'total', 'grand_total')"/>
+                                        <td>
+                                            <span style="color: white;" t-out="'..' * (a.get('level', 1) - 1)"/>
+                                            <t t-if="is_bold">
+                                                <strong t-out="a.get('name')"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-out="a.get('name')"/>
+                                            </t>
+                                        </td>
+                                        <td class="text-end" style="white-space: nowrap;">
+                                            <span t-out="a.get('balance')"
+                                                  t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

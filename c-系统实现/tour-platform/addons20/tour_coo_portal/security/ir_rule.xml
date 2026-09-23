@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- COO 门户：可以查看所有运营数据 -->
+
+    <!-- tour.plan: COO 可以查看所有团队（含审批写入） -->
+<!-- project.task: COO 可以查看所有计调任务 -->
+<!-- tour.guide: COO 可以查看所有导游 -->
+<!-- tour.supplier: COO 可以查看所有供应商 -->
+<!-- tour.line: COO 可以查看所有线路 -->
+<!-- fleet.vehicle: COO 可以查看所有车辆 -->
+<!-- res.partner: COO 可以查看所有联系人 -->
+</odoo>

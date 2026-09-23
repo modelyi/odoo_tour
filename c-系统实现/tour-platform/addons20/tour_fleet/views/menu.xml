@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 车队管理顶级菜单 -->
+    <menuitem id="menu_tms_fleet"
+        name="车队管理"
+        web_icon="tour_fleet,static/description/icon.png"
+        sequence="25"
+        groups="tour_base.group_tour_operator,tour_base.group_tour_guide_manager"/>
+
+    <menuitem id="menu_tour_driver"
+        name="司机档案"
+        parent="menu_tms_fleet"
+        action="action_tour_driver"
+        sequence="10"/>
+
+    <menuitem id="menu_tour_vehicle"
+        name="车辆档案"
+        parent="menu_tms_fleet"
+        action="fleet.fleet_vehicle_action"
+        sequence="20"/>
+</odoo>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- 费用分摊规则 Form -->
+    <record id="view_cost_allocation_rule_form" model="ir.ui.view">
+        <field name="name">tour.cost.allocation.rule.form</field>
+        <field name="model">tour.cost.allocation.rule</field>
+        <field name="arch" type="xml">
+            <form string="费用分摊规则">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="source_account_id"/>
+                            <field name="allocation_base"/>
+                        </group>
+                        <group>
+                            <field name="target_plan_id"/>
+                            <field name="journal_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="分摊明细">
+                        <field name="line_ids" nolabel="1">
+                            <list string="分摊明细" editable="bottom">
+                                <field name="analytic_account_id"/>
+                                <field name="percentage"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 费用分摊规则 List -->
+    <record id="view_cost_allocation_rule_list" model="ir.ui.view">
+        <field name="name">tour.cost.allocation.rule.list</field>
+        <field name="model">tour.cost.allocation.rule</field>
+        <field name="arch" type="xml">
+            <list string="费用分摊规则">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="source_account_id"/>
+                <field name="allocation_base"/>
+                <field name="target_plan_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 费用分摊规则 Action -->
+    <record id="action_cost_allocation_rule" model="ir.actions.act_window">
+        <field name="name">费用分摊规则</field>
+        <field name="res_model">tour.cost.allocation.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- 执行分摊 Wizard -->
+    <record id="view_cost_allocation_wizard_form" model="ir.ui.view">
+        <field name="name">tour.cost.allocation.wizard.form</field>
+        <field name="model">tour.cost.allocation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="执行费用分摊">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="rule_ids" widget="many2many_tags"/>
+                </group>
+                <group string="分摊预览">
+                    <field name="preview_ids" nolabel="1">
+                        <list string="预览">
+                            <field name="rule_id"/>
+                            <field name="source_account_id"/>
+                            <field name="target_account_id"/>
+                            <field name="amount" widget="monetary"/>
+                        </list>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_compute_preview" string="计算预览" type="object" class="btn-secondary"/>
+                    <button name="action_execute" string="执行分摊" type="object" class="btn-primary"/>
+                    <button string="取消" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cost_allocation_wizard" model="ir.actions.act_window">
+        <field name="name">执行费用分摊</field>
+        <field name="res_model">tour.cost.allocation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- 菜单 -->
+    <menuitem id="menu_cost_allocation_rule"
+              name="费用分摊规则"
+              parent="menu_management_analysis"
+              action="action_cost_allocation_rule"
+              sequence="50"/>
+
+    <menuitem id="menu_cost_allocation_wizard"
+              name="执行费用分摊"
+              parent="menu_management_analysis"
+              action="action_cost_allocation_wizard"
+              sequence="60"/>
+</odoo>

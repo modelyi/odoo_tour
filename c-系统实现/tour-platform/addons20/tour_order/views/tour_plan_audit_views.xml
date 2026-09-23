@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 计调审核列表视图 -->
+    <record id="view_tour_plan_operation_audit_list" model="ir.ui.view">
+        <field name="name">tour.plan.operation.audit.list</field>
+        <field name="model">tour.plan</field>
+        <field name="arch" type="xml">
+            <list string="计调审核" decoration-info="operation_audit_state == 'pending'" decoration-success="operation_audit_state == 'approved'" decoration-danger="operation_audit_state == 'rejected'">
+                <field name="plan_code"/>
+                <field name="plan_name"/>
+                <field name="line_id"/>
+                <field name="begin_date"/>
+                <field name="state"/>
+                <field name="operation_audit_state" widget="badge" decoration-info="operation_audit_state == 'pending'" decoration-success="operation_audit_state == 'approved'" decoration-danger="operation_audit_state == 'rejected'"/>
+                <field name="operation_audit_uid"/>
+                <field name="operation_audit_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 财务审核列表视图 -->
+    <record id="view_tour_plan_finance_audit_list" model="ir.ui.view">
+        <field name="name">tour.plan.finance.audit.list</field>
+        <field name="model">tour.plan</field>
+        <field name="arch" type="xml">
+            <list string="财务审核" decoration-info="finance_audit_state == 'pending'" decoration-success="finance_audit_state == 'approved'" decoration-danger="finance_audit_state == 'rejected'">
+                <field name="plan_code"/>
+                <field name="plan_name"/>
+                <field name="line_id"/>
+                <field name="begin_date"/>
+                <field name="state"/>
+                <field name="operation_audit_state" widget="badge"/>
+                <field name="finance_audit_state" widget="badge" decoration-info="finance_audit_state == 'pending'" decoration-success="finance_audit_state == 'approved'" decoration-danger="finance_audit_state == 'rejected'"/>
+                <field name="finance_audit_uid"/>
+                <field name="finance_audit_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 计调审核 Action -->
+    <record id="action_tour_plan_operation_audit" model="ir.actions.act_window">
+        <field name="name">计调审核</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_tour_plan_operation_audit_list"/>
+        <field name="domain">[('state', 'in', ['operating', 'in_progress', 'completed'])]</field>
+        <field name="context">{'search_default_operation_audit_pending': 1}</field>
+    </record>
+
+    <!-- 财务审核 Action -->
+    <record id="action_tour_plan_finance_audit" model="ir.actions.act_window">
+        <field name="name">财务审核</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_tour_plan_finance_audit_list"/>
+        <field name="domain">[('operation_audit_state', '=', 'approved'), ('state', 'in', ['in_progress', 'completed'])]</field>
+        <field name="context">{'search_default_finance_audit_pending': 1}</field>
+    </record>
+
+    <!-- 单团归档 Action -->
+    <record id="action_tour_plan_archive" model="ir.actions.act_window">
+        <field name="name">单团归档</field>
+        <field name="res_model">tour.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'completed'), ('finance_audit_state', '=', 'approved')]</field>
+    </record>
+
+    <!-- 搜索视图：审核状态过滤器 -->
+    <record id="view_tour_plan_audit_search" model="ir.ui.view">
+        <field name="name">tour.plan.audit.search</field>
+        <field name="model">tour.plan</field>
+        <field name="arch" type="xml">
+            <search string="审核搜索">
+                <field name="plan_code"/>
+                <field name="plan_name"/>
+                <separator/>
+                <filter name="operation_audit_pending" string="待计调审核" domain="[('operation_audit_state', '=', 'pending')]"/>
+                <filter name="operation_audit_approved" string="计调审核通过" domain="[('operation_audit_state', '=', 'approved')]"/>
+                <filter name="finance_audit_pending" string="待财务审核" domain="[('finance_audit_state', '=', 'pending')]"/>
+                <filter name="finance_audit_approved" string="财务审核通过" domain="[('finance_audit_state', '=', 'approved')]"/>
+                <separator/>
+                <filter name="group_operation_audit" string="计调审核状态" context="{'group_by': 'operation_audit_state'}"/>
+                <filter name="group_finance_audit" string="财务审核状态" context="{'group_by': 'finance_audit_state'}"/>
+            </search>
+        </field>
+    </record>
+</odoo>

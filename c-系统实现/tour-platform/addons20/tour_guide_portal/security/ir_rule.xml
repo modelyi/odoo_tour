@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 导游门户：只能看自己的数据 -->
+
+    <!-- tour.guide: portal 用户只能看关联自己 partner 的导游 -->
+<!-- tour.commission: portal 用户只能看自己的佣金 -->
+<!-- tour.guide.loan: portal 用户只能看自己的借款 -->
+<!-- hr.expense: portal 用户只能看自己的报账，可创建 -->
+<!-- ir.attachment: portal 用户只能访问自己报账的附件 -->
+<!-- project.task: portal 用户只能看自己的派团 -->
+<!-- tour.plan: portal 用户只能看自己参与的团 -->
+</odoo>

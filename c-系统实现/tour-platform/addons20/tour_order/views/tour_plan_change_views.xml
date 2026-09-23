@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_plan_change_search" model="ir.ui.view">
+        <field name="name">tour.plan.change.search</field>
+        <field name="model">tour.plan.change</field>
+        <field name="arch" type="xml">
+            <search string="单团变更搜索">
+                <field name="plan_id"/>
+                <field name="origin_plan_id"/>
+                <field name="change_type"/>
+                <separator/>
+                <filter name="group_change_type" string="变更类型" context="{'group_by':'change_type'}"/>
+                <filter name="audited" string="已审核" domain="[('audit_chk','=',True)]"/>
+                <filter name="unaudited" string="未审核" domain="[('audit_chk','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_plan_change" model="ir.actions.act_window">
+        <field name="name">单团变更</field>
+        <field name="res_model">tour.plan.change</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_plan_change_search"/>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_plan_change_list" model="ir.ui.view">
+        <field name="name">tour.plan.change.list</field>
+        <field name="model">tour.plan.change</field>
+        <field name="arch" type="xml">
+            <list string="单团变更">
+                <field name="plan_id"/>
+                <field name="origin_plan_id"/>
+                <field name="change_type"/>
+                <field name="price_diff"/>
+                <field name="audit_chk"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_plan_change_form" model="ir.ui.view">
+        <field name="name">tour.plan.change.form</field>
+        <field name="model">tour.plan.change</field>
+        <field name="arch" type="xml">
+            <form string="单团变更">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="origin_plan_id"/>
+                            <field name="change_type"/>
+                        </group>
+                        <group>
+                            <field name="price_diff"/>
+                            <field name="audit_chk"/>
+                            <field name="create_uid"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="change_reason"/>
+                    </group>
+                    <group string="变更前后值">
+                        <field name="old_value"/>
+                        <field name="new_value"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

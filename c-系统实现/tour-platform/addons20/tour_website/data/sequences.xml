@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 线上报名单号（报名单号，唯一） -->
+        <record id="seq_tour_plan_reg_online" model="ir.sequence">
+            <field name="name">线上报名单号</field>
+            <field name="code">tour.plan.reg.online</field>
+            <field name="prefix">ON</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- 线上承载团队团号（自动建团用） -->
+        <record id="seq_tour_plan_online" model="ir.sequence">
+            <field name="name">线上团队团号</field>
+            <field name="code">tour.plan.online</field>
+            <field name="prefix">TPL</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

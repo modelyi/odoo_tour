@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 计调强制安排权限组 -->
+    <record id="group_tour_operation_force_assign" model="res.groups">
+        <field name="name">计调强制安排</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- 营运中心二次确认权限组 -->
+    <record id="group_tour_operation_confirm" model="res.groups">
+        <field name="name">营运中心二次确认</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- 计调角色隐含 project 用户组：让计调看到项目菜单并能读写 project.task -->
+    <record id="tour_base.group_tour_operator" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('project.group_project_user'))]"/>
+    </record>
+
+    <!-- 预订任务记录规则：按公司隔离 -->
+</odoo>

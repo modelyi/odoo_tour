@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_plan_reg_tourist,tour.plan.reg tourist,tour_order.model_tour_plan_reg,group_tourist_portal,1,0,0,0
+access_tour_plan_tourist,tour.plan tourist,tour_order.model_tour_plan,group_tourist_portal,1,0,0,0
+access_tour_plan_reg_passenger_tourist,tour.plan.reg.passenger tourist,tour_website.model_tour_plan_reg_passenger,group_tourist_portal,1,0,0,0
+access_tour_line_tourist,tour.line tourist,tour_product.model_tour_line,group_tourist_portal,1,0,0,0
+access_tour_departure_tourist,tour.departure tourist,tour_product.model_tour_departure,group_tourist_portal,1,0,0,0
+access_tour_payment_claim_tourist,tour.payment.claim tourist,tour_accounting.model_tour_payment_claim,group_tourist_portal,1,0,0,0
+access_account_move_tourist,account.move tourist,account.model_account_move,group_tourist_portal,1,0,0,0

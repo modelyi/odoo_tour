@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+rule_vehicle_coo,fleet.vehicle: COO sees all vehicles (fleet.vehicle),fleet.vehicle,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"
+rule_task_coo,project.task: COO sees all tasks (project.task),project.task,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"
+rule_partner_coo,res.partner: COO sees all partners (res.partner),res.partner,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"
+rule_guide_coo,tour.guide: COO sees all guides (tour.guide),tour.guide,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"
+rule_line_coo,tour.line: COO sees all lines (tour.line),tour.line,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"
+rule_plan_coo,tour.plan: COO sees all plans (tour.plan),tour.plan,tour_coo_portal.group_coo_portal,ru,"[(1, '=', 1)]"
+rule_supplier_coo,tour.supplier: COO sees all suppliers (tour.supplier),tour.supplier,tour_coo_portal.group_coo_portal,r,"[(1, '=', 1)]"

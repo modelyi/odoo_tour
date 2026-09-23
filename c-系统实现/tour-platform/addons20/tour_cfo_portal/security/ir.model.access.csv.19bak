@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_expense_cfo,hr.expense cfo,hr_expense.model_hr_expense,group_cfo_portal,1,1,1,0
+access_tour_commission_cfo,tour.commission cfo,tour_accounting.model_tour_commission,group_cfo_portal,1,1,0,0
+access_tour_guide_loan_cfo,tour.guide.loan cfo,tour_accounting.model_tour_guide_loan,group_cfo_portal,1,1,0,0
+access_tour_guide_cfo,tour.guide cfo,tour_resource.model_tour_guide,group_cfo_portal,1,0,0,0
+access_tour_plan_cfo,tour.plan cfo,tour_order.model_tour_plan,group_cfo_portal,1,0,0,0
+access_ir_attachment_cfo,ir.attachment cfo,base.model_ir_attachment,group_cfo_portal,1,1,1,0

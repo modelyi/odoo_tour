@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- sale.order.line 列表：显示班期 + 总人数 + 桥接报名 -->
+    <record id="view_order_line_tree_tour" model="ir.ui.view">
+        <field name="name">sale.order.line.list.tour</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="departure_id" optional="show"/>
+                <field name="total_people" optional="show"/>
+                <field name="reg_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- sale.order.line 只读表单：显示班期 + 五档人数 + 桥接报名 -->
+    <record id="view_order_line_form_tour" model="ir.ui.view">
+        <field name="name">sale.order.line.form.tour</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <group string="线路班期 / 人数">
+                    <field name="departure_id"/>
+                    <field name="adult_num"/>
+                    <field name="child_num"/>
+                    <field name="old_man_num"/>
+                    <field name="student_num"/>
+                    <field name="baby_num"/>
+                    <field name="total_people"/>
+                    <field name="reg_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

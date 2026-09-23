@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_pm_portal" model="res.groups">
+        <field name="name">产品专家门户用户</field>
+        <field name="comment">产品专家门户用户组，可访问产品管理门户</field>
+    </record>
+</odoo>

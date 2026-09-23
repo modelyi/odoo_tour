@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_financial">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <t t-set="data_report_margin_top" t-value="12"/>
+                <t t-set="data_report_header_spacing" t-value="9"/>
+                <t t-set="data_report_dpi" t-value="110"/>
+                <div class="page">
+                    <h2 t-out="data['form']['account_report_id'][1]"/>
+                    <div class="row mt16 mb16">
+                        <div class="col-4">
+                            <strong>编制单位：</strong>
+                            <span t-out="env.company.name"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>期间：</strong>
+                            <span t-if="data['form']['date_from']" t-out="data['form']['date_from']"/>
+                            <span> 至 </span>
+                            <span t-if="data['form']['date_to']" t-out="data['form']['date_to']"/>
+                        </div>
+                        <div class="col-4 text-end">
+                            <strong>单位：元</strong>
+                        </div>
+                    </div>
+                    <div class="row mb8">
+                        <div class="col-6">
+                            <span>凭证范围：</span>
+                            <span t-if="data['form']['target_move'] == 'all'">全部凭证</span>
+                            <span t-if="data['form']['target_move'] == 'posted'">已过账凭证</span>
+                        </div>
+                    </div>
+
+                    <!-- 单余额模式（财政部格式） -->
+                    <table class="table table-sm table-reports"
+                           t-if="not data['form']['enable_filter'] and not data['form']['debit_credit']">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th class="text-end">金额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="report_lines" t-as="a">
+                                <t t-if="a['level'] != 0">
+                                    <t t-set="is_bold" t-value="a.get('level') &lt;= 3"/>
+                                    <td>
+                                        <span style="color: white;" t-out="'..' * a.get('level', 0)"/>
+                                        <t t-if="is_bold">
+                                            <strong t-out="a.get('name')"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-out="a.get('name')"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-out="a.get('balance')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 借贷模式 -->
+                    <table class="table table-sm table-reports" t-if="data['form']['debit_credit'] == 1">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th class="text-end">借方</th>
+                                <th class="text-end">贷方</th>
+                                <th class="text-end">余额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="report_lines" t-as="a">
+                                <t t-if="a['level'] != 0">
+                                    <t t-set="is_bold" t-value="a.get('level') &lt;= 3"/>
+                                    <td>
+                                        <span style="color: white;" t-out="'..' * a.get('level', 0)"/>
+                                        <t t-if="is_bold">
+                                            <strong t-out="a.get('name')"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-out="a.get('name')"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-end" style="white-space: nowrap;">
+                                        <span t-out="a.get('debit')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                    <td class="text-end" style="white-space: nowrap;">
+                                        <span t-out="a.get('credit')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                    <td class="text-end" style="white-space: nowrap;">
+                                        <span t-out="a.get('balance')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 比较模式 -->
+                    <table class="table table-sm table-reports"
+                           t-if="data['form']['enable_filter'] == 1 and not data['form']['debit_credit']">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th class="text-end">本期金额</th>
+                                <th class="text-end">上期金额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="report_lines" t-as="a">
+                                <t t-if="a['level'] != 0">
+                                    <t t-set="is_bold" t-value="a.get('level') &lt;= 3"/>
+                                    <td>
+                                        <span style="color: white;" t-out="'..' * a.get('level', 0)"/>
+                                        <t t-if="is_bold">
+                                            <strong t-out="a.get('name')"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-out="a.get('name')"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-out="a.get('balance')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-out="a.get('balance_cmp')"
+                                              t-options="{'widget': 'monetary', 'display_currency': env.company.currency_id}"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

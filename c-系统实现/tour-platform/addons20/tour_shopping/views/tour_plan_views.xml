@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- tour.plan Smart Button: 购物记录 -->
+    <record id="view_tour_plan_form_shopping" model="ir.ui.view">
+        <field name="name">tour.plan.form.shopping.smart.button</field>
+        <field name="model">tour.plan</field>
+        <field name="inherit_id" ref="tour_order.view_tour_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_shopping" type="object"
+                    class="oe_stat_button" icon="fa-shopping-cart"
+                    help="查看该团的购物记录">
+                    <div class="o_stat_info">
+                        <field name="shop_record_count" widget="statinfo" string="购物"/>
+                        <field name="shop_total_amount" widget="monetary"
+                            class="o_stat_text"/>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

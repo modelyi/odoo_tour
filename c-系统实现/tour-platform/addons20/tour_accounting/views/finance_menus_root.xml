@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 财务管理：独立顶级应用入口（与业务管理并列）。
+         整合原「业务管理>财务管理」和「会计>旅行社财务」的全部菜单项。
+         仅财务角色可见。 -->
+    
+    <menuitem id="menu_tour_finance"
+        name="财务管理"
+        web_icon="tour_accounting,static/description/icon.png"
+        sequence="25"
+        groups="tour_base.group_tour_finance"/>
+    <menuitem id="menu_tms_daily_ops"
+        name="日常收付"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="10"/>
+    <menuitem id="menu_tms_profit_collection"
+        name="核算与催收"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="20"/>
+    <menuitem id="menu_tms_finance_config"
+        name="配置"
+        parent="menu_tour_finance"
+        groups="tour_base.group_tour_finance"
+        sequence="200"/>
+</odoo>

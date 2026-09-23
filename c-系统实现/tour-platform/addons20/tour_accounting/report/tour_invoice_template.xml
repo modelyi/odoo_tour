@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 旅游差额征税发票打印模板：仅在 tour_is_diff_tax=True 时追加
+         「差额征税」标识 + 票面差额要素 + 扣除项目清单附表 [BS-12 §3.5]。 -->
+    <template id="tour_invoice_template" inherit_id="account.report_invoice_document">
+        <xpath expr="//table[@name='invoice_line_table']" position="after">
+            <div t-if="o.tour_is_diff_tax" class="tour_diff_tax_block mt-3">
+                <!-- 差额征税标识 -->
+                <div class="row mb-2">
+                    <div class="col-12 text-center">
+                        <span class="badge border border-danger text-danger px-3 py-2"
+                              style="font-size: 16px;">差额征税发票</span>
+                    </div>
+                </div>
+
+                <!-- 差额征税票面要素（扣除项目金额以「***」体现，明细见附表） -->
+                <table class="table table-sm table-borderless o_diff_tax_summary mb-2">
+                    <tr>
+                        <td class="text-start">全部价款（含税）：</td>
+                        <td class="text-end"><span t-field="o.tour_diff_gross"/></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">扣除项目金额（含税）：</td>
+                        <td class="text-end"><span>***</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">差额销售额（不含税）：</td>
+                        <td class="text-end"><span t-field="o.tour_diff_base"/></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">销项税额（净额）：</td>
+                        <td class="text-end"><span t-field="o.tour_diff_tax"/></td>
+                    </tr>
+                </table>
+
+                <!-- 扣除项目清单附表 -->
+                <p class="fw-bold mb-1">扣除项目清单（附表）</p>
+                <table class="table table-sm o_main_table table-borderless">
+                    <thead>
+                        <tr>
+                            <th class="text-start">扣除项目</th>
+                            <th class="text-start">对应成本科目</th>
+                            <th class="text-end">含税金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.tour_deduct_line_ids" t-as="line">
+                            <tr>
+                                <td class="text-start"><span t-field="line.deduct_type"/></td>
+                                <td class="text-start"><span t-field="line.account_id"/></td>
+                                <td class="text-end">
+                                    <span t-field="line.amount"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                        <tr t-if="not o.tour_deduct_line_ids">
+                            <td colspan="3" class="text-center text-muted">无扣除明细</td>
+                        </tr>
+                        <tr class="fw-bold" t-if="o.tour_deduct_line_ids">
+                            <td class="text-end" colspan="2">合计</td>
+                            <td class="text-end">
+                                <span t-out="sum(o.tour_deduct_line_ids.mapped('amount'))"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- 团号/线路（旅游专用票面备注） -->
+                <t t-if="o.tour_plan_id">
+                    <p class="mb-0">团号：<span t-field="o.tour_plan_id.plan_code"/>
+                        <t t-if="o.tour_plan_id.line_id">
+                            <span>　线路：</span><span t-field="o.tour_plan_id.line_id"/>
+                        </t>
+                    </p>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

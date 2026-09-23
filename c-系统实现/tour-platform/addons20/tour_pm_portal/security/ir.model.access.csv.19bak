@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_line_pm,tour.line pm,tour_product.model_tour_line,group_pm_portal,1,0,0,0
+access_tour_departure_pm,tour.departure pm,tour_product.model_tour_departure,group_pm_portal,1,1,0,0
+access_tour_plan_pm,tour.plan pm,tour_order.model_tour_plan,group_pm_portal,1,0,0,0
+access_tour_plan_reg_pm,tour.plan.reg pm,tour_order.model_tour_plan_reg,group_pm_portal,1,0,0,0
+access_tour_supplier_pm,tour.supplier pm,tour_resource.model_tour_supplier,group_pm_portal,1,0,0,0

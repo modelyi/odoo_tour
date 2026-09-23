@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+rule_expense_portal,hr.expense: portal user sees own expenses (hr.expense),hr.expense,base.group_portal,cru,"['|',
+            ('x_guide_id.partner_id', '=', user.partner_id.id),
+            ('employee_id.user_id.partner_id', '=', user.partner_id.id)]"
+rule_task_portal,project.task: portal user sees own dispatches (project.task),project.task,base.group_portal,r,"[
+            ('resource_type', '=', 'guide'),
+            ('guide_id.partner_id', '=', user.partner_id.id)]"
+rule_commission_portal,tour.commission: portal user sees own commissions (tour.commission),tour.commission,base.group_portal,r,"[('guide_id.partner_id', '=', user.partner_id.id)]"
+rule_guide_portal,tour.guide: portal user sees own guide (tour.guide),tour.guide,base.group_portal,r,"[('partner_id', '=', user.partner_id.id)]"
+rule_loan_portal,tour.guide.loan: portal user sees own loans (tour.guide.loan),tour.guide.loan,base.group_portal,r,"['|',
+            ('guide_id.partner_id', '=', user.partner_id.id),
+            ('employee_id.user_id.partner_id', '=', user.partner_id.id)]"
+rule_plan_portal,tour.plan: portal user sees own plans (tour.plan),tour.plan,base.group_portal,r,"[('guide_ids', 'in', user.partner_id.id)]"

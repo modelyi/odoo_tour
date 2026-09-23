@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        官网品牌配置：导航「线路产品」入口 + 网站名称 + 移除空商城入口
+        采用 website 标准方式：website.menu 记录 + <delete> + <function>
+    -->
+    <data>
+
+        <!--
+            顶部/页脚导航新增「线路产品」→ /tours
+            website.menu.create() 会在父菜单为 website.main_menu 时，
+            自动同步一份到顶部菜单（Top Menu）与一份到页脚菜单（Footer Menu）。
+        -->
+        <record id="menu_tours" model="website.menu">
+            <field name="name">线路产品</field>
+            <field name="url">/tours</field>
+            <field name="sequence" eval="30"/>
+            <field name="parent_id" ref="website.main_menu"/>
+        </record>
+
+        <!--
+            移除指向 Odoo 默认空商城的 Shop 菜单（顶部 + 页脚），
+            避免用户点击进入空 /shop。线路产品入口由上面的 menu_tours 承接。
+        -->
+        <delete model="website.menu" search="[('url', '=', '/shop')]"/>
+
+        <!-- 网站标题/品牌：My Website → 联洋海螺角旅行社 -->
+        <function model="website" name="_tour_write_brand_name" eval="['联洋海螺角旅行社']"/>
+
+        <!--
+            公司联系电话/邮箱（标准来源，供邮件/发票/联系人等引用）：
+            电话 13877778888、邮箱 info@layaconch.com
+            官网页头/页脚的可编辑文本块是主题硬编码占位，另见 website_brand_templates.xml 的 QWeb 覆盖。
+        -->
+        <function model="res.company" name="write" eval="[ref('base.main_company'), {'phone': '13877778888', 'email': 'info@layaconch.com'}]"/>
+
+    </data>
+</odoo>

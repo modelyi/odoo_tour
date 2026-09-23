@@ -1,0 +1,18 @@
+id,name,model_id,group_id/id,operation,domain
+access_hr_contract_advantage_template_community_user,access.hr.contract.advantage.template.community.user (hr.contract.advantage.template),hr.contract.advantage.template,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_contribution_register_community_user,access.hr.contribution.register.community.user (hr.contribution.register),hr.contribution.register,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_payroll_community_structure_community_user,access.hr.payroll.structure.community.user (hr.payroll.structure),hr.payroll.structure,hr_payroll_community.group_hr_payroll_community_user,crud,
+hr_payroll_rule_officer,Officer and subordinates Payslip (hr.payslip),hr.payslip,hr_payroll_community.group_hr_payroll_community_user,crud,"['|','|', ('employee_id.user_id', '=',
+                user.id), ('employee_id.department_id', '=', False),
+                ('employee_id.department_id.manager_id.user_id', '=', user.id)]
+            "
+access_hr_payslip_employees_community_user,access.community.user (hr.payslip.employees),hr.payslip.employees,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_payslip_input_community_user,access.hr.payslip.input.community.user (hr.payslip.input),hr.payslip.input,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_payslip_line_community_user,access.hr.payslip.line.community.user (hr.payslip.line),hr.payslip.line,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_payslip_run,access.hr.payslip.run (hr.payslip.run),hr.payslip.run,hr_payroll_community.group_hr_payroll_community_manager,crud,
+access_hr_payslip_worked_days_community_user,access.hr.payslip.worked.days.community.user (hr.payslip.worked.days),hr.payslip.worked.days,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_rule_input_community_user,access.hr.rule.input.community.user (hr.rule.input),hr.rule.input,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_salary_rule_community_user,access.hr.salary.rule.community.user (hr.salary.rule),hr.salary.rule,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_hr_salary_rule_category_community_user,access.hr.salary.rule.category.community.user (hr.salary.rule.category),hr.salary.rule.category,hr_payroll_community.group_hr_payroll_community_user,crud,
+access_payslip_lines_contribution_register_community_user,access.payslip.lines.contribution.register.community.user (payslip.lines.contribution.register),payslip.lines.contribution.register,hr_payroll_community.group_hr_payroll_community_user,crud,
+hr_payslip_rule_manager,All Payslip (hr.payslip),hr.payslip,hr_payroll_community.group_hr_payroll_community_manager,crud,"[(1,'=',1)]"

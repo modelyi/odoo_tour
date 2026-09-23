@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        标准会计菜单归位（不与 accounting_menu_reorg.xml 冲突的部分）
+        accounting_menu_reorg.xml 负责将凭证/资产/预算/报表/分析重组为 5 个二级分类，
+        本文件仅处理发票、催款、客户对账单等归位。
+    -->
+
+    <!-- 发票（Odoo 原生，归位回「客户」Customers 分组） -->
+    <record model="ir.ui.menu" id="account.menu_action_move_out_invoice_type">
+        <field name="parent_id" ref="account.menu_finance_receivables"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- 催款 → 催款级别进「审查」Review、催款报告进「客户」Customers -->
+    <record model="ir.ui.menu" id="account_followup_menu">
+        <field name="name">催收级别</field>
+        <field name="parent_id" ref="account.account_audit_menu"/>
+        <field name="sequence">30</field>
+    </record>
+    <record model="ir.ui.menu" id="customer_statements_menu">
+        <field name="name">催收报告</field>
+        <field name="parent_id" ref="account.menu_finance_receivables"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- 账龄分析 → Partner Reports 下 -->
+    <record model="ir.ui.menu" id="menu_aged_trial_balance">
+        <field name="name">往来单位帐龄余额</field>
+        <field name="parent_id" ref="account_reports_partner"/>
+        <field name="sequence">2</field>
+    </record>
+</odoo>

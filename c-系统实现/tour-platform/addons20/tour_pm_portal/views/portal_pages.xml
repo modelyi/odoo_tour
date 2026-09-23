@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- 班期作战室 /my/pm                                              -->
+    <!-- ============================================================ -->
+    <template id="portal_pm_war_room" name="PM War Room">
+        <t t-call="tour_pm_portal.portal_pm_layout">
+            <div class="o_pm_war_room">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">
+                        <i class="fa fa-crosshairs me-2"/>班期作战室
+                    </h3>
+                    <div class="btn-group" role="group">
+                        <a t-attf-href="/my/pm?month=#{prev_month}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa fa-chevron-left"/>
+                        </a>
+                        <span class="btn btn-outline-primary btn-sm disabled">
+                            <t t-out="month_name"/>
+                        </span>
+                        <a t-attf-href="/my/pm?month=#{next_month}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa fa-chevron-right"/>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 预警统计 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card border-danger">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-danger mb-1">
+                                        <i class="fa fa-exclamation-circle me-1"/>零报名班期
+                                    </h6>
+                                    <p class="mb-0 small text-muted">15 天内出发且无人报名</p>
+                                </div>
+                                <h2 class="text-danger mb-0"><t t-out="zero_count"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-warning">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-warning mb-1">
+                                        <i class="fa fa-clock-o me-1"/>紧急班期
+                                    </h6>
+                                    <p class="mb-0 small text-muted">7 天内出发且售罄率 &lt; 30%</p>
+                                </div>
+                                <h2 class="text-warning mb-0"><t t-out="urgent_count"/></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 日历视图 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fa fa-calendar me-2"/>班期日历
+                        </h5>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="row g-1">
+                            <!-- 星期标题 -->
+                            <t t-foreach="['一','二','三','四','五','六','日']" t-as="wd">
+                                <div class="col text-center py-1">
+                                    <small class="text-muted fw-bold">周<t t-out="wd"/></small>
+                                </div>
+                            </t>
+                            <!-- 日期格子 -->
+                            <t t-set="first_weekday" t-value="month_start.weekday()"/>
+                            <t t-set="days_in_month" t-value="(month_end - month_start).days + 1"/>
+                            <!-- 空白填充 -->
+                            <t t-foreach="range(first_weekday)" t-as="i">
+                                <div class="col" style="min-height: 80px;"/>
+                            </t>
+                            <!-- 日期 -->
+                            <t t-foreach="range(1, days_in_month + 1)" t-as="day">
+                                <t t-set="day_date" t-value="month_start + datetime.timedelta(days=day - 1)"/>
+                                <t t-set="day_deps" t-value="calendar_data.get(day, [])"/>
+                                <t t-set="is_today" t-value="day_date == today"/>
+                                <div t-att-class="'col border rounded p-1 ' + (is_today and 'bg-primary bg-opacity-10 border-primary' or '')"
+                                     style="min-height: 80px;">
+                                    <div class="d-flex justify-content-between">
+                                        <small t-att-class="is_today and 'fw-bold text-primary' or ''">
+                                            <t t-out="day"/>
+                                        </small>
+                                        <t t-if="day_deps">
+                                            <span class="badge bg-secondary" t-att-title="'%s 个班期' % len(day_deps)">
+                                                <t t-out="len(day_deps)"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                    <t t-foreach="day_deps" t-as="item">
+                                        <div t-att-class="'small mt-1 px-1 rounded text-truncate ' +
+                                            (item['status'] == 'zero' and 'bg-danger text-white' or
+                                             item['status'] == 'tight' and 'bg-warning text-dark' or
+                                             item['status'] == 'urgent' and 'bg-danger text-white' or
+                                             item['status'] == 'low' and 'bg-info text-white' or
+                                             item['status'] == 'ended' and 'bg-secondary text-white' or
+                                             'bg-success text-white')"
+                                             t-att-title="'%s | 售罄率 %s%% | %s 天后出发' % (item['dep'].line_id.name, item['fill_rate'], item['days_to_go'])">
+                                            <i class="fa fa-bus me-1"/>
+                                            <t t-out="item['dep'].line_id.name[:8]"/>
+                                            <span class="float-end"><t t-out="item['fill_rate']"/>%</span>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <div class="d-flex gap-3 small">
+                            <span><i class="fa fa-square text-danger me-1"/>零报名</span>
+                            <span><i class="fa fa-square text-warning me-1"/>余位紧张 (≥80%)</span>
+                            <span><i class="fa fa-square text-info me-1"/>余位偏低 (&lt;50%)</span>
+                            <span><i class="fa fa-square text-success me-1"/>正常</span>
+                            <span><i class="fa fa-square text-secondary me-1"/>已结束</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 待处理列表 -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <h6 class="mb-0">
+                                    <i class="fa fa-exclamation-triangle me-2"/>零报名 — 需要决策
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="zero_list">
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="zero_list" t-as="item">
+                                            <div class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <strong><t t-out="item['dep'].line_id.name"/></strong>
+                                                        <br/>
+                                                        <small class="text-muted">
+                                                            出发：<t t-out="item['dep'].start_date" t-options="{'widget': 'date'}"/>
+                                                            （<t t-out="item['days_to_go']"/> 天后）
+                                                            · 总位数：<t t-out="item['dep'].seats"/>
+                                                        </small>
+                                                    </div>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-danger btn-sm pm-action-btn"
+                                                                t-att-data-dep-id="item['dep'].id"
+                                                                data-action="cancel"
+                                                                title="取消班期">
+                                                            <i class="fa fa-times"/>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-3 mb-0">暂无零报名班期</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning">
+                                <h6 class="mb-0">
+                                    <i class="fa fa-clock-o me-2"/>紧急 — 即将出发且余位多
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="urgent_list">
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="urgent_list" t-as="item">
+                                            <div class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <strong><t t-out="item['dep'].line_id.name"/></strong>
+                                                        <br/>
+                                                        <small class="text-muted">
+                                                            出发：<t t-out="item['dep'].start_date" t-options="{'widget': 'date'}"/>
+                                                            （<t t-out="item['days_to_go']"/> 天后）
+                                                            · 售罄率：<t t-out="item['fill_rate']"/>%
+                                                            · 余位：<t t-out="item['dep'].remain_seats"/>
+                                                        </small>
+                                                    </div>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-warning btn-sm pm-action-btn"
+                                                                t-att-data-dep-id="item['dep'].id"
+                                                                data-action="adjust_seats"
+                                                                title="调整位数">
+                                                            <i class="fa fa-edit"/>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted text-center py-3 mb-0">暂无紧急班期</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 线路详情 /my/pm/lines/&lt;int:line_id&gt;                         -->
+    <!-- ============================================================ -->
+    <template id="portal_pm_line_detail" name="PM Line Detail">
+        <t t-call="tour_pm_portal.portal_pm_layout">
+            <div class="o_pm_line_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fa fa-route me-2"/>
+                        <t t-out="line.name"/>
+                    </h3>
+                    <a href="/my/pm" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回作战室
+                    </a>
+                </div>
+
+                <!-- 业绩汇总 -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="text-muted">累计团队</h6>
+                                <h3><t t-out="total_plans"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="text-muted">累计收客</h6>
+                                <h3><t t-out="total_guests"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="text-muted">累计收入</h6>
+                                <h3>¥<t t-out="'%.0f' % total_revenue"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h6 class="text-muted">退团率</h6>
+                                <h3 t-att-class="'text-danger' if cancel_rate > 10 else ''">
+                                    <t t-out="cancel_rate"/>%
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 班期列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">关联班期</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <t t-if="departures">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>出发日期</th>
+                                        <th>返程日期</th>
+                                        <th class="text-end">总位数</th>
+                                        <th class="text-end">已订</th>
+                                        <th class="text-end">余位</th>
+                                        <th class="text-end">售罄率</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="departures" t-as="item">
+                                        <tr>
+                                            <td><t t-out="item['dep'].start_date" t-options="{'widget': 'date'}"/></td>
+                                            <td><t t-out="item['dep'].end_date" t-options="{'widget': 'date'}"/></td>
+                                            <td class="text-end"><t t-out="item['dep'].seats"/></td>
+                                            <td class="text-end"><t t-out="item['dep'].booked_seats"/></td>
+                                            <td class="text-end"><t t-out="item['dep'].remain_seats"/></td>
+                                            <td class="text-end">
+                                                <span t-att-class="'badge ' + (item['fill_rate'] >= 80 and 'bg-danger' or item['fill_rate'] >= 50 and 'bg-warning' or 'bg-success')">
+                                                    <t t-out="item['fill_rate']"/>%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (item['dep'].state == 'published' and 'bg-success' or item['dep'].state == 'ended' and 'bg-secondary' or 'bg-info')">
+                                                    <t t-out="dict(item['dep']._fields['state'].selection).get(item['dep'].state, '-')"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted text-center py-3 mb-0">暂无班期数据</p>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

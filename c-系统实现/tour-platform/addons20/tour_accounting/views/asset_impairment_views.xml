@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Asset Impairment Form View -->
+    <record model="ir.ui.view" id="asset_impairment_view_form">
+        <field name="name">asset.impairment.view.form</field>
+        <field name="model">asset.impairment</field>
+        <field name="arch" type="xml">
+            <form string="资产减值">
+                <header>
+                    <button name="action_confirm" string="确认" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_post" string="过账" type="object"
+                            invisible="state != 'confirmed'" class="oe_highlight"/>
+                    <button name="action_cancel" string="取消" type="object"
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_draft" string="设为草稿" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not move_id">
+                            <field name="move_count" widget="statinfo" string="凭证"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="减值信息">
+                            <field name="asset_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="amount" widget="monetary" currency_field="currency_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="company_id" options="{'no_create': True}"
+                                   groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="减值原因">
+                            <field name="reason" nolabel="1" readonly="state != 'draft'"
+                                   placeholder="请说明减值原因..."/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="备注" name="notes">
+                            <field name="notes" nolabel="1" readonly="state != 'draft'"
+                                   placeholder="备注信息..."/>
+                        </page>
+                        <page string="凭证" name="move" invisible="not move_id">
+                            <group>
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Asset Impairment List View -->
+    <record model="ir.ui.view" id="asset_impairment_view_tree">
+        <field name="name">asset.impairment.view.tree</field>
+        <field name="model">asset.impairment</field>
+        <field name="arch" type="xml">
+            <list string="资产减值"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'confirmed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="date"/>
+                <field name="amount" widget="monetary"/>
+                <field name="reason"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirmed'"
+                       decoration-success="state == 'posted'"
+                       decoration-danger="state == 'cancelled'"/>
+                <field name="move_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Asset Impairment Search View -->
+    <record model="ir.ui.view" id="asset_impairment_view_search">
+        <field name="name">asset.impairment.view.search</field>
+        <field name="model">asset.impairment</field>
+        <field name="arch" type="xml">
+            <search string="搜索资产减值">
+                <field name="name"/>
+                <field name="asset_id"/>
+                <filter name="state_draft" string="草稿" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_posted" string="已过账" domain="[('state', '=', 'posted')]"/>
+                <group>
+                    <filter name="group_asset" string="资产" domain="[]" context="{'group_by': 'asset_id'}"/>
+                    <filter name="group_date" string="日期" domain="[]" context="{'group_by': 'date'}"/>
+                    <filter name="group_state" string="状态" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Asset Impairment Action -->
+    <record model="ir.actions.act_window" id="action_asset_impairment">
+        <field name="name">资产减值</field>
+        <field name="res_model">asset.impairment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

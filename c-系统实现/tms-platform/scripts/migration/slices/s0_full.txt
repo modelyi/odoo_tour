@@ -1,5 +1,6 @@
 # 由 etl_order.py 自动生成（外键拓扑，父在前）—— 不要手改顺序，改 seeds
 # 模式：upsert=按 id 覆盖 | insertignore=违约则跳过 | wipe=先按 id 删再插
+# 第 3 列 = 人工排除列（见 --exclude-file），用于"20 有、19 没有落点"的列
 upsert res_currency
 upsert res_country
 upsert res_country_group
@@ -15,7 +16,7 @@ upsert res_lang
 upsert website
 upsert res_partner
 upsert res_partner_bank
-upsert account_journal
+upsert account_journal check_sequence_id
 upsert account_bank_statement
 upsert account_bank_statement_line
 upsert account_cash_rounding
@@ -58,10 +59,10 @@ upsert hr_department
 upsert sms_template
 upsert project_project_stage
 upsert project_update
-upsert project_project
+upsert project_project alias_id
 upsert tour_departure
-upsert account_payment_method
-upsert payment_provider
+insertignore account_payment_method
+skip payment_provider
 upsert account_payment_method_line
 upsert account_payment_term
 upsert product_product
@@ -76,7 +77,7 @@ upsert tour_plan
 upsert account_analytic_account
 upsert account_asset_category
 upsert account_bulk_payment
-upsert payment_method
+skip payment_method
 upsert payment_token
 upsert payment_transaction
 upsert account_payment

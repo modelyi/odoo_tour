@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 导游门户布局模板 -->
+
+    <template id="portal_guide_layout" name="Guide Portal Layout">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_submenu_id" ref="tour_guide_portal.menu_guide_portal"/>
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_guide">
+                <div class="row">
+                    <div class="col-md-3">
+                        <t t-call="tour_guide_portal.portal_guide_sidebar"/>
+                    </div>
+                    <div class="col-md-9">
+                        <t t-out="0"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 侧边栏导航 -->
+    <template id="portal_guide_sidebar" name="导游门户侧栏">
+        <div class="o_guide_sidebar">
+            <h5 class="mb-3">
+                <i class="fa fa-user-circle me-2"/>
+                <t t-out="guide.name"/>
+            </h5>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" t-att-class="'active' if page_name == 'guide_home' else ''"
+                       href="/my/guide">
+                        <i class="fa fa-home me-2"/>门户首页
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" t-att-class="'active' if page_name == 'dispatches' else ''"
+                       href="/my/guide/dispatches">
+                        <i class="fa fa-calendar me-2"/>我的派团
+                        <span class="badge bg-secondary ms-auto" t-out="dispatch_count"/>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" t-att-class="'active' if page_name in ('commissions', 'commission_detail') else ''"
+                       href="/my/guide/commissions">
+                        <i class="fa fa-money me-2"/>佣金查询
+                        <span class="badge bg-secondary ms-auto" t-out="commission_count"/>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" t-att-class="'active' if page_name in ('loans', 'loan_detail') else ''"
+                       href="/my/guide/loans">
+                        <i class="fa fa-credit-card me-2"/>借款状态
+                        <span class="badge bg-secondary ms-auto" t-out="loan_count"/>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" t-att-class="'active' if page_name in ('expenses', 'expense_detail', 'expense_new') else ''"
+                       href="/my/guide/expenses">
+                        <i class="fa fa-file-text-o me-2"/>我的报账
+                        <span class="badge bg-secondary ms-auto" t-out="expense_count"/>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </template>
+
+    <!-- 无权限提示 -->
+    <template id="portal_guide_no_access" name="导游门户无权限">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_guide_no_access text-center py-5">
+                <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"/>
+                <h3>未找到导游档案</h3>
+                <p class="text-muted">您的账号尚未关联导游档案，请联系管理员。</p>
+            </div>
+        </t>
+    </template>
+</odoo>

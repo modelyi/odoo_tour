@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 员工自助权限 [BS-15 §7.7]
+         员工（hr.employee 关联 res.users）仅见/写自己的借款与报账；
+         财务角色（tour_base.group_tour_finance）全权（审批/放款/审核/付款）。
+         组合语义：不同 group 的 record rule 取 OR，财务用户同时在 base.group_user 与
+         tour_base.group_tour_finance，故见 (自己的 ∪ 全部) = 全部；
+         非财务内部用户只在 base.group_user，仅见自己。 -->
+
+    <!-- ============ 借款单 ============ -->
+</odoo>

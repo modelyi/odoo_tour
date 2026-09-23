@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Record Rule: HR Manager can see all announcements -->
+<!-- Record Rule: Employee can only see relevant announcements -->
+</data>
+</odoo>

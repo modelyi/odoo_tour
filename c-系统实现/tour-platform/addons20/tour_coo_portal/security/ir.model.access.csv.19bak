@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_plan_coo,tour.plan coo,tour_order.model_tour_plan,group_coo_portal,1,1,0,0
+access_project_task_coo,project.task coo,project.model_project_task,group_coo_portal,1,0,0,0
+access_tour_guide_coo,tour.guide coo,tour_resource.model_tour_guide,group_coo_portal,1,0,0,0
+access_tour_supplier_coo,tour.supplier coo,tour_resource.model_tour_supplier,group_coo_portal,1,0,0,0
+access_tour_line_coo,tour.line coo,tour_product.model_tour_line,group_coo_portal,1,0,0,0
+access_fleet_vehicle_coo,fleet.vehicle coo,fleet.model_fleet_vehicle,group_coo_portal,1,0,0,0
+access_res_partner_coo,res.partner coo,base.model_res_partner,group_coo_portal,1,0,0,0

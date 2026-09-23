@@ -1,0 +1,14 @@
+# 19 侧不存在的列 → 规则填值。表达式被括成 (…) 拼进 INSERT 的 SELECT 列表，
+# `s.` = staging 别名（`FROM __stg_<表> s`）。
+#
+# res_partner_bank.clearing_label_id 是 20 新增的 NOT NULL 外键（→ clearing.label）。
+# 20 的算法（odoo20/odoo/addons/base/models/res_partner_bank.py:124 _compute_clearing_label_id）：
+#   按账户国家找该国家的标签，没有国家就用"国家级为 NULL 的默认标签"（13 条里恰好 1 条）。
+#
+# 为什么这里只能取默认标签：**19 的开户行国家没有落点**。
+#   19 侧 res_partner_bank 没有 country_id 列，国家挂在 bank_id → res.bank.country 上；
+#   而 20 把 res.bank 整个模型删了（实测 19 有 / 20 无的表清单里有它，60 行）
+#   → bank_id 不在两侧交集里 → staging 里连这个值都不存在，remap 通道也用不上。
+#   待定性（B2 找业务定）：要不要按 iban/账号前缀重算清算标签，还是接受"全部默认标签"
+#   （实测 19 侧 97 条里 clearing_number 非空 0 条、挂 bank_id 48 条 —— 清算号码本来就没在用，真正会丢的只是"开户行名称"这一栏）。
+clearing_label_id	(select min(cl.id) from clearing_label cl where cl.country_id is null)

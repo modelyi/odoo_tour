@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  旅行社明细科目表 [BS-10 §四]
+  以 l10n_cn 企业会计准则（大企业/通用）科目编码为基准，追加旅行社专用明细科目。
+  Odoo 19：account.account 用 code（compute，落 code_store），不写 company_id；
+  无 account.group 时科目为平铺（code 层级内嵌于编码）。
+  差额征税可扣除标记（tour_vat_deductible）按 BS-10 §4.6：
+    住宿/餐饮/交通/门票/地接/签证 = 可扣除；导服/保险/自费/购物 = 不可扣除。
+  Odoo 20：account.account.create() 会对 asset_cash/liability_credit_card 自动建日记账
+  （_create_default_journals），多个现金科目会撞 mail.alias 唯一约束，且 19 不会凭空建 journal。
+  故本文件统一带 skip_auto_account_journal_creation。
+-->
+<odoo noupdate="1" context="{'skip_auto_account_journal_creation': True}">
+
+    <!-- ============ 资产类 ============ -->
+    <record id="tour_account_1001" model="account.account">
+        <field name="code">1001</field>
+        <field name="name">库存现金</field>
+        <field name="account_type">asset_cash</field>
+    </record>
+    <record id="tour_account_1002" model="account.account">
+        <field name="code">1002</field>
+        <field name="name">银行存款</field>
+        <field name="account_type">asset_cash</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_1012" model="account.account">
+        <field name="code">1012</field>
+        <field name="name">其他货币资金</field>
+        <field name="account_type">asset_cash</field>
+    </record>
+    <record id="tour_account_101201" model="account.account">
+        <field name="code">1012.01</field>
+        <field name="name">其他货币资金—微信</field>
+        <field name="account_type">asset_cash</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_101202" model="account.account">
+        <field name="code">1012.02</field>
+        <field name="name">其他货币资金—支付宝</field>
+        <field name="account_type">asset_cash</field>
+        <field name="reconcile">True</field>
+    </record>
+
+    <record id="tour_account_1122" model="account.account">
+        <field name="code">1122</field>
+        <field name="name">应收账款</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_112201" model="account.account">
+        <field name="code">1122.01</field>
+        <field name="name">应收账款—团款</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_112202" model="account.account">
+        <field name="code">1122.02</field>
+        <field name="name">应收账款—购物佣金</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_112203" model="account.account">
+        <field name="code">1122.03</field>
+        <field name="name">应收账款—二次结算</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_1123" model="account.account">
+        <field name="code">1123</field>
+        <field name="name">预付账款</field>
+        <field name="account_type">asset_prepayments</field>
+        <field name="reconcile">True</field>
+    </record>
+
+    <record id="tour_account_1221" model="account.account">
+        <field name="code">1221</field>
+        <field name="name">其他应收款</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_122101" model="account.account">
+        <field name="code">1221.01</field>
+        <field name="name">其他应收款—员工借款</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_122102" model="account.account">
+        <field name="code">1221.02</field>
+        <field name="name">其他应收款—员工备用金</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_122103" model="account.account">
+        <field name="code">1221.03</field>
+        <field name="name">其他应收款—员工代付</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_122104" model="account.account">
+        <field name="code">1221.04</field>
+        <field name="name">其他应收款—内部往来</field>
+        <field name="account_type">asset_receivable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_1231" model="account.account">
+        <field name="code">1231</field>
+        <field name="name">坏账准备</field>
+        <field name="account_type">asset_current</field>
+    </record>
+
+    <!-- ============ 负债类 ============ -->
+    <record id="tour_account_2202" model="account.account">
+        <field name="code">2202</field>
+        <field name="name">应付账款</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_220201" model="account.account">
+        <field name="code">2202.01</field>
+        <field name="name">应付账款—地接费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220202" model="account.account">
+        <field name="code">2202.02</field>
+        <field name="name">应付账款—住宿费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220203" model="account.account">
+        <field name="code">2202.03</field>
+        <field name="name">应付账款—餐费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220204" model="account.account">
+        <field name="code">2202.04</field>
+        <field name="name">应付账款—交通费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220205" model="account.account">
+        <field name="code">2202.05</field>
+        <field name="name">应付账款—门票费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220206" model="account.account">
+        <field name="code">2202.06</field>
+        <field name="name">应付账款—签证费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_220207" model="account.account">
+        <field name="code">2202.07</field>
+        <field name="name">应付账款—导服费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_220208" model="account.account">
+        <field name="code">2202.08</field>
+        <field name="name">应付账款—保险费</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_220209" model="account.account">
+        <field name="code">2202.09</field>
+        <field name="name">应付账款—自费项目</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_220210" model="account.account">
+        <field name="code">2202.10</field>
+        <field name="name">应付账款—购物成本</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+
+    <record id="tour_account_2203" model="account.account">
+        <field name="code">2203</field>
+        <field name="name">预收账款</field>
+        <field name="account_type">liability_current</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_220301" model="account.account">
+        <field name="code">2203.01</field>
+        <field name="name">预收账款—团款</field>
+        <field name="account_type">liability_current</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_2211" model="account.account">
+        <field name="code">2211</field>
+        <field name="name">应付职工薪酬</field>
+        <field name="account_type">liability_current</field>
+    </record>
+
+    <record id="tour_account_2221" model="account.account">
+        <field name="code">2221</field>
+        <field name="name">应交税费</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222101" model="account.account">
+        <field name="code">2221.01</field>
+        <field name="name">应交税费—应交增值税(销项)</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222102" model="account.account">
+        <field name="code">2221.02</field>
+        <field name="name">应交税费—应交增值税(进项)</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222103" model="account.account">
+        <field name="code">2221.03</field>
+        <field name="name">应交税费—应交增值税(销项税额抵减)</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222104" model="account.account">
+        <field name="code">2221.04</field>
+        <field name="name">应交税费—应交企业所得税</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222105" model="account.account">
+        <field name="code">2221.05</field>
+        <field name="name">应交税费—应交个人所得税</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222106" model="account.account">
+        <field name="code">2221.06</field>
+        <field name="name">应交税费—应交印花税</field>
+        <field name="account_type">liability_current</field>
+    </record>
+    <record id="tour_account_222107" model="account.account">
+        <field name="code">2221.07</field>
+        <field name="name">应交税费—应交增值税(简易计税/小规模)</field>
+        <field name="account_type">liability_current</field>
+    </record>
+
+    <record id="tour_account_2241" model="account.account">
+        <field name="code">2241</field>
+        <field name="name">其他应付款</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224101" model="account.account">
+        <field name="code">2241.01</field>
+        <field name="name">其他应付款—代收代付</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224102" model="account.account">
+        <field name="code">2241.02</field>
+        <field name="name">其他应付款—导游分成</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224103" model="account.account">
+        <field name="code">2241.03</field>
+        <field name="name">其他应付款—待认领</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224104" model="account.account">
+        <field name="code">2241.04</field>
+        <field name="name">其他应付款—客户退款</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224105" model="account.account">
+        <field name="code">2241.05</field>
+        <field name="name">其他应付款—内部往来</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224106" model="account.account">
+        <field name="code">2241.06</field>
+        <field name="name">其他应付款—员工代付</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+    <record id="tour_account_224107" model="account.account">
+        <field name="code">2241.07</field>
+        <field name="name">其他应付款—导游押金</field>
+        <field name="account_type">liability_payable</field>
+        <field name="reconcile">True</field>
+    </record>
+
+    <!-- ============ 权益类 ============ -->
+    <!-- 权益类科目（4001/4101/4102/4104）已由 l10n_cn 创建，不再重复定义 -->
+
+    <!-- ============ 损益类 ============ -->
+    <record id="tour_account_6001" model="account.account">
+        <field name="code">6001</field>
+        <field name="name">主营业务收入</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_600101" model="account.account">
+        <field name="code">6001.01</field>
+        <field name="name">主营收入—组团收入（总额法）</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_600102" model="account.account">
+        <field name="code">6001.02</field>
+        <field name="name">主营收入—地接收入（净额法差价）</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_600103" model="account.account">
+        <field name="code">6001.03</field>
+        <field name="name">主营收入—代订收入（净额法差价）</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_600104" model="account.account">
+        <field name="code">6001.04</field>
+        <field name="name">主营收入—购物佣金收入</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_6050" model="account.account">
+        <field name="code">6050</field>
+        <field name="name">佣金收入（购物佣金旅行社留存）</field>
+        <field name="account_type">income</field>
+    </record>
+    <record id="tour_account_6051" model="account.account">
+        <field name="code">6051</field>
+        <field name="name">其他业务收入</field>
+        <field name="account_type">income_other</field>
+    </record>
+    <record id="tour_account_6301" model="account.account">
+        <field name="code">6301</field>
+        <field name="name">营业外收入</field>
+        <field name="account_type">income_non_operating</field>
+    </record>
+
+    <record id="tour_account_6401" model="account.account">
+        <field name="code">6401</field>
+        <field name="name">主营业务成本</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_640101" model="account.account">
+        <field name="code">6401.01</field>
+        <field name="name">成本—地接费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640102" model="account.account">
+        <field name="code">6401.02</field>
+        <field name="name">成本—住宿费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640103" model="account.account">
+        <field name="code">6401.03</field>
+        <field name="name">成本—餐费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640104" model="account.account">
+        <field name="code">6401.04</field>
+        <field name="name">成本—交通费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640105" model="account.account">
+        <field name="code">6401.05</field>
+        <field name="name">成本—门票费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640106" model="account.account">
+        <field name="code">6401.06</field>
+        <field name="name">成本—签证费</field>
+        <field name="account_type">expense_direct_cost</field>
+        <field name="tour_vat_deductible">True</field>
+    </record>
+    <record id="tour_account_640107" model="account.account">
+        <field name="code">6401.07</field>
+        <field name="name">成本—导服费</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_640108" model="account.account">
+        <field name="code">6401.08</field>
+        <field name="name">成本—保险费</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_640109" model="account.account">
+        <field name="code">6401.09</field>
+        <field name="name">成本—自费项目</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_640110" model="account.account">
+        <field name="code">6401.10</field>
+        <field name="name">成本—购物成本</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_640111" model="account.account">
+        <field name="code">6401.11</field>
+        <field name="name">成本—其他</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_6402" model="account.account">
+        <field name="code">6402</field>
+        <field name="name">其他业务成本</field>
+        <field name="account_type">expense_direct_cost</field>
+    </record>
+    <record id="tour_account_6403" model="account.account">
+        <field name="code">6403</field>
+        <field name="name">税金及附加</field>
+        <field name="account_type">expense_tax</field>
+    </record>
+    <record id="tour_account_6601" model="account.account">
+        <field name="code">6601</field>
+        <field name="name">销售费用</field>
+        <field name="account_type">expense_selling</field>
+    </record>
+    <record id="tour_account_6602" model="account.account">
+        <field name="code">6602</field>
+        <field name="name">管理费用</field>
+        <field name="account_type">expense_admin</field>
+    </record>
+    <record id="tour_account_6603" model="account.account">
+        <field name="code">6603</field>
+        <field name="name">财务费用</field>
+        <field name="account_type">expense_finance</field>
+    </record>
+    <record id="tour_account_6701" model="account.account">
+        <field name="code">6701</field>
+        <field name="name">资产减值损失</field>
+        <field name="account_type">expense</field>
+    </record>
+    <record id="tour_account_6711" model="account.account">
+        <field name="code">6711</field>
+        <field name="name">营业外支出</field>
+        <field name="account_type">expense_non_operating</field>
+    </record>
+
+</odoo>

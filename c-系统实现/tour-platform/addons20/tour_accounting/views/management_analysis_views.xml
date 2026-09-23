@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============ 线路毛利排名表 ============ -->
+    <record id="action_report_line_profit" model="ir.actions.act_window">
+        <field name="name">线路毛利排名</field>
+        <field name="res_model">tour.plan.account</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('income_total', '!=', 0)]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_tour_plan_account_pivot_line" model="ir.ui.view">
+        <field name="name">tour.plan.account.pivot.line</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <pivot string="线路毛利排名" sample="1">
+                <field name="line_id" type="row"/>
+                <field name="income_total" type="measure"/>
+                <field name="cost_total" type="measure"/>
+                <field name="profit" type="measure"/>
+                <field name="profit_margin" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============ 部门费用分析表 ============ -->
+    <record id="action_report_dept_expense" model="ir.actions.act_window">
+        <field name="name">部门费用分析</field>
+        <field name="res_model">account.analytic.line</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('account_id.plan_id.name', '=', '成本中心')]</field>
+    </record>
+
+    <record id="view_analytic_line_pivot_dept" model="ir.ui.view">
+        <field name="name">account.analytic.line.pivot.dept</field>
+        <field name="model">account.analytic.line</field>
+        <field name="arch" type="xml">
+            <pivot string="部门费用分析" sample="1">
+                <field name="account_id" type="row"/>
+                <field name="general_account_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="amount" type="measure" widget="monetary"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============ 月度经营分析表 ============ -->
+    <record id="action_report_monthly_business" model="ir.actions.act_window">
+        <field name="name">月度经营分析</field>
+        <field name="res_model">tour.plan.account</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('income_total', '!=', 0)]</field>
+    </record>
+
+    <record id="view_tour_plan_account_pivot_monthly" model="ir.ui.view">
+        <field name="name">tour.plan.account.pivot.monthly</field>
+        <field name="model">tour.plan.account</field>
+        <field name="arch" type="xml">
+            <pivot string="月度经营分析" sample="1">
+                <field name="begin_date" interval="month" type="col"/>
+                <field name="biz_mode" type="row"/>
+                <field name="income_total" type="measure"/>
+                <field name="cost_total" type="measure"/>
+                <field name="profit" type="measure"/>
+                <field name="profit_margin" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============ 渠道贡献分析表 ============ -->
+    <record id="action_report_channel_analysis" model="ir.actions.act_window">
+        <field name="name">渠道贡献分析</field>
+        <field name="res_model">tour.plan.account</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('income_total', '!=', 0)]</field>
+    </record>
+
+    <!-- ============ 菜单 ============ -->
+    <menuitem id="menu_management_analysis"
+              name="经营分析"
+              parent="account.menu_finance"
+              sequence="30"/>
+
+    <menuitem id="menu_report_line_profit"
+              name="线路毛利排名"
+              parent="menu_management_analysis"
+              action="action_report_line_profit"
+              sequence="10"/>
+
+    <menuitem id="menu_report_dept_expense"
+              name="部门费用分析"
+              parent="menu_management_analysis"
+              action="action_report_dept_expense"
+              sequence="20"/>
+
+    <menuitem id="menu_report_monthly_business"
+              name="月度经营分析"
+              parent="menu_management_analysis"
+              action="action_report_monthly_business"
+              sequence="30"/>
+
+    <menuitem id="menu_report_channel_analysis"
+              name="渠道贡献分析"
+              parent="menu_management_analysis"
+              action="action_report_channel_analysis"
+              sequence="40"/>
+</odoo>

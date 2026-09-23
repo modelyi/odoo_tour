@@ -80,6 +80,46 @@ A1 的域名翻转（`tour.solepro.cloud` → 19 平桥实例）**不需要**业
 6. **附件**：`ir_attachment` 走象限 1，filestore `rsync -a` 保留属主（uid 不一致 → 附件 500）。
 7. **负例进 UAT**："没有 500"不等于"校验在工作"（TDS-30 #25）。
 
+## 6A. S0 实测出的四个通用通道（`scripts/migration/`，S2 复用同一套）
+
+搬运管线里"一次失败换一条规则"的部分全部落在 `etl_slice.sh` 头部注释（九条铁律）。
+真正需要设计的是**四个通道**，因为 19→20 的坑不是一类，是四类，混在一个通道里必然互相掩盖：
+
+| 通道 | 什么时候用 | 为什么不能合并 |
+|---|---|---|
+| `slices/modes_s0.txt` 的 `insertignore` / `skip` | 源侧自己就违反目标唯一键；或该表**由 20 拥有**（装模块就重建） | 前者是"能搬的先搬，违约的定性"，后者是"根本不该搬" |
+| `slices/remap/<表>.txt`（`@ref` 镜像 + staging UPDATE） | 两侧都有这列、但外键 id 不同（模块基数据） | 重映射必须在**目标库**做：源库的 SELECT 看不见 20 的表 |
+| `slices/fixcol/<表>.txt`（SQL 规则填列） | 20 新增的列 19 根本没有值，但值**可按规则推导** | 补 staging 救不了它 —— 该列不在两侧交集里，进不了 INSERT 列表（铁律 9） |
+| `slices/exclude_s0.txt`（排除列） | 20 新增的列 19 连**落点**都没有 | 不编造值，只留痕，进待签字清单 |
+
+`etl_order.py` 除了出顺序，还出 **`slices/cycles.txt`（拓扑时剪断的回边）**，交给
+`etl_cycle.sh drop/add`：搬之前摘掉环上的外键，搬完原样加回。
+这一步是必须的 —— 只按顺序搬永远不收敛，因为 **`INSERT … SELECT` 是一条语句 = 一个事务**：
+`account_move.origin_payment_id ↔ account_payment.move_id` 互相引用，27.6 万条凭证里
+只要有一条指向还没搬的付款，**整表 0 行进不去**（实测两轮都失败）。
+`add` 那一侧不是保险，而是**引用完整性校验本身**：加不回去的那条就是真脏数据，
+和"顺序问题"从此彻底区分开 —— 这正是 B2 对账要的输入。
+
+回边判定必须剔掉 `create_uid`/`write_uid`：Odoo 每张表都指 `res_users`，DFS 里"到处都在栈上"，
+第一版因此报了 202 条回边（真环 122 条、摘除 218 个约束），照单全 DROP 等于把约束校验废掉。
+
+S0 实测的 19↔20 语义变更（B2 待签字清单的来源，不是实施细节）：
+
+1. **`res.bank` 模型在 20 被整个删除**（19 有 60 行）⇒ `res_partner_bank.bank_id` 无处可去，
+   开户行名称这一栏会丢；20 用 `clearing.label`（13 条，1 条国家级为 NULL 的默认标签）替代。
+   实测 19 的 97 条收款账户里 `clearing_number` 非空 **0** 条，所以只丢名称、不丢号码。
+2. **`account_move` 新增 CHECK**：发票类凭证的 `document_tax_mode` 必须非空
+   （`account_move.py:836`），取值语义 = 公司设置 `account_price_include`（现网单公司，两侧都是
+   `tax_excluded`）。该列**可空**，所以任何只看 `attnotnull` 的自动兜底都看不见它。
+   风险留痕：旧凭证在 20 里被**编辑**时会按新语义重算税额 —— 只读看数无影响，写路径要业务确认。
+3. **`payment.method.provider_id`：19 的 m2m 在 20 变成 NOT NULL m2o**（19 有 231 行派生目录，
+   20 只留 3 行）⇒ 判定为"20 拥有"，不搬。
+4. **一批 20 新增 NOT NULL 列**（`res_country.zip_applicability`、`hr_version.tz`、
+   `sale_order.document_tax_mode` 等 11 张表）：有 DB 默认用默认，否则按类型兜底，
+   外键列兜不出 id 就删该行 —— 每条动作写进 `FILLLOG`（本轮 740 处补默认 / 176 处删行 / 42 处无兜底）。
+5. **filestore 是 `tms` + `tms_tenant_1789530161` 两个目录的并集**：415 个对象的实体在租户目录里
+   （内容按 sha1 寻址 ⇒ 可安全合并去重）。A1/B2 的附件拷贝必须按这个口径，否则附件 404。
+
 ## 7. 变更影响与回退
 
 - 本文替代 TDS-30 §7/§8 的**顺序**，不改其**判据**；判据逐条继承。

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 折旧明细表打印模板 -->
+    <template id="report_asset_depreciation_detail_document">
+        <t t-set="data" t-value="data"/>
+        <t t-set="company" t-value="env.company"/>
+        <div class="page" t-attf-style="font-family: 'SimSun', serif; font-size: 11px;">
+            <!-- 报表头部 -->
+            <div class="row" style="border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px;">
+                <div class="col-4 text-start">
+                    <span t-out="company.name" style="font-size: 14px;"/>
+                </div>
+                <div class="col-4 text-center">
+                    <h2 style="font-weight: bold; letter-spacing: 4px; margin: 0;">固定资产折旧明细表</h2>
+                </div>
+                <div class="col-4 text-end" style="font-size: 11px;">
+                    <span>期间：<t t-out="data.get('date_from', '')" t-options='{"widget": "date"}'/> 至 <t t-out="data.get('date_to', '')" t-options='{"widget": "date"}'/></span>
+                </div>
+            </div>
+
+            <!-- 筛选条件 -->
+            <div style="margin-bottom: 10px; font-size: 11px;">
+                <t t-if="data.get('category_id')">
+                    <span>资产类别：<t t-out="env['account.asset.category'].browse(data['category_id']).name"/></span>
+                </t>
+                <t t-else="">
+                    <span>资产类别：全部</span>
+                </t>
+            </div>
+
+            <!-- 汇总信息 -->
+            <div style="margin-bottom: 10px;">
+                <table class="table table-sm table-bordered" style="margin-bottom: 0;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th class="text-center" style="width: 14%;">资产数量</th>
+                            <th class="text-center" style="width: 14%;">原值合计</th>
+                            <th class="text-center" style="width: 14%;">本期折旧合计</th>
+                            <th class="text-center" style="width: 14%;">累计折旧合计</th>
+                            <th class="text-center" style="width: 14%;">累计减值合计</th>
+                            <th class="text-center" style="width: 16%;">账面价值合计</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <t t-set="assets" t-value="env['account.asset.asset'].search([
+                                    ('type', '=', 'purchase'),
+                                    ('state', 'in', ['open', 'paused', 'close']),
+                                    ('company_id', '=', data.get('company_id', company.id)),
+                                    ('category_id', '=', data.get('category_id') or False) if data.get('category_id') else (1, '=', 1)
+                                ])"/>
+                                <t t-out="len(assets)"/>
+                            </td>
+                            <td class="text-end">
+                                <t t-set="total_value" t-value="sum(a.value for a in assets)"/>
+                                <t t-out="total_value" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-set="total_period_depreciation" t-value="0"/>
+                                <t t-foreach="assets" t-as="asset">
+                                    <t t-foreach="asset.depreciation_line_ids" t-as="line">
+                                        <t t-if="line.depreciation_date and line.depreciation_date >= data.get('date_from') and line.depreciation_date &lt;= data.get('date_to')">
+                                            <t t-set="total_period_depreciation" t-value="total_period_depreciation + line.amount"/>
+                                        </t>
+                                    </t>
+                                </t>
+                                <t t-out="total_period_depreciation" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-set="total_accumulated" t-value="sum(sum(l.amount for l in a.depreciation_line_ids if l.move_posted_check) for a in assets)"/>
+                                <t t-out="total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-set="total_impairment" t-value="sum(a.impairment_total for a in assets)"/>
+                                <t t-out="total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end" style="font-weight: bold;">
+                                <t t-out="total_value - total_accumulated - total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 折旧明细表 -->
+            <div style="margin-top: 10px;">
+                <table class="table table-sm table-bordered" style="font-size: 10px;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th class="text-center" style="width: 7%;">序号</th>
+                            <th class="text-center" style="width: 9%;">资产编号</th>
+                            <th class="text-center" style="width: 13%;">资产名称</th>
+                            <th class="text-center" style="width: 10%;">资产类别</th>
+                            <th class="text-center" style="width: 9%;">原值</th>
+                            <th class="text-center" style="width: 7%;">残值</th>
+                            <th class="text-center" style="width: 8%;">折旧方法</th>
+                            <th class="text-center" style="width: 9%;">本期折旧</th>
+                            <th class="text-center" style="width: 9%;">累计折旧</th>
+                            <th class="text-center" style="width: 8%;">减值</th>
+                            <th class="text-center" style="width: 10%;">账面价值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="seq" t-value="0"/>
+                        <t t-foreach="assets" t-as="asset">
+                            <t t-set="seq" t-value="seq + 1"/>
+                            <t t-set="asset_period_dep" t-value="sum(l.amount for l in asset.depreciation_line_ids if l.depreciation_date and l.depreciation_date >= data.get('date_from') and l.depreciation_date &lt;= data.get('date_to'))"/>
+                            <t t-set="asset_accumulated_dep" t-value="sum(l.amount for l in asset.depreciation_line_ids if l.move_posted_check)"/>
+                            <tr>
+                                <td class="text-center"><t t-out="seq"/></td>
+                                <td class="text-center"><t t-out="asset.code or ''"/></td>
+                                <td><t t-out="asset.name"/></td>
+                                <td><t t-out="asset.category_id.name or ''"/></td>
+                                <td class="text-end">
+                                    <t t-out="asset.value" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset.salvage_value" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-center">
+                                    <t t-if="asset.method == 'linear'">直线法</t>
+                                    <t t-elif="asset.method == 'degressive'">余额递减法</t>
+                                    <t t-elif="asset.method == 'double_degressive'">双倍余额递减法</t>
+                                    <t t-elif="asset.method == 'sum_of_years'">年数总和法</t>
+                                    <t t-else="">-</t>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset_period_dep" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset_accumulated_dep" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="asset.value - asset_accumulated_dep - asset.impairment_total" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                            </tr>
+                        </t>
+                        <!-- 空行补齐（至少显示 10 行） -->
+                        <t t-set="asset_count" t-value="len(assets)"/>
+                        <t t-foreach="range(max(0, 10 - asset_count))" t-as="i">
+                            <tr>
+                                <td style="height: 20px;"> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f9f9f9;">
+                            <td class="text-center" colspan="4">合 计</td>
+                            <td class="text-end">
+                                <t t-out="total_value" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-end">
+                                <t t-out="total_period_depreciation" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="total_accumulated" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td class="text-end">
+                                <t t-out="total_value - total_accumulated - total_impairment" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- 签章栏 -->
+            <div class="row" style="margin-top: 20px; font-size: 11px; border-top: 1px solid #000; padding-top: 8px;">
+                <div class="col-3 text-center">
+                    <span>制表人：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>审核人：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>财务主管：<u style="display: inline-block; width: 60px;"> </u></span>
+                </div>
+                <div class="col-3 text-center">
+                    <span>日期：<u style="display: inline-block; width: 80px;"> </u></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_asset_depreciation_detail">
+        <t t-call="web.html_container">
+            <t t-call="tour_accounting.report_asset_depreciation_detail_document"/>
+        </t>
+    </template>
+</odoo>

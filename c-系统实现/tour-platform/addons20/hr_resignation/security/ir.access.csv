@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+hr_resignation_rule_user,Employee Resignation User (hr.resignation),hr.resignation,base.group_user,cru,"['|', ('employee_id.user_id','=',user.id), ('clearance_line_ids.responsible_user_id', '=', user.id)]"

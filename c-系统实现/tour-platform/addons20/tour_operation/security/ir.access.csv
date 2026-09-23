@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_tour_guide_evaluation_finance,tour.guide.evaluation.finance (tour.guide.evaluation),tour.guide.evaluation,tour_base.group_tour_finance,r,
+access_tour_guide_evaluation_manager,tour.guide.evaluation.manager (tour.guide.evaluation),tour.guide.evaluation,tour_base.group_tour_manager,crud,
+access_tour_guide_evaluation_operator,tour.guide.evaluation.operator (tour.guide.evaluation),tour.guide.evaluation,tour_base.group_tour_operator,cru,
+rule_project_task_company,预订任务：公司隔离 (project.task),project.task,tour_base.group_tour_operator,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"

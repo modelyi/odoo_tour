@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 购物管理：独立顶级应用入口（与业务管理、资源管理并列） -->
+    <menuitem id="menu_tms_shopping"
+        name="购物管理"
+        web_icon="tour_shopping,static/description/icon.png"
+        sequence="30"/>
+</odoo>

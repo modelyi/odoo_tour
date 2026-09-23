@@ -1,0 +1,79 @@
+// Bank reconciliation widget styles (Odoo 19 compatible)
+// Cleaned up: removed dead .accounts-dashboard-wrap rules, IE prefixes, !important abuse
+
+.bold_date {
+    font-weight: bold;
+}
+
+.form_view_class {
+    width: 83%;
+}
+
+.form_bank {
+    width: 1500px;
+}
+
+.statement_button {
+    margin-left: 180px;
+    position: absolute;
+    height: 4px;
+    padding: 2px 0 0 0;
+    border: 0;
+    z-index: 2;
+    background-color: transparent;
+}
+
+.statement_button .btn-sm {
+    position: relative;
+    padding-top: 0;
+    padding-bottom: 0;
+    top: -13px;
+    visibility: hidden;
+}
+
+.statement_button:hover .btn-sm {
+    display: inline-block;
+    visibility: visible;
+}
+
+.to_check {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.bank_reconcile_model_dropdown .dropdown-toggle {
+    border: none;
+    box-shadow: none;
+    background-color: white;
+    margin-left: 195px;
+}
+
+.selected-row {
+    background-color: whitesmoke;
+}
+
+.row-clicked {
+    background-color: whitesmoke;
+}
+
+.o_bank_reconcile_stats_buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 5px;
+    margin-top: -$o-sheet-vpadding;
+    white-space: nowrap;
+    border-bottom: 1px solid $border-color;
+    height: fit-content;
+    min-height: $o-statbutton-height;
+
+    .o_bank_reconcile_status_buttons_aside_left {
+        flex-grow: 0;
+        display: flex !important;
+        flex-flow: row nowrap;
+        border-right: 1px solid $border-color;
+
+        .btn {
+            margin-right: $o-statbutton-spacing;
+        }
+    }
+}

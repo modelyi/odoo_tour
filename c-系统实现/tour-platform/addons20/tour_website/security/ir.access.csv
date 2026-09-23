@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_tour_plan_reg_passenger_manager,tour.plan.reg.passenger.manager (tour.plan.reg.passenger),tour.plan.reg.passenger,tour_base.group_tour_manager,crud,
+access_tour_plan_reg_passenger_operator,tour.plan.reg.passenger.operator (tour.plan.reg.passenger),tour.plan.reg.passenger,tour_base.group_tour_operator,ru,
+access_tour_plan_reg_passenger_sales,tour.plan.reg.passenger.sales (tour.plan.reg.passenger),tour.plan.reg.passenger,tour_base.group_tour_sales,cru,

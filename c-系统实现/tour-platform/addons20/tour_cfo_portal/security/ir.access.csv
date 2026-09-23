@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+rule_expense_cfo,hr.expense: CFO sees all expenses (hr.expense),hr.expense,tour_cfo_portal.group_cfo_portal,ru,"[(1, '=', 1)]"
+access_hr_expense_cfo,hr.expense cfo (hr.expense),hr.expense,tour_cfo_portal.group_cfo_portal,c,
+rule_attachment_cfo,ir.attachment: CFO sees all expense attachments (ir.attachment),ir.attachment,tour_cfo_portal.group_cfo_portal,cru,"[('res_model', '=', 'hr.expense')]"
+rule_commission_cfo,tour.commission: CFO sees all commissions (tour.commission),tour.commission,tour_cfo_portal.group_cfo_portal,ru,"[(1, '=', 1)]"
+rule_guide_cfo,tour.guide: CFO sees all guides (tour.guide),tour.guide,tour_cfo_portal.group_cfo_portal,r,"[(1, '=', 1)]"
+rule_loan_cfo,tour.guide.loan: CFO sees all loans (tour.guide.loan),tour.guide.loan,tour_cfo_portal.group_cfo_portal,ru,"[(1, '=', 1)]"
+rule_plan_cfo,tour.plan: CFO sees all plans (tour.plan),tour.plan,tour_cfo_portal.group_cfo_portal,r,"[(1, '=', 1)]"

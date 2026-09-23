@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 纳税人身份 / 税率 / 征收率 / 差额征税开关 [BS-11 §十] -->
+    <record id="res_config_settings_view_form_tour_vat" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.tour_accounting.vat</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="差额征税增值税" string="差额征税增值税" name="tour_accounting">
+                    <block title="差额征税增值税（旅游服务）" name="tour_vat_setting_container">
+                        <setting string="纳税人身份"
+                            help="一般纳税人税率 6%；小规模征收率 3%（优惠期减按 1%）[BS-11 §三]">
+                            <field name="tour_taxpayer_type"/>
+                        </setting>
+                        <setting string="增值税税率(%)"
+                            help="一般纳税人税率，旅游服务默认 6% [财税2016-36号]">
+                            <field name="tour_vat_rate"/>
+                        </setting>
+                        <setting string="征收率(%)"
+                            help="小规模征收率，默认 3%，优惠期减按 1% [财政部税务总局公告2023年第19号]">
+                            <field name="tour_vat_levy_rate"/>
+                        </setting>
+                        <setting string="启用差额征税"
+                            help="[财税2016-36号] 选择差额征税后 36 个月不得变更；关闭走全额计税">
+                            <field name="tour_diff_tax_enabled"/>
+                        </setting>
+                        <setting string="成本已在记账侧拆税"
+                            help="防双重扣减开关 [BS-19 §一 裁定5]：默认关闭（6401 含税，台账按 r 不含税化）；差额抵减凭证回写 6401 后置 True，台账不再换算">
+                            <field name="tour_cost_tax_split"/>
+                        </setting>
+                    </block>
+                    <block title="财务报表格式" name="tour_report_format">
+                        <setting string="财政部报表格式"
+                            help="开启=利润表费用显示为正数+减号前缀（财政部标准）；关闭=费用显示为负数（Odoo 原生格式）">
+                            <field name="tour_mof_report_format"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

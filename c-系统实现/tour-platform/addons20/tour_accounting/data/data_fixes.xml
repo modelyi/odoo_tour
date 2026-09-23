@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Data fix functions — these always execute on module upgrade.
+  This file must NOT have noupdate="1" so that function tags run.
+-->
+<odoo>
+    <!-- Fix depreciation account codes -->
+    <function model="account.account" name="_fix_depreciation_codes" eval="[]"/>
+
+    <!-- Remap expense account types for MOF report format -->
+    <function model="account.account" name="_tour_remap_expense_account_types" eval="[]"/>
+
+    <!-- Rename employee loan account (BS-15 §2.2) -->
+    <function model="account.account" name="_tour_rename_employee_loan_account" eval="[]"/>
+
+    <!-- Fix financial report account_type_ids -->
+    <function model="account.financial.report" name="_fix_financial_report_data" eval="[]"/>
+
+    <!-- Fix cash flow report data -->
+    <function model="account.financial.report" name="_fix_cash_flow_report_data" eval="[]"/>
+</odoo>

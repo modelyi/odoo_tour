@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CMO 门户：可以查看所有营销和业务数据 -->
+
+    <!-- crm.lead: CMO 可以查看所有线索 -->
+<!-- tour.plan: CMO 可以查看所有团队订单 -->
+<!-- tour.plan.reg: CMO 可以查看所有报名 -->
+<!-- tour.line: CMO 可以查看所有线路 -->
+<!-- res.partner: CMO 可以查看所有客户 -->
+</odoo>

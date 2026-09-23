@@ -1,0 +1,6 @@
+id,name,model_id,group_id/id,operation,domain
+rule_lead_cmo,crm.lead: CMO sees all leads (crm.lead),crm.lead,tour_cmo_portal.group_cmo_portal,ru,"[(1, '=', 1)]"
+rule_partner_cmo,res.partner: CMO sees all partners (res.partner),res.partner,tour_cmo_portal.group_cmo_portal,r,"[(1, '=', 1)]"
+rule_line_cmo,tour.line: CMO sees all lines (tour.line),tour.line,tour_cmo_portal.group_cmo_portal,r,"[(1, '=', 1)]"
+rule_plan_cmo,tour.plan: CMO sees all plans (tour.plan),tour.plan,tour_cmo_portal.group_cmo_portal,r,"[(1, '=', 1)]"
+rule_plan_reg_cmo,tour.plan.reg: CMO sees all regs (tour.plan.reg),tour.plan.reg,tour_cmo_portal.group_cmo_portal,r,"[(1, '=', 1)]"

@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+rule_account_move_tourist,account.move: tourist sees own invoices (account.move),account.move,tour_tourist_portal.group_tourist_portal,r,"[('partner_id', '=', user.partner_id.id), ('move_type', 'in', ['out_invoice', 'out_refund'])]"
+access_tour_departure_tourist,tour.departure tourist (tour.departure),tour.departure,tour_tourist_portal.group_tourist_portal,r,
+access_tour_line_tourist,tour.line tourist (tour.line),tour.line,tour_tourist_portal.group_tourist_portal,r,
+rule_payment_claim_tourist,tour.payment.claim: tourist sees own claims (tour.payment.claim),tour.payment.claim,tour_tourist_portal.group_tourist_portal,r,"[('plan_id.reg_ids.partner_id', '=', user.partner_id.id)]"
+rule_plan_tourist,tour.plan: tourist sees own plans (tour.plan),tour.plan,tour_tourist_portal.group_tourist_portal,r,"[('reg_ids.partner_id', '=', user.partner_id.id)]"
+rule_plan_reg_tourist,tour.plan.reg: tourist sees own regs (tour.plan.reg),tour.plan.reg,tour_tourist_portal.group_tourist_portal,r,"[('partner_id', '=', user.partner_id.id)]"
+rule_passenger_tourist,tour.plan.reg.passenger: tourist sees own passengers (tour.plan.reg.passenger),tour.plan.reg.passenger,tour_tourist_portal.group_tourist_portal,r,"[('reg_id.partner_id', '=', user.partner_id.id)]"

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- 产品经理门户 - 布局 + 侧边栏                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_pm_layout" name="PM Portal Layout">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_sidebar_class" t-value="'col-lg-3'"/>
+            <t t-set="o_portal_content_class" t-value="'col-lg-9'"/>
+            <div class="row">
+                <div class="col-lg-3">
+                    <t t-call="tour_pm_portal.portal_pm_sidebar"/>
+                </div>
+                <div class="col-lg-9">
+                    <t t-out="0"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_pm_sidebar" name="PM Portal Sidebar">
+        <div class="o_pm_sidebar">
+            <h5 class="mb-3">
+                <i class="fa fa-cube me-2"/>产品经理
+            </h5>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/my/pm">
+                        <i class="fa fa-crosshairs me-2"/>班期作战室
+                    </a>
+                </li>
+            </ul>
+            <hr/>
+            <small class="text-muted">
+                <i class="fa fa-info-circle me-1"/>聚焦班期决策<br/>
+                线路管理请在后台操作
+            </small>
+        </div>
+    </template>
+
+    <template id="portal_pm_no_access" name="PM No Access">
+        <t t-call="portal.portal_layout">
+            <div class="alert alert-warning text-center py-5">
+                <i class="fa fa-exclamation-triangle fa-3x mb-3"/>
+                <h4>无访问权限</h4>
+                <p class="mb-0">您没有产品经理门户的访问权限，请联系管理员。</p>
+            </div>
+        </t>
+    </template>
+</odoo>

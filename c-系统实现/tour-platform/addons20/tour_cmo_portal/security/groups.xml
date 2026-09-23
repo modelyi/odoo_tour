@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CMO 门户用户组 -->
+    <record id="group_cmo_portal" model="res.groups">
+        <field name="name">CMO 门户用户</field>
+        <field name="comment">CMO 门户用户组，可以访问营销分析和线索管理功能</field>
+    </record>
+</odoo>

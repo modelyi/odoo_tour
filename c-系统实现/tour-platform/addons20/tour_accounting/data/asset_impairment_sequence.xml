@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_asset_impairment" model="ir.sequence">
+            <field name="name">Asset Impairment</field>
+            <field name="code">asset.impairment</field>
+            <field name="prefix">IMP/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

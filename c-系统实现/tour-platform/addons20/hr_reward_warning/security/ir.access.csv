@@ -1,0 +1,10 @@
+id,name,model_id,group_id/id,operation,domain
+hr_announcement_employee_rule,Relevant Announcements for Employee (hr.announcement),hr.announcement,base.group_user,r,"[
+                '|', '|', '|',
+                ('is_announcement', '=', True),
+                ('employee_ids.user_id', '=', user.id),
+                ('department_ids.member_ids.user_id', '=', user.id),
+                ('position_ids.employee_ids.user_id', '=', user.id)
+            ]"
+hr_announcement_manager_rule,All Announcements for HR Manager (hr.announcement),hr.announcement,hr.group_hr_manager,crud,"[(1, '=', 1)]"
+hr_announcement_manager_rule_2,All Announcements for HR Manager (hr.announcement),hr.announcement,hr.group_hr_user,crud,"[(1, '=', 1)]"

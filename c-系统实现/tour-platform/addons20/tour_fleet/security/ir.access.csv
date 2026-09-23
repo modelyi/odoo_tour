@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_tour_driver_guide_mgr,tour.driver.guide_mgr (tour.driver),tour.driver,tour_base.group_tour_guide_manager,cru,
+access_tour_driver_manager,tour.driver.manager (tour.driver),tour.driver,tour_base.group_tour_manager,crud,
+access_tour_driver_operator,tour.driver.operator (tour.driver),tour.driver,tour_base.group_tour_operator,r,

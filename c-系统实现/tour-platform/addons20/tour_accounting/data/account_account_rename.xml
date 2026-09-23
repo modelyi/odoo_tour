@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  科目改名落库（noupdate=0，保证存量库 -u 升级时生效）[BS-15 §2.2]。
+  1221.01 其他应收款—导游借款 → 其他应收款—员工借款（编码不变，历史余额/冲抵链路不断）。
+  注：account_account_tour.xml 整体为 noupdate=1（科目表安装后不被覆盖），
+  故此处以 function 触发 _tour_rename_employee_loan_account 幂等改名。
+-->
+<odoo>
+    <function model="account.account" name="_tour_rename_employee_loan_account"/>
+</odoo>

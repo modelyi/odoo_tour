@@ -6,3 +6,13 @@ utm_source insertignore
 utm_medium insertignore
 mail_message_subtype insertignore
 discuss_channel skip
+
+# —— S0 v5 实测新增（每条都要在 TDS-32 §6 留结论）——
+# payment.method 是**支付商目录基数据**：19 有 231 行（每个 provider 自动派生），20 只留 3 行，
+# 且 20 给它加了 NOT NULL 的 provider_id（19 是 m2m）。这是"20 自己拥有、装模块就会重建"的一类，
+# 搬过来只会污染，且造不出 provider 归属 → 不搬（同 res_groups / ir_model 的处理口径）。
+payment_method skip
+payment_provider skip
+# account.payment.method 是**业务表**（收款/付款方式，journal 直接引用），必须搬；
+# 但 19 侧本身有 (code, payment_type) 重复行 → 违约的行跳过，剩下的进"待定性"。
+account_payment_method insertignore

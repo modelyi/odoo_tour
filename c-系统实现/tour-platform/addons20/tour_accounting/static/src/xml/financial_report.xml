@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="tour_accounting.FinancialReportView">
+        <div class="o_action o_financial_report">
+            <Layout display="{ controlPanel: {} }">
+                <t t-set-slot="control-panel-always-buttons">
+                    <button class="btn btn-secondary" t-on-click="expandAll">
+                        <i class="fa fa-expand me-1"/>全部展开
+                    </button>
+                    <button class="btn btn-secondary" t-on-click="collapseAll">
+                        <i class="fa fa-compress me-1"/>全部折叠
+                    </button>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                        <div class="d-flex align-items-center gap-1">
+                            <label class="fw-bold mb-0 text-nowrap">会计期间:</label>
+                            <select class="o_input"
+                                    t-on-change="onPeriodChange">
+                                <t t-foreach="state.periods" t-as="period" t-key="period.id">
+                                    <option t-att-value="period.id"
+                                            t-att-selected="period.id === state.periodId">
+                                        <t t-out="period.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" t-on-click="loadReport">
+                            <i class="fa fa-refresh me-1"/>查询
+                        </button>
+                    </div>
+                </t>
+
+                <!-- Loading indicator -->
+                <div t-if="state.loading" class="text-center py-5">
+                    <i class="fa fa-spinner fa-spin fa-3x text-muted"/>
+                    <p class="mt-3 text-muted">加载中...</p>
+                </div>
+
+                <!-- Report content -->
+                <div t-elif="state.reportData" class="p-3">
+                    <h3 class="mb-3 text-center" t-out="state.reportName"/>
+
+                    <table class="table table-sm table-hover o_report_table">
+                        <thead>
+                            <tr class="o_report_header">
+                                <th style="width: 50%;">科目</th>
+                                <th t-if="state.showDebitCredit" class="text-end" style="width: 16%;">借方</th>
+                                <th t-if="state.showDebitCredit" class="text-end" style="width: 16%;">贷方</th>
+                                <th class="text-end" style="width: 18%;">余额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.visibleRows" t-as="row" t-key="row.id">
+                                <tr t-att-class="getTrClass(row)"
+                                    t-att-style="'padding-left: ' + (row.depth * 20) + 'px'">
+                                    <td>
+                                        <span t-if="row.has_children"
+                                              class="fa me-1 o_toggle_btn"
+                                              t-att-class="state.expandedRows.has(row.id) ? 'fa-chevron-down' : 'fa-chevron-right'"
+                                              t-on-click="() => this.toggleRow(row.id)"/>
+                                        <span t-else="" class="me-3"/>
+                                        <span t-if="row.account_id or row.report_id"
+                                              class="o_drilldown"
+                                              t-on-click="() => this.drillDown(row)">
+                                            <t t-out="row.name"/>
+                                        </span>
+                                        <span t-else="" t-att-class="row.is_report ? 'fw-bold' : ''">
+                                            <t t-out="row.name"/>
+                                        </span>
+                                    </td>
+                                    <td t-if="state.showDebitCredit" class="text-end text-nowrap">
+                                        <t t-out="formatMoney(row.debit)"/>
+                                    </td>
+                                    <td t-if="state.showDebitCredit" class="text-end text-nowrap">
+                                        <t t-out="formatMoney(row.credit)"/>
+                                    </td>
+                                    <td class="text-end text-nowrap"
+                                        t-att-class="row.is_report ? 'fw-bold' : ''">
+                                        <t t-out="formatMoney(row.balance)"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="o_report_total fw-bold">
+                                <td>合计</td>
+                                <td t-if="state.showDebitCredit" class="text-end text-nowrap">
+                                    <t t-out="formatMoney(state.reportData.total_debit)"/>
+                                </td>
+                                <td t-if="state.showDebitCredit" class="text-end text-nowrap">
+                                    <t t-out="formatMoney(state.reportData.total_credit)"/>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <t t-out="formatMoney(state.reportData.total_balance)"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Empty state -->
+                <div t-else="" class="text-center py-5 text-muted">
+                    <i class="fa fa-table fa-3x mb-3"/>
+                    <p>暂无报表数据</p>
+                </div>
+            </Layout>
+        </div>
+    </t>
+
+</templates>

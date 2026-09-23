@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- 1. 仪表盘首页                                                  -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_home" name="Tourist Portal Home">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_home">
+                <h3 class="mb-4">
+                    <i class="fa fa-dashboard me-2"/>我的首页
+                </h3>
+
+                <!-- 4 KPI 卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">我的订单</h6>
+                                        <h2 class="mb-0 mt-2">
+                                            <t t-out="total_orders"/>
+                                        </h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-list-alt fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/tourist/orders"
+                                   class="text-white text-decoration-none">
+                                    查看详情 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">待付金额</h6>
+                                        <h2 class="mb-0 mt-2">
+                                            ¥ <t t-out="'%.2f' % pending_amount"/>
+                                        </h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-money fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/tourist/payments"
+                                   class="text-white text-decoration-none">
+                                    付款进度 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">即将出行</h6>
+                                        <h2 class="mb-0 mt-2">
+                                            <t t-out="upcoming_trips"/>
+                                        </h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-plane fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/tourist/trips"
+                                   class="text-white text-decoration-none">
+                                    查看行程 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">已完成</h6>
+                                        <h2 class="mb-0 mt-2">
+                                            <t t-out="completed_count"/>
+                                        </h2>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-check-circle fa-3x opacity-50"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="/my/tourist/orders?filterby=active"
+                                   class="text-white text-decoration-none">
+                                    查看全部 <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近订单 -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">最近订单</h5>
+                        <a href="/my/tourist/orders" class="btn btn-sm btn-outline-primary">
+                            全部订单
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        <t t-if="recent_regs">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>报名单号</th>
+                                        <th>线路</th>
+                                        <th>出发日期</th>
+                                        <th class="text-center">人数</th>
+                                        <th class="text-end">金额</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="recent_regs" t-as="reg">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/my/tourist/orders/%s' % reg.id">
+                                                    <t t-out="reg.reg_code"/>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <t t-out="reg.plan_id.line_id.name or '-'"/>
+                                            </td>
+                                            <td>
+                                                <t t-out="reg.begin_date"
+                                                   t-options="{'widget': 'date'}"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="reg.guest_count"/>
+                                            </td>
+                                            <td class="text-end">
+                                                ¥ <t t-out="'%.2f' % reg.in_com_quo_sum"/>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (dict(reg._fields['state'].selection).get(reg.state) == '已确认' and 'bg-success' or dict(reg._fields['state'].selection).get(reg.state) == '已取消' and 'bg-danger' or 'bg-secondary')">
+                                                    <t t-out="dict(reg._fields['state'].selection).get(reg.state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2"/>
+                                <br/>暂无订单记录
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- 付款提醒 -->
+                <t t-if="reminder_regs">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning bg-opacity-25">
+                            <h5 class="mb-0">
+                                <i class="fa fa-bell me-2"/>付款提醒
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-foreach="reminder_regs" t-as="reg">
+                                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                    <div>
+                                        <a t-att-href="'/my/tourist/orders/%s' % reg.id">
+                                            <t t-out="reg.reg_code"/>
+                                        </a>
+                                        <span class="text-muted ms-2">
+                                            <t t-out="reg.plan_id.line_id.name or ''"/>
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-danger fw-bold">
+                                            待付: ¥ <t t-out="'%.2f' % reg.sum_un_pay"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 2. 订单列表                                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_orders" name="Tourist Orders">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_orders">
+                <h3 class="mb-3">
+                    <i class="fa fa-list-alt me-2"/>我的订单
+                </h3>
+
+                <!-- 搜索栏 -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <form method="GET" action="/my/tourist/orders">
+                            <input type="hidden" name="filterby" t-att-value="filterby"/>
+                            <input type="hidden" name="sortby" t-att-value="sortby"/>
+                            <div class="input-group">
+                                <input type="text" class="form-control"
+                                       name="search" placeholder="搜索报名单号或姓名"
+                                       t-att-value="search"/>
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fa fa-search"/>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <!-- 过滤标签 -->
+                        <div class="btn-group">
+                            <a t-att-href="'/my/tourist/orders?filterby=all&amp;sortby=%s' % sortby"
+                               t-att-class="'btn btn-sm ' + (filterby == 'all' and 'btn-primary' or 'btn-outline-primary')">
+                                全部
+                            </a>
+                            <a t-att-href="'/my/tourist/orders?filterby=active&amp;sortby=%s' % sortby"
+                               t-att-class="'btn btn-sm ' + (filterby == 'active' and 'btn-primary' or 'btn-outline-primary')">
+                                有效
+                            </a>
+                            <a t-att-href="'/my/tourist/orders?filterby=cancelled&amp;sortby=%s' % sortby"
+                               t-att-class="'btn btn-sm ' + (filterby == 'cancelled' and 'btn-primary' or 'btn-outline-primary')">
+                                已取消
+                            </a>
+                        </div>
+                        <!-- 排序下拉 -->
+                        <div class="dropdown d-inline-block ms-2">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                <i class="fa fa-sort me-1"/>排序
+                            </button>
+                            <div class="dropdown-menu">
+                                <t t-foreach="searchbar_sortings" t-as="key">
+                                    <a t-att-href="'/my/tourist/orders?filterby=%s&amp;sortby=%s&amp;search=%s' % (filterby, key, search or '')"
+                                       t-att-class="'dropdown-item' + (sortby == key and ' active' or '')">
+                                        <t t-out="searchbar_sortings[key]['label']"/>
+                                    </a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 订单表格 -->
+                <t t-if="regs">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>报名单号</th>
+                                <th>线路</th>
+                                <th>出发日期</th>
+                                <th>返回日期</th>
+                                <th class="text-center">人数</th>
+                                <th class="text-end">金额</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="regs" t-as="reg">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/tourist/orders/%s' % reg.id">
+                                            <t t-out="reg.reg_code"/>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <t t-out="reg.plan_id.line_id.name or '-'"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="reg.begin_date"
+                                           t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="reg.end_date"
+                                           t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="reg.guest_count"/>
+                                    </td>
+                                    <td class="text-end">
+                                        ¥ <t t-out="'%.2f' % reg.in_com_quo_sum"/>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (reg.state == 'confirmed' and 'bg-success' or reg.state == 'cancelled' and 'bg-danger' or reg.state == 'draft' and 'bg-secondary' or 'bg-info')">
+                                            <t t-out="dict(reg._fields['state'].selection).get(reg.state)"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/my/tourist/orders/%s' % reg.id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fa fa-eye"/> 详情
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <t t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-inbox fa-3x mb-3"/>
+                        <br/>
+                        暂无订单记录
+                        <br/>
+                        <a href="/tours" class="btn btn-primary mt-3">
+                            <i class="fa fa-search me-1"/>浏览线路
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 3. 订单详情                                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_order_detail" name="Tourist Order Detail">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_order_detail">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        订单详情 - <t t-out="reg.reg_code"/>
+                    </h3>
+                    <a href="/my/tourist/orders" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"/>返回列表
+                    </a>
+                </div>
+
+                <!-- 订单信息卡片 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fa fa-info-circle me-2"/>订单信息
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless mb-0">
+                            <tr>
+                                <th style="width: 150px;">报名单号</th>
+                                <td><t t-out="reg.reg_code"/></td>
+                                <th style="width: 150px;">下单日期</th>
+                                <td>
+                                    <t t-out="reg.order_date"
+                                       t-options="{'widget': 'date'}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>线路</th>
+                                <td><t t-out="reg.plan_id.line_id.name or '-'"/></td>
+                                <th>团号</th>
+                                <td><t t-out="reg.plan_id.plan_code or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>出发日期</th>
+                                <td>
+                                    <t t-out="reg.begin_date"
+                                       t-options="{'widget': 'date'}"/>
+                                </td>
+                                <th>返回日期</th>
+                                <td>
+                                    <t t-out="reg.end_date"
+                                       t-options="{'widget': 'date'}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>联系人</th>
+                                <td><t t-out="reg.supplier_user or '-'"/></td>
+                                <th>手机</th>
+                                <td><t t-out="reg.supplier_user_mobile_masked or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <th>状态</th>
+                                <td>
+                                    <span t-att-class="'badge ' + (reg.state == 'confirmed' and 'bg-success' or reg.state == 'cancelled' and 'bg-danger' or 'bg-secondary')">
+                                        <t t-out="dict(reg._fields['state'].selection).get(reg.state)"/>
+                                    </span>
+                                </td>
+                                <th>团队状态</th>
+                                <td>
+                                    <span t-if="reg.plan_id"
+                                          t-att-class="'badge ' + (reg.plan_id.state == 'confirmed' and 'bg-success' or reg.plan_id.state == 'in_progress' and 'bg-primary' or reg.plan_id.state == 'completed' and 'bg-success' or 'bg-secondary')">
+                                        <t t-out="dict(reg.plan_id._fields['state'].selection).get(reg.plan_id.state)"/>
+                                    </span>
+                                    <span t-else="">-</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 人数与金额 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-users me-2"/>人数明细
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm mb-0">
+                                    <tr>
+                                        <td>成人</td>
+                                        <td class="text-end"><t t-out="reg.adult_num"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>儿童</td>
+                                        <td class="text-end"><t t-out="reg.child_num"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>老人</td>
+                                        <td class="text-end"><t t-out="reg.old_man_num"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>学生</td>
+                                        <td class="text-end"><t t-out="reg.student_num"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>婴儿</td>
+                                        <td class="text-end"><t t-out="reg.baby_num"/></td>
+                                    </tr>
+                                    <tr class="table-active fw-bold">
+                                        <td>合计（不含婴儿）</td>
+                                        <td class="text-end"><t t-out="reg.guest_count"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-yen me-2"/>金额汇总
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm mb-0">
+                                    <tr>
+                                        <td>收入报价</td>
+                                        <td class="text-end">
+                                            ¥ <t t-out="'%.2f' % reg.in_com_quo_sum"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>已收款</td>
+                                        <td class="text-end text-success">
+                                            ¥ <t t-out="'%.2f' % reg.sum_pay_normal"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-warning fw-bold">
+                                        <td>未收款</td>
+                                        <td class="text-end text-danger">
+                                            ¥ <t t-out="'%.2f' % reg.sum_un_pay"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 客人名单 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fa fa-id-card me-2"/>客人名单
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <t t-if="reg.passenger_ids">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>姓名</th>
+                                        <th>年龄档</th>
+                                        <th>证件类型</th>
+                                        <th>证件号</th>
+                                        <th class="text-end">单价</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="reg.passenger_ids" t-as="p">
+                                        <tr>
+                                            <td><t t-out="p.sequence"/></td>
+                                            <td><t t-out="p.name"/></td>
+                                            <td>
+                                                <t t-out="dict(p._fields['passenger_type'].selection).get(p.passenger_type)"/>
+                                            </td>
+                                            <td>
+                                                <t t-out="dict(p._fields['id_type'].selection).get(p.id_type)"/>
+                                            </td>
+                                            <td><t t-out="p.id_number_masked or '****'"/></td>
+                                            <td class="text-end">
+                                                ¥ <t t-out="'%.2f' % p.price"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center text-muted py-3">
+                                暂无客人信息
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- 付款摘要 -->
+                <t t-if="claims">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fa fa-money me-2"/>付款记录
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>收款编号</th>
+                                        <th>收款日期</th>
+                                        <th class="text-end">金额</th>
+                                        <th>支付渠道</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="claims" t-as="claim">
+                                        <tr>
+                                            <td><t t-out="claim.name"/></td>
+                                            <td>
+                                                <t t-out="claim.pay_date"
+                                                   t-options="{'widget': 'date'}"/>
+                                            </td>
+                                            <td class="text-end">
+                                                ¥ <t t-out="'%.2f' % claim.pay_money"/>
+                                            </td>
+                                            <td>
+                                                <t t-out="claim.pay_channel_id.name or '-'"/>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (claim.claim_state == '3' and 'bg-success' or claim.claim_state == '2' and 'bg-info' or claim.claim_state == '1' and 'bg-warning' or 'bg-secondary')">
+                                                    <t t-out="dict(claim._fields['claim_state'].selection).get(claim.claim_state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- 操作按钮（P1 占位） -->
+                <div class="card">
+                    <div class="card-body">
+                        <p class="text-muted mb-2">更多功能即将上线</p>
+                        <a href="/my/tourist/orders" class="btn btn-outline-secondary">
+                            <i class="fa fa-arrow-left me-1"/>返回订单列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 4. 付款记录                                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_payments" name="Tourist Payments">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_payments">
+                <h3 class="mb-3">
+                    <i class="fa fa-money me-2"/>付款进度
+                </h3>
+
+                <!-- 汇总 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h6>累计付款</h6>
+                                <h3>¥ <t t-out="'%.2f' % total_paid"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 付款记录表格 -->
+                <t t-if="claims">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>收款编号</th>
+                                <th>收款日期</th>
+                                <th>关联团号</th>
+                                <th class="text-end">收款金额</th>
+                                <th>支付渠道</th>
+                                <th>认领状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="claims" t-as="claim">
+                                <tr>
+                                    <td><t t-out="claim.name"/></td>
+                                    <td>
+                                        <t t-out="claim.pay_date"
+                                           t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td><t t-out="claim.plan_code or '-'"/></td>
+                                    <td class="text-end">
+                                        ¥ <t t-out="'%.2f' % claim.pay_money"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="claim.pay_channel_id.name or '-'"/>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (claim.claim_state == '3' and 'bg-success' or claim.claim_state == '2' and 'bg-info' or claim.claim_state == '1' and 'bg-warning' or 'bg-secondary')">
+                                            <t t-out="dict(claim._fields['claim_state'].selection).get(claim.claim_state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <t t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-credit-card fa-3x mb-3"/>
+                        <br/>
+                        暂无付款记录
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 5. 即将出行                                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_trips" name="Tourist Trips">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_trips">
+                <h3 class="mb-3">
+                    <i class="fa fa-plane me-2"/>我的行程
+                </h3>
+
+                <t t-if="upcoming">
+                    <t t-foreach="upcoming" t-as="reg">
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong><t t-out="reg.plan_id.line_id.name or '未命名线路'"/></strong>
+                                    <span class="badge bg-info ms-2">
+                                        <t t-out="dict(reg.plan_id._fields['state'].selection).get(reg.plan_id.state)"/>
+                                    </span>
+                                </div>
+                                <a t-att-href="'/my/tourist/orders/%s' % reg.id"
+                                   class="btn btn-sm btn-outline-primary">
+                                    查看详情
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">报名单号</div>
+                                        <div><t t-out="reg.reg_code"/></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">出发日期</div>
+                                        <div>
+                                            <t t-out="reg.begin_date"
+                                               t-options="{'widget': 'date'}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">返回日期</div>
+                                        <div>
+                                            <t t-out="reg.end_date"
+                                               t-options="{'widget': 'date'}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">人数</div>
+                                        <div><t t-out="reg.guest_count"/> 人</div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">团号</div>
+                                        <div><t t-out="reg.plan_id.plan_code or '-'"/></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">导游</div>
+                                        <div>
+                                            <t t-if="reg.plan_id.guide_ids">
+                                                <t t-foreach="reg.plan_id.guide_ids" t-as="g">
+                                                    <t t-out="g.name"/>
+                                                    <t t-if="not g_last">, </t>
+                                                </t>
+                                            </t>
+                                            <t t-else="">待安排</t>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">金额</div>
+                                        <div>
+                                            ¥ <t t-out="'%.2f' % reg.in_com_quo_sum"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-muted small">待付</div>
+                                        <div class="text-danger fw-bold">
+                                            ¥ <t t-out="'%.2f' % reg.sum_un_pay"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-plane fa-3x mb-3"/>
+                        <br/>
+                        暂无即将出行的行程
+                        <br/>
+                        <a href="/tours" class="btn btn-primary mt-3">
+                            <i class="fa fa-search me-1"/>浏览线路
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 6. 发票列表                                                    -->
+    <!-- ============================================================ -->
+    <template id="portal_tourist_invoices" name="Tourist Invoices">
+        <t t-call="tour_tourist_portal.portal_tourist_layout">
+            <div class="o_tourist_invoices">
+                <h3 class="mb-3">
+                    <i class="fa fa-file-text-o me-2"/>发票管理
+                </h3>
+
+                <t t-if="invoices">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>发票号</th>
+                                <th>发票日期</th>
+                                <th>类型</th>
+                                <th class="text-end">金额</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="invoices" t-as="inv">
+                                <tr>
+                                    <td>
+                                        <t t-out="inv.name or inv.ref or '-'"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="inv.invoice_date"
+                                           t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="dict(inv._fields['move_type'].selection).get(inv.move_type)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-att-class="inv.move_type == 'out_refund' and 'text-danger' or ''">
+                                            ¥ <t t-out="'%.2f' % inv.amount_total_signed"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge ' + (inv.state == 'posted' and 'bg-success' or inv.state == 'draft' and 'bg-secondary' or inv.state == 'cancel' and 'bg-danger' or 'bg-info')">
+                                            <t t-out="dict(inv._fields['state'].selection).get(inv.state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <t t-call="portal.pager"/>
+                </t>
+                <t t-else="">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-file-text-o fa-3x mb-3"/>
+                        <br/>
+                        暂无发票记录
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

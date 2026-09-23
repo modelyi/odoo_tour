@@ -8,11 +8,12 @@
   python3 etl_order.py --seeds seeds_s0.txt --out slices/s0_full.txt
 """
 import argparse
+import os
 import subprocess
 import sys
 
 SRC = ('tms-db', 'tms')
-DST = ('odoo20-db', 's0tour')
+DST = ('odoo20-db', os.environ.get('ETL_DST_DB', 's0tour'))
 
 # 20 侧自己拥有、**绝对不能被 19 覆盖**的元数据表（注册表、视图、动作、模块状态）。
 # 闭包碰到它们时必须剪掉，否则 upsert 会把 20 的界面定义改回 19 的样子 —— 那是整站白屏级别的事故。
@@ -42,17 +43,23 @@ def tables(side):
     return {r[0] for r in rows}
 
 
+AUDIT_COLS = {'create_uid', 'write_uid'}
+
+
 def fks(side):
-    """→ {child: [(parent, conname), …]}"""
+    """→ {child: {parent: {列名…}}}（同一对表可能有多条外键，列名都要留着）"""
     rows = q(side[0], side[1], """
-select conrelid::regclass::text, confrelid::regclass::text
-  from pg_constraint
- where contype='f' and connamespace='public'::regnamespace
+select conrelid::regclass::text, confrelid::regclass::text,
+       string_agg(att.attname, ',' order by att.attname)
+  from pg_constraint c
+  join lateral unnest(c.conkey) with ordinality as k(attnum, ord) on true
+  join pg_attribute att on att.attrelid = c.conrelid and att.attnum = k.attnum
+ where c.contype='f' and c.connamespace='public'::regnamespace
  group by 1,2""")
     m = {}
-    for child, parent in rows:
+    for child, parent, cols in rows:
         if child != parent:
-            m.setdefault(child, set()).add(parent)
+            m.setdefault(child, {}).setdefault(parent, set()).update(cols.split(','))
     return m
 
 
@@ -62,7 +69,13 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--mode-file', default=None,
                     help='可选：`表名 模式` 覆盖默认 upsert（违约表填 insertignore）')
+    ap.add_argument('--cycles-out', default=None,
+                    help='回边清单输出路径，默认与 --out 同目录的 cycles.txt（etl_cycle.sh 的输入）')
+    ap.add_argument('--exclude-file', default=None,
+                    help='可选：`表名 列1,列2` —— 这些列进不了搬运列表（20 有、19 无落点的列）')
     a = ap.parse_args()
+    if a.cycles_out is None:
+        a.cycles_out = os.path.join(os.path.dirname(a.out) or '.', 'cycles.txt')
 
     t19, t20 = tables(SRC), tables(DST)
     both = t19 & t20
@@ -78,6 +91,12 @@ def main():
             p = l.split()
             if len(p) >= 2 and not l.startswith('#'):
                 modes[p[0]] = p[1]
+    excludes = {}
+    if a.exclude_file:
+        for l in open(a.exclude_file, encoding='utf-8'):
+            p = l.split()
+            if len(p) >= 2 and not l.startswith('#'):
+                excludes[p[0]] = p[1]
 
     fk = fks(SRC)
     # 1) 从种子出发取"父表闭包"（这些表必须先于种子存在）
@@ -91,32 +110,55 @@ def main():
             if p in both and p not in DENY and not p.startswith(DENY_PREFIX):
                 stack.append(p)
 
-    # 2) 拓扑排序：父在前；遇到环（互相引用很常见，如 res_company↔partner）就把回边忽略掉，
-    #    由 etl_slice.sh 的 upsert 语义兜住"父行还不存在时先插子行"的那一条外键。
-    order, state = [], {}
+    # 2) 拓扑排序：父在前。**环必须显式记下来，不能"剪掉就完事"**：
+    #    剪断回边只解决"谁先插入"，解决不了"一整条 INSERT 是原子的"——
+    #    实测 account_move 因为 account_move.origin_payment_id ↔ account_payment.move_id 互为依赖，
+    #    27.6 万行里只要有一条指向还没搬的付款，**整表 0 行进不去**，跑三轮也不会收敛。
+    #    所以正确做法是：搬这对表之前把回边上的外键约束临时 DROP，全部搬完再 ADD 回去
+    #    （ADD 会顺带做引用完整性校验，校验不过的那条就是真正的脏数据）。
+    #    见 etl_cycle.sh。
+    order, state, cycles = [], {}, set()
 
-    def visit(n, path):
+    def visit(n):
         if state.get(n) == 'done' or n in DENY or n.startswith(DENY_PREFIX) or n in DENY_EXACT:
             return
         if state.get(n) == 'visiting':
-            return                      # 环：剪掉回边
+            return
         state[n] = 'visiting'
         for p in sorted(fk.get(n, ())):
-            if p in need:
-                visit(p, path + [n])
+            if p not in need:
+                continue
+            if state.get(p) == 'visiting':
+                # 只有**非审计列**的回边才算真环。Odoo 每张表都有 create_uid/write_uid → res_users，
+                # 而 res_users 又能从几乎任何表走到（父表闭包），于是 DFS 里"到处都在栈上"，
+                # 第一版因此报了 202 条回边 —— 全去 DROP 外键既没意义又把约束校验整个废掉。
+                cols = fk.get(n, {}).get(p, set())
+                if not cols <= AUDIT_COLS:
+                    cycles.add((n, p))
+                continue
+            visit(p)
         state[n] = 'done'
         order.append(n)
 
     for n in sorted(need):
-        visit(n, [])
+        visit(n)
+
+    with open(a.cycles_out, 'w', encoding='utf-8') as f:
+        f.write('# 由 etl_order.py 生成的"拓扑剪断的回边"：`子表 父表`，父表靠这些子表的外键指回来。\n')
+        f.write('# 搬之前用 etl_cycle.sh drop 临时删掉这些外键，搬完 add 回来（add = 引用完整性校验）。\n')
+        for c, p in sorted(cycles):
+            f.write('%s %s\n' % (c, p))
 
     with open(a.out, 'w', encoding='utf-8') as f:
         f.write('# 由 etl_order.py 自动生成（外键拓扑，父在前）—— 不要手改顺序，改 seeds\n')
         f.write('# 模式：upsert=按 id 覆盖 | insertignore=违约则跳过 | wipe=先按 id 删再插\n')
+        f.write('# 第 3 列 = 人工排除列（见 --exclude-file），用于"20 有、19 没有落点"的列\n')
         for n in order:
-            f.write('%s %s\n' % (modes.get(n, 'upsert'), n))
+            ex = excludes.get(n)
+            f.write('%s %s%s\n' % (modes.get(n, 'upsert'), n, (' ' + ex) if ex else ''))
 
-    print('种子 %d → 闭包 %d 表，已写 %s' % (len(seeds), len(order), a.out))
+    print('种子 %d → 闭包 %d 表，回边 %d 条（%s），已写 %s'
+          % (len(seeds), len(order), len(cycles), a.cycles_out, a.out))
     if dropped:
         print('!! 种子写了但 20 侧无此表（模型已删）: %s' % ' '.join(dropped))
     dead = sorted(t for t in only19 if t.startswith('tour_') or t in ('res_bank', 'account_group'))

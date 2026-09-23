@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 30 天报账预警：每日检查已放款且超过报账截止日的借款 [BS-06 R-29] -->
+        <record id="cron_tour_guide_loan_overdue" model="ir.cron">
+            <field name="name">导游借款 30 天报账预警</field>
+            <field name="model_id" ref="model_tour_guide_loan"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_overdue_warning()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+    </data>
+</odoo>

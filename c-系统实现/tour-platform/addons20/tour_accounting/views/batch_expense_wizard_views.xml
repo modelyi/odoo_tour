@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 导游批量报账向导 -->
+    <record id="view_tour_batch_expense_wizard_form" model="ir.ui.view">
+        <field name="name">tour.batch.expense.wizard.form</field>
+        <field name="model">tour.batch.expense.wizard</field>
+        <field name="arch" type="xml">
+            <form string="导游批量报账">
+                <group>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="x_guide_id"/>
+                    </group>
+                    <group>
+                        <field name="date"/>
+                    </group>
+                </group>
+                <separator string="费用明细（可跨团）"/>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="product_id"/>
+                        <field name="amount"/>
+                        <field name="quantity"/>
+                        <field name="x_plan_id"/>
+                        <field name="x_plan_code" readonly="1"/>
+                        <field name="x_loan_id"/>
+                        <field name="x_invoice_no"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_create_expenses" type="object"
+                            string="创建费用" class="btn-primary"/>
+                    <button string="取消" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_batch_expense_wizard" model="ir.actions.act_window">
+        <field name="name">导游批量报账</field>
+        <field name="res_model">tour.batch.expense.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- 菜单已迁移至「费用与借款」顶级菜单，全员自助可见 -->
+</odoo>

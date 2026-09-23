@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_tour_shop_agreement_search" model="ir.ui.view">
+        <field name="name">tour.shop.agreement.search</field>
+        <field name="model">tour.shop.agreement</field>
+        <field name="arch" type="xml">
+            <search string="购物协议搜索">
+                <field name="name"/>
+                <field name="shop_id"/>
+                <filter name="draft" string="草稿" domain="[('state','=','draft')]"/>
+                <filter name="effective" string="生效" domain="[('state','=','effective')]"/>
+                <filter name="expired" string="到期" domain="[('state','=','expired')]"/>
+                <filter name="terminated" string="终止" domain="[('state','=','terminated')]"/>
+                <separator/>
+                <group name="group_by">
+                    <filter name="group_shop_type" string="购物店类型" context="{'group_by':'shop_type'}"/>
+                    <filter name="group_settle_cycle" string="结算周期" context="{'group_by':'settle_cycle'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tour_shop_agreement" model="ir.actions.act_window">
+        <field name="name">购物协议</field>
+        <field name="res_model">tour.shop.agreement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tour_shop_agreement_search"/>
+    </record>
+
+    <!-- List View -->
+    <record id="view_tour_shop_agreement_list" model="ir.ui.view">
+        <field name="name">tour.shop.agreement.list</field>
+        <field name="model">tour.shop.agreement</field>
+        <field name="arch" type="xml">
+            <list string="购物协议" sample="1">
+                <field name="name"/>
+                <field name="shop_id"/>
+                <field name="shop_type"/>
+                <field name="rebate_rate"/>
+                <field name="rebate_base" optional="hide"/>
+                <field name="settle_cycle"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'effective'"
+                    decoration-warning="state == 'expired'"
+                    decoration-danger="state == 'terminated'"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tour_shop_agreement_form" model="ir.ui.view">
+        <field name="name">tour.shop.agreement.form</field>
+        <field name="model">tour.shop.agreement</field>
+        <field name="arch" type="xml">
+            <form string="购物协议" duplicate="false">
+                <header>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,effective,expired"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="已终止" bg_color="text-bg-danger" invisible="state != 'terminated'"/>
+                    <div class="d-flex flex-column flex-sm-row align-items-center">
+                        <div class="col-12 col-sm-6 col-md-7 col-lg-8 px-4">
+                            <div class="oe_title mw-100 ps-0 pe-sm-2">
+                                <h1>
+                                    <field name="name" placeholder="协议编号"/>
+                                </h1>
+                                <h5 class="d-flex align-items-baseline mb-0">
+                                    <i class="fa fa-building fa-fw me-1 text-primary"/>
+                                    <field name="shop_id" class="w-100 w-sm-75"/>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="shop_type"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="begin_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group string="返佣条款">
+                        <group>
+                            <field name="rebate_rate"/>
+                            <field name="rebate_base"/>
+                        </group>
+                        <group>
+                            <field name="guarantee_rebate"/>
+                            <field name="settle_cycle"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

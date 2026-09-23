@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 游客门户：只能看自己的数据（只读） -->
+
+    <!-- tour.plan.reg: 只能看自己 partner_id 的报名 -->
+<!-- tour.plan: 只能看自己报名关联的团队 -->
+<!-- tour.plan.reg.passenger: 只能看自己报名的客人 -->
+<!-- tour.payment.claim: 只能看自己团队关联的收款 -->
+<!-- account.move: 只能看自己的发票（out_invoice / out_refund） -->
+</odoo>

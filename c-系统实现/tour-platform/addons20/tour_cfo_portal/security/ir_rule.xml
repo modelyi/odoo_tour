@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CFO 门户：可以查看所有财务数据 -->
+
+    <!-- hr.expense: CFO 可以查看所有报账 -->
+<!-- tour.commission: CFO 可以查看所有佣金 -->
+<!-- tour.guide.loan: CFO 可以查看所有借款 -->
+<!-- tour.guide: CFO 可以查看所有导游 -->
+<!-- tour.plan: CFO 可以查看所有团队 -->
+<!-- ir.attachment: CFO 可以访问所有报账附件 -->
+</odoo>

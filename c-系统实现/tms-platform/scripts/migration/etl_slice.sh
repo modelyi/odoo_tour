@@ -13,7 +13,7 @@
 #   wipe          先按 id 删再插 —— 只在"19 绝对权威且目标侧可能被手改脏"时用，
 #                 且必须**子表在前**，否则 DELETE 会被外键挡。
 #
-# 九条实测铁律（每条都是一次失败换来的，别改回旧写法）：
+# 十条实测铁律（每条都是一次失败换来的，别改回旧写法）：
 #  1. 只搬两侧都存在的列（information_schema 交集），再减去清单第 3 列的人工排除。
 #  2. **列存在 ≠ 列可比**：必须比 `udt_name`。20 把一批字段改成 translatable（text→jsonb），
 #     COPY 时报 `invalid input syntax for type json / Token "Events" is invalid`，
@@ -41,13 +41,19 @@
 #     于是那 15 处 fill UPDATE 全跑完、日志好看，最终仍报
 #     `null value in column "zip_applicability"`（实测）。这类列按字面量插入；
 #     外键类（造不出 id）直接判 FAIL 并点名列，不许悄悄 0 行蒙过去。
+#  10. **"NULL 就删行"的兜底只能作用于交集列**：不在交集里的列在 staging 里恒为 NULL
+#      （19 压根没有这一列），拿它当删行条件就是**把整表删空**。实测 res_partner_bank 97 行
+#      全被这条 DELETE 吃掉，表现成"LESS-97 但不报 FAIL"，然后 account_journal → 27.6 万凭证
+#      → 81.8 万分录整条链 0 行 —— 一个自伤把全链路堵死，查了 40 分钟才查到这里。
+#      这类列的去留只由 fixcol / xbad 通道决定（见铁律 9），与 staging 无关。
 set -u          # 故意不带 -e：见下方 rc 注释——每一步显式取退出码，
               # 靠 set -e 判定会在 if/子 shell 上下文里失效，造成**静默半搬迁**
 LIST="${1:?用法: etl_slice.sh <清单文件> [库名]}"
 DST_DB="${2:-s0tour}"
 SRC_C=tms-db; SRC_DB=tms
 DST_C=odoo20-db
-RMDIR="$(dirname "$LIST")/remap"
+RMDIR="$(dirname "$LIST")/remap"      # 外键 id 两侧不同 → 按自然键重映射
+FIXDIR="$(dirname "$LIST")/fixcol"     # 19 没有的列 → 按可评审的 SQL 规则填值
 TMPQ=$(mktemp -d /tmp/etl_slice.XXXX); trap 'rm -rf "$TMPQ"' EXIT
 
 cols_sql() {  # $1=容器 $2=库 $3=表 → "列名|udt"，按列名排序；$4=1 时剔掉 GENERATED 列（目标侧）
@@ -142,7 +148,13 @@ for line in "${LINES[@]}"; do
      order by a.attnum")
   # 逐列求值会退化成"每个 NOT NULL 列一次全表扫"（account_move 有 30+ 个），所以合成两条语句：
   # 一条 UPDATE 补默认、一条 DELETE 掉无法造 id 的行。
-  fillsql=$(awk -F'\t' -v T="$tbl" '
+  # **只允许作用于交集列**：不在交集里的列 staging 恒为 NULL（19 根本没有这列），
+  # 若按 `col is null` 删行就等于**把整表删空** —— 实测 res_partner_bank 97 行全被删掉，
+  # 表现为"LESS-97 但不报 FAIL"，然后 account_journal→凭证→分录整条链 0 行，
+  # 一路查了 40 分钟才查到这里。这类列的去留由下面的 fixcol / xbad 通道决定，与 staging 无关。
+  fillsql=$(awk -F'\t' -v T="$tbl" -v JF="$jf" '
+      BEGIN{while((getline l<JF)>0){split(l,p,"|");h[p[1]]=1}}
+      !($1 in h) { next }
       $2=="fill" { if (u == "") { u = "set " } else { u = u ", "; w = w " or " }
                    u = u "\"" $1 "\" = coalesce(\"" $1 "\", " $3 ")"; w = w "\"" $1 "\" is null" }
       $2=="drop" { if (d != "") d = d " or "; d = d "\"" $1 "\" is null" }
@@ -157,10 +169,21 @@ for line in "${LINES[@]}"; do
   # 于是 UPDATE 了个寂寞，仍然违约（实测 res_country.zip_applicability 被判成 FAIL(INSERT)，
   # 而 fill 日志里"补默认"数还挺好看）。这类列必须作为**字面量拼进 INSERT 列表**。
   # 同一列若在交集里（19 有、只是值为 NULL）则仍走上面的 staging UPDATE。
-  xfill=$(awk -F'\t' -v JF="$jf" 'BEGIN{while((getline l<JF)>0){split(l,p,"|");h[p[1]]=1}}
-          !($1 in h) && $2=="fill"{printf "%s%s\t%s\n", sep, $1, $3; sep="\n"}' <<<"$fills")
-  xbad=$(awk -F'\t' -v JF="$jf" 'BEGIN{while((getline l<JF)>0){split(l,p,"|");h[p[1]]=1}}
-        !($1 in h) && $2!="fill"{printf "%s ", $1}' <<<"$fills")
+  # **规则填列（`fixcol/<表>.txt`）**：19 根本没有的列，取值必须来自一条**写进仓库、可评审**的
+  # SQL 规则，而不是脚本凭类型猜。为什么必须有这个通道：20 有一类列**可空但带 CHECK** ——
+  # 实测 `account_move_check_document_tax_mode_set` 要求发票类凭证的 document_tax_mode 非空，
+  # 而上面的 fills 查询只看 `attnotnull`，这类列对脚本完全隐形 → 27.6 万条凭证一条都进不去。
+  # 规则表达式里用 `s.` 引用 staging 行（staging 在 INSERT 里别名就是 s），所以可以按行取值。
+  rules=""
+  [ -f "$FIXDIR/$tbl.txt" ] && rules=$(awk -F'\t' '!/^#/ && NF>=2 {printf "%s\t%s\n", $1, $2}' "$FIXDIR/$tbl.txt")
+  xfill=$(awk -F'\t' -v JF="$jf" -v R="$rules" '
+      BEGIN{while((getline l<JF)>0){split(l,p,"|");h[p[1]]=1}
+            n=split(R,rr,"\n"); for(i=1;i<=n;i++){split(rr[i],q,"\t"); if(q[1]!="")r[q[1]]=1}}
+      !($1 in h) && !($1 in r) && $2=="fill"{printf "%s%s\t%s\n", sep, $1, $3; sep="\n"}' <<<"$fills")
+  xbad=$(awk -F'\t' -v JF="$jf" -v R="$rules" '
+      BEGIN{while((getline l<JF)>0){split(l,p,"|");h[p[1]]=1}
+            n=split(R,rr,"\n"); for(i=1;i<=n;i++){split(rr[i],q,"\t"); if(q[1]!="")r[q[1]]=1}}
+      !($1 in h) && !($1 in r) && $2!="fill"{printf "%s ", $1}' <<<"$fills")
   xc=""; xs=""
   if [ -n "$xfill" ]; then
     while IFS=$'\t' read -r cn cv; do
@@ -168,6 +191,17 @@ for line in "${LINES[@]}"; do
       xc="$xc, \"$cn\""; xs="$xs, $cv"
       printf '%s\t%s\t%s\n' "$tbl" "$cn" "补默认(字面量)" >> "$FILLLOG"
     done <<< "$xfill"
+  fi
+  if [ -n "$rules" ]; then
+    while IFS=$'\t' read -r cn cv; do
+      [ -z "$cn" ] && continue
+      if grep -q "^$cn|" "$jf"; then
+        echo "    !! $tbl.$cn 在 19 有值，规则填列不适用（改写成 remap/$tbl.txt 的 UPDATE）"
+        continue
+      fi
+      xc="$xc, \"$cn\""; xs="$xs, ($cv)"
+      printf '%s\t%s\t%s\n' "$tbl" "$cn" "规则填列(fixcol)" >> "$FILLLOG"
+    done <<< "$rules"
   fi
 
   # ON CONFLICT 目标：有 id 才按 id 更新；insertignore / wipe / 无 id 一律 DO NOTHING
@@ -240,7 +274,7 @@ for line in "${LINES[@]}"; do
   fi
   if [ "$rc" = 0 ]; then
     docker exec "$DST_C" psql -U odoo -d "$DST_DB" -q -v ON_ERROR_STOP=1 -c "
-      $pre INSERT INTO $tbl ($collist$xc) SELECT $collist$xs FROM __stg_$tbl ON CONFLICT $conflict" 2>>"$LERR" \
+      $pre INSERT INTO $tbl ($collist$xc) SELECT $collist$xs FROM __stg_$tbl s ON CONFLICT $conflict" 2>>"$LERR" \
       || { rc=1; why=INSERT; }
   fi
   docker exec "$DST_C" psql -U odoo -d "$DST_DB" -q -c "DROP TABLE IF EXISTS __stg_$tbl" >/dev/null 2>&1 || :

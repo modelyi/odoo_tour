@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================= 导游借款单 ======================= -->
+    <record id="view_tour_guide_loan_search" model="ir.ui.view">
+        <field name="name">tour.guide.loan.search</field>
+        <field name="model">tour.guide.loan</field>
+        <field name="arch" type="xml">
+            <search string="导游借款搜索">
+                <field name="name"/>
+                <field name="guide_id"/>
+                <field name="employee_id"/>
+                <field name="plan_id"/>
+                <field name="plan_code"/>
+                <field name="amount"/>
+                <separator/>
+                <filter name="group_state" string="状态" context="{'group_by':'state'}"/>
+                <filter name="group_guide" string="导游" context="{'group_by':'guide_id'}"/>
+                <filter name="filter_overdue" string="已超期未报账" domain="[('is_overdue','=',True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tour_guide_loan" model="ir.actions.act_window">
+        <field name="name">导游借款</field>
+        <field name="res_model">tour.guide.loan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_tour_guide_loan_search"/>
+    </record>
+
+    <record id="view_tour_guide_loan_kanban" model="ir.ui.view">
+        <field name="name">tour.guide.loan.kanban</field>
+        <field name="model">tour.guide.loan</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="amount"/>
+                <field name="residual"/>
+                <field name="state"/>
+                <field name="is_overdue"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex align-items-baseline mb-2">
+                            <field name="name" class="fw-bolder fs-5 me-2"/>
+                            <field name="amount" widget="monetary" class="fw-bolder ms-auto flex-shrink-0"/>
+                        </div>
+                        <div class="text-muted mb-2">
+                            <field name="employee_id"/>
+                        </div>
+                        <div class="d-flex justify-content-between mt4">
+                            <span class="text-muted">未冲抵</span>
+                            <field name="residual" widget="monetary"/>
+                        </div>
+                        <footer class="align-items-end">
+                            <field name="state" widget="badge"
+                                decoration-success="state=='settled'"
+                                decoration-info="state=='disbursed'"
+                                decoration-warning="state=='approved'"
+                                decoration-muted="state=='draft'"/>
+                            <field name="is_overdue" invisible="not is_overdue"
+                                   class="ms-2" widget="boolean" string="超期"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_tour_guide_loan_list" model="ir.ui.view">
+        <field name="name">tour.guide.loan.list</field>
+        <field name="model">tour.guide.loan</field>
+        <field name="arch" type="xml">
+            <list string="导游借款">
+                <field name="name"/>
+                <field name="guide_id"/>
+                <field name="employee_id"/>
+                <field name="plan_code"/>
+                <field name="amount"/>
+                <field name="purpose"/>
+                <field name="due_date"/>
+                <field name="residual"/>
+                <field name="is_overdue" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                    decoration-success="state=='settled'" decoration-info="state=='disbursed'"
+                    decoration-warning="state=='approved'" decoration-muted="state=='draft'"/>
+                <field name="move_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tour_guide_loan_form" model="ir.ui.view">
+        <field name="name">tour.guide.loan.form</field>
+        <field name="model">tour.guide.loan</field>
+        <field name="arch" type="xml">
+            <form string="导游借款单">
+                <header>
+                    <button name="action_approve" string="审批" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
+                        invisible="state != 'draft'"/>
+                    <button name="action_disburse" string="放款" type="object" class="btn-primary"
+                        groups="tour_base.group_tour_finance"
+                        invisible="state != 'approved'"/>
+                    <button name="action_reject" string="退回" type="object"
+                        groups="tour_base.group_tour_finance"
+                        invisible="state not in ('draft','approved')"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,approved,disbursed,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="move_count" widget="statinfo" string="凭证"/>
+                        </button>
+                        <button name="action_view_expenses" type="object"
+                                class="oe_stat_button" icon="fa-receipt">
+                            <field name="expense_count" widget="statinfo" string="报账"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="借款单号"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="借款人信息">
+                            <field name="employee_id"/>
+                            <field name="guide_id"/>
+                            <field name="plan_id"/>
+                            <field name="plan_code"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </group>
+                        <group string="借款信息">
+                            <field name="amount" widget="monetary" currency_field="currency_id"/>
+                            <field name="account_id"/>
+                            <field name="apply_date"/>
+                            <field name="loan_date"/>
+                            <field name="due_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="借款用途" name="purpose">
+                            <group>
+                                <field name="purpose" nolabel="1" placeholder="请输入借款用途..."/>
+                            </group>
+                        </page>
+                        <page string="三方分离" name="separation">
+                            <group string="借款人≠审批人≠放款人">
+                                <group>
+                                    <field name="applicant_id"/>
+                                    <field name="approver_id"/>
+                                    <field name="approve_date"/>
+                                </group>
+                                <group>
+                                    <field name="disburser_id"/>
+                                    <field name="disbursement_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="冲抵与凭证" name="settlement">
+                            <group>
+                                <group>
+                                    <field name="settled_amount" widget="monetary" currency_field="currency_id"/>
+                                    <field name="residual" widget="monetary" currency_field="currency_id"/>
+                                    <field name="is_overdue"/>
+                                </group>
+                                <group>
+                                    <field name="move_id"/>
+                                    <field name="move_state"/>
+                                </group>
+                            </group>
+                            <separator string="关联报账费用"/>
+                            <field name="x_expense_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="product_id"/>
+                                    <field name="total_amount_currency"/>
+                                    <field name="x_plan_code"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="归属" name="ownership">
+                            <group>
+                                <group>
+                                    <field name="company_id"/>
+                                </group>
+                                <group>
+                                    <field name="department_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,17 @@
+# 进不了搬运列表的列（20 有、19 侧**没有落点**，不是"值脏"）。
+# 格式：`表名 列1,列2`。与 fixcol 的区别：fixcol 是"能按规则算出值"，
+# 这里连源值都没处取，只能不搬 + 留痕进待签字清单。
+
+# account_journal.check_sequence_id：指向 ir_sequence，而 ir_sequence 在 etl_order.py 的 DENY
+#   名单里（20 自己拥有；19 覆盖会把 20 的序列定义改回 19 的样子）。19 的 journal 里
+#   check_sequence_id=41 这类 id 在 20 根本不存在 → 外键直接违约。
+#   凭证号**连续性**是 B3 切换的必做项（按 code 迁 next_number + 在 20 侧重建序列 + 重映射引用），
+#   不是 S0 只读影子能验证的东西，先留空并记入待办。
+account_journal check_sequence_id
+
+# project_project.alias_id：指向 mail.alias，而 mail_alias 也在 DENY 名单里
+#   （邮箱别名要按当前域名重算；19 的 alias 行带着旧域名 tms.solepro.cloud，
+#    盖过去等于把 20 的别名指到一个不该用的域名上）。
+#   后果：项目上的"邮件别名"栏在影子里为空，看业务数据不受影响；
+#   B3 切换时按新域名重建别名（见计划 §9 切换后必做清单）。
+project_project alias_id

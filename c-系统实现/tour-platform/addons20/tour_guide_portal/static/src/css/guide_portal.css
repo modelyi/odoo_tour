@@ -1,0 +1,83 @@
+/* 导游门户样式 */
+
+.o_portal_guide {
+    min-height: 60vh;
+}
+
+.o_guide_sidebar {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.o_guide_sidebar h5 {
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 0.5rem;
+}
+
+.o_guide_sidebar .nav-link {
+    color: #495057;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.o_guide_sidebar .nav-link:hover {
+    background: #e9ecef;
+}
+
+.o_guide_sidebar .nav-link.active {
+    background: #875A7B;
+    color: #fff;
+}
+
+.o_guide_sidebar .nav-link .badge {
+    margin-left: auto;
+}
+
+.o_guide_home .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.o_guide_home .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.o_guide_home .card h2 {
+    color: #495057;
+}
+
+.o_portal_guide_no_access {
+    background: #fff;
+    border-radius: 8px;
+    padding: 3rem;
+}
+
+.o_portal_guide_no_access i {
+    opacity: 0.7;
+}
+
+/* 详情页表格 */
+.o_guide_dispatch_detail .table th,
+.o_guide_commission_detail .table th,
+.o_guide_loan_detail .table th,
+.o_guide_expense_detail .table th {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .o_guide_sidebar {
+        margin-bottom: 1rem;
+    }
+
+    .o_guide_home .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}

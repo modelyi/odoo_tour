@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+rule_departure_pm,tour.departure: PM sees all departures (tour.departure),tour.departure,tour_pm_portal.group_pm_portal,r,"[(1, '=', 1)]"
+access_tour_departure_pm,tour.departure pm (tour.departure),tour.departure,tour_pm_portal.group_pm_portal,u,
+rule_line_pm,tour.line: PM sees all lines (tour.line),tour.line,tour_pm_portal.group_pm_portal,r,"[(1, '=', 1)]"
+rule_plan_pm,tour.plan: PM sees all plans (tour.plan),tour.plan,tour_pm_portal.group_pm_portal,r,"[(1, '=', 1)]"
+rule_plan_reg_pm,tour.plan.reg: PM sees all regs (tour.plan.reg),tour.plan.reg,tour_pm_portal.group_pm_portal,r,"[(1, '=', 1)]"
+rule_supplier_pm,tour.supplier: PM sees all suppliers (tour.supplier),tour.supplier,tour_pm_portal.group_pm_portal,r,"[(1, '=', 1)]"

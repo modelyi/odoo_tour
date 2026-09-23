@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tour_line_operator,tour.line.operator,model_tour_line,tour_base.group_tour_operator,1,1,1,0
+access_tour_line_sales,tour.line.sales,model_tour_line,tour_base.group_tour_sales,1,0,0,0
+access_tour_line_finance,tour.line.finance,model_tour_line,tour_base.group_tour_finance,1,0,0,0
+access_tour_line_manager,tour.line.manager,model_tour_line,tour_base.group_tour_manager,1,1,1,1
+access_tour_departure_operator,tour.departure.operator,model_tour_departure,tour_base.group_tour_operator,1,1,1,0
+access_tour_departure_sales,tour.departure.sales,model_tour_departure,tour_base.group_tour_sales,1,0,0,0
+access_tour_departure_finance,tour.departure.finance,model_tour_departure,tour_base.group_tour_finance,1,0,0,0
+access_tour_departure_manager,tour.departure.manager,model_tour_departure,tour_base.group_tour_manager,1,1,1,1
+access_tour_line_detail_operator,tour.line.detail.operator,model_tour_line_detail,tour_base.group_tour_operator,1,1,1,0
+access_tour_line_detail_sales,tour.line.detail.sales,model_tour_line_detail,tour_base.group_tour_sales,1,0,0,0
+access_tour_line_detail_manager,tour.line.detail.manager,model_tour_line_detail,tour_base.group_tour_manager,1,1,1,1
+access_tour_pay_way_operator,tour.pay.way.operator,model_tour_pay_way,tour_base.group_tour_operator,1,1,1,0
+access_tour_pay_way_finance,tour.pay.way.finance,model_tour_pay_way,tour_base.group_tour_finance,1,0,0,0
+access_tour_pay_way_manager,tour.pay.way.manager,model_tour_pay_way,tour_base.group_tour_manager,1,1,1,1

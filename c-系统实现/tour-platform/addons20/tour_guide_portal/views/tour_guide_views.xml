@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 后台导游表单：增加门户相关按钮和字段 -->
+    <record id="view_guide_form_portal" model="ir.ui.view">
+        <field name="name">tour.guide.form.portal</field>
+        <field name="model">tour.guide</field>
+        <field name="inherit_id" ref="tour_resource.view_tour_guide_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_send_portal_invitation"
+                            string="发送门户邀请"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not partner_id"/>
+                </header>
+            </xpath>
+            <xpath expr="//sheet/div[@class='oe_button_box']" position="inside">
+                <button name="action_send_portal_invitation"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-envelope">
+                    <field name="has_portal_access" widget="boolean_button"
+                           options='{"terminology": {"true": "已开通门户", "false": "未开通"}}'/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

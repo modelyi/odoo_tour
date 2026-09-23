@@ -1,0 +1,13 @@
+# 19 侧不存在的列 → 用规则填值。脚本把整条表达式括成 (…) 拼进 INSERT 的 SELECT 列表，
+# 表达式里的 `s.` 就是 staging 表别名（`FROM __stg_<表> s`），所以可以按行取值。
+# 格式：`列名<TAB>SQL 表达式`；# 开头是注释。每条规则必须写清依据 —— B2 验收逐条找业务签字。
+
+# account_move.document_tax_mode
+#   约束依据：odoo20/addons/account/models/account_move.py:836
+#     check(move_type NOT IN (6 个发票类) OR document_tax_mode IS NOT NULL)
+#   取值依据：同文件 :2558 _compute_document_tax_mode
+#     非发票类 → NULL；发票类且未设 → 公司设置 account_price_include
+#   现网单公司，19/20 两侧 res_company.account_price_include 实测均为 tax_excluded。
+#   注意这是 20 的**新语义**（19 由 tax.price_include 逐税判断）：本表只是把历史凭证标成
+#   "按公司默认"，不改动任何金额；但业务在 20 里**编辑**这些旧发票时会按新语义重算 —— 记入待签字清单。
+document_tax_mode	case when s.move_type in ('out_invoice','out_refund','out_receipt','in_invoice','in_refund','in_receipt') then coalesce((select c.account_price_include from res_company c where c.id = s.company_id), 'tax_excluded') else null end

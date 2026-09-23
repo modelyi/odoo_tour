@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_tour_merge_manager,tour.merge.manager (tour.merge),tour.merge,tour_base.group_tour_manager,crud,
+access_tour_merge_operator,tour.merge.operator (tour.merge),tour.merge,tour_base.group_tour_operator,cru,
+access_tour_plan_finance,tour.plan.finance (tour.plan),tour.plan,tour_base.group_tour_finance,r,
+access_tour_plan_manager,tour.plan.manager (tour.plan),tour.plan,tour_base.group_tour_manager,crud,
+access_tour_plan_operator,tour.plan.operator (tour.plan),tour.plan,tour_base.group_tour_operator,ru,
+access_tour_plan_sales,tour.plan.sales (tour.plan),tour.plan,tour_base.group_tour_sales,cru,
+access_tour_plan_change_manager,tour.plan.change.manager (tour.plan.change),tour.plan.change,tour_base.group_tour_manager,crud,
+access_tour_plan_change_operator,tour.plan.change.operator (tour.plan.change),tour.plan.change,tour_base.group_tour_operator,cru,
+access_tour_plan_reg_finance,tour.plan.reg.finance (tour.plan.reg),tour.plan.reg,tour_base.group_tour_finance,r,
+access_tour_plan_reg_manager,tour.plan.reg.manager (tour.plan.reg),tour.plan.reg,tour_base.group_tour_manager,crud,
+access_tour_plan_reg_operator,tour.plan.reg.operator (tour.plan.reg),tour.plan.reg,tour_base.group_tour_operator,ru,
+access_tour_plan_reg_sales,tour.plan.reg.sales (tour.plan.reg),tour.plan.reg,tour_base.group_tour_sales,cru,
