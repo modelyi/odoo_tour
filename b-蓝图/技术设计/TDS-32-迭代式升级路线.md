@@ -80,10 +80,10 @@ A1 的域名翻转（`tour.solepro.cloud` → 19 平桥实例）**不需要**业
 6. **附件**：`ir_attachment` 走象限 1，filestore `rsync -a` 保留属主（uid 不一致 → 附件 500）。
 7. **负例进 UAT**："没有 500"不等于"校验在工作"（TDS-30 #25）。
 
-## 6A. S0 实测出的四个通用通道（`scripts/migration/`，S2 复用同一套）
+## 6A. S0 实测出的五个通用通道（`scripts/migration/`，S2 复用同一套）
 
 搬运管线里"一次失败换一条规则"的部分全部落在 `etl_slice.sh` 头部注释（九条铁律）。
-真正需要设计的是**四个通道**，因为 19→20 的坑不是一类，是四类，混在一个通道里必然互相掩盖：
+真正需要设计的是**五个通道**，因为 19→20 的坑不是一类，是五类，混在一个通道里必然互相掩盖：
 
 | 通道 | 什么时候用 | 为什么不能合并 |
 |---|---|---|
@@ -91,6 +91,7 @@ A1 的域名翻转（`tour.solepro.cloud` → 19 平桥实例）**不需要**业
 | `slices/remap/<表>.txt`（`@ref` 镜像 + staging UPDATE） | 两侧都有这列、但外键 id 不同（模块基数据） | 重映射必须在**目标库**做：源库的 SELECT 看不见 20 的表 |
 | `slices/fixcol/<表>.txt`（SQL 规则填列） | 20 新增的列 19 根本没有值，但值**可按规则推导** | 补 staging 救不了它 —— 该列不在两侧交集里，进不了 INSERT 列表（铁律 9） |
 | `slices/exclude_s0.txt`（排除列） | 20 新增的列 19 连**落点**都没有 | 不编造值，只留痕，进待签字清单 |
+| `s0_grant_groups.py`（XMLID 自然键映射） | 关系表的**端点是 20 自建的组**（`res_groups` 在 DENY 名单里，两侧同组不同 id） | 按原 id 拷 = 把用户挂到**别的组**上，是权限放大，比不拷更糟；只有自然键能对得上 |
 
 `etl_order.py` 除了出顺序，还出 **`slices/cycles.txt`（拓扑时剪断的回边）**，交给
 `etl_cycle.sh drop/add`：搬之前摘掉环上的外键，搬完原样加回。
@@ -119,6 +120,36 @@ S0 实测的 19↔20 语义变更（B2 待签字清单的来源，不是实施�
    外键列兜不出 id 就删该行 —— 每条动作写进 `FILLLOG`（本轮 740 处补默认 / 176 处删行 / 42 处无兜底）。
 5. **filestore 是 `tms` + `tms_tenant_1789530161` 两个目录的并集**：415 个对象的实体在租户目录里
    （内容按 sha1 寻址 ⇒ 可安全合并去重）。A1/B2 的附件拷贝必须按这个口径，否则附件 404。
+   判据也不能用"行数 = 文件数"：19 侧 27,564 行只对应 **3,197** 个去重文件（内容寻址共用），
+   按行数判会误报"丢了两万多个文件"。
+6. **中间表（m2m）对外键闭包是不可见的** —— 闭包沿"谁 FK 到谁"走，而没有任何表 FK 到中间表，
+   于是父表全搬齐、中间表仍然 0 行。实测缺口：`account_move_line_account_tax_rel` 4,437→0、
+   `product_taxes_rel` 233→0，表现成"凭证金额分毫不差，但税不见了"，逐表行数判据完全看不见。
+   修法是 `etl_order.py::junctions()`：恰好两条外键、且两端都在（或允许在）闭包内的表补进来
+   （实测补 52 张），同时把端点是 20 自有表的 11 张（`res_groups_users_rel` 等）单独列为
+   "需自然键映射"，**绝不按 id 拷**。
+7. **权限组成员必须走自然键**：不做的后果不是"少数据"而是**业务看不见** —— 影子库里所有
+   `tour.*` 都是 AccessError，看着像搬迁失败。实测 19 侧 admin 有 32 个显式组（含
+   `tour_base.group_tour_guide_manager`/`group_tour_operator`，正是 `tour.guide` 那两条 ACL 的组），
+   20 侧空库只带 13 个装机组 ⇒ 必须按 `module.name` XMLID 两侧各解一次再写关系。
+   映射不上的 XMLID 不猜不造，原样打印 = "切换后要重配权限"清单（B3 交付物）。
+8. **安全规则表在 20 换了名字和形状**（B1 已按此重写 `ir.access`）：
+   19 `ir_model_access`（`perm_read/write/create/unlink` 四个 bool + `group_id` 单组）
+   → 20 `ir_access`（`model_id` m2o + `group_id` + **`operation` 一列字符串**，实测取值是
+   `c/cr/cru/crud/r/rd/…` 15 种组合）。两张表**名字不同** ⇒ 不在两侧交集里，永远不进搬运清单，
+   规则完全由 20 侧模块装载产生 —— 这是对的，但也意味着"19 里手工调过的权限"必丢，B3 要复核。
+9. **20 的 web 层 RPC 协议变了**（`s0_smoke.py` 实测，S1/S2 前端与脚本都受影响）：
+   `web_search_read(domain, specification, offset, limit, order, count_limit)`（19 是 `fields`）、
+   `web_read_group(domain, groupby, aggregates, limit, …)`（19 是 `groupby_list` + `fields`）、
+   `web_read(specification)`、`get_views(views)` 的 views 改成 **`[[view_id, view_type], …]`**
+   （19 是 `[{type: …}]`）。⇒ 冒烟判"数据在不在、视图编不编得出来"一律走仍兼容的 ORM 级
+   `search_read` / `read_group(domain, groupby, aggregates)`，不绑死在某个 web 协议版本上。
+10. **翻译列在 19/20 都是 jsonb**：`res_groups.name` 直接 `string_agg` 报
+    `function string_agg(jsonb, unknown) does not exist` ⇒ 任何跨版本 SQL 取"名称"都要
+    `->>'en_US'` 或 `jsonb_typeof` 分支（`etl_slice.sh` 铁律 4 的类型转换正是为此）。
+    `ir_model_data` 反倒**两侧同名**（`module/name/model/res_id/noupdate`，实测列一致），
+    所以 XMLID 自然键映射在两侧都能直接用同一句 SQL —— 别凭印象给 20 编一个 `xml_id` 列名，
+    凡跨版本取元数据一律先查 `information_schema`。
 
 ## 7. 变更影响与回退
 

@@ -44,6 +44,15 @@ union all select 'partner',           count(*)::text from res_partner
 union all select 'users',             count(*)::text from res_users
 union all select 'tour_plan',         count(*)::text from tour_plan
 union all select 'tour_plan_account', count(*)::text from tour_plan_account
+-- 中间表（m2m）判据。**为什么单独列**：闭包靠"谁 FK 到谁"求传递闭包，而中间表是
+-- 叶子 —— 没有任何表 FK 到它，所以父表全搬了它仍然可以是 0 行（实测：
+-- account_move_line_account_tax_rel 4437→0、product_taxes_rel 233→0）。
+-- 表现是"凭证金额都对，但税不见了"—— 逐表行数判据看不见这种缺口。
+union all select 'jun_aml_tax',       count(*)::text from account_move_line_account_tax_rel
+union all select 'jun_product_taxes', count(*)::text from product_taxes_rel
+union all select 'jun_fp_tax',        count(*)::text from account_fiscal_position_account_tax_rel
+union all select 'jun_account_company', count(*)::text from account_account_res_company_rel
+union all select 'jun_company_users', count(*)::text from res_company_users_rel
 "
 # 信息项（不计入差异）：matching_number 上有没有 DB 约束/索引。
 # 实测两侧都**没有**唯一约束 —— 这条不变式是 ORM 级的，所以真正的判据只能靠上面的
@@ -83,6 +92,37 @@ j20=$(run "$DST_C" "$DST_DB" "$J20")
 printf '%-20s %-17s %-17s %s\n' "idx_matching" "-" "$j20" "信息项"
 
 printf '%s\n' "------------------------------------------------------------------------------"
+# 附件判据。两个坑（本轮都实测踩过）：
+#  ① 附件是**内容寻址**的：19 侧 27,564 行只对应 3,197 个文件（相同 checksum 共用一个
+#     store_fname）→ "行数 = 文件数" 是错判据，会误报"丢了两万多个文件"。
+#  ② 19 的 filestore 是**两个目录的并集**：主库 tms + 租户库 tms_tenant_1789530161
+#     （实测 415 个对象只在租户目录里）。只拷 tms 目录 → 这 415 个附件在 20 上必 500。
+#     B3 的 filestore 动作必须按并集做。
+# 口径：**以源侧的文件清单为准**逐个查目标侧能否解析。20 自建行（资产包缓存
+# ir.ui.view/*、装机头像）的缺失不算 —— 那些 20 会自己重建，混进来只会掩盖真问题。
+FS19="/home/adai/tms/c-系统实现/tms-platform/data/odoo/filestore/tms
+/home/adai/tms/c-系统实现/tms-platform/data/odoo/filestore/tms_tenant_1789530161"
+FS20="/home/adai/odoo20/data/filestore/$DST_DB"
+SFLIST=$(mktemp); trap 'rm -f "$F19" "$F20" "$SFLIST"' EXIT
+run "$SRC_C" "$SRC_DB" \
+  "select distinct store_fname from ir_attachment where store_fname is not null" | grep . > "$SFLIST"
+# 空清单会让"缺失=0"变成假过关，必须先堵掉
+[ -s "$SFLIST" ] || { echo "FAIL: 源侧附件清单为空（查询失败或无数据）"; exit 1; }
+cnt_missing() {   # $1=filestore 根（可多个，换行/空白分隔）→ 源清单里落盘缺失的个数
+  local root f
+  while read -r f; do
+    for root in $1; do [ -f "$root/${f:0:2}/${f:2}" ] && continue 2; done
+    echo x
+  done < "$SFLIST" | wc -l
+}
+m19=$(cnt_missing "$FS19"); m20=$(cnt_missing "$FS20")
+printf '%-20s %-17s %-17s %s\n' "attach_src_files" "$(wc -l < "$SFLIST")" "$(wc -l < "$SFLIST")" OK
+j=OK
+if [ "$m19" != 0 ]; then j="FAIL(源侧自身缺 $m19)"; BADD=$((BADD+1))
+elif [ "$m20" != 0 ]; then j="FAIL(目标侧缺 $m20)"; BADD=$((BADD+1)); fi
+printf '%-20s %-17s %-17s %s\n' "attach_files_missing" "$m19" "$m20" "$j"
+
+printf '%s\n' "------------------------------------------------------------------------------"
 printf '%s\n'   "按设计不搬（20 侧自建基数据；差异是预期的，但必须留痕）"
 run "$SRC_C" "$SRC_DB" "$DENY_SQL" > /tmp/recon_d19.txt
 run "$DST_C" "$DST_DB" "$DENY_SQL" > /tmp/recon_d20.txt
@@ -92,6 +132,18 @@ while IFS='|' read -r k v19; do
   printf '%-20s %-17s %-17s %s\n' "$k" "$v19" "${v20:-<无>}" "不搬"
 done < /tmp/recon_d19.txt
 rm -f /tmp/recon_d19.txt /tmp/recon_d20.txt
+
+printf '%s\n' "------------------------------------------------------------------------------"
+# 权限组：res_groups 是 DENY 端（20 自建、两侧同组不同 id）→ 只能按 XMLID 映射，
+# 因此成员关系**允许少于源侧**（20 侧确实没有那个组时）。但它必须是"映射后"而不是
+# "没映射"：admin 一组都没有 = 所有 tour.* 都 AccessError，业务侧看到的就是空界面。
+G19=$(run "$SRC_C" "$SRC_DB" "select count(*) from res_groups_users_rel")
+G20=$(run "$DST_C" "$DST_DB" "select count(*) from res_groups_users_rel")
+U20=$(run "$DST_C" "$DST_DB" "select count(distinct uid) from res_groups_users_rel")
+A20=$(run "$DST_C" "$DST_DB" "select count(*) from res_groups_users_rel r join res_users u on u.id=r.uid where u.login='admin'")
+j=OK
+if [ "${A20:-0}" = 0 ]; then j="FAIL(admin 零组 → 组映射未跑)"; BADD=$((BADD+1)); fi
+printf '%-20s %-17s %-17s %s\n' "group_members" "$G19" "$G20" "$j（覆盖用户 $U20 个，admin $A20 组）"
 
 printf '%s\n' "------------------------------------------------------------------------------"
 echo "差异判据数: $BADD"

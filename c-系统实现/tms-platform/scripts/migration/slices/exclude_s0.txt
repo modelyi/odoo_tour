@@ -14,4 +14,3 @@ account_journal check_sequence_id
 #    盖过去等于把 20 的别名指到一个不该用的域名上）。
 #   后果：项目上的"邮件别名"栏在影子里为空，看业务数据不受影响；
 #   B3 切换时按新域名重建别名（见计划 §9 切换后必做清单）。
-project_project alias_id

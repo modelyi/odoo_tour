@@ -19,7 +19,11 @@ DST = ('odoo20-db', os.environ.get('ETL_DST_DB', 's0tour'))
 # 闭包碰到它们时必须剪掉，否则 upsert 会把 20 的界面定义改回 19 的样子 —— 那是整站白屏级别的事故。
 DENY_PREFIX = ('ir_model', 'ir_ui_view', 'ir_actions', 'ir_act_', 'ir_module', 'ir_logging',
                'ir_http', 'ir_rule', 'ir_model_access', 'ir_model_constraint',
-               'ir_model_relation', 'ir_translation', 'ir_attachment_backup')
+               'ir_model_relation', 'ir_translation', 'ir_attachment_backup',
+               # 20 把 19 的 ir_model_access 改名成 ir_access 并把四个 perm_* bool 换成
+               # 一列 operation（实测 c/cr/cru/crud/r/… 15 种）。表名不同 ⇒ 本来就不在交集里，
+               # 但仍要 DENY：20 侧这张表由模块装载拥有，任何"以后同名"的写法都不能被 19 覆盖。
+               'ir_access')
 DENY = {'ir_config_parameter', 'ir_cron', 'ir_sequence', 'ir_property', 'ir_qweb_field',
         'bus_bus', 'decimal_precision', 'ir_demo', 'ir_demo_failure',
         # 权限组与邮件别名同样是"20 装载模块时自己生成"的基数据：res_groups.privilege_id /
@@ -44,6 +48,40 @@ def tables(side):
 
 
 AUDIT_COLS = {'create_uid', 'write_uid'}
+
+
+def junctions(side, cand, fk):
+    """候选里筛出真正的中间表：除 id/审计列外**只有两个单列外键**。
+    返回 (可直拷的集合, 因两端含 DENY 表而不能直拷的集合)。
+    含 DENY 端（如 res_groups）的**绝不能按原 id 拷** —— 20 侧同一组的 id 不一样，
+    照拷等于把用户挂到别的组上（权限放大，比没有还糟）。这类只能走自然键映射
+    （见 s0_grant_groups.py）。"""
+    if not cand:
+        return set(), set()
+    inlist = ','.join("'%s'" % t for t in cand)          # cand 全部来自 information_schema
+    rows = q(side[0], side[1], """
+select table_name, string_agg(column_name, ',' order by ordinal_position)
+  from information_schema.columns
+ where table_schema='public' and table_name in (%s)
+ group by 1""" % inlist)
+    cols = {t: set(c.split(',')) for t, c in rows}
+    ok, deny_ended = set(), set()
+    for t in cand:
+        cs = cols.get(t)
+        if not cs:
+            continue
+        fkcols, single = set(), True
+        for p, c in fk[t].items():
+            if len(c) != 1:
+                single = False
+            fkcols |= c
+        if not single or (cs - fkcols) - (AUDIT_COLS | {'id'}):
+            continue                                     # 还有别的业务列 → 不是纯中间表
+        if any(p in DENY or p.startswith(DENY_PREFIX) for p in fk[t]) or t in DENY or t.startswith(DENY_PREFIX):
+            deny_ended.add(t)
+        else:
+            ok.add(t)
+    return ok, deny_ended
 
 
 def fks(side):
@@ -109,6 +147,41 @@ def main():
         for p in fk.get(t, ()):
             if p in both and p not in DENY and not p.startswith(DENY_PREFIX):
                 stack.append(p)
+
+    # 1b) **多对多中间表（junction）不会从父表闭包里长出来** —— 它们只当子表，
+    #     谁也不外键指向它们。实测漏掉 res_groups_users_rel 之后，影子库里 admin
+    #     一个组都没有，`tour.guide` 直接 AccessError（"TMS/旅行社经理"那批组全空），
+    #     表现成"数据搬齐了但业务看不见"。所以显式补：两端都在闭包里、
+    #     除 id/审计列外**只有两个外键列**的表。
+    def _ends_ok(t):
+        # 两端要么在闭包里，要么是被 DENY 的 20 自有表（res_groups / mail_alias…）——
+        # 后者 20 侧也有行，只是 id 不同，必须走自然键映射而不是原 id 照拷。
+        return all(p in need or (p in both and (p in DENY or p.startswith(DENY_PREFIX)))
+                   for p in fk.get(t, ()))
+
+    def _ends_bad(t):   # 端点里"不能按 id 拷"的那类表：DENY 端 或 被 skip 的 20 自有表
+        bad = []
+        for p in fk.get(t, ()):
+            if p in need and modes.get(p) == 'skip':
+                bad.append('%s(skip)' % p)
+            elif p in both and (p in DENY or p.startswith(DENY_PREFIX)):
+                bad.append('%s(20自有)' % p)
+        return bad
+    cand = [t for t in sorted(both - need) if len(fk.get(t, ())) == 2 and _ends_ok(t)]
+    jun, jun_deny = junctions(SRC, cand, fk)
+    # 端点被 skip / 由 20 自有表持有的中间表**不进清单**：按 id 拷必然 FK 违约
+    # （实测 payment_method 231→3、project_project 被 skip），硬搬只会把 FAIL 变成噪音。
+    jun_bad = {t: _ends_bad(t) for t in jun if _ends_bad(t)}
+    jun -= set(jun_bad)
+    need |= jun
+    if jun:
+        print('补入中间表 %d 张: %s' % (len(jun), ' '.join(sorted(jun))))
+    if jun_deny:
+        print('!! 中间表 %d 张含 20 自有端（res_groups 等），**不按原 id 拷**，'
+              '需自然键映射: %s' % (len(jun_deny), ' '.join(sorted(jun_deny))))
+    if jun_bad:
+        print('!! 中间表 %d 张端点不可按 id 引用（20 自有或已 skip）→ 不搬，需业务复核: %s'
+              % (len(jun_bad), ' '.join('%s←%s' % (t, ','.join(v)) for t, v in sorted(jun_bad.items()))))
 
     # 2) 拓扑排序：父在前。**环必须显式记下来，不能"剪掉就完事"**：
     #    剪断回边只解决"谁先插入"，解决不了"一整条 INSERT 是原子的"——

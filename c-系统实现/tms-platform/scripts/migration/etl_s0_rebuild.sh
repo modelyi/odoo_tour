@@ -36,4 +36,9 @@ for p in 1 2; do
 done
 echo "===== 加回外键（= 引用完整性校验）$(date -Is)"
 bash etl_cycle.sh add "$CYC" "$DB" 2>&1 | tail -30
+# 权限组关系是 DENY 端（20 自建 res_groups，同组两侧 id 不同）→ 不在拷贝清单里，
+# 必须按 XMLID 自然键单独映射一轮。不做的后果不是"少数据"，而是 admin 零组 →
+# 所有 tour.* 模型 AccessError，看着像"搬迁失败"其实是看不见。
+echo "===== 权限组自然键映射 $(date -Is)"
+python3 s0_grant_groups.py "$DB" 2>&1 | tee -a "$LOGDIR/rebuild_groups.log"
 echo "===== 完成 $(date -Is)"

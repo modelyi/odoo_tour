@@ -16,3 +16,11 @@ payment_provider skip
 # account.payment.method 是**业务表**（收款/付款方式，journal 直接引用），必须搬；
 # 但 19 侧本身有 (code, payment_type) 重复行 → 违约的行跳过，剩下的进"待定性"。
 account_payment_method insertignore
+
+# —— S0 v7 收尾 ——
+# project_project：19 侧只有 1 行、name=en_US"Internal"、**project_task=0 行**（实测）
+#   ⇒ 这是 19 装机自带的 demo 项目，本系统不用项目管理。它撞在 20 新增的
+#   NOT NULL 无默认列 alias_id 上（mail_alias 是 20 自建表，不能凭空造 id）。
+#   所以不是"排除列"能解决的：整表 skip，与"搬 0 行业务数据"等价且无副作用。
+#   待签字项（TDS-32 §7）：若业务要在 20 上用项目/任务，切换后由 20 侧正常新建。
+project_project skip

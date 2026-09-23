@@ -1,0 +1,11 @@
+# Odoo 20 源码实例（tour-platform / S0 影子、S1+ 预发）缺的运行期第三方包。
+# 版本与 c-系统实现/tms-platform/Dockerfile.odoo 的 /opt/qiflibs 完全一致 ——
+# 同一个模块在 19 容器与 20 源码实例上必须见到同一份依赖，否则"19 正常 20 报错"
+# 这类现象就没法归因了。
+#
+# 装法（不要装进 odoo20 的 venv，那是上游 checkout，装了会污染金丝雀基线）：
+#   python3 -m pip install --target "$PYLIBS" -r requirements20.txt
+# s0_env.sh 会按 PYLIBS 自检并自动补装，所以这里必须保持可直接 pip 安装。
+qifparse==0.5
+pandas==2.2.3
+numpy==1.26.4
