@@ -1,0 +1,25 @@
+# S0 种子表（业务上"人要看见"的那些）；父表由 etl_order.py 自动补进闭包
+res_partner
+res_users
+product_template
+product_product
+product_category
+account_account
+account_journal
+account_move
+account_move_line
+account_partial_reconcile
+account_analytic_account
+account_analytic_line
+tour_plan
+tour_plan_reg
+tour_plan_account
+tour_payment_claim
+tour_guide
+tour_departure
+tour_line
+fleet_vehicle
+hr_employee
+project_project
+mail_message
+ir_attachment

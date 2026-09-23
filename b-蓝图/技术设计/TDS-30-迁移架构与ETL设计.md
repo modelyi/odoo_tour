@@ -425,6 +425,15 @@ WARNING 分类（125 模块全装一轮，共 17 类；逐类定性，不靠"看
 ⇒ 这些修复**没有把装载面改坏**，这条是本节作为 gate 判据的自洽性检查；
 B1 签字页引用 `gate_b1_6`（最新一次全装 + 单测），`gate_b1_4` 作为首次达成记录保留。
 
+**控制器改完（#24/#25）之后的终审：`b1gate8`（权威）** —— 125 模块 / `Modules loaded.` ×2 /
+**`0 failed, 0 error(s) of 129 tests`** / 无 CRITICAL（`gate_b1_7` 曾出现 1 条
+`odoo.service.httpd … quitting` CRITICAL：冒烟服务器还占着 28169，装载与单测因 `--no-http` 未受影响，
+但为了让权威日志干净直接弃跑重跑）。同一轮 `b1gate8` 上重跑门户 GET 冒烟：
+**44×200 / 0 Traceback / 0 ERROR**，11 条非 200 全是 `id=1` 数据性 404 + 1 条正确 403 + 1 条 303，
+六个门户页 `<title>` 均渲染自家标题（无一页落回 "No Access"）⇒ §5.8 的第三段判据在**含前端修复的最终树**上成立。
+跑完已用 `scripts/migration/smoke/teardown_smoke_fixtures.py` 清空夹具
+（`guides=[25] users=[smoke_bot_admin, smoke_bot_portal]` → `LEFT … =0`），gate 库里不留冒烟账号。
+
 
 ### 5.8 第三段判据：门户运行时冒烟（2026-09-22）+ 顺带查出的 19 现网潜伏缺陷
 
