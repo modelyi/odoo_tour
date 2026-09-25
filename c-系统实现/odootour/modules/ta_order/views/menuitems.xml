@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_order_ops" name="销售与报名" parent="ta_base.menu_ta_root" sequence="20"/>
+    <menuitem id="menu_ta_order" name="订单报名" parent="menu_ta_order_ops" action="action_ta_order" sequence="10"/>
+</odoo>

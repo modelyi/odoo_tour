@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+ta_order_sales,ta.order 销售维护,ta.order,ta_base.group_ta_sales,crud,
+ta_order_dispatcher_read,ta.order 计调只读,ta.order,ta_base.group_ta_dispatcher,r,
+ta_order_accountant,ta.order 财务改收款字段外,ta.order,ta_base.group_ta_accountant,ru,
+ta_order_manager,ta.order 管理层全权,ta.order,ta_base.group_ta_manager,crud,
+ta_order_cashier_read,ta.order 出纳只读,ta.order,ta_base.group_ta_cashier,r,
+ta_order_comp_rule,ta.order 多公司限制,ta.order,,crud,"[('company_id', 'in', company_ids)]"
+ta_order_line_sales,ta.order.line 销售,ta.order.line,ta_base.group_ta_sales,crud,
+ta_order_line_read,ta.order.line 相关只读,ta.order.line,ta_base.group_ta_dispatcher,r,
+ta_order_line_comp_rule,ta.order.line 多公司限制,ta.order.line,,crud,"[('company_id', 'in', company_ids)]"
+ta_receivable_plan_sales,ta.receivable.plan 销售,ta.receivable.plan,ta_base.group_ta_sales,crud,
+ta_receivable_plan_read,ta.receivable.plan 只读,ta.receivable.plan,ta_base.group_ta_accountant,r,
+ta_receivable_plan_comp_rule,ta.receivable.plan 多公司限制,ta.receivable.plan,,crud,"[('company_id', 'in', company_ids)]"

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_order_tree" model="ir.ui.view">
+        <field name="name">ta.order.tree</field>
+        <field name="model">ta.order</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="partner_id" optional="show"/>
+                <field name="departure_id"/>
+                <field name="heads"/>
+                <field name="amount_total" sum="合计"/>
+                <field name="amount_paid" sum="合计" optional="show"/>
+                <field name="amount_open" sum="未收" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-warning="state == 'tripping'"
+                       decoration-muted="state in ('settled','cancel')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_order_form" model="ir.ui.view">
+        <field name="name">ta.order.form</field>
+        <field name="model">ta.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="确认下单" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_trip" type="object" string="开始行程" invisible="state != 'confirmed'"/>
+                    <button name="action_settle" type="object" string="结算" invisible="state != 'tripping'"/>
+                    <button name="action_cancel" type="object" string="取消" invisible="state in ('settled','cancel')" confirm="确认取消？将释放班期占位。"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,tripping,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="kind"/>
+                            <field name="partner_id"/>
+                            <field name="departure_id" readonly="state != 'draft'"
+                                   context="{'no_open': True}"/>
+                            <field name="biz_mode_id"/>
+                            <field name="date_confirm"/>
+                        </group>
+                        <group>
+                            <field name="heads"/>
+                            <field name="amount_total"/>
+                            <field name="amount_paid"/>
+                            <field name="amount_open"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="报名名单" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kind"/>
+                                    <field name="unit_price"/>
+                                    <field name="amount"/>
+                                    <field name="id_card" optional="hide"/>
+                                    <field name="phone" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="收款期次" name="plans">
+                            <field name="plan_ids" readonly="state == 'cancel'">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="due_date"/>
+                                    <field name="amount"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ta_order" model="ir.actions.act_window">
+        <field name="name">订单报名</field>
+        <field name="res_model">ta.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
