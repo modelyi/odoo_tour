@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_ta_route" model="ir.sequence">
+        <field name="name">线路编号</field>
+        <field name="code">ta.route</field>
+        <field name="prefix">XL</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_ta_departure" model="ir.sequence">
+        <field name="name">班期编号</field>
+        <field name="code">ta.departure</field>
+        <field name="prefix">BQ</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_ta_order" model="ir.sequence">
+        <field name="name">团队订单编号</field>
+        <field name="code">ta.order</field>
+        <field name="prefix">DD</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_ta_claim" model="ir.sequence">
+        <field name="name">收款认领单编号</field>
+        <field name="code">ta.payment.claim</field>
+        <field name="prefix">RL</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_ta_guide_loan" model="ir.sequence">
+        <field name="name">导游借款单编号</field>
+        <field name="code">ta.guide.loan</field>
+        <field name="prefix">JK</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_ta_guide_commission" model="ir.sequence">
+        <field name="name">导游佣金单编号</field>
+        <field name="code">ta.guide.commission</field>
+        <field name="prefix">YJ</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

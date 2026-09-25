@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+ta_route_dispatcher,ta.route 计调维护,ta.route,ta_base.group_ta_dispatcher,crud,
+ta_route_sales_read,ta.route 销售只读,ta.route,ta_base.group_ta_sales,r,
+ta_route_accountant_read,ta.route 财务只读,ta.route,ta_base.group_ta_accountant,r,
+ta_route_manager,ta.route 管理层全权,ta.route,ta_base.group_ta_manager,crud,
+ta_route_comp_rule,ta.route 多公司限制,ta.route,,crud,"[('company_id', 'in', company_ids)]"
+ta_route_stop_dispatcher,ta.route.stop 计调,ta.route.stop,ta_base.group_ta_dispatcher,crud,
+ta_route_stop_read,ta.route.stop 相关只读,ta.route.stop,ta_base.group_ta_sales,r,
+ta_route_stop_comp_rule,ta.route.stop 多公司限制,ta.route.stop,,crud,"[('company_id', 'in', company_ids)]"
+ta_route_price_dispatcher,ta.route.price 计调,ta.route.price,ta_base.group_ta_dispatcher,crud,
+ta_route_price_read,ta.route.price 相关只读,ta.route.price,ta_base.group_ta_sales,r,
+ta_route_price_comp_rule,ta.route.price 多公司限制,ta.route.price,,crud,"[('company_id', 'in', company_ids)]"
+ta_departure_dispatcher,ta.departure 计调维护,ta.departure,ta_base.group_ta_dispatcher,crud,
+ta_departure_sales_read,ta.departure 销售只读,ta.departure,ta_base.group_ta_sales,r,
+ta_departure_accountant_read,ta.departure 财务只读,ta.departure,ta_base.group_ta_accountant,r,
+ta_departure_manager,ta.departure 管理层全权,ta.departure,ta_base.group_ta_manager,crud,
+ta_departure_comp_rule,ta.departure 多公司限制,ta.departure,,crud,"[('company_id', 'in', company_ids)]"
+ta_departure_merge_wiz,ta.departure.merge 计调并团,ta.departure.merge,ta_base.group_ta_dispatcher,crud,
+ta_departure_merge_wiz_manager,ta.departure.merge 管理层,ta.departure.merge,ta_base.group_ta_manager,crud,

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_route_tree" model="ir.ui.view">
+        <field name="name">ta.route.tree</field>
+        <field name="model">ta.route</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="days"/>
+                <field name="list_price"/>
+                <field name="responsible_id" widget="many2one_avatar_user"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'on_sale'"
+                       decoration-muted="state == 'off'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_route_form" model="ir.ui.view">
+        <field name="name">ta.route.form</field>
+        <field name="model">ta.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_on_sale" type="object" string="上架在售" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_off" type="object" string="停售" invisible="state != 'on_sale'"/>
+                    <button name="action_draft" type="object" string="退回草稿" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="如：华东五市双飞六日"/></h1>
+                        <field name="code" class="oe_subtitle"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="responsible_id" widget="many2one_avatar_user"/>
+                            <field name="days"/>
+                            <field name="list_price"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="行程明细" name="stops">
+                            <field name="stop_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="day_no"/>
+                                    <field name="name"/>
+                                    <field name="city"/>
+                                    <field name="meal"/>
+                                    <field name="accommodation"/>
+                                    <field name="content"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="价格体系" name="prices">
+                            <field name="price_ids">
+                                <list editable="bottom">
+                                    <field name="kind"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" groups="base.group_multi_currency"/>
+                                    <field name="active"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="产品介绍" name="desc">
+                            <field name="description" placeholder="图文介绍…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ta_route" model="ir.actions.act_window">
+        <field name="name">线路产品</field>
+        <field name="res_model">ta.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

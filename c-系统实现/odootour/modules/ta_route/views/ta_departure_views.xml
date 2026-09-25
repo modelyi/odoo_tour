@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_ta_departure_merge" model="ir.actions.act_window">
+        <field name="name">并团向导</field>
+        <field name="res_model">ta.departure.merge</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_ta_departure" model="ir.actions.act_window">
+        <field name="name">班期</field>
+        <field name="res_model">ta.departure</field>
+        <field name="view_mode">list,calendar,form</field>
+    </record>
+    <record id="view_ta_departure_tree" model="ir.ui.view">
+        <field name="name">ta.departure.tree</field>
+        <field name="model">ta.departure</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="route_id"/>
+                <field name="biz_mode_id" optional="show"/>
+                <field name="date_start"/>
+                <field name="date_end" optional="hide"/>
+                <field name="seats_used"/>
+                <field name="seats_total"/>
+                <field name="seats_min" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ('planning','open')"
+                       decoration-success="state in ('confirmed','settled')"
+                       decoration-warning="state == 'departed'"
+                       decoration-danger="state == 'cancel'"
+                       decoration-muted="state == 'merged'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_departure_form" model="ir.ui.view">
+        <field name="name">ta.departure.form</field>
+        <field name="model">ta.departure</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open" type="object" string="开放报名" class="btn-primary" invisible="state != 'planning'"/>
+                    <button name="action_confirm" type="object" string="确认成团" invisible="state != 'open'"/>
+                    <button name="action_depart" type="object" string="发团" invisible="state != 'confirmed'"/>
+                    <button name="action_settle" type="object" string="结算完成" invisible="state != 'departed'"/>
+                    <button name="%(action_ta_departure_merge)d" type="action" string="并团…" invisible="state not in ('open','confirmed')" context="{'default_target_id': id}"/>
+                    <button name="action_cancel" type="object" string="取消" invisible="state in ('departed','settled','merged','cancel')" confirm="确认取消该班期？"/>
+                    <field name="state" widget="statusbar" statusbar_visible="planning,open,confirmed,departed,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <div class="oe_stat_button p-3">
+                            <field name="seats_free" widget="statinfo" string="余位"/>
+                        </div>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="route_id" readonly="state != 'planning'"/>
+                            <field name="biz_mode_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="seats_total" readonly="state not in ('planning','open')"/>
+                            <field name="seats_min" readonly="state not in ('planning','open')"/>
+                            <field name="seats_used"/>
+                            <field name="merge_target_id" invisible="not merge_target_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="guide_ids" widget="many2many_tags_avatar"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ta_departure_calendar" model="ir.ui.view">
+        <field name="name">ta.departure.calendar</field>
+        <field name="model">ta.departure</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date_start" date_stop="date_end" string="班期日历" mode="month" color="state">
+                <field name="route_id"/>
+                <field name="guide_ids" widget="many2many_avatar_user"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_ta_departure_merge_form" model="ir.ui.view">
+        <field name="name">ta.departure.merge.form</field>
+        <field name="model">ta.departure.merge</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="target_id"/>
+                    <field name="source_ids" widget="many2many_tags"/>
+                    <field name="note"/>
+                </group>
+                <footer>
+                    <button name="action_validate" type="object" string="确认并团" class="btn-primary"/>
+                    <button special="cancel" string="放弃"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

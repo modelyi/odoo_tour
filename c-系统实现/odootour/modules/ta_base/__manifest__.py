@@ -1,0 +1,20 @@
+{
+    'name': '旅行社基础数据',
+    'summary': 'V20 核心闭环基座：业务模式码、角色权限、系统设置',
+    'version': '20.0.0.1.0',
+    'category': 'Travel Agency',
+    'author': 'TMS Team',
+    'depends': ['base', 'mail', 'base_setup'],
+    'data': [
+        'security/ta_security.xml',
+        'security/ir.access.csv',
+        'data/ta_biz_mode_data.xml',
+        'data/ir_sequence_data.xml',
+        'views/biz_mode_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/menuitems.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

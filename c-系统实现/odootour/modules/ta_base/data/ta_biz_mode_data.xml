@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 业务模式码 15 项（含 3 别名码），语义出处 BS-02 §5 / 易途 BizModeID。
+     引用：c-系统实现/tour-platform/addons20/tour_base/models/constants.py::BIZ_MODE（规则出处，非代码复制）。 -->
+<odoo noupdate="1">
+    <record id="biz_mode_1" model="ta.biz.mode"><field name="code">1</field><field name="name">团队输单 (DT)</field></record>
+    <record id="biz_mode_2" model="ta.biz.mode"><field name="code">2</field><field name="name">团队输单 (DT)</field><field name="is_alias" eval="True"/><field name="alias_of" ref="biz_mode_1"/></record>
+    <record id="biz_mode_12" model="ta.biz.mode"><field name="code">12</field><field name="name">团期计划 (DSK)</field></record>
+    <record id="biz_mode_13" model="ta.biz.mode"><field name="code">13</field><field name="name">散客单组 (DSS)</field></record>
+    <record id="biz_mode_14" model="ta.biz.mode"><field name="code">14</field><field name="name">散客并团 (DSN)</field></record>
+    <record id="biz_mode_15" model="ta.biz.mode"><field name="code">15</field><field name="name">散客并团 (DSN)</field><field name="is_alias" eval="True"/><field name="alias_of" ref="biz_mode_14"/></record>
+    <record id="biz_mode_16" model="ta.biz.mode"><field name="code">16</field><field name="name">内部流转</field></record>
+    <record id="biz_mode_17" model="ta.biz.mode"><field name="code">17</field><field name="name">产品计划</field></record>
+    <record id="biz_mode_18" model="ta.biz.mode"><field name="code">18</field><field name="name">关键字并团</field></record>
+    <record id="biz_mode_21" model="ta.biz.mode"><field name="code">21</field><field name="name">组团团队 (DTO)</field></record>
+    <record id="biz_mode_31" model="ta.biz.mode"><field name="code">31</field><field name="name">组团散客 (DSO)</field></record>
+    <record id="biz_mode_41" model="ta.biz.mode"><field name="code">41</field><field name="name">代订项目 (DD)</field></record>
+    <record id="biz_mode_51" model="ta.biz.mode"><field name="code">51</field><field name="name">自由行</field></record>
+    <record id="biz_mode_52" model="ta.biz.mode"><field name="code">52</field><field name="name">自由行</field><field name="is_alias" eval="True"/><field name="alias_of" ref="biz_mode_51"/></record>
+    <record id="biz_mode_71" model="ta.biz.mode"><field name="code">71</field><field name="name">共享协议报名</field></record>
+</odoo>

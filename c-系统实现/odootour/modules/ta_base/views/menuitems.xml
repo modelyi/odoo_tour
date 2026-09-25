@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_root" name="旅行社" sequence="60"
+              groups="group_ta_sales,group_ta_dispatcher,group_ta_cashier,group_ta_accountant,group_ta_guide,group_ta_manager"/>
+
+    <menuitem id="menu_ta_config" name="基础配置" parent="menu_ta_root" sequence="90" groups="group_ta_manager"/>
+    <menuitem id="menu_ta_biz_mode" name="业务模式码" parent="menu_ta_config" action="action_ta_biz_mode" sequence="10"/>
+</odoo>

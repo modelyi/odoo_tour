@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_config_settings_form_ta" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ta.base</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="旅行社" string="旅行社管理" name="ta_base" groups="ta_base.group_ta_manager">
+                    <block title="单团核算口径" name="ta_pnl_block">
+                        <setting string="成本含税拆分"
+                                 help="勾选后成本按含税录入，单团毛利按 BS-19 口径 cost_net = cost_total/(1+r) 自动拆分；与含税利润口径互斥。">
+                            <field name="ta_cost_tax_split"/>
+                            <div class="content-group" invisible="not ta_cost_tax_split">
+                                <field name="ta_default_tax_rate" class="o_light_label"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
