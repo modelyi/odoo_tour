@@ -2,17 +2,17 @@
 
 约定与 tms-platform/tour-platform 的 A0-5 一致：**一切镜像按 digest 固定，升级必须显式换 pin 并走一遍冒烟。**
 
-## 当前 pin（2026-09-25 装机）
+## 当前 pin（2026-09-25 更新）
 
 | 项 | 值 |
 |----|----|
 | 来源 | https://github.com/odoo/odoo（社区版，零 patch） |
 | 分支 | `20.0` |
-| commit | `87a1773bda6c87bd4a1fc276bbe4bc8fe8f81a11` |
+| commit | `c7f7429776e018c20dbad9ae5a9873345635b661`（2026-09-25 分支头；上一 pin `87a1773bda6c`） |
 | 构建方式 | 自建镜像 `Dockerfile.odoo`（Docker Hub 无官方 odoo:20 镜像，2026-09-25 用 registry API 核实；最新为 19.0-20260908） |
 | 基础镜像 | `python:3.12.14-bookworm` @ `sha256:dbbe4ceb97851e2e5fa83798b239811f871cb743b259ba3563737349f6bcfaa0` |
 | 数据库 | `postgres:16-alpine` @ `sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea` |
-| 镜像产物 | `odootour:20.0-a1` = image ID `d1966975a5fb`（本地 build 无 push digest，按 image ID 固定） |
+| 镜像产物 | `odootour:20.0-a2` = image ID `98049665c16d`（新增 tour 侧 pip 依赖 qifparse==0.5/pandas==2.2.3/numpy==1.26.4，pin 同 tour-platform/requirements20.txt；旧产物 `20.0-a1`=`d1966975a5fb` 保留作回退） |
 | 访问 | https://tour.solepro.cloud → nginx → 127.0.0.1:8079 |
 
 ## 升级 runbook（20.0.x 小步推进）
@@ -67,3 +67,6 @@
   旧数据保留在 `odoo20-db` 容器不动。
 - 2026-09-25 安装 `om_account_accountant`（odoomates/odooapps@20.0 pin `478c06f`，vendor 只读挂载），`-i om_account_accountant --stop-after-init` 无 ERROR，重启后 `/web/login` 200。
 - 2026-09-25 运行数据迁至基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup，见上"目录布局"）；迁移前留档 `backup/tour20-prehome-20260925-123257.sql.gz`；仓库内 data 副本已删。
+- 2026-09-25 补齐 om 套件：加装 `om_account_budget_purchase`/`om_hr_payroll`/`om_hr_payroll_account`（连带 core purchase/hr/hr_holidays）；`om_data_remove` 刻意不装。addons20 35 模块拷入 `cust_addons/`（未装载）。
+- 2026-09-25 **清库重建 + 升级**：pin 升到 20.0@c7f74297（+5 官方 FIX），镜像 `20.0-a2`（含 tour pip 依赖层）；删除旧 `tour20` 与调试残留库，重建空库（base 无 demo）+ om 全家桶，现 83 个 installed。清库前备份 `backup/tour20-20260925-143237.sql.gz` + `filestore-20260925-143237.tgz`；旧镜像 a1 保留可回退（`docker compose up -d` 指回 tag + 恢复备份）。
+- 2026-09-25 加装 `l10n_cn`（中国会计本地化），与 tms 19 生产口径一致（19 端 installed 的 l10n 也仅此一个）；共 84 个 installed，日志 0 ERROR。

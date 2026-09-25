@@ -29,10 +29,13 @@ services:
       context: .
       dockerfile: Dockerfile.odoo
       args:
-        ODOO_COMMIT: ${ODOO_COMMIT:-87a1773bda6c87bd4a1fc276bbe4bc8fe8f81a11}
+        ODOO_COMMIT: ${ODOO_COMMIT:-c7f7429776e018c20dbad9ae5a9873345635b661}
     image: odootour:20.0-a2
     container_name: odootour-odoo
     restart: unless-stopped
+    environment:
+      # tour_base field_crypto 加密字段密钥：必须与 tms 完全同值，否则密文乱码（值只在不入库的 .env）
+      TMS_FIELD_ENCRYPT_KEY: ${TMS_FIELD_ENCRYPT_KEY:-}
     depends_on:
       db:
         condition: service_healthy
