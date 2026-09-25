@@ -138,7 +138,7 @@ tms/
 | deploy.sh | ✅ 完成 | 自动化部署脚本 |
 | Nginx 反代 | ✅ 运行中 | tms.solepro.cloud → 127.0.0.1:8070 |
 | [tour-platform/](c-系统实现/tour-platform/) | 🚧 A1 平桥运行中 | 与 tms 同一镜像(`9ebb8c2d5340`)的 19 平桥实例：`tour-db/tour-odoo/tour-redis`，`127.0.0.1:8071`，库 `tour19`，`dbfilter=^tour19$`；pin 见 `config/ODOO_PIN.md` |
-| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a1`，github 20.0@`87a1773b`，空库 `tour20` 仅 core，addons 目录预留），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
+| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a1`，github 20.0@`87a1773b`，空库 `tour20`，已装 core + Odoo Mates om_* 全套（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），cust_addons 已挂 addons20 35 模块（I0 批），运行数据基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup）），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
 | [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账）、`security_19to20/`（19 `ir.model.access`+`ir.rule` → 20 `ir.access` 转换与复核工具，含 README 与 `check_domains.py` 规则域装载期预检）、`check_xmlid_order.py`/`check_model_refs.py`/`check_field_refs.py`/`check_legacy_api.py`/`check_view_xpaths.py`（B1 空库装载预检五件套，用法与判据见 `README-空库预检.md`） |
 
 ### C2. Subagent 角色配置

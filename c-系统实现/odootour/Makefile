@@ -2,6 +2,8 @@ COMPOSE := docker compose
 DB := tour20
 
 -include .env
+# 运行数据家目录（与 docker-compose.yml 的 ${ODOOTOUR_HOME} 保持一致）
+ODOOTOUR_HOME ?= $(HOME)/odootour
 export
 
 .PHONY: build up down ps logs init-db restart shell psql backup admin-hash
@@ -36,10 +38,10 @@ shell:            ## odoo 容器内 bash
 psql:             ## 连 tour20 库
 	$(COMPOSE) exec db psql -U odoo -d $(DB)
 
-backup:           ## pg_dump + filestore 存档到 ./data/backup
-	@mkdir -p data/backup
-	docker exec odootour-db pg_dump -U odoo $(DB) | gzip > data/backup/$(DB)-$(shell date +%Y%m%d-%H%M%S).sql.gz
-	tar czf data/backup/filestore-$(shell date +%Y%m%d-%H%M%S).tgz -C data/odoo filestore
+backup:           ## pg_dump + filestore 存档到 $(ODOOTOUR_HOME)/backup
+	@mkdir -p $(ODOOTOUR_HOME)/backup
+	docker exec odootour-db pg_dump -U odoo $(DB) | gzip > $(ODOOTOUR_HOME)/backup/$(DB)-$(shell date +%Y%m%d-%H%M%S).sql.gz
+	sudo tar czf $(ODOOTOUR_HOME)/backup/filestore-$(shell date +%Y%m%d-%H%M%S).tgz -C $(ODOOTOUR_HOME)/pg/odoo filestore
 
 admin-hash:       ## 用 .env 的 ADMIN_PASSWD 生成 pbkdf2 哈希（手工替换 config/odoo.conf 的 admin_passwd）
 	$(COMPOSE) exec odoo python3 -c "from passlib.context import CryptContext; import os; \

@@ -30,13 +30,40 @@
 
 ## 客制化路线
 
-- 铁律：core 零 patch；客制一律放 `./addons` → 容器 `/mnt/extra-addons`（当前为空，仅预留）。
+- 铁律：core 零 patch；客制一律放 `$ODOOTOUR_HOME/cust_addons` → 容器 `/mnt/extra-addons`（当前为空，仅预留）。
 - B1 阶段挂 `c-系统实现/tour-platform/addons20` 的 35 个 20 侧模块；届时：
   - `.env` 注入 `TMS_FIELD_ENCRYPT_KEY`，且**必须与 tms 完全同值**（见 tour-platform compose 注释）；
   - pip 依赖按 `tour-platform/requirements20.txt` 的 pin 线（qifparse/pandas/numpy）追加进 Dockerfile。
+
+## 目录布局（基准目录 /home/adai/odoo20tour，compose 变量 `${ODOOTOUR_HOME}`）
+
+| 路径 | 角色 |
+|------|------|
+| `~/odoo20tour/odoodocker/` | 部署入口：compose/Makefile/Dockerfile 均为指向仓库的 symlink，可 `cd` 进去直接 `docker compose up -d` |
+| `~/odoo20tour/conf/odoo.conf` | 容器实读配置（symlink → 仓库 `config/odoo.conf`，改仓库版即生效，restart 后） |
+| `~/odoo20tour/cust_addons/` | 客制 addons → 容器 `/mnt/extra-addons`（仓库 `addons/` 是指向它的 symlink） |
+| `~/odoo20tour/vendor/odooapps-20.0` | 第三方模块 → 容器 `/mnt/vendor-addons`（只读；仓库 `vendor/` symlink 指向此，不入库） |
+| `~/odoo20tour/pg/postgres` | PG 数据 → db 容器 |
+| `~/odoo20tour/pg/odoo` | Odoo data+filestore → `/var/lib/odoo`（属主须为容器 odoo uid 100） |
+| `~/odoo20tour/backup/`、`odoo_log/` | make backup 落盘处 / 日志预留 |
+| `~/odoo20tour/.env` | 与仓库 `.env` 同步（两处同内容，均 gitignore） |
+
+仓库 `c-系统实现/odootour/` 保存全部可版本化文件（compose、Makefile、Dockerfile、config/odoo.conf、文档）。
+
+## 第三方模块（vendor/）
+
+- 来源：https://github.com/odoomates/odooapps 分支 `20.0`，pin HEAD `478c06f`（2026-09-25）。
+- 说明：apps.odoo.com 下载需登录账号，免费模块改由厂商官方 GitHub 仓库获取，功能与商店发布包同源。
+- 挂载：`/home/adai/odoo20tour/vendor/odooapps-20.0` → 容器 `/mnt/vendor-addons`（只读），已并入 `addons_path`；升级时在该目录 `git pull` 并更新此处 pin。
+- 已安装（vendor 23 个中的 22 个口径）：`om_account_accountant` 全家桶（会计套件，69 模块）+ `om_account_budget_purchase`、`om_hr_payroll`、`om_hr_payroll_account`（2026-09-25 补齐，连带 core `purchase`/`hr`/`hr_holidays`）。
+- **不装**：`om_data_remove`——批量删数据运维工具，显著放大删除权限，不入生产库；需要时临时装用。
+- 迁移动态：`om_hr_payroll` 与 19 端 OH HRMS 套件（hr_payroll_community 等 14 模块）功能撞名，tour_hr 移植批（F5 待签字）时二选一，以 om 为基。
+- 迁移战略（已定）：会计栈**以 om 为基础**，tour_accounting 原地瘦身为业务增量模块（保技术名，depends 切 om 全家桶），详见迁移计划 I1。
 
 ## 历史
 
 - 2026-09-25 初始装机：20.0@87a1773bda6c，全新空库 `tour20`（无 demo），仅 core；
   取代 `/home/adai/odoo20` 源码 dev 实例（master 20.1a1，tag `tms-20.1a1-r1`，127.0.0.1:28069）。
   旧数据保留在 `odoo20-db` 容器不动。
+- 2026-09-25 安装 `om_account_accountant`（odoomates/odooapps@20.0 pin `478c06f`，vendor 只读挂载），`-i om_account_accountant --stop-after-init` 无 ERROR，重启后 `/web/login` 200。
+- 2026-09-25 运行数据迁至基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup，见上"目录布局"）；迁移前留档 `backup/tour20-prehome-20260925-123257.sql.gz`；仓库内 data 副本已删。

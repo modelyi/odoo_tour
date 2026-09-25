@@ -81,6 +81,9 @@ RUN git clone --branch "${ODOO_BRANCH}" --single-branch --depth 1 \
     && grep -q "${ODOO_COMMIT}" <(git rev-parse HEAD) \
     && pip install --no-cache-dir -r requirements.txt
 
+# ---- tour_* 模块运行期依赖（pin 与 tour-platform/requirements20.txt 完全一致）----
+RUN pip install --no-cache-dir qifparse==0.5 pandas==2.2.3 numpy==1.26.4
+
 # odoo 用户与官方镜像同 uid 语义（100）；101 组在基础镜像里已被 _ssh 占用，故组用 102 避让。宿主机 ./data ./addons 由启动脚本 chown 到 odoo uid。
 RUN mkdir -p /etc/odoo /mnt/extra-addons /var/lib/odoo \
     && groupadd -r odoo -g 102 \
@@ -91,6 +94,7 @@ RUN mkdir -p /etc/odoo /mnt/extra-addons /var/lib/odoo \
 RUN cd /usr/lib/odoo/odoo-server \
     && python3 -c "from odoo import release; v=release.version; assert v.startswith('20.'), v; print('odoo version ok:', v)" \
     && python3 -c "import psycopg2, lxml, PIL, gevent; print('deps ok')" \
+    && python3 -c "import qifparse, pandas, numpy; print('tour deps ok')" \
     && wkhtmltopdf --version
 
 USER odoo

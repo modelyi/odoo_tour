@@ -1,6 +1,8 @@
 # odootour —— Odoo 20（github 20.0 源码自建镜像）
 # 访问：https://tour.solepro.cloud → 本机 nginx → 127.0.0.1:8079
 # 与 tour-platform（19 平桥）/ tms-platform（19 生产）完全隔离，各自独立 db 与数据目录。
+# 运行数据家目录 ODOOTOUR_HOME（.env 定义，默认 /home/adai/odoo20tour）：
+#   pg/postgres=PG 数据  pg/odoo=Odoo data+filestore  odoo_config/=odoo.conf  cust_addons/=客制 addons  vendor/=第三方模块  backup/=备份  odoo_log/=日志
 name: odootour
 
 services:
@@ -13,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: postgres
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ${ODOOTOUR_HOME:-/home/adai/odoo20tour}/pg/postgres:/var/lib/postgresql/data
     networks:
       - odootour-net
     healthcheck:
@@ -28,7 +30,7 @@ services:
       dockerfile: Dockerfile.odoo
       args:
         ODOO_COMMIT: ${ODOO_COMMIT:-87a1773bda6c87bd4a1fc276bbe4bc8fe8f81a11}
-    image: odootour:20.0-a1
+    image: odootour:20.0-a2
     container_name: odootour-odoo
     restart: unless-stopped
     depends_on:
@@ -46,9 +48,10 @@ services:
       - "127.0.0.1:8079:8069"
       - "127.0.0.1:8078:8072"
     volumes:
-      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
-      - ./addons:/mnt/extra-addons
-      - ./data/odoo:/var/lib/odoo
+      - ${ODOOTOUR_HOME:-/home/adai/odoo20tour}/conf/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ${ODOOTOUR_HOME:-/home/adai/odoo20tour}/cust_addons:/mnt/extra-addons
+      - ${ODOOTOUR_HOME:-/home/adai/odoo20tour}/vendor/odooapps-20.0:/mnt/vendor-addons:ro
+      - ${ODOOTOUR_HOME:-/home/adai/odoo20tour}/pg/odoo:/var/lib/odoo
     networks:
       - odootour-net
     healthcheck:
