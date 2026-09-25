@@ -25,7 +25,7 @@ init-db:          ## 初始化空库 tour20（不含 demo；只跑一次）
 	$(COMPOSE) run --rm odoo python3 /usr/lib/odoo/odoo-server/odoo-bin \
 		-c /etc/odoo/odoo.conf \
 		--db_host=db --db_user=odoo --db_password=$(POSTGRES_PASSWORD) \
-		-d $(DB) --without-demo=all -i base --stop-after-init
+		-d $(DB) --without-demo=True -i base --stop-after-init
 
 restart:
 	$(COMPOSE) restart odoo

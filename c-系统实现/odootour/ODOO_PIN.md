@@ -12,7 +12,7 @@
 | 构建方式 | 自建镜像 `Dockerfile.odoo`（Docker Hub 无官方 odoo:20 镜像，2026-09-25 用 registry API 核实；最新为 19.0-20260908） |
 | 基础镜像 | `python:3.12.14-bookworm` @ `sha256:dbbe4ceb97851e2e5fa83798b239811f871cb743b259ba3563737349f6bcfaa0` |
 | 数据库 | `postgres:16-alpine` @ `sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea` |
-| 镜像产物 | `odootour:20.0-a1`（build 后把 `docker inspect --format '{{index .RepoDigests 0}}'` 补记到此处） |
+| 镜像产物 | `odootour:20.0-a1` = image ID `d1966975a5fb`（本地 build 无 push digest，按 image ID 固定） |
 | 访问 | https://tour.solepro.cloud → nginx → 127.0.0.1:8079 |
 
 ## 升级 runbook（20.0.x 小步推进）
