@@ -1,0 +1,99 @@
+# syntax=docker/dockerfile:1
+# odootour —— Odoo 20 生产镜像（tour.solepro.cloud）
+#
+# 配方：仿 docker-library/odoo（apt 依赖 + wkh tmltopdf + postgresql-client），
+# 但源码不走 nightly deb，而是直接 git clone github.com/odoo/odoo 的 20.0 分支、
+# checkout 固定 commit（ARG ODOO_COMMIT），由发起人 2026-09-25 确认。
+#
+# 铁律：core 零 patch，一切客制放 ./addons → /mnt/extra-addons。
+# 升级 = 改 ODOO_COMMIT 重新 build；pin 记录见 ODOO_PIN.md。
+
+# 基础镜像按 digest 固定（A0-5 约定）：python:3.12.14-bookworm
+FROM python:3.12.14-bookworm@sha256:dbbe4ceb97851e2e5fa83798b239811f871cb743b259ba3563737349f6bcfaa0
+
+# Odoo 20 MIN_PY_VERSION = 3.12；requirements.txt 的 pin 线即 Debian 12/Ubuntu 24.04
+ENV LANG=C.UTF-8 \
+    ODOO_RC=/etc/odoo/odoo.conf
+
+ARG ODOO_BRANCH=20.0
+# pin：github odoo/odoo 20.0 分支 2026-09-25 HEAD（升级时显式更换并记录 ODOO_PIN.md）
+ARG ODOO_COMMIT=87a1773bda6c87bd4a1fc276bbe4bc8fe8f81a11
+
+SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
+
+# ---- 系统依赖 -------------------------------------------------------------
+# git/wget: 构建期取源码；postgresql-client(经 PGDG 与 db 容器 16 对齐): pg_dump/psql；
+# fonts-noto-cjk: 中文 PDF 报表；libreoffice: Odoo 20 文档类报表可选（B1 前不带，控制体积）。
+# -dev 包为 pip 编译 requirements（psycopg2/python-ldap/lxml/Pillow/reportlab）所需。
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        dirmngr \
+        fonts-noto-cjk \
+        git \
+        gnupg \
+        xz-utils \
+        libpq-dev \
+        libldap2-dev \
+        libsasl2-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        libffi-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+        libfreetype6-dev \
+        liblcms2-dev \
+        libopenjp2-7-dev \
+        libwebp-dev \
+        libtiff6 \
+        libharfbuzz-dev \
+        libfribidi-dev \
+        graphviz \
+    && rm -rf /var/lib/apt/lists/*
+
+# postgresql-client-16 对齐 db 容器版本（bookworm 自带 15 无法 pg_dump 16 服务端）
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+    && GNUPGHOME="$(mktemp -d)" \
+    && export GNUPGHOME \
+    && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
+    && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
+    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
+    && gpgconf --kill all && rm -rf "$GNUPGHOME" \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y postgresql-client-16 \
+    && rm -f /etc/apt/sources.list.d/pgdg.list \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- wkhtmltopdf（与官方 odoo:19 镜像同源；bookworm 构建版）---------------
+RUN curl -o wkhtmltox.deb -sSL \
+        https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && echo 'e9f95436298c77cc9406bd4bbd242f4771d0a4b2 wkhtmltox.deb' | sha1sum -c - \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
+    && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+
+# ---- Odoo 20 源码（github clone + pin commit，零 patch）-------------------
+RUN git clone --branch "${ODOO_BRANCH}" --single-branch --depth 1 \
+        https://github.com/odoo/odoo /usr/lib/odoo/odoo-server \
+    && cd /usr/lib/odoo/odoo-server \
+    && git fetch --depth 1 origin "${ODOO_COMMIT}" \
+    && git checkout --detach "${ODOO_COMMIT}" \
+    && grep -q "${ODOO_COMMIT}" <(git rev-parse HEAD) \
+    && pip install --no-cache-dir -r requirements.txt
+
+# odoo 用户与官方镜像同 uid 语义（100）；101 组在基础镜像里已被 _ssh 占用，故组用 102 避让。宿主机 ./data ./addons 由启动脚本 chown 到 odoo uid。
+RUN mkdir -p /etc/odoo /mnt/extra-addons /var/lib/odoo \
+    && groupadd -r odoo -g 102 \
+    && useradd -r -m -d /var/lib/odoo -u 100 -g 102 odoo \
+    && chown -R odoo:odoo /mnt/extra-addons /var/lib/odoo
+
+# 构建期自检：版本必须是 20.0 线，否则直接构建失败
+RUN cd /usr/lib/odoo/odoo-server \
+    && python3 -c "from odoo import release; v=release.version; assert v.startswith('20.'), v; print('odoo version ok:', v)" \
+    && python3 -c "import psycopg2, lxml, PIL, gevent; print('deps ok')" \
+    && wkhtmltopdf --version
+
+USER odoo
+EXPOSE 8069 8072
+WORKDIR /var/lib/odoo
+CMD ["python3", "/usr/lib/odoo/odoo-server/odoo-bin", "-c", "/etc/odoo/odoo.conf"]

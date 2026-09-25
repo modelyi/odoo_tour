@@ -1,0 +1,63 @@
+# odootour —— Odoo 20（github 20.0 源码自建镜像）
+# 访问：https://tour.solepro.cloud → 本机 nginx → 127.0.0.1:8079
+# 与 tour-platform（19 平桥）/ tms-platform（19 生产）完全隔离，各自独立 db 与数据目录。
+name: odootour
+
+services:
+  db:
+    image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+    container_name: odootour-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - odootour-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-odoo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile.odoo
+      args:
+        ODOO_COMMIT: ${ODOO_COMMIT:-87a1773bda6c87bd4a1fc276bbe4bc8fe8f81a11}
+    image: odootour:20.0-a1
+    container_name: odootour-odoo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - python3
+      - /usr/lib/odoo/odoo-server/odoo-bin
+      - -c
+      - /etc/odoo/odoo.conf
+      - --db_host=db
+      - --db_user=${POSTGRES_USER:-odoo}
+      - --db_password=${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:8079:8069"
+      - "127.0.0.1:8078:8072"
+    volumes:
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ./addons:/mnt/extra-addons
+      - ./data/odoo:/var/lib/odoo
+    networks:
+      - odootour-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/login >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+networks:
+  odootour-net:
+    driver: bridge
