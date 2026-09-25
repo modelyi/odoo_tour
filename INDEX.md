@@ -71,7 +71,8 @@ tms/
 
 | 文档 | 大小 | 负责人 | 说明 |
 |------|------|--------|------|
-| [PRD-产品需求文档.md](b-蓝图/产品设计/PRD-产品需求文档.md) | 10.9 KB | product-manager | 产品愿景、8类角色、10大模块、成功指标 |
+| [PRD-V20-旅行社行业应用产品规划.md](b-蓝图/产品设计/PRD-V20-旅行社行业应用产品规划.md) | 待评审 | 2026-09-25 | **现行产品规划**：单店标准产品（架构预留 SaaS）+ 核心闭环 MVP（线路班期→报价报名→收款认领→计调→单团核算→导游报账佣金）+ 非目标清单 + SaaS 预留三原则 + UAT 教训固化为 NFR |
+| [PRD-产品需求文档.md](b-蓝图/产品设计/PRD-产品需求文档.md) | 10.9 KB | product-manager | ⚠️ 历史版本（v19/SaaS 定位），以 PRD-V20 为准：产品愿景、8类角色、10大模块、成功指标 |
 | [产品路线图.md](b-蓝图/产品设计/产品路线图.md) | 13.6 KB | product-manager | Phase 1-5 功能列表、里程碑、依赖 |
 | [功能优先级矩阵.md](b-蓝图/产品设计/功能优先级矩阵.md) | 18.4 KB | product-manager | 135项功能 × 价值/成本 → P0-P3 |
 
@@ -105,12 +106,13 @@ tms/
 | [技术架构思路.md](b-蓝图/技术架构思路.md) | 26.1 KB | product-architect | 整体技术选型、SaaS、小程序、AI演进 |
 | [TDS-系统架构设计.md](b-蓝图/技术设计/TDS-系统架构设计.md) | 17.0 KB | product-architect | 架构图、Docker编排、多租户、升级路径 |
 | [TDS-数据模型设计.md](b-蓝图/技术设计/TDS-数据模型设计.md) | 39.8 KB | product-architect | 8个核心表字段映射、索引、分区方案 |
-| [TDS-模块划分.md](b-蓝图/技术设计/TDS-模块划分.md) | 30.4 KB | product-architect | 14个模块、依赖关系、292人天工作量 |
+| [TDS-V20-模块地图与迭代批次.md](b-蓝图/技术设计/TDS-V20-模块地图与迭代批次.md) | 待评审 | 2026-09-25 | **现行模块规划**：`ta_*` 6 模块核心闭环（批1 ≈100–124 人天）+ 批2 购物返佣/差额征税/三段审核 + 演示验收脚本 + 工程约定（影子库先行、禁复制旧代码） |
+| [TDS-模块划分.md](b-蓝图/技术设计/TDS-模块划分.md) | 30.4 KB | product-architect | ⚠️ v19 口径存档：14个模块、依赖关系、292人天工作量（V20 对照见 TDS-V20 附录） |
 | [TDS-缺口补齐方案与分阶段实施计划.md](b-蓝图/技术设计/TDS-缺口补齐方案与分阶段实施计划.md) | 22.6 KB | product-architect | 5类数据补缺 + 6项功能补齐 + 分阶段实施计划 |
-| [迁移与升级计划-TMS到tour.md](b-蓝图/技术设计/迁移与升级计划-TMS到tour.md) | 16 KB | 批准版 | A0 基线加固 → A1 平桥 19 → A2 标准化 → B0–B3 升级 Odoo 20 并切换域名 |
+| [迁移与升级计划-TMS到tour.md](b-蓝图/技术设计/迁移与升级计划-TMS到tour.md) | 16 KB | **已废止（2026-09-25）存档** | 不再以迁移升级形式实施；A0 基线加固 → A1 平桥 19 → A2 标准化 → B0–B3 升级 Odoo 20 并切换域名（验收报告保留 d-交付验收） |
 | [TDS-30-迁移架构与ETL设计.md](b-蓝图/技术设计/TDS-30-迁移架构与ETL设计.md) | 24 KB | B0 产出 | 19↔20 字段 diff + 187 模块处置矩阵 + 6 条 20 硬事实 + ETL 增量 + B1 工作量重估 |
 | [TDS-31-回退预案.md](b-蓝图/技术设计/TDS-31-回退预案.md) | 12 KB | B0 期产出 | R-A1/R-B3 回退判据与动作、冻结/解冻语义、增量补录、演练要求（B3 前置） |
-| [TDS-32-迭代式升级路线.md](b-蓝图/技术设计/TDS-32-迭代式升级路线.md) | 7 KB | **现行执行路线** | 大爆炸切换 → S0 影子可见 / S1 只读门户切流 / S2 写权转移 / S3 收尾 四级台阶；写耦合边界（订单↔班期↔凭证必须同片）+ 每周可演示节奏 + 每次增量重建的 7 条不变式 |
+| [TDS-32-迭代式升级路线.md](b-蓝图/技术设计/TDS-32-迭代式升级路线.md) | 7 KB | **已废止（2026-09-25）** | 存档：大爆炸切换 → S0 影子可见 / S1 只读门户切流 / S2 写权转移 / S3 收尾 四级台阶；写耦合边界（订单↔班期↔凭证必须同片）+ 每周可演示节奏 + 每次增量重建的 7 条不变式 |
 | [CR-01-tour_saas多租户移出本期范围.md](b-蓝图/技术设计/CR-01-tour_saas多租户移出本期范围.md) | 4 KB | 范围变更 | 20 无运行期建库 API + 仅 1 个测试租户 → tour_saas 停用，待 Owner 签字 |
 
 ### B5. 项目管理
@@ -138,7 +140,7 @@ tms/
 | deploy.sh | ✅ 完成 | 自动化部署脚本 |
 | Nginx 反代 | ✅ 运行中 | tms.solepro.cloud → 127.0.0.1:8070 |
 | [tour-platform/](c-系统实现/tour-platform/) | 🚧 A1 平桥运行中 | 与 tms 同一镜像(`9ebb8c2d5340`)的 19 平桥实例：`tour-db/tour-odoo/tour-redis`，`127.0.0.1:8071`，库 `tour19`，`dbfilter=^tour19$`；pin 见 `config/ODOO_PIN.md` |
-| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a1`，github 20.0@`87a1773b`，空库 `tour20`，已装 core + Odoo Mates om_* 全套（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），cust_addons 已挂 addons20 35 模块（I0 批），运行数据基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup）），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
+| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a2`，github 20.0@`c7f74297`，空库 `tour20` 已清库重建 84 模块（含 l10n_cn），core + Odoo Mates om_* 全套（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），cust_addons 已放 addons20 35 模块未装载），运行数据基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup）），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
 | [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账）、`security_19to20/`（19 `ir.model.access`+`ir.rule` → 20 `ir.access` 转换与复核工具，含 README 与 `check_domains.py` 规则域装载期预检）、`check_xmlid_order.py`/`check_model_refs.py`/`check_field_refs.py`/`check_legacy_api.py`/`check_view_xpaths.py`（B1 空库装载预检五件套，用法与判据见 `README-空库预检.md`） |
 
 ### C2. Subagent 角色配置
