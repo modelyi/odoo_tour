@@ -77,3 +77,8 @@
   ② `res.users` 组字段改名 `group_ids`（且命令值须传 id 整数）；③ `account.account` 无 `company_id`（跨公司模板）；
   ④ 冲销字段为 `reversed_entry_id`/`reversal_move_ids`（无 `reversal_move_id`）；⑤ 无 `fields.Related`，related 走字段参数 `related=`。
   ta 出纳/会计组在 ta_finance 中挂 `account.group_account_invoice`（凭证生成最小权限）。
+- 2026-09-26 **M3 影子库验收**：`ta_dispatch`（派工条目+确认生成供应商账单草稿+取消回退）与
+  `ta.team.pnl`（SQL 视图，BS-19 口径：cost_net=cost/(1+r)，含税口径单列）安装通过；五模块 30 测试全绿。
+  新增 20 端坑位：⑥ `ir.config_parameter` 改类型化 API（get_bool/set_float…，无 get_param）；
+  ⑦ partner 级 `property_account_expense_id` 移除，费用科目走 `company.expense_account_id`；
+  ⑧ pivot/graph 不接受 create 属性；⑨ SQL 视图模型测试读取前需 `env.flush_all()`。

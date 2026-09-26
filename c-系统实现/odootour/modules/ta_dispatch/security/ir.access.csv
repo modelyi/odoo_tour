@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+ta_dispatch_item_dispatcher,ta.dispatch.item 计调维护,ta.dispatch.item,ta_base.group_ta_dispatcher,crud,
+ta_dispatch_item_read,ta.dispatch.item 销售只读,ta.dispatch.item,ta_base.group_ta_sales,r,
+ta_dispatch_item_acct,ta.dispatch.item 会计只读,ta.dispatch.item,ta_base.group_ta_accountant,r,
+ta_dispatch_item_comp_rule,ta.dispatch.item 多公司限制,ta.dispatch.item,,crud,"[('company_id', 'in', company_ids)]"
+ta_team_pnl_dispatcher,ta.team.pnl 计调查看,ta.team.pnl,ta_base.group_ta_dispatcher,r,
+ta_team_pnl_acct,ta.team.pnl 会计查看,ta.team.pnl,ta_base.group_ta_accountant,r,
+ta_team_pnl_sales,ta.team.pnl 销售查看,ta.team.pnl,ta_base.group_ta_sales,r,
+ta_team_pnl_comp_rule,ta.team.pnl 多公司限制,ta.team.pnl,,r,"[('company_id', 'in', company_ids)]"

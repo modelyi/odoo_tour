@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_dispatch_item" model="ir.actions.act_window">
+        <field name="name">计调派工</field>
+        <field name="res_model">ta.dispatch.item</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_dispatch_item_list" model="ir.ui.view">
+        <field name="name">ta.dispatch.item.list</field>
+        <field name="model">ta.dispatch.item</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'" editable="bottom">
+                <field name="departure_id"/>
+                <field name="route_id"/>
+                <field name="kind"/>
+                <field name="supplier_id"/>
+                <field name="name"/>
+                <field name="qty"/>
+                <field name="unit_price"/>
+                <field name="amount" sum="合计"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-danger="state == 'cancel'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_dispatch_item_form" model="ir.ui.view">
+        <field name="name">ta.dispatch.item.form</field>
+        <field name="model">ta.dispatch.item</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="确认派工" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
+                    <button name="action_cancel" string="取消" type="object"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_reset_draft" string="恢复草稿" type="object"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="departure_id"/>
+                            <field name="route_id"/>
+                            <field name="kind"/>
+                            <field name="supplier_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="qty"/>
+                            <field name="unit_price"/>
+                            <field name="amount"/>
+                            <field name="move_id" invisible="not move_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="name"/>
+                        <field name="note"/>
+                    </group>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 班期表单追加派工页签与导游/领队指派 -->
+    <record id="view_ta_departure_form_inherit_dispatch" model="ir.ui.view">
+        <field name="name">ta.departure.form.dispatch</field>
+        <field name="model">ta.departure</field>
+        <field name="inherit_id" ref="ta_route.view_ta_departure_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group[2]" position="after">
+                <group>
+                    <field name="dispatch_cost_total"/>
+                </group>
+                <group string="计调派工">
+                    <field name="dispatch_item_ids"
+                           nolabel="1"
+                           context="{'default_departure_id': id}">
+                        <list editable="bottom">
+                            <field name="kind"/>
+                            <field name="supplier_id"/>
+                            <field name="name"/>
+                            <field name="qty"/>
+                            <field name="unit_price"/>
+                            <field name="amount"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

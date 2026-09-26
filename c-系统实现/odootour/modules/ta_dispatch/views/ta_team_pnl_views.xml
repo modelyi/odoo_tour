@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_team_pnl" model="ir.actions.act_window">
+        <field name="name">单团损益</field>
+        <field name="res_model">ta.team.pnl</field>
+        <field name="view_mode">list,pivot,graph</field>
+    </record>
+
+    <record id="view_ta_team_pnl_list" model="ir.ui.view">
+        <field name="name">ta.team.pnl.list</field>
+        <field name="model">ta.team.pnl</field>
+        <field name="arch" type="xml">
+            <list create="false">
+                <field name="code"/>
+                <field name="route_name"/>
+                <field name="date_start"/>
+                <field name="seats_used"/>
+                <field name="order_total"/>
+                <field name="income" sum="合计"/>
+                <field name="cost_total" sum="合计"/>
+                <field name="cost_net"/>
+                <field name="profit" sum="合计"/>
+                <field name="profit_tax_incl"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_team_pnl_pivot" model="ir.ui.view">
+        <field name="name">ta.team.pnl.pivot</field>
+        <field name="model">ta.team.pnl</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="route_name" type="row"/>
+                <field name="income" type="col"/>
+                <field name="cost_total" type="col"/>
+                <field name="profit" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_team_pnl_graph" model="ir.ui.view">
+        <field name="name">ta.team.pnl.graph</field>
+        <field name="model">ta.team.pnl</field>
+        <field name="arch" type="xml">
+            <graph>
+                <field name="route_name" type="row"/>
+                <field name="income" type="measure"/>
+                <field name="cost_total" type="measure"/>
+                <field name="profit" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>
