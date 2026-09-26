@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="res_user_ask_bot" model="res.users">
+            <field name="name">问数助手</field>
+            <field name="login">askbot@tour.local</field>
+            <field name="active" eval="True"/>
+            <!-- 无任何业务组：查询一律切到提问人身份执行（权限口径=提问人） -->
+            <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>

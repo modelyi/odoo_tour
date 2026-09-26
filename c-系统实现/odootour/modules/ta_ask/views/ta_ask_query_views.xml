@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_ask_query_list" model="ir.ui.view">
+        <field name="name">ta.ask.query.list</field>
+        <field name="model">ta.ask.query</field>
+        <field name="arch" type="xml">
+            <list create="false" sample="1">
+                <field name="create_date" string="提问时间"/>
+                <field name="asker_id" widget="many2one_avatar_user"/>
+                <field name="question"/>
+                <field name="intent"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state in ('clarify','pending')"
+                       decoration-danger="state in ('denied','nointent','error')"/>
+                <field name="latency_ms"/>
+                <field name="channel_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_ask_query_form" model="ir.ui.view">
+        <field name="name">ta.ask.query.form</field>
+        <field name="model">ta.ask.query</field>
+        <field name="arch" type="xml">
+            <form create="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="asker_id"/>
+                            <field name="state"/>
+                            <field name="intent"/>
+                            <field name="latency_ms"/>
+                        </group>
+                        <group>
+                            <field name="channel_id"/>
+                            <field name="message_id"/>
+                            <field name="reply_message_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="问题原文">
+                        <field name="question" nolabel="1"/>
+                    </group>
+                    <group string="结果摘要">
+                        <field name="result_brief" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ta_ask_query_search" model="ir.ui.view">
+        <field name="name">ta.ask.query.search</field>
+        <field name="model">ta.ask.query</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asker_id"/>
+                <field name="question"/>
+                <field name="intent"/>
+                <filter name="filter_done" string="已回答" domain="[('state','=','done')]"/>
+                <filter name="filter_failed" string="未成功" domain="[('state','in',('denied','nointent','error','clarify'))]"/>
+                <filter name="group_asker" string="按提问人" context="{'group_by':'asker_id'}"/>
+                <filter name="group_state" string="按状态" context="{'group_by':'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_ask_query" model="ir.actions.act_window">
+        <field name="name">问数记录</field>
+        <field name="res_model">ta.ask.query</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ta_ask_query_search"/>
+    </record>
+</odoo>

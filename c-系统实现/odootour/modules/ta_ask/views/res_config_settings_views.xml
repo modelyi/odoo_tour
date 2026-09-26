@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_ta_ask" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ta.ask</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='ta_base']" position="inside">
+                <block title="Discuss 问数机器人" name="ta_ask_block">
+                    <setting string="启用问数机器人"
+                             help="在 Discuss 私聊或频道 @ 问数助手提问，按提问人的数据权限回答。LLM 只做问题→白名单查询的映射，不生成 SQL。">
+                        <field name="ta_ask_enabled"/>
+                    </setting>
+                    <setting string="DeepSeek 接入"
+                             help="API Key 仅存系统参数，不入库不进 git；请在此页面填写。"
+                             invisible="not ta_ask_enabled">
+                        <field name="ta_ask_deepseek_api_key" widget="password" placeholder="sk-..."/>
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="ta_ask_deepseek_model" class="col-lg-4 o_light_label"/>
+                                <field name="ta_ask_deepseek_model" class="col-lg-6"/>
+                            </div>
+                            <div class="row">
+                                <label for="ta_ask_deepseek_base_url" class="col-lg-4 o_light_label"/>
+                                <field name="ta_ask_deepseek_base_url" class="col-lg-6"/>
+                            </div>
+                            <div class="row">
+                                <label for="ta_ask_timeout" class="col-lg-4 o_light_label"/>
+                                <field name="ta_ask_timeout" class="col-lg-3"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

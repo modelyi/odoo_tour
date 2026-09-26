@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_ask_root" name="问数机器人" parent="ta_base.menu_ta_root"
+              sequence="95" groups="ta_base.group_ta_manager"/>
+    <menuitem id="menu_ta_ask_query" name="问数记录" parent="menu_ta_ask_root"
+              action="action_ta_ask_query" sequence="10"/>
+</odoo>
