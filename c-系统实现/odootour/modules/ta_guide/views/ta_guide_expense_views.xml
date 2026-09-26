@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_guide_expense" model="ir.actions.act_window">
+        <field name="name">导游报账</field>
+        <field name="res_model">ta.guide.expense</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_guide_expense_list" model="ir.ui.view">
+        <field name="name">ta.guide.expense.list</field>
+        <field name="model">ta.guide.expense</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="guide_id"/>
+                <field name="departure_id"/>
+                <field name="amount_total" sum="合计"/>
+                <field name="approved_by" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'submitted'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_expense_form" model="ir.ui.view">
+        <field name="name">ta.guide.expense.form</field>
+        <field name="model">ta.guide.expense</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="提交" type="object"
+                            invisible="state not in ('draft', 'rejected')" class="oe_highlight"/>
+                    <button name="action_approve" string="审核通过" type="object"
+                            invisible="state != 'submitted'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_reject" string="驳回" type="object"
+                            invisible="state != 'submitted'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="guide_id" readonly="state != 'draft'"/>
+                            <field name="departure_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="amount_total"/>
+                            <field name="approved_by" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="费用明细">
+                        <field name="line_ids" nolabel="1" readonly="state not in ('draft', 'rejected')">
+                            <list editable="bottom">
+                                <field name="name"/>
+                                <field name="amount"/>
+                                <field name="invoice_ref"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

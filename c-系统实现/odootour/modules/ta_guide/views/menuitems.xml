@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_guide" name="导游与报账" parent="ta_base.menu_ta_root" sequence="40"/>
+    <menuitem id="menu_ta_guide_loan" name="导游借款" parent="menu_ta_guide"
+              action="action_ta_guide_loan" sequence="10"/>
+    <menuitem id="menu_ta_guide_expense" name="导游报账" parent="menu_ta_guide"
+              action="action_ta_guide_expense" sequence="20"/>
+    <menuitem id="menu_ta_guide_commission" name="导游佣金" parent="menu_ta_guide"
+              action="action_ta_guide_commission" sequence="30"/>
+</odoo>

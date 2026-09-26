@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_guide_loan" model="ir.actions.act_window">
+        <field name="name">导游借款</field>
+        <field name="res_model">ta.guide.loan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_guide_loan_list" model="ir.ui.view">
+        <field name="name">ta.guide.loan.list</field>
+        <field name="model">ta.guide.loan</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="guide_id"/>
+                <field name="departure_id" optional="show"/>
+                <field name="amount" sum="合计"/>
+                <field name="deducted_amount"/>
+                <field name="outstanding" sum="合计"/>
+                <field name="due_date" optional="show"/>
+                <field name="is_overdue" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_loan_form" model="ir.ui.view">
+        <field name="name">ta.guide.loan.form</field>
+        <field name="model">ta.guide.loan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" string="审批" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_pay" string="发放" type="object"
+                            invisible="state != 'approved'" class="oe_highlight"
+                            groups="ta_base.group_ta_cashier,ta_base.group_ta_accountant"/>
+                    <button name="action_cancel" string="取消" type="object"
+                            invisible="state not in ('draft', 'approved')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,paid,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="guide_id"/>
+                            <field name="departure_id"/>
+                            <field name="date"/>
+                            <field name="amount" readonly="state not in ('draft', 'approved')"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group>
+                            <field name="journal_id" readonly="state not in ('draft', 'approved')"/>
+                            <field name="date_paid"/>
+                            <field name="paid_move_id" invisible="not paid_move_id"/>
+                            <field name="deducted_amount"/>
+                            <field name="outstanding"/>
+                            <field name="is_overdue"/>
+                        </group>
+                    </group>
+                    <group string="冲抵记录">
+                        <field name="deduct_line_ids" nolabel="1" readonly="1">
+                            <list>
+                                <field name="commission_id"/>
+                                <field name="net_deduct"/>
+                            </list>
+                        </field>
+                    </group>
+                    <field name="note" placeholder="备注…"/>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

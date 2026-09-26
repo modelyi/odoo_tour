@@ -1,0 +1,18 @@
+id,name,model_id,group_id/id,operation,domain
+ta_guide_loan_acct,ta.guide.loan 会计维护,ta.guide.loan,ta_base.group_ta_accountant,crud,
+ta_guide_loan_cashier,ta.guide.loan 出纳发放,ta.guide.loan,ta_base.group_ta_cashier,ru,
+ta_guide_loan_guide_own,ta.guide.loan 导游本人查看,ta.guide.loan,ta_base.group_ta_guide,r,"[('guide_id', '=', user.partner_id.id)]"
+ta_guide_loan_comp_rule,ta.guide.loan 多公司限制,ta.guide.loan,,crud,"[('company_id', 'in', company_ids)]"
+ta_guide_expense_guide_own,ta.guide.expense 导游本人,ta.guide.expense,ta_base.group_ta_guide,crud,"[('guide_id', '=', user.partner_id.id)]"
+ta_guide_expense_acct,ta.guide.expense 会计审核,ta.guide.expense,ta_base.group_ta_accountant,ru,
+ta_guide_expense_disp,ta.guide.expense 计调查看,ta.guide.expense,ta_base.group_ta_dispatcher,r,
+ta_guide_expense_comp_rule,ta.guide.expense 多公司限制,ta.guide.expense,,crud,"[('company_id', 'in', company_ids)]"
+ta_guide_expense_line_guide,ta.guide.expense.line 导游本人,ta.guide.expense.line,ta_base.group_ta_guide,crud,"[('expense_id.guide_id', '=', user.partner_id.id)]"
+ta_guide_expense_line_acct,ta.guide.expense.line 会计,ta.guide.expense.line,ta_base.group_ta_accountant,ru,
+ta_guide_expense_line_comp_rule,ta.guide.expense.line 多公司限制,ta.guide.expense.line,,crud,"[('company_id', 'in', company_ids)]"
+ta_guide_commission_acct,ta.guide.commission 会计维护,ta.guide.commission,ta_base.group_ta_accountant,crud,
+ta_guide_commission_guide_own,ta.guide.commission 导游本人查看,ta.guide.commission,ta_base.group_ta_guide,r,"[('guide_id', '=', user.partner_id.id)]"
+ta_guide_commission_comp_rule,ta.guide.commission 多公司限制,ta.guide.commission,,crud,"[('company_id', 'in', company_ids)]"
+ta_guide_deduct_acct,ta.guide.commission.deduct 会计,ta.guide.commission.deduct,ta_base.group_ta_accountant,crud,
+ta_guide_deduct_guide_own,ta.guide.commission.deduct 导游本人查看,ta.guide.commission.deduct,ta_base.group_ta_guide,r,"[('commission_id.guide_id', '=', user.partner_id.id)]"
+ta_guide_deduct_comp_rule,ta.guide.commission.deduct 多公司限制,ta.guide.commission.deduct,,crud,"[('company_id', 'in', company_ids)]"

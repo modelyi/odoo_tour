@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_guide_commission" model="ir.actions.act_window">
+        <field name="name">导游佣金</field>
+        <field name="res_model">ta.guide.commission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_guide_commission_list" model="ir.ui.view">
+        <field name="name">ta.guide.commission.list</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="guide_id"/>
+                <field name="departure_id"/>
+                <field name="allowance" sum="合计"/>
+                <field name="tax_amount" sum="合计"/>
+                <field name="net_amount" sum="合计"/>
+                <field name="deducted_total"/>
+                <field name="payable_rest" sum="合计"/>
+                <field name="state" widget="badge" decoration-success="state == 'settled'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_commission_form" model="ir.ui.view">
+        <field name="name">ta.guide.commission.form</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_settle" string="结算并冲抵借款" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,settled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="guide_id"/>
+                            <field name="departure_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="allowance"/>
+                            <field name="tax_rate"/>
+                            <field name="rule_note"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="tax_amount"/>
+                            <field name="net_amount"/>
+                        </group>
+                        <group>
+                            <field name="deducted_total"/>
+                            <field name="payable_rest"/>
+                        </group>
+                    </group>
+                    <group string="冲抵借款">
+                        <field name="deduct_line_ids" nolabel="1" readonly="1">
+                            <list>
+                                <field name="loan_id"/>
+                                <field name="net_deduct"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -106,7 +106,7 @@ tms/
 | [技术架构思路.md](b-蓝图/技术架构思路.md) | 26.1 KB | product-architect | 整体技术选型、SaaS、小程序、AI演进 |
 | [TDS-系统架构设计.md](b-蓝图/技术设计/TDS-系统架构设计.md) | 17.0 KB | product-architect | 架构图、Docker编排、多租户、升级路径 |
 | [TDS-数据模型设计.md](b-蓝图/技术设计/TDS-数据模型设计.md) | 39.8 KB | product-architect | 8个核心表字段映射、索引、分区方案 |
-| [TDS-V20-模块地图与迭代批次.md](b-蓝图/技术设计/TDS-V20-模块地图与迭代批次.md) | 待评审 | 2026-09-25 | **现行模块规划**：`ta_*` 6 模块核心闭环（批1 ≈100–124 人天）+ 批2 购物返佣/差额征税/三段审核 + 演示验收脚本 + 工程约定（影子库先行、禁复制旧代码） |
+| [TDS-V20-模块地图与迭代批次.md](b-蓝图/技术设计/TDS-V20-模块地图与迭代批次.md) | 批1已实施 | 2026-09-26 | **现行模块规划**：`ta_*` 6 模块核心闭环（批1 ≈100–124 人天）已按影子库流程交付（M1–M4，36 测试全绿，正式库已安装），批2 购物返佣/差额征税/三段审核 + 演示验收脚本 + 工程约定（影子库先行、禁复制旧代码） |
 | [TDS-模块划分.md](b-蓝图/技术设计/TDS-模块划分.md) | 30.4 KB | product-architect | ⚠️ v19 口径存档：14个模块、依赖关系、292人天工作量（V20 对照见 TDS-V20 附录） |
 | [TDS-缺口补齐方案与分阶段实施计划.md](b-蓝图/技术设计/TDS-缺口补齐方案与分阶段实施计划.md) | 22.6 KB | product-architect | 5类数据补缺 + 6项功能补齐 + 分阶段实施计划 |
 | [迁移与升级计划-TMS到tour.md](b-蓝图/技术设计/迁移与升级计划-TMS到tour.md) | 16 KB | **已废止（2026-09-25）存档** | 不再以迁移升级形式实施；A0 基线加固 → A1 平桥 19 → A2 标准化 → B0–B3 升级 Odoo 20 并切换域名（验收报告保留 d-交付验收） |
@@ -140,7 +140,7 @@ tms/
 | deploy.sh | ✅ 完成 | 自动化部署脚本 |
 | Nginx 反代 | ✅ 运行中 | tms.solepro.cloud → 127.0.0.1:8070 |
 | [tour-platform/](c-系统实现/tour-platform/) | 🚧 A1 平桥运行中 | 与 tms 同一镜像(`9ebb8c2d5340`)的 19 平桥实例：`tour-db/tour-odoo/tour-redis`，`127.0.0.1:8071`，库 `tour19`，`dbfilter=^tour19$`；pin 见 `config/ODOO_PIN.md` |
-| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a2`，github 20.0@`c7f74297`，空库 `tour20` 已清库重建 84 模块（含 l10n_cn），core + Odoo Mates om_* 全套（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），cust_addons 已放 addons20 35 模块未装载），运行数据基准目录 `~/odoo20tour/`（odoodocker/conf/cust_addons/pg/vendor/backup）），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
+| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a2`，github 20.0@`c7f74297`，空库 `tour20` 90 模块 = core + om_* 全套 + l10n_cn + **ta_* 旅行社六模块（批1 核心闭环，2026-09-26 安装）**；影子库 `tour20_dev` 走 NFR-5 流程；开发目录 git 内 `modules/`，`make sync` → `cust_addons`（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），运行数据基准目录 `~/odoo20tour/`），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
 | [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账）、`security_19to20/`（19 `ir.model.access`+`ir.rule` → 20 `ir.access` 转换与复核工具，含 README 与 `check_domains.py` 规则域装载期预检）、`check_xmlid_order.py`/`check_model_refs.py`/`check_field_refs.py`/`check_legacy_api.py`/`check_view_xpaths.py`（B1 空库装载预检五件套，用法与判据见 `README-空库预检.md`） |
 
 ### C2. Subagent 角色配置

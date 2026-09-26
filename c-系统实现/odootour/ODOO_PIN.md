@@ -82,3 +82,8 @@
   新增 20 端坑位：⑥ `ir.config_parameter` 改类型化 API（get_bool/set_float…，无 get_param）；
   ⑦ partner 级 `property_account_expense_id` 移除，费用科目走 `company.expense_account_id`；
   ⑧ pivot/graph 不接受 create 属性；⑨ SQL 视图模型测试读取前需 `env.flush_all()`。
+- 2026-09-26 **M4 正式库安装**：`ta_guide`（借款-审批-发放挂 1221 口径科目 icp `ta_guide.loan_account_id`、
+  报账审核入单团成本、佣金 BS-08 AC-18 税后净额冲抵）六模块全套装入 tour20（安装前备份
+  `backup/tour20-pre-ta-install-20260926-111424.sql.gz`），tour20 现 90 installed；restart 后 /web/login 200。
+  影子库回归 36 测试全绿（六模块）。导游对账 portal 界面留批3（规则与数据链已闭环）。
+  生产使用前需配置：公司费用科目、导游借款科目（1221）、银行日记账默认科目（发放/落账依赖）。
