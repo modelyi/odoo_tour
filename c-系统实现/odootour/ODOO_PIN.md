@@ -70,3 +70,10 @@
 - 2026-09-25 补齐 om 套件：加装 `om_account_budget_purchase`/`om_hr_payroll`/`om_hr_payroll_account`（连带 core purchase/hr/hr_holidays）；`om_data_remove` 刻意不装。addons20 35 模块拷入 `cust_addons/`（未装载）。
 - 2026-09-25 **清库重建 + 升级**：pin 升到 20.0@c7f74297（+5 官方 FIX），镜像 `20.0-a2`（含 tour pip 依赖层）；删除旧 `tour20` 与调试残留库，重建空库（base 无 demo）+ om 全家桶，现 83 个 installed。清库前备份 `backup/tour20-20260925-143237.sql.gz` + `filestore-20260925-143237.tgz`；旧镜像 a1 保留可回退（`docker compose up -d` 指回 tag + 恢复备份）。
 - 2026-09-25 加装 `l10n_cn`（中国会计本地化），与 tms 19 生产口径一致（19 端 installed 的 l10n 也仅此一个）；共 84 个 installed，日志 0 ERROR。
+
+- 2026-09-26 **M2 影子库验收**：tour20_dev 加装 core `account` + `ta_order`/`ta_finance`，
+  四模块 26 个测试全绿（exit 0）。正式库 tour20 未动，待 M4 端到端后安装。
+  Odoo 20 API 坑位记录（供后续模块）：① 视图按钮 `states=` 属性已废除，用 `invisible="state ..."`；
+  ② `res.users` 组字段改名 `group_ids`（且命令值须传 id 整数）；③ `account.account` 无 `company_id`（跨公司模板）；
+  ④ 冲销字段为 `reversed_entry_id`/`reversal_move_ids`（无 `reversal_move_id`）；⑤ 无 `fields.Related`，related 走字段参数 `related=`。
+  ta 出纳/会计组在 ta_finance 中挂 `account.group_account_invoice`（凭证生成最小权限）。

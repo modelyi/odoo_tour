@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ta 财务角色挂接 account 最小权限组（凭证读取/生成所需，依赖 ta_finance 引入 account） -->
+    <record id="ta_base.group_ta_cashier" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+    </record>
+    <record id="ta_base.group_ta_accountant" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+    </record>
+</odoo>

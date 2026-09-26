@@ -7,6 +7,7 @@
     'depends': ['ta_order', 'account'],
     'data': [
         'security/ir.access.csv',
+        'security/ta_finance_groups.xml',
         'views/ta_bank_line_views.xml',
         'views/ta_payment_claim_views.xml',
         'views/menuitems.xml',

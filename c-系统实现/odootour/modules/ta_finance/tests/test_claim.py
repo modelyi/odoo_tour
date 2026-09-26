@@ -41,11 +41,11 @@ class TestClaim(TransactionCase):
         cls.order.action_confirm()
         # --- 岗位用户 ---
         def mk(login, group_xmlids):
-            groups = [cls.env.ref(g) for g in group_xmlids]
+            groups = [cls.env.ref(g).id for g in group_xmlids] + [cls.env.ref('base.group_user').id]
             return cls.env['res.users'].create({
                 'name': login, 'login': login + '@test.local',
                 'company_id': cls.company.id,
-                'groups_id': [(6, 0, groups)]})
+                'group_ids': [(6, 0, groups)]})
         cls.u_cashier = mk('cashier_t', ['ta_base.group_ta_cashier'])
         cls.u_sales = mk('sales_t', ['ta_base.group_ta_sales'])
         cls.u_sales_acct = mk('sales_acct_t',
@@ -103,7 +103,8 @@ class TestClaim(TransactionCase):
         u_disp = self.env['res.users'].create({
             'name': 'disp_t', 'login': 'disp_t@test.local',
             'company_id': self.company.id,
-            'groups_id': [(6, 0, [self.env.ref('ta_base.group_ta_dispatcher')])]})
+            'group_ids': [(6, 0, [self.env.ref('ta_base.group_ta_dispatcher').id,
+                                  self.env.ref('base.group_user').id])]})
         with self.assertRaises(AccessError):
             claim.with_user(u_disp).action_approve()
 
@@ -138,7 +139,7 @@ class TestClaim(TransactionCase):
         self.assertFalse(claim.move_id)
         self.assertAlmostEqual(self.order.amount_paid, 0.0)
         rev = self.env['account.move'].search(
-            [('reversal_move_id', '!=', False)])
+            [('reversed_entry_id', '!=', False)])
         self.assertTrue(rev, '应存在红冲凭证')
 
     def test_reject_then_resubmit(self):
