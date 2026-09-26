@@ -6,7 +6,7 @@ DB := tour20
 ODOOTOUR_HOME ?= $(HOME)/odoo20tour
 export
 
-.PHONY: build up down ps logs init-db restart shell psql backup admin-hash sync dev-db dev-install dev-test
+.PHONY: build up down ps logs init-db restart shell psql backup admin-hash sync dev-db dev-install dev-test dev-web
 
 build:            ## 构建镜像（升级时先在 .env 换 ODOO_COMMIT）
 	$(COMPOSE) build odoo
@@ -64,3 +64,7 @@ dev-install:      ## 影子库装/升模块：make dev-install MODS=ta_base[,…
 
 dev-test:         ## 影子库跑测试：make dev-test MODS=ta_route（随 -u 触发模块 tests）
 	$(COMPOSE) run --rm odoo $(ODOO) $(DBARGS) -d $(DEV_DB) -u $(MODS) --test-enable --stop-after-init --log-level=test
+
+dev-web:          ## 影子库网页预览：http://127.0.0.1:8077（Ctrl+C 停止）
+	$(COMPOSE) run --rm -p 127.0.0.1:8077:8069 odoo $(ODOO) $(DBARGS) -d $(DEV_DB) \
+		--db-filter='^$(DEV_DB)$$' --http-port=8069
