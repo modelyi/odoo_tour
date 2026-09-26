@@ -8,8 +8,10 @@
     'data': [
         'security/ir.access.csv',
         'security/ta_finance_groups.xml',
+        'data/ir_sequence_expense.xml',
         'views/ta_bank_line_views.xml',
         'views/ta_payment_claim_views.xml',
+        'views/ta_expense_views.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_ta_expense" model="ir.sequence">
+        <field name="name">费用报销单编号</field>
+        <field name="code">ta.expense</field>
+        <field name="prefix">FY%(y)s</field>
+        <field name="padding">6</field>
+    </record>
+</odoo>

@@ -17,3 +17,6 @@ ta_claim_alloc_sales,ta.claim.alloc 销售,ta.claim.alloc,ta_base.group_ta_sales
 ta_claim_alloc_disp,ta.claim.alloc 计调,ta.claim.alloc,ta_base.group_ta_dispatcher,crud,
 ta_claim_alloc_acct,ta.claim.alloc 会计,ta.claim.alloc,ta_base.group_ta_accountant,ru,
 ta_claim_alloc_comp_rule,ta.claim.alloc 多公司限制,ta.claim.alloc,,crud,"[('company_id', 'in', company_ids)]"
+ta_expense_user,ta.expense 全员可建,ta.expense,base.group_user,crud,
+ta_expense_accountant,ta.expense 会计审核,ta.expense,ta_base.group_ta_accountant,ru,
+ta_expense_comp_rule,ta.expense 多公司限制,ta.expense,,crud,"[('company_id', 'in', company_ids)]"

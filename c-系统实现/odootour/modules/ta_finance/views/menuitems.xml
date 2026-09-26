@@ -5,4 +5,6 @@
               action="action_ta_bank_line" sequence="10"/>
     <menuitem id="menu_ta_payment_claim" name="收款认领" parent="menu_ta_finance"
               action="action_ta_payment_claim" sequence="20"/>
+    <menuitem id="menu_ta_expense" name="费用报销" parent="menu_ta_finance"
+              action="action_ta_expense" sequence="30"/>
 </odoo>
