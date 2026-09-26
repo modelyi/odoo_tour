@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_payment_claim" model="ir.actions.act_window">
+        <field name="name">收款认领</field>
+        <field name="res_model">ta.payment.claim</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_payment_claim_list" model="ir.ui.view">
+        <field name="name">ta.payment.claim.list</field>
+        <field name="model">ta.payment.claim</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="amount" sum="合计"/>
+                <field name="amount_alloc"/>
+                <field name="claimed_by" widget="many2one_avatar_user"/>
+                <field name="approved_by" widget="many2one_avatar_user"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'submitted'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_payment_claim_form" model="ir.ui.view">
+        <field name="name">ta.payment.claim.form</field>
+        <field name="model">ta.payment.claim</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="提交" type="object"
+                            invisible="state not in ('draft', 'rejected')" class="oe_highlight"/>
+                    <button name="action_approve" string="审核通过" type="object"
+                            invisible="state != 'submitted'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_reject" string="驳回" type="object"
+                            invisible="state != 'submitted'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_reverse" string="反审核" type="object"
+                            invisible="state != 'approved'"
+                            groups="ta_base.group_ta_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="claimed_by" readonly="1"/>
+                            <field name="approved_by" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="amount_alloc"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="move_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="资金来源（银行到账）" name="lines">
+                            <field name="line_ids" readonly="state not in ('draft', 'rejected')">
+                                <list editable="bottom">
+                                    <field name="bank_line_id"
+                                           domain="[('state', '!=', 'claimed')]"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="认领去向（订单）" name="allocs">
+                            <field name="alloc_ids" readonly="state not in ('draft', 'rejected')">
+                                <list editable="bottom">
+                                    <field name="order_id"/>
+                                    <field name="amount_allocated"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="备注" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

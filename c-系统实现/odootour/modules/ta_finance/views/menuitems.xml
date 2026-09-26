@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_finance" name="财务" parent="ta_base.menu_ta_root" sequence="30"/>
+    <menuitem id="menu_ta_bank_line" name="收款登记" parent="menu_ta_finance"
+              action="action_ta_bank_line" sequence="10"/>
+    <menuitem id="menu_ta_payment_claim" name="收款认领" parent="menu_ta_finance"
+              action="action_ta_payment_claim" sequence="20"/>
+</odoo>

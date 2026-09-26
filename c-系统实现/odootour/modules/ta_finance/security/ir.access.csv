@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+ta_bank_line_cashier,ta.bank.line 出纳维护,ta.bank.line,ta_base.group_ta_cashier,crud,
+ta_bank_line_read,ta.bank.line 相关只读,ta.bank.line,ta_base.group_ta_sales,r,
+ta_bank_line_read_disp,ta.bank.line 计调只读,ta.bank.line,ta_base.group_ta_dispatcher,r,
+ta_bank_line_accountant,ta.bank.line 会计读写受限,ta.bank.line,ta_base.group_ta_accountant,ru,
+ta_bank_line_comp_rule,ta.bank.line 多公司限制,ta.bank.line,,crud,"[('company_id', 'in', company_ids)]"
+ta_claim_write,ta.payment.claim 销售认领,ta.payment.claim,ta_base.group_ta_sales,crud,
+ta_claim_write_disp,ta.payment.claim 计调认领,ta.payment.claim,ta_base.group_ta_dispatcher,crud,
+ta_claim_accountant,ta.payment.claim 会计审核,ta.payment.claim,ta_base.group_ta_accountant,ru,
+ta_claim_cashier_read,ta.payment.claim 出纳只读,ta.payment.claim,ta_base.group_ta_cashier,r,
+ta_claim_comp_rule,ta.payment.claim 多公司限制,ta.payment.claim,,crud,"[('company_id', 'in', company_ids)]"
+ta_claim_line_sales,ta.claim.line 销售,ta.claim.line,ta_base.group_ta_sales,crud,
+ta_claim_line_disp,ta.claim.line 计调,ta.claim.line,ta_base.group_ta_dispatcher,crud,
+ta_claim_line_acct,ta.claim.line 会计,ta.claim.line,ta_base.group_ta_accountant,ru,
+ta_claim_line_comp_rule,ta.claim.line 多公司限制,ta.claim.line,,crud,"[('company_id', 'in', company_ids)]"
+ta_claim_alloc_sales,ta.claim.alloc 销售,ta.claim.alloc,ta_base.group_ta_sales,crud,
+ta_claim_alloc_disp,ta.claim.alloc 计调,ta.claim.alloc,ta_base.group_ta_dispatcher,crud,
+ta_claim_alloc_acct,ta.claim.alloc 会计,ta.claim.alloc,ta_base.group_ta_accountant,ru,
+ta_claim_alloc_comp_rule,ta.claim.alloc 多公司限制,ta.claim.alloc,,crud,"[('company_id', 'in', company_ids)]"
