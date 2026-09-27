@@ -43,8 +43,8 @@ class TaTeamPnlAsk(models.Model):
                 for p in self.search([], limit=200)]
         rows.sort(key=lambda r: r[4], reverse=(order == 'top'))
         return {
-            'title': '班期毛利%s TOP%d（BS-19 口径）' % ('排行' if order == 'top' else '垫底', topn),
-            'columns': ['班期', '线路', '已收款', '成本（含税）', '毛利'],
+            'title': '发团计划毛利%s TOP%d（BS-19 口径）' % ('排行' if order == 'top' else '垫底', topn),
+            'columns': ['发团计划', '线路', '已收款', '成本（含税）', '毛利'],
             'rows': rows[:topn],
             'note': '',
         }

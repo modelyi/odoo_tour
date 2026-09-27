@@ -9,7 +9,7 @@ class TaDispatchItem(models.Model):
     NFR-2：move_id 已有值不得重复生成；条目确认后金额锁定，改价须取消重开。
     """
     _name = 'ta.dispatch.item'
-    _description = '计调派工条目'
+    _description = '计调单（资源安排）'
     _inherit = ['mail.thread', 'ta.mixin']
     _order = 'departure_id desc, kind, id'
 
@@ -27,7 +27,7 @@ class TaDispatchItem(models.Model):
     ]
 
     departure_id = fields.Many2one(
-        'ta.departure', string='班期', required=True, ondelete='cascade',
+        'ta.departure', string='发团计划', required=True, ondelete='cascade',
         index=True, tracking=True)
     route_id = fields.Many2one(related='departure_id.route_id', store=True)
     kind = fields.Selection(KIND, required=True, tracking=True)
@@ -59,7 +59,7 @@ class TaDispatchItem(models.Model):
             if item.state != 'draft':
                 raise UserError("只有草稿条目可以确认。")
             if item.departure_id.state not in ('open', 'confirmed', 'departed', 'settled'):
-                raise UserError("班期当前状态不允许确认派工。")
+                raise UserError("发团计划当前状态不允许确认计调单。")
             item.move_id = item._create_supplier_bill()
             item.state = 'confirmed'
         return True
@@ -70,7 +70,7 @@ class TaDispatchItem(models.Model):
                 raise UserError("条目已取消。")
             if item.move_id:
                 if item.move_id.state != 'draft':
-                    raise UserError("供应商账单已过账，请先在会计侧处理，不能直接取消派工。")
+                    raise UserError("供应商账单已过账，请先在会计侧处理，不能直接取消计调单。")
                 item.move_id.unlink()
             item.state = 'cancel'
 
@@ -98,7 +98,7 @@ class TaDispatchItem(models.Model):
             'journal_id': journal.id,
             'partner_id': partner.id,
             'date': self.date_start or fields.Date.context_today(self),
-            'ref': f"派工 {self.departure_id.code or ''} {self.name}",
+            'ref': f"计调单 {self.departure_id.code or ''} {self.name}",
             'invoice_line_ids': [(0, 0, {
                 'name': self.name,
                 'account_id': expense.id,
@@ -112,7 +112,7 @@ class TaDispatchItem(models.Model):
 class TaDepartureDispatch(models.Model):
     _inherit = 'ta.departure'
 
-    dispatch_item_ids = fields.One2many('ta.dispatch.item', 'departure_id', string='派工条目')
+    dispatch_item_ids = fields.One2many('ta.dispatch.item', 'departure_id', string='计调单')
     dispatch_cost_total = fields.Float(compute='_compute_dispatch_cost', store=True)
 
     @api.depends('dispatch_item_ids.state', 'dispatch_item_ids.amount')

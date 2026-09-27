@@ -25,7 +25,7 @@ class TestClaim(TransactionCase):
         cls.partner = cls.env['res.partner'].create({
             'name': '测试客户',
             'property_account_receivable_id': cls.recv_account.id})
-        # --- 业务环境：线路→班期→订单（已确认，总额 3000）---
+        # --- 业务环境：线路→发团计划→订单（已确认，总额 3000）---
         route = cls.env['ta.route'].create({
             'name': '收款测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],

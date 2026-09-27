@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_asset" model="ir.actions.act_window">
+        <field name="name">固定资产</field>
+        <field name="res_model">ta.asset</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_ta_asset_depreciate_wizard" model="ir.actions.act_window">
+        <field name="name">计提折旧</field>
+        <field name="res_model">ta.asset.depreciate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_ta_asset_list" model="ir.ui.view">
+        <field name="name">ta.asset.list</field>
+        <field name="model">ta.asset</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category"/>
+                <field name="acquisition_date"/>
+                <field name="cost" sum="合计原值"/>
+                <field name="monthly_depreciation" sum="合计月折旧"/>
+                <field name="accumulated_depreciation" sum="合计累计折旧"/>
+                <field name="book_value" sum="合计净值"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'in_use'"
+                       decoration-muted="state == 'disposed'"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_asset_form" model="ir.ui.view">
+        <field name="name">ta.asset.form</field>
+        <field name="model">ta.asset</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_validate" string="启用（在用）" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_dispose" string="处置" type="object"
+                            invisible="state != 'in_use'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_back_to_draft" string="退回草稿" type="object"
+                            invisible="state != 'disposed'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_use"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="如：宇通旅游大巴 沪Axxxxx"/></h1>
+                        <field name="code" readonly="1"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category"/>
+                            <field name="acquisition_date" readonly="depreciation_line_ids != []"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="cost"/>
+                            <field name="residual_rate"/>
+                            <field name="depreciation_months"/>
+                            <field name="monthly_depreciation"/>
+                            <field name="accumulated_depreciation"/>
+                            <field name="book_value"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="折旧记录" name="deps">
+                            <field name="depreciation_line_ids" readonly="1">
+                                <list>
+                                    <field name="period"/>
+                                    <field name="amount"/>
+                                    <field name="move_id"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ta_asset_search" model="ir.ui.view">
+        <field name="name">ta.asset.search</field>
+        <field name="model">ta.asset</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="in_use" string="在用" domain="[('state', '=', 'in_use')]"/>
+                <filter name="disposed" string="已处置" domain="[('state', '=', 'disposed')]"/>
+                <separator/>
+                <filter name="group_category" string="类别" context="{'group_by': 'category'}"/>
+                <filter name="group_state" string="状态" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_asset_depreciation" model="ir.actions.act_window">
+        <field name="name">折旧记录</field>
+        <field name="res_model">ta.asset.depreciation</field>
+        <field name="view_mode">list,pivot</field>
+    </record>
+
+    <record id="view_ta_asset_depreciation_list" model="ir.ui.view">
+        <field name="name">ta.asset.depreciation.list</field>
+        <field name="model">ta.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="period"/>
+                <field name="asset_id"/>
+                <field name="amount" sum="合计"/>
+                <field name="move_id"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_asset_depreciation_pivot" model="ir.ui.view">
+        <field name="name">ta.asset.depreciation.pivot</field>
+        <field name="model">ta.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="period" type="row"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_asset_depreciate_wizard_form" model="ir.ui.view">
+        <field name="name">ta.asset.depreciate.wizard.form</field>
+        <field name="model">ta.asset.depreciate.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="period_to" placeholder="2026-08"/>
+                    <field name="post_moves"/>
+                </group>
+                <div class="text-muted">
+                    将为全部「在用」资产从购置月起补提到该期间（含），已提期间自动跳过（幂等）。
+                </div>
+                <footer>
+                    <button name="action_run" string="开始计提" type="object" class="oe_highlight"/>
+                    <button string="取消" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

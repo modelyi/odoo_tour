@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_ta_route_ops" name="产品与班期" parent="ta_base.menu_ta_root" sequence="10"/>
+    <menuitem id="menu_ta_route_ops" name="产品与发团计划" parent="ta_base.menu_ta_root" sequence="10"/>
     <menuitem id="menu_ta_route" name="线路产品" parent="menu_ta_route_ops" action="action_ta_route" sequence="10"/>
-    <menuitem id="menu_ta_departure" name="班期" parent="menu_ta_route_ops" action="action_ta_departure" sequence="20"/>
+    <menuitem id="menu_ta_departure" name="发团计划" parent="menu_ta_route_ops" action="action_ta_departure" sequence="20"/>
 </odoo>

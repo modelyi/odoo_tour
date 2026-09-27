@@ -7,7 +7,7 @@
         <field name="padding">4</field>
     </record>
     <record id="seq_ta_departure" model="ir.sequence">
-        <field name="name">班期编号</field>
+        <field name="name">发团计划编号</field>
         <field name="code">ta.departure</field>
         <field name="prefix">BQ</field>
         <field name="padding">5</field>

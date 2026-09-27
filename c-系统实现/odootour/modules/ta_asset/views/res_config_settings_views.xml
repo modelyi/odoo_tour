@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_ta_asset" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ta.asset</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='ta_pnl_block']" position="after">
+                <block title="固定资产" name="ta_asset_block">
+                    <setting string="折旧费用科目" help="计提折旧借方科目（如 6602 折旧费）。">
+                        <field name="ta_asset_depreciation_account_id"/>
+                    </setting>
+                    <setting string="累计折旧科目" help="计提折旧贷方科目（如 1602 累计折旧）。">
+                        <field name="ta_asset_accumulated_account_id"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

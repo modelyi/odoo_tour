@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+ta_asset_user,ta.asset 内部用户读,ta.asset,base.group_user,r,
+ta_asset_accountant,ta.asset 会计读写,ta.asset,ta_base.group_ta_accountant,crud,
+ta_asset_comp_rule,ta.asset 多公司限制,ta.asset,,crud,"[('company_id', 'in', company_ids)]"
+ta_asset_dep_user,ta.asset.depreciation 内部用户读,ta.asset.depreciation,base.group_user,r,
+ta_asset_dep_accountant,ta.asset.depreciation 会计读写,ta.asset.depreciation,ta_base.group_ta_accountant,crud,
+ta_asset_dep_comp_rule,ta.asset.depreciation 多公司限制,ta.asset.depreciation,,crud,"[('company_id', 'in', company_ids)]"
+ta_asset_wiz_accountant,ta.asset.depreciate.wizard 会计向导,ta.asset.depreciate.wizard,ta_base.group_ta_accountant,crud,

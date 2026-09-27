@@ -54,7 +54,7 @@ class TaRoute(models.Model):
 
     @api.constrains('state')
     def _check_open_departures(self):
-        """停售/回草稿不得遗留未完结班期。"""
+        """停售/回草稿不得遗留未完结发团计划。"""
         for route in self:
             if route.state != 'on_sale':
                 blocking = self.env['ta.departure'].search_count([
@@ -63,7 +63,7 @@ class TaRoute(models.Model):
                 ])
                 if blocking:
                     raise UserError(
-                        f"线路「{route.display_name}」仍有 {blocking} 个未完结班期，不能离开在售状态。")
+                        f"线路「{route.display_name}」仍有 {blocking} 个未完结发团计划，不能离开在售状态。")
 
 
 class TaRouteStop(models.Model):

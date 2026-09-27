@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ta_asset" name="固定资产" parent="ta_finance.menu_ta_finance" sequence="40"/>
+    <menuitem id="menu_ta_asset_card" name="资产卡片" parent="menu_ta_asset"
+              action="action_ta_asset" sequence="10"/>
+    <menuitem id="menu_ta_asset_depreciation" name="折旧记录" parent="menu_ta_asset"
+              action="action_ta_asset_depreciation" sequence="20"/>
+    <menuitem id="menu_ta_asset_depreciate" name="计提折旧" parent="menu_ta_asset"
+              action="action_ta_asset_depreciate_wizard" sequence="30"
+              groups="ta_base.group_ta_accountant"/>
+</odoo>

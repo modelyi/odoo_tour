@@ -9,14 +9,14 @@ class TaGuideLoan(models.Model):
     逾期提醒：due_date 已过且未结清，列表/日历红色标记（cron 双跑防护不适用，纯计算字段）。
     """
     _name = 'ta.guide.loan'
-    _description = '导游借款'
+    _description = '导游借支（借款）'
     _inherit = ['mail.thread', 'ta.mixin']
     _order = 'date desc, id desc'
 
     name = fields.Char(string='借款单号', readonly=True, copy=False,
                        default=lambda self: self.env['ir.sequence'].next_by_code('ta.guide.loan') or '/')
     guide_id = fields.Many2one('res.partner', string='导游', required=True, tracking=True)
-    departure_id = fields.Many2one('ta.departure', string='关联班期')
+    departure_id = fields.Many2one('ta.departure', string='关联团期')
     date = fields.Date(string='申请日期', required=True, default=fields.Date.context_today)
     amount = fields.Float(string='借款金额', required=True)
     due_date = fields.Date(string='应结清日')

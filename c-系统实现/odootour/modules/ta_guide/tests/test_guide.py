@@ -77,7 +77,7 @@ class TestGuide(TransactionCase):
         self.env.flush_all()
         pnl = self.env['ta.team.pnl'].search([('departure_id', '=', self.dep.id)])
         self.assertAlmostEqual(pnl.guide_expense_total, 460.0)
-        # 该团无收款/派工成本：毛利 = -(0 + 460)
+        # 该团无收款/计调成本：毛利 = -(0 + 460)
         self.assertAlmostEqual(pnl.profit, -460.0)
         self.assertAlmostEqual(pnl.profit_tax_incl, -460.0)
 

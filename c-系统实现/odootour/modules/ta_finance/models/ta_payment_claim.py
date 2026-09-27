@@ -79,6 +79,9 @@ class TaPaymentClaim(models.Model):
                     raise UserError(f"流水 {cl.bank_line_id.ref or cl.bank_line_id.id} 已被其他审核占用。")
             for alloc in claim.alloc_ids:
                 alloc.order_id._ta_apply_paid(alloc.amount_allocated)
+                # 期次核销：先到期先分配；历史订单期次不全时余量仅记订单头，不拦截
+                self.env['ta.receivable.plan']._ta_apply_claim(
+                    alloc.order_id, alloc.amount_allocated, claim)
             claim.move_id = claim._create_move()
             claim.approved_by = self.env.user
             claim.state = 'approved'
@@ -108,6 +111,8 @@ class TaPaymentClaim(models.Model):
                     }])
                 rev.action_post()
             for alloc in claim.alloc_ids:
+                self.env['ta.receivable.plan']._ta_revert_claim(
+                    alloc.order_id, alloc.amount_allocated, claim)
                 alloc.order_id._ta_apply_paid(-alloc.amount_allocated)
             claim.write({'state': 'draft', 'move_id': False, 'approved_by': False})
 

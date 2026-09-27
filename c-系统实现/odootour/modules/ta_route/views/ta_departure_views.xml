@@ -9,7 +9,7 @@
     </record>
 
     <record id="action_ta_departure" model="ir.actions.act_window">
-        <field name="name">班期</field>
+        <field name="name">发团计划</field>
         <field name="res_model">ta.departure</field>
         <field name="view_mode">list,calendar,form</field>
     </record>
@@ -47,7 +47,7 @@
                     <button name="action_depart" type="object" string="发团" invisible="state != 'confirmed'"/>
                     <button name="action_settle" type="object" string="结算完成" invisible="state != 'departed'"/>
                     <button name="%(action_ta_departure_merge)d" type="action" string="并团…" invisible="state not in ('open','confirmed')" context="{'default_target_id': id}"/>
-                    <button name="action_cancel" type="object" string="取消" invisible="state in ('departed','settled','merged','cancel')" confirm="确认取消该班期？"/>
+                    <button name="action_cancel" type="object" string="取消" invisible="state in ('departed','settled','merged','cancel')" confirm="确认取消该发团计划？"/>
                     <field name="state" widget="statusbar" statusbar_visible="planning,open,confirmed,departed,settled"/>
                 </header>
                 <sheet>
@@ -88,7 +88,7 @@
         <field name="name">ta.departure.calendar</field>
         <field name="model">ta.departure</field>
         <field name="arch" type="xml">
-            <calendar date_start="date_start" date_stop="date_end" string="班期日历" mode="month" color="state">
+            <calendar date_start="date_start" date_stop="date_end" string="发团日历" mode="month" color="state">
                 <field name="route_id"/>
                 <field name="guide_ids" widget="many2many_avatar_user"/>
             </calendar>

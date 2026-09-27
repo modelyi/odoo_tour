@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 迭代3：订单收款期次列表补认领来源列（字段定义在 ta_finance 侧） -->
+    <record id="ta_order_view_form_plan_claim" model="ir.ui.view">
+        <field name="name">ta.order.form.plan.claim</field>
+        <field name="model">ta.order</field>
+        <field name="inherit_id" ref="ta_order.ta_order_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='plan_ids']//field[@name='amount_paid']" position="after">
+                <field name="claim_ids" widget="many2many_tags" readonly="1" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -4,19 +4,19 @@ from odoo import models, fields, api
 
 class TaTeamPnl(models.Model):
     """单团核算（BS-19 口径）：收入=已审核认领到本团订单的金额；
-    成本=已确认派工条目 +（M4 追加）导游报账。SQL 视图聚合，只读。
+    成本=已确认计调单 +（M4 追加）导游报账。SQL 视图聚合，只读。
     """
     _name = 'ta.team.pnl'
     _description = '单团损益'
     _auto = False
     _order = 'date_start desc'
 
-    departure_id = fields.Many2one('ta.departure', string='班期', readonly=True)
+    departure_id = fields.Many2one('ta.departure', string='发团计划', readonly=True)
     route_name = fields.Char(string='线路', readonly=True)
-    code = fields.Char(string='班期号', readonly=True)
+    code = fields.Char(string='计划号', readonly=True)
     date_start = fields.Date(string='出发日', readonly=True)
     company_id = fields.Many2one('res.company', string='公司', readonly=True)
-    state = fields.Selection(related='departure_id.state', string='班期状态')
+    state = fields.Selection(related='departure_id.state', string='发团计划状态')
     seats_used = fields.Integer(string='报名人数', readonly=True)
     income = fields.Float(string='已收款', readonly=True)
     order_total = fields.Float(string='订单总额', readonly=True)

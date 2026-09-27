@@ -31,7 +31,7 @@
                     <button name="action_confirm" type="object" string="确认下单" class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_trip" type="object" string="开始行程" invisible="state != 'confirmed'"/>
                     <button name="action_settle" type="object" string="结算" invisible="state != 'tripping'"/>
-                    <button name="action_cancel" type="object" string="取消" invisible="state in ('settled','cancel')" confirm="确认取消？将释放班期占位。"/>
+                    <button name="action_cancel" type="object" string="取消" invisible="state in ('settled','cancel')" confirm="确认取消？将释放发团计划占位。"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,tripping,settled"/>
                 </header>
                 <sheet>
@@ -75,6 +75,7 @@
                                     <field name="name"/>
                                     <field name="due_date"/>
                                     <field name="amount"/>
+                                    <field name="amount_paid" readonly="1"/>
                                     <field name="note"/>
                                 </list>
                             </field>

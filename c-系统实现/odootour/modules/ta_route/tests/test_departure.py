@@ -9,7 +9,7 @@ class TestDeparture(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.route = cls.env['ta.route'].create({
-            'name': '班期测试线路',
+            'name': '发团计划测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],
             'price_ids': [(0, 0, {'kind': 'adult', 'amount': 1000})],
         })

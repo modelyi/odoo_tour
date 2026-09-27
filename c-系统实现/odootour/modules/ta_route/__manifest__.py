@@ -1,6 +1,6 @@
 {
-    'name': '旅行社线路与班期',
-    'summary': '线路产品、多价格体系、班期（发团计划）、并团',
+    'name': '旅行社线路与发团计划',
+    'summary': '线路产品、多价格体系、发团计划（发团计划）、并团',
     'version': '20.0.0.1.0',
     'category': 'Travel Agency',
     'author': 'TMS Team',

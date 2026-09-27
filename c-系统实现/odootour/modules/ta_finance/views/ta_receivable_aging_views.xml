@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_receivable_aging" model="ir.actions.act_window">
+        <field name="name">应收账龄</field>
+        <field name="res_model">ta.receivable.aging</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_not_settled': 1}</field>
+    </record>
+
+    <record id="view_ta_receivable_aging_list" model="ir.ui.view">
+        <field name="name">ta.receivable.aging.list</field>
+        <field name="model">ta.receivable.aging</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0">
+                <field name="order_name"/>
+                <field name="partner_id"/>
+                <field name="route_name" optional="show"/>
+                <field name="date_oldest"/>
+                <field name="days_overdue"/>
+                <field name="bucket" widget="badge"
+                       decoration-success="bucket == 'b0_30'"
+                       decoration-warning="bucket in ('b31_60', 'b61_90')"
+                       decoration-danger="bucket == 'b90p'"/>
+                <field name="amount_total" sum="合计"/>
+                <field name="amount_paid" sum="合计"/>
+                <field name="amount_open" sum="未收合计"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_receivable_aging_pivot" model="ir.ui.view">
+        <field name="name">ta.receivable.aging.pivot</field>
+        <field name="model">ta.receivable.aging</field>
+        <field name="arch" type="xml">
+            <pivot sample="1">
+                <field name="bucket" type="col"/>
+                <field name="partner_id" type="row"/>
+                <field name="amount_open" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_receivable_aging_search" model="ir.ui.view">
+        <field name="name">ta.receivable.aging.search</field>
+        <field name="model">ta.receivable.aging</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="order_name"/>
+                <field name="partner_id"/>
+                <field name="route_name"/>
+                <filter name="not_settled" string="含未结清"
+                        domain="[('state', 'in', ('confirmed', 'tripping'))]"/>
+                <filter name="overdue60" string="逾期60天以上" domain="[('days_overdue', '&gt;', 60)]"/>
+                <separator/>
+                <filter name="group_bucket" string="账龄桶" context="{'group_by': 'bucket'}"/>
+                <filter name="group_partner" string="客户" context="{'group_by': 'partner_id'}"/>
+            </search>
+        </field>
+    </record>
+</odoo>

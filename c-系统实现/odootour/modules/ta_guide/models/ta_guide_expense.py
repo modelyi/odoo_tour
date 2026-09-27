@@ -13,7 +13,7 @@ class TaGuideExpense(models.Model):
     date = fields.Date(string='报账日期', required=True, default=fields.Date.context_today)
     guide_id = fields.Many2one('res.partner', string='报销导游', required=True,
                                default=lambda self: self.env.user.partner_id, tracking=True)
-    departure_id = fields.Many2one('ta.departure', string='团（班期）', required=True,
+    departure_id = fields.Many2one('ta.departure', string='发团计划', required=True,
                                    domain="[('state', 'in', ('confirmed', 'departed', 'settled'))]")
     line_ids = fields.One2many('ta.guide.expense.line', 'expense_id', string='费用明细')
     amount_total = fields.Float(compute='_compute_total', store=True)

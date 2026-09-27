@@ -18,7 +18,7 @@ class TaOrder(models.Model):
     partner_id = fields.Many2one('res.partner', string='客户',
                                  help='团队输单时的组团社/单位客户；散客可留空。')
     departure_id = fields.Many2one(
-        'ta.departure', string='班期', required=True, index=True,
+        'ta.departure', string='发团计划', required=True, index=True,
         domain="[('state', 'in', ('open', 'confirmed'))]", tracking=True)
     route_id = fields.Many2one(related='departure_id.route_id', store=True, readonly=False)
     biz_mode_id = fields.Many2one('ta.biz.mode', string='业务模式',
@@ -158,4 +158,7 @@ class TaReceivablePlan(models.Model):
     name = fields.Char(string='期次', required=True)
     due_date = fields.Date(string='到期日')
     amount = fields.Float(digits=(12, 2), required=True)
+    amount_paid = fields.Float(string='已核销', readonly=True, copy=False, digits=(12, 2))
     note = fields.Char()
+    # claim_ids 字段及认领核销分配逻辑由 ta_finance 扩展（ta_receivable_plan.py），
+    # 避免 ta_order 反向引用 ta.payment.claim 造成加载顺序问题。

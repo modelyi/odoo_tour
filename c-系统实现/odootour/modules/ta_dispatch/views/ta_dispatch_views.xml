@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_ta_dispatch_item" model="ir.actions.act_window">
-        <field name="name">计调派工</field>
+        <field name="name">计调</field>
         <field name="res_model">ta.dispatch.item</field>
         <field name="view_mode">list,form</field>
     </record>
@@ -34,7 +34,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" string="确认派工" type="object"
+                    <button name="action_confirm" string="确认计调单" type="object"
                             invisible="state != 'draft'" class="oe_highlight"
                             groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
                     <button name="action_cancel" string="取消" type="object"
@@ -69,7 +69,7 @@
         </field>
     </record>
 
-    <!-- 班期表单追加派工页签与导游/领队指派 -->
+    <!-- 发团计划表单追加计调单页签与导游/领队指派 -->
     <record id="view_ta_departure_form_inherit_dispatch" model="ir.ui.view">
         <field name="name">ta.departure.form.dispatch</field>
         <field name="model">ta.departure</field>
@@ -79,7 +79,7 @@
                 <group>
                     <field name="dispatch_cost_total"/>
                 </group>
-                <group string="计调派工">
+                <group string="计调">
                     <field name="dispatch_item_ids"
                            nolabel="1"
                            context="{'default_departure_id': id}">

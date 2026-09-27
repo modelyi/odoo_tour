@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_ta_dispatch" name="计调" parent="ta_base.menu_ta_root" sequence="25"/>
-    <menuitem id="menu_ta_dispatch_item" name="派工条目" parent="menu_ta_dispatch"
+    <menuitem id="menu_ta_dispatch_item" name="计调单" parent="menu_ta_dispatch"
               action="action_ta_dispatch_item" sequence="10"/>
     <menuitem id="menu_ta_team_pnl" name="单团损益" parent="menu_ta_dispatch"
               action="action_ta_team_pnl" sequence="20"/>

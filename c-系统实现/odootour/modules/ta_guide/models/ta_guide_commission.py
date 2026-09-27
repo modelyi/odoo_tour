@@ -17,7 +17,7 @@ class TaGuideCommission(models.Model):
                        default=lambda self: self.env['ir.sequence'].next_by_code('ta.guide.commission') or '/')
     date = fields.Date(required=True, default=fields.Date.context_today)
     guide_id = fields.Many2one('res.partner', string='导游', required=True, tracking=True)
-    departure_id = fields.Many2one('ta.departure', string='团（班期）', required=True)
+    departure_id = fields.Many2one('ta.departure', string='发团计划', required=True)
     allowance = fields.Float(string='补贴/出团费', required=True)
     rule_note = fields.Char(string='规则参数', help='如：50元/天×3天+购物零返佣。')
     tax_rate = fields.Float(string='个税税率', default=0.0)

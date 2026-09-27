@@ -20,3 +20,8 @@ ta_claim_alloc_comp_rule,ta.claim.alloc 多公司限制,ta.claim.alloc,,crud,"[(
 ta_expense_user,ta.expense 全员可建,ta.expense,base.group_user,crud,
 ta_expense_accountant,ta.expense 会计审核,ta.expense,ta_base.group_ta_accountant,ru,
 ta_expense_comp_rule,ta.expense 多公司限制,ta.expense,,crud,"[('company_id', 'in', company_ids)]"
+ta_aging_read,ta.receivable.aging 相关只读,ta.receivable.aging,ta_base.group_ta_accountant,r,
+ta_aging_read_sales,ta.receivable.aging 销售只读,ta.receivable.aging,ta_base.group_ta_sales,r,
+ta_aging_comp_rule,ta.receivable.aging 多公司限制,ta.receivable.aging,,r,"[('company_id', 'in', company_ids)]"
+ta_plan_accountant,ta.receivable.plan 会计核销,ta.receivable.plan,ta_base.group_ta_accountant,ru,
+ta_plan_comp_rule,ta.receivable.plan 多公司限制,ta.receivable.plan,,r,"[('company_id', 'in', company_ids)]"
