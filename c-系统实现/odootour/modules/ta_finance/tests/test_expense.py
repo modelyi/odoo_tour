@@ -5,7 +5,10 @@ from odoo.exceptions import UserError, AccessError
 
 @tagged('post_install', '-at_install')
 class TestExpense(TransactionCase):
-    """费用报销：提交→审核生成凭证（AC-05 非本人审核 + 幂等）。"""
+    """费用报销：提交→审核生成凭证（AC-05 非本人审核 + 幂等）。
+
+    注意：Odoo 20 中 account.move 仅会计/开票/采购组可读，凭证断言一律 with_user(会计)。
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -18,11 +21,16 @@ class TestExpense(TransactionCase):
             'name': '其他应付款测试', 'code': '224101',
             'account_type': 'liability_current'})
         cls.journal = cls.env['account.journal'].create({
-            'name': '费用测试日记账', 'code': 'EXPTST', 'type': 'expense',
+            'name': '费用测试日记账', 'code': 'EXPTST', 'type': 'purchase',
             'company_id': cls.company.id})
         cls.company.expense_account_id = cls.expense_account
-        cls.env['ir.config_parameter'].sudo().set_param(
-            'ta_finance.payable_employee_account_id', str(cls.payable_account.id))
+        icp = cls.env['ir.config_parameter'].sudo()
+        rec = icp.search([('key', '=', 'ta_finance.payable_employee_account_id')], limit=1)
+        if rec:
+            rec.value = str(cls.payable_account.id)
+        else:
+            icp.create({'key': 'ta_finance.payable_employee_account_id',
+                        'value': str(cls.payable_account.id)})
 
         def mk(login, group_xmlids):
             groups = [cls.env.ref(g).id for g in group_xmlids] + [cls.env.ref('base.group_user').id]
@@ -45,17 +53,18 @@ class TestExpense(TransactionCase):
         self.assertEqual(exp.state, 'submitted')
         exp.with_user(self.u_acct).action_approve()
         self.assertEqual(exp.state, 'approved')
-        self.assertTrue(exp.move_id)
-        self.assertEqual(exp.move_id.state, 'draft')
-        self.assertAlmostEqual(exp.move_id.amount_total, 500.0)
-        debit = exp.move_id.line_ids.filtered(lambda l: l.debit)
-        credit = exp.move_id.line_ids.filtered(lambda l: l.credit)
+        move = exp.sudo().move_id.with_user(self.u_acct)
+        self.assertTrue(move)
+        self.assertEqual(move.state, 'draft')
+        self.assertAlmostEqual(move.amount_total, 500.0)
+        debit = move.line_ids.filtered(lambda l: l.debit)
+        credit = move.line_ids.filtered(lambda l: l.credit)
         self.assertEqual(debit.mapped('account_id'), self.expense_account)
         self.assertEqual(credit.mapped('account_id'), self.payable_account)
-        moves_before = self.env['account.move'].search_count([])
+        moves_before = self.env['account.move'].sudo().search_count([])
         with self.assertRaises(UserError):
             exp.with_user(self.u_acct).action_approve()
-        self.assertEqual(self.env['account.move'].search_count([]), moves_before)
+        self.assertEqual(self.env['account.move'].sudo().search_count([]), moves_before)
 
     def test_self_approval_blocked(self):
         # T1.2 AC-05：审核人不能是报销人本人

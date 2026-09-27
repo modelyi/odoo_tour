@@ -95,10 +95,10 @@ class TaExpense(models.Model):
         if not payable:
             raise UserError("未配置员工往来科目（ta_finance.payable_employee_account_id 或收款人应付科目）。")
         journal = self.env['account.journal'].search(
-            [('type', 'in', ('expense', 'purchase')), ('company_id', '=', self.company_id.id)],
+            [('type', '=', 'purchase'), ('company_id', '=', self.company_id.id)],
             limit=1)
         if not journal:
-            raise UserError("当前公司没有费用/采购日记账，无法生成凭证。")
+            raise UserError("当前公司没有采购日记账，无法生成费用凭证。")
         return self.env['account.move'].create({
             'journal_id': journal.id,
             'date': self.date,
