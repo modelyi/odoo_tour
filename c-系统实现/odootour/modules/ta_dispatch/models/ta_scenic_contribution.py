@@ -51,7 +51,7 @@ class TaScenicContribution(models.Model):
                        + """ + expense_sql + """ AS cost_total
                 FROM ta_departure d
             )
-            SELECT s.departure_id * 1000000 + s.supplier_id AS id,
+            SELECT (s.departure_id::text || '_' || s.supplier_id::text) AS id,
                    s.departure_id AS departure_id,
                    s.supplier_id AS supplier_id,
                    d.code AS code,
