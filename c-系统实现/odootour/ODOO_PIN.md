@@ -104,4 +104,8 @@
      create 即 "not balanced" UserError；
   ㉜ 对平校验 SQL 要按科目过滤（V13 曾对整张平衡凭证求净额，恒 0 造成假差异）；
   ㉝ 跨库读旧系统：`docker network connect tms-net odootour-odoo` + psycopg2 双连接，口令仅 env 注入
-     （`TMS_OLD_DB_PASSWORD`，值同 tms-odoo 容器 PGPASSWORD），跑完 disconnect 还原。
+     （`TMS_OLD_DB_PASSWORD`，值同 tms-odoo 容器 PGPASSWORD），跑完 disconnect 还原；
+  ㉞ O20 `account_account.code` 是 compute（公司相关），raw SQL 只能查 `code_store->>'<公司id>'`；
+     对平脚本校验 SQL 异常时回退打印预测值=自我印证，必须显式报错而非吞掉；
+  ㉟ SQL 视图改 id 列类型（integer↔text 拼接）时 `CREATE OR REPLACE VIEW` 报
+     `cannot change data type of view column`，init() 必须先 `DROP VIEW IF EXISTS`。

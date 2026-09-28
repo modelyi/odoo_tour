@@ -3,6 +3,30 @@ from odoo.tests.common import TransactionCase, tagged
 from odoo.exceptions import UserError, AccessError
 
 
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：正式库存量科目，search by code
+    命中即用（name 不同也无妨）；仅在不存在时创建。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
+
+
 @tagged('post_install', '-at_install')
 class TestClaim(TransactionCase):
     """三步闭环（登记→认领→审核）+ AC-05 岗位分离 + 幂等 + 反审核。"""
@@ -11,17 +35,14 @@ class TestClaim(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        # --- 最小会计环境（影子库无演示数据）---
-        cls.bank_account = cls.env['account.account'].create({
-            'name': '银行存款', 'code': '1002',
-            'account_type': 'asset_current'})
-        cls.recv_account = cls.env['account.account'].create({
-            'name': '应收账款', 'code': '1122',
-            'account_type': 'asset_receivable'})
-        cls.journal = cls.env['account.journal'].create({
-            'name': '银行测试', 'code': 'BNKT', 'type': 'bank',
-            'company_id': cls.company.id,
-            'default_account_id': cls.bank_account.id})
+        # --- 最小会计环境（get-or-create，兼容存量正式库）---
+        cls.bank_account = _get_or_create_account(
+            cls.env, '1002', '银行存款-finance测试', 'asset_current')
+        cls.recv_account = _get_or_create_account(
+            cls.env, '1122', '应收账款-finance测试', 'asset_receivable')
+        cls.journal = _get_or_create_journal(
+            cls.env, 'bank', '银行测试-finance', 'BNKT',
+            default_account_id=cls.bank_account.id)
         cls.partner = cls.env['res.partner'].create({
             'name': '测试客户',
             'property_account_receivable_id': cls.recv_account.id})

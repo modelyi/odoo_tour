@@ -55,3 +55,4 @@ backup/
 .env.old*
 .env.save*
 c-系统实现/tms-platform/backup/
+backups/

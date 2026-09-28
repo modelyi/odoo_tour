@@ -3,6 +3,29 @@ from odoo.tests.common import TransactionCase, tagged
 from odoo.exceptions import UserError, AccessError
 
 
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：search by code 命中即用。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
+
+
 @tagged('post_install', '-at_install')
 class TestGuide(TransactionCase):
     """借款-发放-报账-佣金冲抵全链（BS-08 AC-18）+ 报账入单团成本。"""
@@ -11,16 +34,15 @@ class TestGuide(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.bank_account = cls.env['account.account'].create({
-            'name': '银行存款G', 'code': '1003', 'account_type': 'asset_current'})
-        cls.loan_account = cls.env['account.account'].create({
-            'name': '其他应收款-导游借款', 'code': '1221', 'account_type': 'asset_receivable'})
+        cls.bank_account = _get_or_create_account(
+            cls.env, '1003', '银行存款G', 'asset_current')
+        cls.loan_account = _get_or_create_account(
+            cls.env, '1221', '其他应收款-导游借款', 'asset_receivable')
         cls.env['ir.config_parameter'].sudo().set_int(
             'ta_guide.loan_account_id', cls.loan_account.id)
-        cls.journal = cls.env['account.journal'].create({
-            'name': '银行发放', 'code': 'BNKG', 'type': 'bank',
-            'company_id': cls.company.id,
-            'default_account_id': cls.bank_account.id})
+        cls.journal = _get_or_create_journal(
+            cls.env, 'bank', '银行发放', 'BNKG',
+            default_account_id=cls.bank_account.id)
         route = cls.env['ta.route'].create({
             'name': '导游测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],

@@ -33,6 +33,8 @@ class TaScenicContribution(models.Model):
         expense_sql = ("COALESCE((SELECT sum(g.amount_total) FROM ta_guide_expense g"
                        " WHERE g.departure_id = d.id AND g.state = 'approved'), 0)"
                        if has_expense else "0")
+        # id 列从 integer 改为 text 拼接，CREATE OR REPLACE 不允许改列类型 → 先 DROP
+        self.env.cr.execute("DROP VIEW IF EXISTS ta_scenic_contribution")
         self.env.cr.execute("""
             CREATE OR REPLACE VIEW ta_scenic_contribution AS
             WITH scenic AS (  -- 景点供应商 × 团 的门票成本

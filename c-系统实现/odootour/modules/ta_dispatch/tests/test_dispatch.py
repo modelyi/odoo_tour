@@ -1,6 +1,31 @@
 # -*- coding: utf-8 -*-
 from odoo.tests.common import TransactionCase, tagged
+from odoo.tools import mute_logger
 from odoo.exceptions import UserError
+
+
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：正式库存量科目，search by code
+    命中即用（name 不同也无妨）；仅在不存在时创建。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
 
 
 @tagged('post_install', '-at_install')
@@ -10,19 +35,16 @@ class TestDispatch(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.expense_account = cls.env['account.account'].create({
-            'name': '主营业务成本', 'code': '6401',
-            'account_type': 'expense_direct_cost'})
+        cls.expense_account = _get_or_create_account(
+            cls.env, '6401', '主营业务成本-dispatch测试', 'expense_direct_cost')
         cls.env.company.expense_account_id = cls.expense_account.id
-        cls.payable_account = cls.env['account.account'].create({
-            'name': '应付账款', 'code': '2202',
-            'account_type': 'liability_payable'})
+        cls.payable_account = _get_or_create_account(
+            cls.env, '2202', '应付账款-dispatch测试', 'liability_payable')
         cls.supplier = cls.env['res.partner'].create({
             'name': '测试车队',
             'property_account_payable_id': cls.payable_account.id})
-        cls.purchase_journal = cls.env['account.journal'].create({
-            'name': '采购测试', 'code': 'PUCHT', 'type': 'purchase',
-            'company_id': cls.env.company.id})
+        cls.purchase_journal = _get_or_create_journal(
+            cls.env, 'purchase', '采购测试-dispatch', 'PUCHT')
         route = cls.env['ta.route'].create({
             'name': '计调测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],
@@ -89,5 +111,7 @@ class TestDispatch(TransactionCase):
 
     def test_negative_price_blocked(self):
         from psycopg2 import IntegrityError
-        with self.assertRaises(IntegrityError), self.env.cr.savepoint():
+        # 预期内的约束违例仍会触发 odoo.sql_db 的 bad query ERROR 日志，静音之
+        with mute_logger('odoo.sql_db'), \
+                self.assertRaises(IntegrityError), self.env.cr.savepoint():
             self._item(price=-1.0)

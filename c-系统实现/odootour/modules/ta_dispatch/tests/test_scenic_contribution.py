@@ -2,6 +2,29 @@
 from odoo.tests.common import TransactionCase, tagged
 
 
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：search by code 命中即用。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
+
+
 @tagged('post_install', '-at_install')
 class TestScenicContribution(TransactionCase):
     """迭代5 T5.1：景点毛利贡献 = 团毛利 × 该景点门票成本 ÷ 全团成本（手算核对）。"""
@@ -9,16 +32,13 @@ class TestScenicContribution(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.expense_account = cls.env['account.account'].create({
-            'name': '主营业务成本S', 'code': '6402',
-            'account_type': 'expense_direct_cost'})
+        cls.expense_account = _get_or_create_account(
+            cls.env, '6402', '主营业务成本S', 'expense_direct_cost')
         cls.env.company.expense_account_id = cls.expense_account.id
-        cls.payable_account = cls.env['account.account'].create({
-            'name': '应付账款S', 'code': '2203',
-            'account_type': 'liability_payable'})
-        cls.purchase_journal = cls.env['account.journal'].create({
-            'name': '采购测试S', 'code': 'PUCHS', 'type': 'purchase',
-            'company_id': cls.env.company.id})
+        cls.payable_account = _get_or_create_account(
+            cls.env, '2203', '应付账款S', 'liability_payable')
+        cls.purchase_journal = _get_or_create_journal(
+            cls.env, 'purchase', '采购测试S', 'PUCHS')
         cls.s_ticket = cls.env['res.partner'].create({
             'name': '票务代订S', 'supplier_rank': 1,
             'property_account_payable_id': cls.payable_account.id})

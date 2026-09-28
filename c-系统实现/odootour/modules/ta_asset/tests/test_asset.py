@@ -1,6 +1,30 @@
 # -*- coding: utf-8 -*-
 from odoo.tests.common import TransactionCase, tagged
+from odoo.tools import mute_logger
 from odoo.exceptions import UserError, AccessError
+
+
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：search by code 命中即用。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
 
 
 @tagged('post_install', '-at_install')
@@ -11,13 +35,12 @@ class TestAsset(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.dep_account = cls.env['account.account'].create({
-            'name': '折旧费测试', 'code': '660201', 'account_type': 'expense'})
-        cls.accum_account = cls.env['account.account'].create({
-            'name': '累计折旧测试', 'code': '160201', 'account_type': 'liability_current'})
-        cls.journal = cls.env['account.journal'].create({
-            'name': '资产折旧测试', 'code': 'ASSTST', 'type': 'general',
-            'company_id': cls.company.id})
+        cls.dep_account = _get_or_create_account(
+            cls.env, '660201', '折旧费测试', 'expense')
+        cls.accum_account = _get_or_create_account(
+            cls.env, '160201', '累计折旧测试', 'liability_current')
+        cls.journal = _get_or_create_journal(
+            cls.env, 'general', '资产折旧测试', 'ASSTST')
         icp = cls.env['ir.config_parameter'].sudo()
         for key, val in (('ta_asset.depreciation_account_id', cls.dep_account.id),
                          ('ta_asset.accumulated_account_id', cls.accum_account.id)):
@@ -97,6 +120,8 @@ class TestAsset(TransactionCase):
         asset = self._asset()
         self.env['ta.asset.depreciation'].create({
             'asset_id': asset.id, 'period': '2026-01', 'amount': 100.0})
-        with self.assertRaises(UniqueViolation), self.env.cr.savepoint():
+        # 预期内的约束违例：savepoint 隔离事务 + 静音 odoo.sql_db 的 bad query ERROR 噪音
+        with mute_logger('odoo.sql_db'), \
+                self.assertRaises(UniqueViolation), self.env.cr.savepoint():
             self.env['ta.asset.depreciation'].create({
                 'asset_id': asset.id, 'period': '2026-01', 'amount': 50.0})

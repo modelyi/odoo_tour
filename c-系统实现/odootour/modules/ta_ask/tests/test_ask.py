@@ -31,15 +31,33 @@ class TestTaAsk(TransactionCase):
         cls.dep.action_open()
         cls.order = cls.env['ta.order'].create({
             'kind': 'team', 'departure_id': cls.dep.id,
+            # 定到无存量确认订单的干净月（远未来 2027-08），保证
+            # _ask_order_month_stats 全量聚合断言不被存量数据污染
+            'date_confirm': '2027-08-10',
             'line_ids': [(0, 0, {'name': '甲', 'kind': 'adult'}),
                          (0, 0, {'name': '乙', 'kind': 'adult'})]})
         cls.order.action_confirm()
         cls.order._ta_apply_paid(2000)
-        bank_acct = cls.env['account.account'].create({
-            'code': '5029TBA', 'name': '问数测试银行', 'account_type': 'asset_cash'})
-        bank_journal = cls.env['account.journal'].create({
-            'name': '问数测试银行账户', 'type': 'bank', 'code': 'TBAK',
-            'default_account_id': bank_acct.id})
+        # 幂等取银行日记账（范式同 scripts/seed_ta_demo.py）：正式库已有存量
+        # 银行日记账/科目，直接复用；若仍新建 asset_cash 科目会触发
+        # _create_default_journals 生成 alias 'bank-none' 与存量日记账撞车。
+        J = cls.env['account.journal']
+        bank_journal = J.search(
+            [('code', '=', 'TBAK'), ('company_id', '=', cls.env.company.id)],
+            limit=1) or J.search(
+            [('type', '=', 'bank'), ('company_id', '=', cls.env.company.id)],
+            limit=1)
+        if not bank_journal:
+            bank_acct = cls.env['account.account'].search(
+                [('code', '=', '5029TBA')], limit=1)
+            if not bank_acct:
+                bank_acct = cls.env['account.account'].create({
+                    'code': '5029TBA', 'name': '问数测试银行',
+                    'account_type': 'asset_cash'})
+            bank_journal = J.create({
+                'name': '问数测试银行账户', 'type': 'bank', 'code': 'TBAK',
+                'company_id': cls.env.company.id,
+                'default_account_id': bank_acct.id})
         bank = cls.env['ta.bank.line'].create({
             'date': '2026-09-10', 'amount': 5000, 'journal_id': bank_journal.id})
         cls.claim = cls.env['ta.payment.claim'].create({
@@ -213,24 +231,25 @@ class TestTaAsk(TransactionCase):
 
     # --- 费用报销月报：仅已审核，按月×类型聚合 ----------------------------
     def test_expense_month_query(self):
+        # 造数定在远未来干净月（2027-06/07）：全量行断言不受存量报销数据污染
         for reason, etype, date, amount in [
-                ('办公用品', 'office', '2026-09-05', 100.0),
-                ('办公耗材', 'office', '2026-09-20', 50.0),
-                ('出差打车', 'travel', '2026-10-11', 200.0)]:
+                ('办公用品', 'office', '2027-06-05', 100.0),
+                ('办公耗材', 'office', '2027-06-20', 50.0),
+                ('出差打车', 'travel', '2027-07-11', 200.0)]:
             self.env['ta.expense'].create({
                 'reason': reason, 'expense_type': etype,
                 'date': date, 'amount': amount, 'state': 'approved'})
         self.env['ta.expense'].create({
             'reason': '草稿不计', 'expense_type': 'office',
-            'date': '2026-09-21', 'amount': 999.0, 'state': 'draft'})
-        data = self.env['ta.expense']._ask_expense_month({'month': '2026-09'})
-        self.assertEqual(data['rows'], [['2026-09', '办公费', 2, 150.0]])
+            'date': '2027-06-21', 'amount': 999.0, 'state': 'draft'})
+        data = self.env['ta.expense']._ask_expense_month({'month': '2027-06'})
+        self.assertEqual(data['rows'], [['2027-06', '办公费', 2, 150.0]])
         data = self.env['ta.expense']._ask_expense_month(
-            {'month': '2026-09', 'month_to': '2026-10'})
+            {'month': '2027-06', 'month_to': '2027-07'})
         self.assertEqual(data['rows'],
-                         [['2026-09', '办公费', 2, 150.0],
-                          ['2026-10', '差旅费', 1, 200.0]])
+                         [['2027-06', '办公费', 2, 150.0],
+                          ['2027-07', '差旅费', 1, 200.0]])
         data = self.env['ta.expense']._ask_expense_month(
-            {'month': '2026-09', 'month_to': '2026-10',
+            {'month': '2027-06', 'month_to': '2027-07',
              'expense_type': 'travel'})
-        self.assertEqual(data['rows'], [['2026-10', '差旅费', 1, 200.0]])
+        self.assertEqual(data['rows'], [['2027-07', '差旅费', 1, 200.0]])

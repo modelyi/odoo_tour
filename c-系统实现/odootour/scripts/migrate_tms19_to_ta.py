@@ -946,7 +946,7 @@ def phase7_report(ctx):
             return v if v is not None else 0
         except Exception:
             cr.rollback()
-            return pred
+            return 'SQL异常'   # 不得用预测值掩盖成 OK
 
     eq = ctx.get('opening', {})
     rows = [
@@ -990,7 +990,8 @@ def phase7_report(ctx):
         ('V13 期初借1002 = Σbalance', ctx['sum_balance'],
          actual_or_pred("SELECT round(sum(l.debit-l.credit),2) FROM account_move_line l "
                         "JOIN account_move m ON m.id=l.move_id "
-                        "JOIN account_account a ON a.id=l.account_id AND a.code='1002' "
+                        "JOIN account_account a ON a.id=l.account_id "
+                        "  AND a.code_store->>'1'='1002' "  # O20：code 存 code_store jsonb（公司id为键）
                         "WHERE m.ref='期初建账'", ctx['sum_balance'])),
         ('V14 期初凭证 Σ借−Σ贷 (应=0)', 0.0,
          actual_or_pred("SELECT round(sum(debit)-sum(credit),2) FROM account_move_line l "

@@ -5,6 +5,29 @@ from odoo import fields
 from odoo.tests.common import TransactionCase, tagged
 
 
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：search by code 命中即用。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
+
+
 @tagged('post_install', '-at_install')
 class TestPlanAging(TransactionCase):
     """迭代3：认领审核→期次先到先核销→反审核回退；应收账龄视图分桶。"""
@@ -13,14 +36,13 @@ class TestPlanAging(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.bank_account = cls.env['account.account'].create({
-            'name': '银行存款3', 'code': '100231', 'account_type': 'asset_current'})
-        cls.recv_account = cls.env['account.account'].create({
-            'name': '应收账款3', 'code': '112231', 'account_type': 'asset_receivable'})
-        cls.journal = cls.env['account.journal'].create({
-            'name': '银行测试3', 'code': 'BNK3', 'type': 'bank',
-            'company_id': cls.company.id,
-            'default_account_id': cls.bank_account.id})
+        cls.bank_account = _get_or_create_account(
+            cls.env, '100231', '银行存款3', 'asset_current')
+        cls.recv_account = _get_or_create_account(
+            cls.env, '112231', '应收账款3', 'asset_receivable')
+        cls.journal = _get_or_create_journal(
+            cls.env, 'bank', '银行测试3', 'BNK3',
+            default_account_id=cls.bank_account.id)
         cls.partner = cls.env['res.partner'].create({
             'name': '账龄客户',
             'property_account_receivable_id': cls.recv_account.id})

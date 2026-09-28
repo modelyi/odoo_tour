@@ -153,7 +153,7 @@ def _ensure_user(name, login, group_xmlids):
     u = U.with_context(**NO_MAIL_CTX).create({
         'name': name, 'login': login,
         'password': secrets.token_urlsafe(16),   # 随机生成，绝不打印
-        'groups_id': [(6, 0, groups)],
+        'group_ids': [(6, 0, groups)],            # Odoo 20: res.users.groups_id 已移除
         'company_ids': [(6, 0, [env.company.id])],
         'company_id': env.company.id,
     })
@@ -167,9 +167,9 @@ def resolve_accountant():
     grp = env.ref('ta_base.group_ta_accountant')
     mgr = env.ref('account.group_account_manager', raise_if_not_found=False)
     cands = env['res.users'].sudo().search(
-        [('groups_id', '=', grp.id), ('active', '=', True)])
+        [('group_ids', '=', grp.id), ('active', '=', True)])
     for u in cands:
-        if not mgr or mgr in u.sudo().groups_id:
+        if not mgr or mgr in u.sudo().group_ids:
             _log.info('seed_ta_demo: 使用既有会计用户 uid=%s', u.id)
             return u
     if cands:
@@ -271,10 +271,10 @@ def seed_expenses(accountant, applicants):
         exp = E.search([('name', '=', name)], limit=1)
         if not exp:
             d = rdate(EXP_START, EXP_END)
-            etype = random.choice(EXP_TYPES)
+            etype = random.choice(EXPENSE_TYPES)
             exp = E.create({
                 'name': name,
-                'reason': '%s %s' % (EXP_REASONS[etype], d.strftime('%Y%m%d')),
+                'reason': '%s %s' % (EXPENSE_REASONS[etype], d.strftime('%Y%m%d')),
                 'applicant_id': applicants[i % len(applicants)].id,
                 'expense_type': etype,
                 'date': d.isoformat(),

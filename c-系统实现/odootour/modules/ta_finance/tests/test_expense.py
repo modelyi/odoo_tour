@@ -3,6 +3,29 @@ from odoo.tests.common import TransactionCase, tagged
 from odoo.exceptions import UserError, AccessError
 
 
+def _get_or_create_account(env, code, name, account_type, **extra):
+    """幂等取数（范式同 scripts/seed_ta_demo.py）：search by code 命中即用。"""
+    acc = env['account.account'].search([('code', '=', code)], limit=1)
+    if not acc:
+        vals = {'code': code, 'name': name, 'account_type': account_type}
+        vals.update(extra)
+        acc = env['account.account'].create(vals)
+    return acc
+
+
+def _get_or_create_journal(env, jtype, name, code, **extra):
+    """幂等日记账：先按测试专属 code 找，再按类型找存量，都没有才建。"""
+    J = env['account.journal']
+    comp = env.company.id
+    j = J.search([('code', '=', code), ('company_id', '=', comp)], limit=1) \
+        or J.search([('type', '=', jtype), ('company_id', '=', comp)], limit=1)
+    if not j:
+        vals = {'name': name, 'code': code, 'type': jtype, 'company_id': comp}
+        vals.update(extra)
+        j = J.create(vals)
+    return j
+
+
 @tagged('post_install', '-at_install')
 class TestExpense(TransactionCase):
     """费用报销：提交→审核生成凭证（AC-05 非本人审核 + 幂等）。
@@ -14,15 +37,12 @@ class TestExpense(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.expense_account = cls.env['account.account'].create({
-            'name': '管理费用测试', 'code': '660901',
-            'account_type': 'expense'})
-        cls.payable_account = cls.env['account.account'].create({
-            'name': '其他应付款测试', 'code': '224101',
-            'account_type': 'liability_current'})
-        cls.journal = cls.env['account.journal'].create({
-            'name': '费用测试日记账', 'code': 'EXPTST', 'type': 'purchase',
-            'company_id': cls.company.id})
+        cls.expense_account = _get_or_create_account(
+            cls.env, '660901', '管理费用测试', 'expense')
+        cls.payable_account = _get_or_create_account(
+            cls.env, '224101', '其他应付款测试', 'liability_current')
+        cls.journal = _get_or_create_journal(
+            cls.env, 'purchase', '费用测试日记账', 'EXPTST')
         cls.company.expense_account_id = cls.expense_account
         icp = cls.env['ir.config_parameter'].sudo()
         rec = icp.search([('key', '=', 'ta_finance.payable_employee_account_id')], limit=1)
