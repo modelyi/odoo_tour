@@ -163,3 +163,74 @@ class TestTaAsk(TransactionCase):
         clean = ask_catalog.sanitize_args(
             ask_catalog.ASK_FUNCTIONS[0]['args'], {'month': '2026-13', 'x': 1})
         self.assertEqual(clean, {})
+
+    # --- 导游绩效：导游×带团月，内联造数手算核对 --------------------------
+    def test_guide_performance_query(self):
+        gp = self.env['res.partner'].create({'name': '问数导游'})
+        gu = self.env['res.users'].create({
+            'name': '问数导游', 'login': 'ask_guide@test.local',
+            'company_id': self.env.company.id, 'partner_id': gp.id,
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        dep = self.env['ta.departure'].create({
+            'route_id': self.route.id, 'date_start': '2026-11-05',
+            'date_end': '2026-11-07', 'seats_total': 10, 'seats_min': 2})
+        dep.action_open()
+        dep.guide_ids = [(6, 0, [gu.id])]
+        order = self.env['ta.order'].create({
+            'kind': 'team', 'departure_id': dep.id,
+            'line_ids': [(0, 0, {'name': '戊', 'kind': 'adult'}),
+                         (0, 0, {'name': '己', 'kind': 'adult'})]})
+        order.action_confirm()
+        order._ta_apply_paid(3000)
+        data = self.env['ta.guide.performance']._ask_guide_performance(
+            {'month': '2026-11', 'guide': '问数导游'})
+        rows = [r for r in data['rows'] if r[1] == '2026-11']
+        self.assertEqual(len(rows), 1)
+        # 带团数1 人数2 收入3000 成本0 毛利3000 借支0
+        self.assertEqual(rows[0][2:], [1, 2, 3000, 0, 3000, 0])
+
+    # --- 景点毛利贡献：门票300/全团成本300 → 贡献=团毛利 ------------------
+    def test_scenic_contribution_query(self):
+        supplier = self.env['res.partner'].create(
+            {'name': '问数景区', 'supplier_rank': 1})
+        # 视图只读聚合：直接建 confirmed 条目，绕开供应商账单落账（同 claim 造数风格）
+        self.env['ta.dispatch.item'].create({
+            'departure_id': self.dep.id, 'kind': 'scenic',
+            'supplier_id': supplier.id, 'name': '大门票',
+            'qty': 2, 'unit_price': 150.0, 'state': 'confirmed'})
+        data = self.env['ta.scenic.contribution']._ask_scenic_contribution(
+            {'supplier': '问数景区',
+             'date_from': '2026-10-01', 'date_to': '2026-10-31'})
+        rows = [r for r in data['rows'] if r[1] == self.dep.code]
+        self.assertEqual(len(rows), 1)
+        # 门票300 全团成本300 收入2000 毛利1700 占比100% 贡献1700
+        self.assertEqual(rows[0][4:], [300, 300, 2000, 1700, 100.0, 1700.0])
+        # 日期区间外查不到
+        data2 = self.env['ta.scenic.contribution']._ask_scenic_contribution(
+            {'supplier': '问数景区', 'date_from': '2026-11-01'})
+        self.assertEqual(
+            [r for r in data2['rows'] if r[1] == self.dep.code], [])
+
+    # --- 费用报销月报：仅已审核，按月×类型聚合 ----------------------------
+    def test_expense_month_query(self):
+        for reason, etype, date, amount in [
+                ('办公用品', 'office', '2026-09-05', 100.0),
+                ('办公耗材', 'office', '2026-09-20', 50.0),
+                ('出差打车', 'travel', '2026-10-11', 200.0)]:
+            self.env['ta.expense'].create({
+                'reason': reason, 'expense_type': etype,
+                'date': date, 'amount': amount, 'state': 'approved'})
+        self.env['ta.expense'].create({
+            'reason': '草稿不计', 'expense_type': 'office',
+            'date': '2026-09-21', 'amount': 999.0, 'state': 'draft'})
+        data = self.env['ta.expense']._ask_expense_month({'month': '2026-09'})
+        self.assertEqual(data['rows'], [['2026-09', '办公费', 2, 150.0]])
+        data = self.env['ta.expense']._ask_expense_month(
+            {'month': '2026-09', 'month_to': '2026-10'})
+        self.assertEqual(data['rows'],
+                         [['2026-09', '办公费', 2, 150.0],
+                          ['2026-10', '差旅费', 1, 200.0]])
+        data = self.env['ta.expense']._ask_expense_month(
+            {'month': '2026-09', 'month_to': '2026-10',
+             'expense_type': 'travel'})
+        self.assertEqual(data['rows'], [['2026-10', '差旅费', 1, 200.0]])

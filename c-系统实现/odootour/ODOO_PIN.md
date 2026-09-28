@@ -87,3 +87,21 @@
   `backup/tour20-pre-ta-install-20260926-111424.sql.gz`），tour20 现 90 installed；restart 后 /web/login 200。
   影子库回归 36 测试全绿（六模块）。导游对账 portal 界面留批3（规则与数据链已闭环）。
   生产使用前需配置：公司费用科目、导游借款科目（1221）、银行日记账默认科目（发放/落账依赖）。
+- 2026-09-28 **财务迭代 3/4/5 坑位补录**（批1/账龄/绩效/景点毛利实测）：
+  ㉑ 跨模块字段依赖：ta_order 不能引用 ta.payment.claim（加载次序），字段与钩子放依赖方 `_inherit` 扩展；
+  ㉒ O20 XML RNG：`pivot/search create="0"`、search 内 `<group>` 均非法，分组走 list view grouping；
+  ㉓ O20 m2m 关系表列名 = 完整模型名（`ta_departure_id`/`res_users_id`），自定义 rel 名保留给定列名；
+  ㉔ PG 无 `round(double precision,int)` → 先 `::numeric`；
+  ㉕ Float 无 default 可能存 NULL → SQL 视图 COALESCE + 字段显式 `default=0.0`；
+  ㉖ 测试创建 partner 时 `property_account_receivable_id` 必须传 `.id` int（recordset 不可 JSON 序列化）；
+  ㉗ 会计组用户无派工创建权限，测试造派工条目需加 `ta_base.group_ta_dispatcher`；
+  ㉘ security CSV 手工 printf 会吞 domain 引号，用 sed/heredoc 修复后必 grep 复核。
+- 2026-09-28 **迭代6 迁移（tms19→tour20）run1 坑位**：
+  ㉙ `odoo-bin shell < script` 模式 `__name__=='__main__'` 成立，main() 自动执行；
+  ㉚ run1 容器副本曾把 chunk_update 的 mogrify 值**追加**到 SQL 尾部（`%s` 占位未替换 → PG 语法错误）；
+     仓库版已改为 `%`→`%%` 转义 + 首个 `%%s` 还原替换；模板含 `LIKE 'ETM|%'` 时此坑必踩；
+  ㉛ account.move.line 手建分录借正贷负：应付/权益须传负额，否则 `debit=max(amt,0)` 全进借方，
+     create 即 "not balanced" UserError；
+  ㉜ 对平校验 SQL 要按科目过滤（V13 曾对整张平衡凭证求净额，恒 0 造成假差异）；
+  ㉝ 跨库读旧系统：`docker network connect tms-net odootour-odoo` + psycopg2 双连接，口令仅 env 注入
+     （`TMS_OLD_DB_PASSWORD`，值同 tms-odoo 容器 PGPASSWORD），跑完 disconnect 还原。

@@ -5,7 +5,7 @@
     'version': '20.0.1.0',
     'category': 'Travel Agency',
     'author': 'TMS Team',
-    'depends': ['ta_guide', 'mail'],
+    'depends': ['ta_guide', 'ta_finance', 'mail'],
     'data': [
         'security/ir.access.csv',
         'data/ask_bot_data.xml',

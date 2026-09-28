@@ -5,7 +5,8 @@ groups 为"可见组"（提示词按提问人组过滤）；执行时再做一�
 并以 ``with_user(asker)`` 运行，双保险（权限口径=提问人）。
 """
 
-# args schema 类型：month=YYYY-MM；topn=整数 1..20；order=top|bot
+# args schema 类型：month=YYYY-MM；date=YYYY-MM-DD；topn=整数 1..20；order=top|bot；
+#                   text=模糊串（≤80）；etype=费用类型枚举
 ASK_FUNCTIONS = [
     {
         'name': 'collections_month',
@@ -90,6 +91,55 @@ ASK_FUNCTIONS = [
         'groups': ['ta_base.group_ta_accountant'],
         'enabled': False,  # 一期暂缓
     },
+    {
+        'name': 'guide_performance',
+        'model': 'ta.guide.performance',
+        'method': '_ask_guide_performance',
+        'description': '导游绩效：导游×带团月的带团数、服务人数、收入、成本、毛利（BS-19 口径）与借支未结',
+        'args': {
+            'guide': {'type': 'text', 'required': False,
+                      'desc': '导游姓名（模糊匹配）或 id，缺省为全部'},
+            'month': {'type': 'month', 'required': False,
+                      'desc': '带团月 YYYY-MM，缺省为全部月份'},
+            'topn': {'type': 'topn', 'required': False, 'desc': '取前几条，默认 10'},
+        },
+        'groups': ['ta_base.group_ta_accountant', 'ta_base.group_ta_manager'],
+        'example': ('6月李绩效的带团绩效', {'month': '2026-06', 'guide': '李绩效'}),
+    },
+    {
+        'name': 'scenic_contribution',
+        'model': 'ta.scenic.contribution',
+        'method': '_ask_scenic_contribution',
+        'description': '景点毛利贡献：景点供应商×发团计划的门票成本、成本占比与分摊毛利排行',
+        'args': {
+            'supplier': {'type': 'text', 'required': False,
+                         'desc': '景点供应商名称（模糊匹配），缺省为全部'},
+            'date_from': {'type': 'date', 'required': False, 'desc': '出发日区间起 YYYY-MM-DD'},
+            'date_to': {'type': 'date', 'required': False, 'desc': '出发日区间止 YYYY-MM-DD'},
+            'topn': {'type': 'topn', 'required': False, 'desc': '取前几条，默认 10'},
+        },
+        'groups': ['ta_base.group_ta_dispatcher', 'ta_base.group_ta_accountant',
+                   'ta_base.group_ta_manager'],
+        'example': ('10月哪个景区贡献毛利最多',
+                    {'date_from': '2026-10-01', 'date_to': '2026-10-31'}),
+    },
+    {
+        'name': 'expense_month',
+        'model': 'ta.expense',
+        'method': '_ask_expense_month',
+        'description': '费用报销月报：按月（可细分费用类型）汇总已审核报销的张数与金额',
+        'args': {
+            'month': {'type': 'month', 'required': False, 'desc': '起始月 YYYY-MM，缺省为当前月'},
+            'month_to': {'type': 'month', 'required': False,
+                         'desc': '结束月 YYYY-MM（区间），缺省同起始月'},
+            'expense_type': {'type': 'etype', 'required': False,
+                             'desc': '费用类型 office/travel/entertainment/freight/marketing/other，缺省为全部'},
+            'topn': {'type': 'topn', 'required': False, 'desc': '取前几条，默认 20'},
+        },
+        'groups': ['ta_base.group_ta_accountant', 'ta_base.group_ta_cashier',
+                   'ta_base.group_ta_manager'],
+        'example': ('本月报销情况', {'month': '2026-09'}),
+    },
 ]
 
 ACTIVE_FUNCTIONS = [f for f in ASK_FUNCTIONS if f.get('enabled', True)]
@@ -128,5 +178,19 @@ def sanitize_args(schema, args):
         elif typ == 'order':
             s = str(val).strip().lower()
             if s in ('top', 'bot'):
+                clean[key] = s
+        elif typ == 'text':
+            s = str(val).strip()
+            if s:
+                clean[key] = s[:80]
+        elif typ == 'date':
+            s = str(val).strip()
+            import re
+            if re.fullmatch(r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])', s):
+                clean[key] = s
+        elif typ == 'etype':
+            s = str(val).strip().lower()
+            if s in ('office', 'travel', 'entertainment',
+                     'freight', 'marketing', 'other'):
                 clean[key] = s
     return clean

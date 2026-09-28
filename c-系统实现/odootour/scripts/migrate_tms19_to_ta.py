@@ -293,7 +293,8 @@ def chunk_update(cr, sql_head, rows):
         for r in chunk:
             m = cr.mogrify('(' + ','.join(['%s'] * len(r)) + ')', r)
             parts.append(m if isinstance(m, str) else m.decode())
-        cr.execute(sql_head + ','.join(parts))
+        head = sql_head.replace('%', '%%').replace('%%s', '%s', 1)
+        cr.execute(head.replace('%s', ','.join(parts), 1))
         total += len(chunk)
         cr.commit()
     return total
@@ -909,10 +910,11 @@ def phase6_opening_move(ctx):
         jrn = J.create({'name': '期初建账', 'code': 'OPEN', 'type': 'general',
                         'company_id': cid})
     lines = []
+    # 符号约定：借正贷负（ar/bank 为借，ap/equity 以负值传入）
     for amount, acc, label in ((ar, a_ar, '期初应收(迁移)'),
                                (bank, a_bank, '期初银行(迁移)'),
-                               (ap, a_ap, '期初应付-历史成本(迁移合成)'),
-                               (equity, a_re, '期初权益(未分配利润，迁移轧平)')):
+                               (-ap, a_ap, '期初应付-历史成本(迁移合成)'),
+                               (-equity, a_re, '期初权益(未分配利润，迁移轧平)')):
         if abs(amount) < 0.005:
             continue
         lines.append((0, 0, {'name': label, 'account_id': acc.id,
@@ -988,6 +990,7 @@ def phase7_report(ctx):
         ('V13 期初借1002 = Σbalance', ctx['sum_balance'],
          actual_or_pred("SELECT round(sum(l.debit-l.credit),2) FROM account_move_line l "
                         "JOIN account_move m ON m.id=l.move_id "
+                        "JOIN account_account a ON a.id=l.account_id AND a.code='1002' "
                         "WHERE m.ref='期初建账'", ctx['sum_balance'])),
         ('V14 期初凭证 Σ借−Σ贷 (应=0)', 0.0,
          actual_or_pred("SELECT round(sum(debit)-sum(credit),2) FROM account_move_line l "

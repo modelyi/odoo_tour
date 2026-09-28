@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """白名单查询函数实现：只读聚合，运行在 with_user(asker) 环境下，
-天然继承 ta_* ACL 与 record rule（权限口径=提问人）。
+天然继承 ta_* ACL 与 record rule（权限口径=提问人，含 company_ids 多公司规则）。
 
-一期启用 4 个（ask_catalog 中 enabled=False 的函数暂缓）。
+一期启用 4 个（ask_catalog 中 enabled=False 的函数暂缓）；
+二期新增导游绩效/景点毛利贡献/费用报销月报 3 个。
 """
 from odoo import models, fields
 
@@ -80,4 +81,92 @@ class TaOrderAsk(models.Model):
             'rows': [[month, len(orders), sum(orders.mapped('heads')),
                       sum(orders.mapped('amount_total'))]],
             'note': '',
+        }
+
+
+class TaGuidePerformanceAsk(models.Model):
+    _inherit = 'ta.guide.performance'
+
+    def _ask_guide_performance(self, args):
+        topn = args.get('topn') or 10
+        domain = []
+        if args.get('month'):
+            domain.append(('ym', '=', args['month']))
+        guide = args.get('guide')
+        if guide:
+            if guide.isdigit():
+                domain.append(('guide_id', '=', int(guide)))
+            else:
+                domain.append(('guide_id.name', 'ilike', guide))
+        self.env.flush_all()  # SQL 视图模型：读取前先落盘（ODOO_PIN 陷阱⑨）
+        recs = self.search(domain, limit=topn)
+        rows = [[r.guide_id.display_name or '-', r.ym, r.tour_count, r.heads,
+                 r.income, r.cost_total, r.profit, r.loan_outstanding]
+                for r in recs]
+        return {
+            'title': '导游绩效（%s）' % (args.get('month') or '全部月份'),
+            'columns': ['导游', '带团月', '带团数', '服务人数',
+                        '团收入', '团成本（计调+报账）', '团毛利', '借支未结'],
+            'rows': rows,
+            'note': '毛利口径同 BS-19；借支未结为当前余额，同导游各月同值。',
+        }
+
+
+class TaScenicContributionAsk(models.Model):
+    _inherit = 'ta.scenic.contribution'
+
+    def _ask_scenic_contribution(self, args):
+        topn = args.get('topn') or 10
+        domain = []
+        if args.get('supplier'):
+            domain.append(('supplier_id.name', 'ilike', args['supplier']))
+        if args.get('date_from'):
+            domain.append(('date_start', '>=', args['date_from']))
+        if args.get('date_to'):
+            domain.append(('date_start', '<=', args['date_to']))
+        self.env.flush_all()  # SQL 视图模型：读取前先落盘（ODOO_PIN 陷阱⑨）
+        rows = [[r.supplier_id.display_name or '-', r.code, r.route_name or '-',
+                 str(r.date_start or ''), r.ticket_cost, r.cost_total,
+                 r.income, r.profit, r.cost_ratio, r.profit_contribution]
+                for r in self.search(domain, limit=200)]
+        rows.sort(key=lambda r: r[9], reverse=True)
+        return {
+            'title': '景点毛利贡献 TOP%d' % topn,
+            'columns': ['景点供应商', '计划号', '线路', '出发日', '门票成本',
+                        '全团成本', '团收入', '团毛利', '门票占比%', '毛利贡献'],
+            'rows': rows[:topn],
+            'note': '毛利贡献=团毛利×门票成本÷全团成本（BS-19 含税口径）。',
+        }
+
+
+class TaExpenseAsk(models.Model):
+    _inherit = 'ta.expense'
+
+    def _ask_expense_month(self, args):
+        month = args.get('month') or fields.Date.context_today(self).strftime('%Y-%m')
+        month_to = args.get('month_to') or month
+        if month_to < month:
+            month, month_to = month_to, month
+        first = '%s-01' % month
+        next_first = _month_bounds(month_to)[1]
+        domain = [('state', '=', 'approved'),
+                  ('date', '>=', first), ('date', '<', next_first)]
+        if args.get('expense_type'):
+            domain.append(('expense_type', '=', args['expense_type']))
+        labels = dict(self._fields['expense_type'].selection)
+        buckets = {}
+        for exp in self.search(domain):
+            key = (exp.date.strftime('%Y-%m'),
+                   labels.get(exp.expense_type, exp.expense_type))
+            cnt, amt = buckets.get(key, (0, 0.0))
+            buckets[key] = (cnt + 1, amt + exp.amount)
+        rows = [[ym, label, cnt, amt]
+                for (ym, label), (cnt, amt) in buckets.items()]
+        rows.sort(key=lambda r: (r[0], -r[3], r[1]))
+        topn = args.get('topn') or 20
+        return {
+            'title': '费用报销月报 %s~%s' % (month, month_to),
+            'columns': ['月份', '费用类型', '张数', '金额合计'],
+            'rows': rows[:topn],
+            'note': '仅统计已审核报销；属公司期间费用，不计入单团损益。',
         }
