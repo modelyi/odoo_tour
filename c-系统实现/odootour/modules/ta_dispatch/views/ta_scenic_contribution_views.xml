@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_scenic_contribution_list" model="ir.ui.view">
+        <field name="name">ta.scenic.contribution.list</field>
+        <field name="model">ta.scenic.contribution</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="date_start"/>
+                <field name="code"/>
+                <field name="route_name" optional="show"/>
+                <field name="supplier_id"/>
+                <field name="ticket_cost" sum="1"/>
+                <field name="cost_total" optional="hide"/>
+                <field name="income" optional="hide"/>
+                <field name="profit" optional="show"/>
+                <field name="cost_ratio"/>
+                <field name="profit_contribution" sum="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_scenic_contribution_pivot" model="ir.ui.view">
+        <field name="name">ta.scenic.contribution.pivot</field>
+        <field name="model">ta.scenic.contribution</field>
+        <field name="arch" type="xml">
+            <pivot sample="1">
+                <field name="supplier_id" type="row"/>
+                <field name="date_start" type="col" interval="month"/>
+                <field name="profit_contribution" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_scenic_contribution_search" model="ir.ui.view">
+        <field name="name">ta.scenic.contribution.search</field>
+        <field name="model">ta.scenic.contribution</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="supplier_id" string="景点供应商"/>
+                <field name="route_name" string="线路"/>
+                <field name="code" string="计划号"/>
+                <filter name="filter_positive" string="有毛利贡献"
+                        domain="[('profit_contribution', '&gt;', 0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_scenic_contribution" model="ir.actions.act_window">
+        <field name="name">景点毛利贡献</field>
+        <field name="res_model">ta.scenic.contribution</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="view_ta_scenic_contribution_search"/>
+    </record>
+
+    <menuitem id="menu_ta_scenic_contribution" name="景点毛利贡献"
+              parent="menu_ta_dispatch" action="action_ta_scenic_contribution" sequence="30"/>
+</odoo>

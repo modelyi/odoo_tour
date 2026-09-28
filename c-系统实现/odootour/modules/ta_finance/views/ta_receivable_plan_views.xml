@@ -4,7 +4,7 @@
     <record id="ta_order_view_form_plan_claim" model="ir.ui.view">
         <field name="name">ta.order.form.plan.claim</field>
         <field name="model">ta.order</field>
-        <field name="inherit_id" ref="ta_order.ta_order_view_form"/>
+        <field name="inherit_id" ref="ta_order.view_ta_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='plan_ids']//field[@name='amount_paid']" position="after">
                 <field name="claim_ids" widget="many2many_tags" readonly="1" optional="hide"/>

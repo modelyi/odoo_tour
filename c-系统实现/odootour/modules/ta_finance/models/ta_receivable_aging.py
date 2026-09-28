@@ -44,7 +44,7 @@ class TaReceivableAging(models.Model):
                        COALESCE(
                            (SELECT min(p.due_date) FROM ta_receivable_plan p
                              WHERE p.order_id = o.id
-                               AND p.amount_paid < p.amount - 0.01),
+                               AND COALESCE(p.amount_paid, 0) < p.amount - 0.01),
                            o.date_confirm,
                            d.date_start) AS date_oldest
                 FROM ta_order o

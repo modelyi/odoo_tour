@@ -10,6 +10,7 @@
         'security/ir.access.csv',
         'views/ta_dispatch_views.xml',
         'views/ta_team_pnl_views.xml',
+        'views/ta_scenic_contribution_views.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

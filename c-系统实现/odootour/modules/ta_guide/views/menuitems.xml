@@ -7,4 +7,6 @@
               action="action_ta_guide_expense" sequence="20"/>
     <menuitem id="menu_ta_guide_commission" name="导游佣金" parent="menu_ta_guide"
               action="action_ta_guide_commission" sequence="30"/>
+    <menuitem id="menu_ta_guide_performance" name="导游绩效" parent="menu_ta_guide"
+              action="action_ta_guide_performance" sequence="40"/>
 </odoo>

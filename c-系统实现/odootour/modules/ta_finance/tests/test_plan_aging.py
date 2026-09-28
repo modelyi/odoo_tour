@@ -23,7 +23,7 @@ class TestPlanAging(TransactionCase):
             'default_account_id': cls.bank_account.id})
         cls.partner = cls.env['res.partner'].create({
             'name': '账龄客户',
-            'property_account_receivable_id': cls.recv_account})
+            'property_account_receivable_id': cls.recv_account.id})
         route = cls.env['ta.route'].create({
             'name': '账龄测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],
@@ -92,7 +92,8 @@ class TestPlanAging(TransactionCase):
             (800, today - relativedelta(days=200), 'b90p'),
         ]
         order = self.order
-        order.plan_ids.unlink()        for i, (amt, due, _b) in enumerate(cases):
+        order.plan_ids.unlink()
+        for i, (amt, due, _b) in enumerate(cases):
             self.env['ta.receivable.plan'].create({
                 'order_id': order.id, 'name': '期%d' % i,
                 'due_date': due, 'amount': amt})
@@ -100,7 +101,7 @@ class TestPlanAging(TransactionCase):
         rows = self.env['ta.receivable.aging'].search([('order_id', '=', order.id)])
         self.assertEqual(len(rows), 1, 'order 维度一行')
         row = rows
-        self.assertAlmostEqual(row.amount_open, 2600)
+        self.assertAlmostEqual(row.amount_open, 1500)  # 订单头口径（期次合计 2600 仅定锚点）
         self.assertEqual(row.date_oldest, min(d for _a, d, _b in cases))
         self.assertEqual(row.bucket, 'b90p')  # 锚点=最早未清期次 → 200 天
         self.assertGreaterEqual(row.days_overdue, 199)

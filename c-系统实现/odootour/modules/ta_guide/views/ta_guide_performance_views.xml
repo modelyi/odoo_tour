@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_guide_performance_list" model="ir.ui.view">
+        <field name="name">ta.guide.performance.list</field>
+        <field name="model">ta.guide.performance</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="ym"/>
+                <field name="guide_id"/>
+                <field name="tour_count" sum="1"/>
+                <field name="heads" sum="1"/>
+                <field name="income" sum="1"/>
+                <field name="cost_total" sum="1"/>
+                <field name="profit" sum="1"/>
+                <field name="expense_count" sum="1"/>
+                <field name="expense_lag_days" avg="1"/>
+                <field name="commission_net" sum="1"/>
+                <field name="loan_outstanding"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_performance_pivot" model="ir.ui.view">
+        <field name="name">ta.guide.performance.pivot</field>
+        <field name="model">ta.guide.performance</field>
+        <field name="arch" type="xml">
+            <pivot sample="1">
+                <field name="guide_id" type="row"/>
+                <field name="ym" type="col"/>
+                <field name="profit" type="measure"/>
+                <field name="tour_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_performance_search" model="ir.ui.view">
+        <field name="name">ta.guide.performance.search</field>
+        <field name="model">ta.guide.performance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="guide_id"/>
+                <field name="ym"/>
+                <filter name="filter_this_year" string="本年"
+                        domain="[('ym', '>=', context_today().strftime('%Y-01'))]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_guide_performance" model="ir.actions.act_window">
+        <field name="name">导游绩效</field>
+        <field name="res_model">ta.guide.performance</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="view_ta_guide_performance_search"/>
+    </record>
+</odoo>

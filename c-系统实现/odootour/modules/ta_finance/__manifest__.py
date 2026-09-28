@@ -13,6 +13,7 @@
         'views/ta_payment_claim_views.xml',
         'views/ta_expense_views.xml',
         'views/ta_receivable_aging_views.xml',
+        'views/ta_receivable_plan_views.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

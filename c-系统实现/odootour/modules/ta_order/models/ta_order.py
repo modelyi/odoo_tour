@@ -158,7 +158,8 @@ class TaReceivablePlan(models.Model):
     name = fields.Char(string='期次', required=True)
     due_date = fields.Date(string='到期日')
     amount = fields.Float(digits=(12, 2), required=True)
-    amount_paid = fields.Float(string='已核销', readonly=True, copy=False, digits=(12, 2))
+    amount_paid = fields.Float(string='已核销', readonly=True, copy=False,
+                            default=0.0, digits=(12, 2))
     note = fields.Char()
     # claim_ids 字段及认领核销分配逻辑由 ta_finance 扩展（ta_receivable_plan.py），
     # 避免 ta_order 反向引用 ta.payment.claim 造成加载顺序问题。

@@ -11,6 +11,7 @@
         'views/ta_guide_loan_views.xml',
         'views/ta_guide_expense_views.xml',
         'views/ta_guide_commission_views.xml',
+        'views/ta_guide_performance_views.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

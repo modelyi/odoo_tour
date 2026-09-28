@@ -16,3 +16,6 @@ ta_guide_commission_comp_rule,ta.guide.commission 多公司限制,ta.guide.commi
 ta_guide_deduct_acct,ta.guide.commission.deduct 会计,ta.guide.commission.deduct,ta_base.group_ta_accountant,crud,
 ta_guide_deduct_guide_own,ta.guide.commission.deduct 导游本人查看,ta.guide.commission.deduct,ta_base.group_ta_guide,r,"[('commission_id.guide_id', '=', user.partner_id.id)]"
 ta_guide_deduct_comp_rule,ta.guide.commission.deduct 多公司限制,ta.guide.commission.deduct,,crud,"[('company_id', 'in', company_ids)]"
+ta_guide_perf_acct,ta.guide.performance 会计读,ta.guide.performance,ta_base.group_ta_accountant,r,
+ta_guide_perf_mgr,ta.guide.performance 管理层读,ta.guide.performance,ta_base.group_ta_manager,r,
+ta_guide_perf_comp_rule,ta.guide.performance 多公司限制,ta.guide.performance,,r,"[('company_id', 'in', company_ids)]"
