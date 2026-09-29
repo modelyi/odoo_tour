@@ -34,8 +34,13 @@ class TestTaAsk(TransactionCase):
             # 定到无存量确认订单的干净月（远未来 2027-08），保证
             # _ask_order_month_stats 全量聚合断言不被存量数据污染
             'date_confirm': '2027-08-10',
-            'line_ids': [(0, 0, {'name': '甲', 'kind': 'adult'}),
-                         (0, 0, {'name': '乙', 'kind': 'adult'})]})
+            # 显式大额 unit_price（该字段 readonly=False 允许覆盖）：未收 9998000
+            # 远高于存量订单最大未收（现网 TOP1≈8.1 万），保证 receivable_top
+            # 的 rows[0] 精确命中本单；人数/口径不变，断言数值随之更新。
+            'line_ids': [(0, 0, {'name': '甲', 'kind': 'adult',
+                                 'unit_price': 5000000.0}),
+                         (0, 0, {'name': '乙', 'kind': 'adult',
+                                 'unit_price': 5000000.0})]})
         cls.order.action_confirm()
         cls.order._ta_apply_paid(2000)
         # 幂等取银行日记账（范式同 scripts/seed_ta_demo.py）：正式库已有存量
@@ -138,7 +143,8 @@ class TestTaAsk(TransactionCase):
         reply = ch.message_ids.filtered(
             lambda m: m.author_id == self.bot.partner_id)
         self.assertEqual(len(reply), 1)
-        self.assertNotIn('4000', reply.body or '')
+        # '9998000' 为本测试订单的未收数：denied 回帖不得夹带业务数据
+        self.assertNotIn('9998000', reply.body or '')
 
     # --- LLM 服务异常 → error，但消息发送不受影响 ---------------------
     @mute_logger('odoo.addons.ta_ask.models.ta_ask_query')
@@ -166,9 +172,9 @@ class TestTaAsk(TransactionCase):
         data = self.env['ta.payment.claim']._ask_collections_month({'month': '2026-09'})
         self.assertEqual(data['rows'], [['2026-09', 1, 5000]])
         data = self.env['ta.order']._ask_order_month_stats({'month': today})
-        self.assertEqual(data['rows'][0][1:], [1, 2, 6000])
+        self.assertEqual(data['rows'][0][1:], [1, 2, 10000000])
         data = self.env['ta.order']._ask_receivable_top({})
-        self.assertEqual(data['rows'][0][3:], [6000, 2000, 4000])
+        self.assertEqual(data['rows'][0][3:], [10000000, 2000, 9998000])
         data = self.env['ta.team.pnl']._ask_top_departure_pnl({'topn': 3, 'order': 'top'})
         row = next(r for r in data['rows'] if r[0] == self.dep.code)
         self.assertEqual(row[2:], [2000, 0, 2000])  # income, cost, profit

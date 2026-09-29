@@ -108,4 +108,8 @@
   ㉞ O20 `account_account.code` 是 compute（公司相关），raw SQL 只能查 `code_store->>'<公司id>'`；
      对平脚本校验 SQL 异常时回退打印预测值=自我印证，必须显式报错而非吞掉；
   ㉟ SQL 视图改 id 列类型（integer↔text 拼接）时 `CREATE OR REPLACE VIEW` 报
-     `cannot change data type of view column`，init() 必须先 `DROP VIEW IF EXISTS`。
+     `cannot change data type of view column`，init() 必须先 `DROP VIEW IF EXISTS`；
+  ㊱ 建 `account.account`（account_type=asset_cash）会级联 `_create_default_journals` 自动生成
+     无 code 日记账，别名 `bank-none` 撞存量 → 迁移后测试造银行数据须复用存量日记账；
+     迁移后 tour20 常驻真实数据，dev-test 造数一律 get-or-create（按 code search-first），
+     聚合断言选存量未覆盖的远未来月份，防数据污染型 FAIL。
