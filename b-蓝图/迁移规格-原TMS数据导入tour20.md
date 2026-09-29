@@ -107,3 +107,12 @@ AC-01 连跑2次 ETM 各表 count 不翻倍；AC-02 §7 V1/V2/V6/V8-12 行数对
 
 ## 附录B 新库只读核对
 `odootour-db psql -U odoo -d tour20`：`\d ta_order/ta_order_line/ta_departure/ta_route`；`SELECT code,name,is_alias FROM ta_biz_mode`；`SELECT kind,count(*) FROM ta_route_price GROUP BY kind`（确认价别实际落地）。
+
+## 10. 执行结果（2026-09-28/29，协调人）
+- run1+run2 双跑：V1–V16 全 OK，AC-01 幂等实证（先删 ETM| 再全量重插，计数不变）。
+- 期初凭证 4 行：Dr1122 75,252,500.67 + Dr1002 9,228,332.70 = Cr2202 1,260,845.61 + Cr4104 83,219,987.76，posted，全库借贷差 0。
+- 6b demo：资产 30/折旧 360 期（posted 凭证 360）、费用 100 单（15/25/45/15，approved 45 出草稿凭证）。
+- R6 实证关闭：旧库 `tour_plan_guide_rel` 全表 0 行、无成本明细行表 → 导游排班与景点级成本归因在历史数据中不存在；
+  scenic 派工条目 kind='other'（R3 拍板）故 ta.scenic.contribution/ta.guide.performance 对 ETM 团为空，属数据事实。
+  可演示性由 scripts/seed_ta_demo_views.py 定向补 demo（DEMO|V 前缀：30 团建 scenic 条目+挂导游+佣金/报账）。
+- 备份：backups/tms_20260928-023532.dump(114.5MB)、tour20_20260928-023532.dump(6.8MB)。
