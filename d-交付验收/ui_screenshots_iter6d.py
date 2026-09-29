@@ -20,7 +20,7 @@ with sync_playwright() as p:
     cerr=[]
     pg.on("pageerror", lambda e: cerr.append(str(e)[:200]))
     pg.goto(BASE+"/web/login", wait_until="domcontentloaded"); settle(1)
-    pg.fill("#login","admin"); pg.fill("#password","admin"); pg.click("button[type=submit]")
+    pg.fill("#login","admin"); pg.fill("#password", os.environ.get("ODOO_TEST_PASS","admin")); pg.click("button[type=submit]")
     pg.wait_for_selector("nav", timeout=40000); settle(2)
     # 09 费用报销 list（混合状态）
     pg.goto(BASE+"/odoo/action-549", wait_until="domcontentloaded")

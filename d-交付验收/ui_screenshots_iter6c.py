@@ -71,7 +71,7 @@ with sync_playwright() as p:
     pg.on("console", lambda m: cerr.append(m.text[:200]) if m.type=="error" else None)
     pg.on("pageerror", lambda e: cerr.append(f"pageerror:{e}"))
     step(lambda: (pg.goto(BASE+"/web/login", wait_until="domcontentloaded"), settle(pg,1),
-                  pg.fill("#login","admin"), pg.fill("#password","admin"), pg.click("button[type=submit]"),
+                  pg.fill("#login","admin"), pg.fill("#password", os.environ.get("ODOO_TEST_PASS","admin")), pg.click("button[type=submit]"),
                   pg.wait_for_selector("nav", timeout=40000), settle(pg,2)))
     log("logged in")
 

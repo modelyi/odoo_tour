@@ -98,6 +98,7 @@ tms/
 | [BS-08-佣金计算.md](b-蓝图/业务规格/BS-08-佣金计算.md) | 25.9 KB | finance-ba | 多层分成、购物协议、人均线考核 |
 | [BS-16-期初建账方案.md](b-蓝图/业务规格/BS-16-期初建账方案.md) | 15.0 KB | finance-ba | 补期初余额 + 修复总账三表仿真（opening entry） |
 | [BS-19-单团毛利口径裁定与最小改造方案.md](b-蓝图/业务规格/BS-19-单团毛利口径裁定与最小改造方案.md) | 18.9 KB | finance-ba | 单团毛利口径裁定（差额征税/净额法）+ 台账字段最小改造 |
+| [迁移规格-原TMS数据导入tour20.md](b-蓝图/迁移规格-原TMS数据导入tour20.md) | 2026-09-28 | 协调人+PM | tms19(ET)→tour20 全链规格：ETM 自然键、R1–R12 拍板、期初建账、§7 对平 V1–V16、§9 AC-01–10、§10 执行结果（双跑全绿） |
 
 ### B4. 技术设计
 
@@ -140,7 +141,7 @@ tms/
 | deploy.sh | ✅ 完成 | 自动化部署脚本 |
 | Nginx 反代 | ✅ 运行中 | tms.solepro.cloud → 127.0.0.1:8070 |
 | [tour-platform/](c-系统实现/tour-platform/) | 🚧 A1 平桥运行中 | 与 tms 同一镜像(`9ebb8c2d5340`)的 19 平桥实例：`tour-db/tour-odoo/tour-redis`，`127.0.0.1:8071`，库 `tour19`，`dbfilter=^tour19$`；pin 见 `config/ODOO_PIN.md` |
-| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a2`，github 20.0@`c7f74297`，空库 `tour20` 90 模块 = core + om_* 全套 + l10n_cn + **ta_* 旅行社六模块（批1 核心闭环，2026-09-26 安装）**；影子库 `tour20_dev` 走 NFR-5 流程；开发目录 git 内 `modules/`，`make sync` → `cust_addons`（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），运行数据基准目录 `~/odoo20tour/`），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
+| [odootour/](c-系统实现/odootour/) | ✅ 运行中 | Odoo 20 生产实例（自建镜像 `odootour:20.0-a2`，github 20.0@`c7f74297`，空库 `tour20` 90 模块 = core + om_* 全套 + l10n_cn + **ta_* 旅行社八模块（批1 核心闭环 ta_base/route/order/dispatch/finance/guide + ta_ask 问数，2026-09-26 安装；批2 财务MVP 增 ta_asset，含费用/资产/账龄/导游绩效/景点毛利；2026-09-29 完成原 TMS 86,927 单真实数据迁移，见 `scripts/migrate_tms19_to_ta.py` 与迭代6 验收报告）**；影子库 `tour20_dev` 走 NFR-5 流程；开发目录 git 内 `modules/`，`make sync` → `cust_addons`（vendor 挂载 odoomates/odooapps@20.0，除 om_data_remove 刻意不装），运行数据基准目录 `~/odoo20tour/`），`odootour-db/odootour-odoo`，`127.0.0.1:8079` → https://tour.solepro.cloud；升级与切换点见 `ODOO_PIN.md` |
 | [scripts/migration/](c-系统实现/tms-platform/scripts/migration/) | ✅ 完成 | `recon.sh`+`recon.sql`（910 指纹键核对）、`a1_golden_paths.py`（G1–G5 金样例）、`backup_restore_drill.sh`、`MIGRATION_LEDGER.md`（迁移台账）、`security_19to20/`（19 `ir.model.access`+`ir.rule` → 20 `ir.access` 转换与复核工具，含 README 与 `check_domains.py` 规则域装载期预检）、`check_xmlid_order.py`/`check_model_refs.py`/`check_field_refs.py`/`check_legacy_api.py`/`check_view_xpaths.py`（B1 空库装载预检五件套，用法与判据见 `README-空库预检.md`） |
 
 ### C2. Subagent 角色配置
@@ -198,6 +199,8 @@ tms/
 | [B0-Odoo20可行性spike报告_2026-09-21.md](d-交付验收/B0-Odoo20可行性spike报告_2026-09-21.md) | ✅ Gate 通过 | 37 模块逐个 20 试装判定 + 19↔20 diff + 4 项待业务确认（B0-Q1–Q4） |
 | [B3-切换runbook_草案.md](d-交付验收/B3-切换runbook_草案.md) | 🚧 草案（未演练） | 13 步主流程（命令/责任人/耗时/验证/中止判据/回滚动作）+ 切换后配置清单 + 5 条回退判据 + 时间线 GO/NO-GO 决策点 |
 | [A0-备份恢复演练_20260921_060048.md](d-交付验收/A0-备份恢复演练_20260921_060048.md) | ✅ PASS | 910 指纹键 0 差异；filestore 备份缺陷 0（附 `A0-recon-*.tsv` 可复算） |
+| [验收报告-财务迭代345.md](d-交付验收/验收报告-财务迭代345.md) | ✅ PASS | 财务 MVP 迭代3/4/5（期次核销+账龄、导游绩效、景点毛利）UI/口径验收，OBS-1–3 |
+| [验收报告-迭代6数据迁移.md](d-交付验收/验收报告-迭代6数据迁移.md) | ✅ PASS 10/10 | 原 TMS 迁移终验：AC-01–10 全过（全程只读+Playwright 18 截图）；OBS-01 账龄/损益视图性能最优先；V2+1/超收回捞 145,063.75 已定位 |
 | 测试计划.md | ⏳ 待编写 | 测试策略和范围 |
 | 测试用例库/ | ⏳ 待编写 | 按模块的测试用例 |
 | 用户手册/ | ⏳ 待编写 | 管理员/操作员/财务员手册 |

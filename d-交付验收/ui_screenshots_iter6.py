@@ -86,7 +86,7 @@ with sync_playwright() as p:
     # --- login ---
     pg.goto(BASE + "/web/login", wait_until="domcontentloaded")
     settle(pg, 1)
-    pg.fill("#login", "admin"); pg.fill("#password", "admin")
+    pg.fill("#login", "admin"); pg.fill("#password", os.environ.get("ODOO_TEST_PASS","admin"))
     pg.click("button[type=submit]")
     pg.wait_for_selector("nav", timeout=40000)
     settle(pg, 2)
