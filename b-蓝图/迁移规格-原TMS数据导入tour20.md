@@ -139,3 +139,30 @@ AC-01 连跑2次 ETM 各表 count 不翻倍；AC-02 §7 V1/V2/V6/V8-12 行数对
 cost_type 全 other → 导入条目 kind='other' → **历史团景点毛利仍为空**（门票信号缺失属数据事实，
 可演示性由 DEMO|V 承接）；tour_plan_guide_rel=0 → 历史导游排班不存在（§10 R6 同结论）。
 购物佣金规则（旧 tour_commission 5 条）按 BS-08 属批2已规划功能，不在本批、旧数据不搬。
+
+### 11.1 批3 执行结果（2026-09-30，devops 三阶段：A 预演 / B 正式 / B2 修正重跑）
+- **成本明细**：ta_dispatch_item 总数 81,269 = ETM|X|P 81,215（Σ256,765,071.40，全 confirmed、move_id 全空）
+  + DEMO| 54；批2 的 150 条合成条目已删（Σ1,260,845.61）。三轮执行幂等（计数不翻倍）。
+- **行程**：ta_route_stop ETM|LD = 803 行、覆盖 213/213 线路（三餐 52 / 交通 220 / 住宿 42 / 正文 35 行非空）。
+- **借支**：ta_guide_loan ETM|GL 6 行（Σamount=Σoutstanding=31,000、Σdeducted=0）；
+  3 条旧库 guide_id 为空的员工备用金按计划跳过。
+  已知偏差 7,700（旧#16 冲抵 4,700 + 旧#17 已结清 3,000）：新模型未结清只能由佣金冲抵行表达，
+  历史冲抵无来源记录 → 不补造（首轮曾 SQL 直写 deducted/outstanding，被 store=True compute 重算
+  覆盖，即 ODOO_PIN ㊲；修正版脚本改为按模型口径导入 + V6c 信息项呈现差额）。
+- **财务不变量**：account_move 406（零新凭证）、posted Σ借−Σ贷=0.00、ta_order 86,927、ta_bank_line 63,937。
+  回归 97 项 0 FAIL / 0 ERROR，服务 :8079 = 200。
+- **历史毛利口径澄清（勿混淆）**：ta.team.pnl.income = **已收款**，order_total = 订单总额。
+  全库 cost_total Σ=256,769,769.40；已收款口径差额 −81,542,520.55（受历史未收 7,525 万主导，非经营结论）；
+  **权责口径 order_total−cost Σ=−12,670,530.71**，与旧台账口径的 −353 万同量级
+  （差额源于"请款实付 Σ2.568 亿"替换"台账估算成本 Σ2.557 亿"，成本改以实付明细为准）。
+  cost_total>0 的团 = 17,808 / 18,454。历史毛利为负属真实经营（团费亏、购物返佣补），不修饰。
+- **景点毛利**：kind 全 'other'（旧 pay_request sup_type 仅 customer/ditch、cost_type 全 other）→
+  历史团门票信号缺失，ta.scenic.contribution 仅 DEMO|V 52 行，属数据事实。
+
+### 11.2 批2 占位 stop 行清理（2026-09-30，用户授权后执行）（DELETE 802 行，跑前备份 /tmp/tour20_pre_stopclean_20260930_0856.dump；
+    复核 ta_route_stop total=803 全为 ETM|LD 真行程、213/213 线路均有 stop、无线路失行程）
+批2 route 落地时按天数机械生成「第N天」空占位行程行（802 行，无城市/正文/备注），
+批3 真行程导入后线路详情同一天出现两套 → 协调人在 migrate_tms19_itinerary.py 写入段固化清理谓词
+（仅删 name≈'第N天' 且全字段为空、且该线路已有 ETM|LD 真行程的行），并对现网执行同谓词 DELETE：
+删 802 行，ta_route_stop 现存 803 行（全 ETM|LD 真行程，213/213 线路各有行程、无线路失去 stop）。
+删除前备份 odootour-db:/tmp/tour20_pre_stopclean_20260930_0856.dump（18.1MB）。

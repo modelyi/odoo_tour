@@ -208,6 +208,16 @@ def write_stops(ctx):
         return
     env.cr.execute("DELETE FROM ta_route_stop WHERE note LIKE '%s'" % NOTE_PREFIX)
     print('  重跑清理：删除既有 ETM|LD 行程 %d 行' % env.cr.rowcount)
+    # 批2 遗留占位 stop（route 落地时按天数机械生成的「第N天」空行，无任何信息量）：
+    # 真行程入库后与导入行同 day_no 重复两套，属机器生成占位、可安全再生 → 清理
+    env.cr.execute(
+        "DELETE FROM ta_route_stop s WHERE s.name ~ '^第[0-9]+天$' "
+        "AND COALESCE(s.note, '') = '' AND COALESCE(s.content, '') = '' "
+        "AND COALESCE(s.city, '') = '' AND COALESCE(s.accommodation, '') = '' "
+        "AND COALESCE(s.traffic, '') = '' "
+        "AND EXISTS (SELECT 1 FROM ta_route_stop t WHERE t.route_id = s.route_id "
+        "            AND t.note LIKE 'ETM|LD' || '%')")
+    print('  批2 占位 stop 清理：%d 行（仅"第N天"空行，且该线路已有真行程）' % env.cr.rowcount)
     env.cr.commit()
     cols = ['company_id', 'route_id', 'sequence', 'day_no', 'name', 'title', 'city',
             'traffic', 'meal_breakfast', 'meal_lunch', 'meal_dinner',

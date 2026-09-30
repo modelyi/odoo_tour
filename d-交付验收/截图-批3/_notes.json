@@ -1,0 +1,62 @@
+{
+ "perf_s": {
+  "ac01_route_list": 0.6,
+  "search::杭杭6天": 1.2,
+  "perf_pnl_list": 0.6,
+  "perf_aging_list": 381.8,
+  "perf_supplier_list": 0.7,
+  "perf_claim_list": 0.6,
+  "perf_bank_list": 0.6,
+  "perf_order_list": 0.6,
+  "search::35870": 1.2,
+  "search::ETM|D|856|2023-04-29": 1.6,
+  "ac04_scenic": 0.6,
+  "ac05_perf": 0.6,
+  "ac06_loan": 0.5,
+  "search::ETM": 1.1
+ },
+ "notes": [
+  "AC-01-线路列表-ZY搜索.png url=http://localhost:8079/odoo/action-537 load=0.6s total=2.2s rows=80 nocontent=0",
+  "AC-01 form url=http://localhost:8079/odoo/action-537/212 stop_rows=7",
+  "OBS01-单团损益-list首屏.png url=http://localhost:8079/odoo/action-542 load=0.6s total=2.7s rows=80 nocontent=0",
+  "OBS01-应收账龄-list首屏.png url=http://localhost:8079/odoo/action-554 load=381.8s total=383.4s rows=80 nocontent=0",
+  "OBS01-供应商付款按团-list首屏.png url=http://localhost:8079/odoo/action-557 load=0.7s total=2.3s rows=80 nocontent=0",
+  "OBS01-收款认领-list首屏.png url=http://localhost:8079/odoo/action-544 load=0.6s total=2.0s rows=0 nocontent=1",
+  "OBS01-银行流水-list首屏.png url=http://localhost:8079/odoo/action-543 load=0.6s total=2.1s rows=80 nocontent=0",
+  "OBS01-订单列表-首屏.png url=http://localhost:8079/odoo/action-540 load=0.6s total=2.1s rows=80 nocontent=0",
+  "AC-02 pivot 按钮未找到",
+  "AC-03 search rows=80",
+  "AC-03 使用了成本降序兜底截图",
+  "AC-04-景点毛利贡献-list.png url=http://localhost:8079/odoo/action-556 load=0.6s total=2.1s rows=52 nocontent=0",
+  "AC-05-导游绩效-list.png url=http://localhost:8079/odoo/action-555 load=0.6s total=2.1s rows=33 nocontent=0",
+  "AC-06-导游借支-list.png url=http://localhost:8079/odoo/action-545 load=0.5s total=2.0s rows=6 nocontent=0"
+ ],
+ "console_errors": [],
+ "slow_rpc": [
+  {
+   "model": "ta.receivable.aging",
+   "method": "?",
+   "ms": 381139
+  },
+  {
+   "model": "ta.route",
+   "method": "?",
+   "ms": 3003
+  },
+  {
+   "model": "ta.supplier.payable",
+   "method": "?",
+   "ms": 2517
+  },
+  {
+   "model": "ta.team.pnl",
+   "method": "?",
+   "ms": 2005
+  },
+  {
+   "model": "ta.team.pnl",
+   "method": "?",
+   "ms": 2003
+  }
+ ]
+}

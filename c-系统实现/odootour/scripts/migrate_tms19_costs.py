@@ -421,7 +421,8 @@ def phase3_cleanup(ctx):
     n, tot = env.cr.fetchone()
     print('  删前合成条目：count=%s Σamount=%s（基线 %d / %.2f → 判定 %s）' % (
         n, tot, ANCHOR_SYNTH_ROWS, ANCHOR_SYNTH_AMOUNT,
-        'OK' if abs(f(tot) - ANCHOR_SYNTH_AMOUNT) <= 0.01 else '差异!'))
+        'OK' if abs(f(tot) - ANCHOR_SYNTH_AMOUNT) <= 0.01
+        else ('已清(幂等重跑)' if f(tot) == 0 else '差异!')))
     env.cr.execute("DELETE FROM ta_dispatch_item "
                    "WHERE note LIKE 'ETM|X%%' AND note NOT LIKE 'ETM|X|%%'")
     env.cr.execute("DELETE FROM ta_dispatch_item WHERE note LIKE 'ETM|X|P%%'")
@@ -502,19 +503,18 @@ def phase5_report(ctx):
                         "WHERE note LIKE 'ETM|X|P%%'", expected_sum)),
         ('V2b 旧实测Σamount vs 基线(锚差)', ctx['sum_all'], ANCHOR_PR_AMOUNT),
         ('V2c 对平锚：基线−跳过额', anchor_net, expected_sum),
-        ('V5 合成条目删除额(目标库实况)', ctx['synth_sum'], ANCHOR_SYNTH_AMOUNT),
+        # V5 = 本轮实际删除额（跑前快照）：首轮=锚 1,260,845.61；重跑快照 0 → 判 OK(已清)
+        ('V5 合成条目本轮删除额(跑前快照；重跑应=0)',
+         ANCHOR_SYNTH_AMOUNT if ctx['synth_rows'] else 0.0, ctx['synth_sum']),
         ('V6 借支行数', len(ctx['loans']),
          actual_or_pred("SELECT count(*) FROM ta_guide_loan WHERE name LIKE 'ETM|GL|%%'",
                         len(ctx['loans']))),
         ('V6b Σoutstanding(入插借支, 模型口径=Σamount)', ctx['loan_amt_sum'],
          actual_or_pred("SELECT round(sum(outstanding)::numeric,2) FROM ta_guide_loan "
                         "WHERE name LIKE 'ETM|GL|%%'", ctx['loan_amt_sum'])),
-        ('V6c 旧residual差额(已知偏差, 不直写compute)',
-         round(ctx['loan_amt_sum'] - ctx['loan_res_sum'], 2),
-         actual_or_pred("SELECT CASE WHEN abs(sum(outstanding) - %s) <= 0.01 "
-                        "THEN 'OK' ELSE '差异!' END FROM ta_guide_loan "
-                        "WHERE name LIKE 'ETM|GL|%%'", 'OK',
-                        args=(ctx['loan_amt_sum'],))),
+        # V6c = 已知偏差呈现行（信息项，非对平判定）
+        ('V6c 旧residual差额(已知偏差：历史冲抵不补造，参考)',
+         round(ctx['loan_amt_sum'] - ctx['loan_res_sum'], 2), '参考'),
         ('V8a 凭证数不变（运行前后）', ctx['move_count0'],
          scalar("SELECT count(*) FROM account_move")),
         ('V8b 全库 posted Σ借−Σ贷 (应=0)', 0.0,
@@ -527,6 +527,9 @@ def phase5_report(ctx):
     print('%-58s %20s %20s %s' % ('核对项', '基线/预测', '实测', '判定'))
     print('-' * 112)
     for name, base, act in rows:
+        if act == '参考':
+            print('%-58s %20s %20s %s' % (name, base, act, '—（信息项）'))
+            continue
         try:
             ok = abs(float(act) - float(base)) <= TOL
         except (TypeError, ValueError):
