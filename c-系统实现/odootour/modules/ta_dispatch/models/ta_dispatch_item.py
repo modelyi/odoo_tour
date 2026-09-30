@@ -45,6 +45,31 @@ class TaDispatchItem(models.Model):
     ], default='draft', required=True, tracking=True, copy=False)
     move_id = fields.Many2one('account.move', string='供应商账单', readonly=True, copy=False)
 
+    # ---- 批3-2 付款闭环透出（付款动作本身在会计侧账单完成，这里只透出状态） ----
+    bill_state = fields.Selection([
+        ('none', '无账单'),
+        ('draft', '账单草稿'),
+        ('posted', '账单已过账'),
+        ('cancel', '账单已作废'),
+    ], string='账单状态', compute='_compute_bill_state', store=False, readonly=True)
+    # O20 核实（account/models/account_move.py::_compute_amount）：in_invoice 的
+    # amount_total / amount_residual 均为 store=True 有列、正数口径（direction_sign=1），
+    # 已付 = amount_total - amount_residual；draft 账单 residual=total → 已付 0。
+    paid_amount = fields.Float(
+        string='已付款额', compute='_compute_paid_amount', store=False, readonly=True,
+        help='挂账供应商账单的已付款金额（amount_total - amount_residual，仅已过账单）。')
+    # 设计说明（批3-3 依赖）：**存储字段** store=True + readonly=False。
+    # - 有新账单：compute 取账单核销付款（account.payment, state paid/reconciled）的最大 date；
+    #   账单存在但未付时置 False；
+    # - 无账单（历史迁移条目）：compute 不赋值 → 保留迁移脚本 raw SQL
+    #   `UPDATE/INSERT ta_dispatch_item.paid_date` 的直写值（列名 ta_dispatch_item.paid_date，
+    #   date 类型，可空；语义=该条目付款完成日，无账单时"有值即视为已付该条目全额"，
+    #   口径由 ta.supplier.payable.paid_total 消费）。
+    paid_date = fields.Date(
+        string='付款日期', compute='_compute_paid_date', store=True, readonly=False, copy=False,
+        help='条目付款完成日。有账单时取账单核销付款的最大日期；'
+             '无账单的历史条目可由迁移脚本直写，compute 不覆盖。')
+
     _amount_check = models.Constraint(
         "check(qty > 0 and unit_price >= 0)",
         '数量必须为正，单价不得为负（NFR-1：金额方向不取绝对值）。')
@@ -53,6 +78,31 @@ class TaDispatchItem(models.Model):
     def _compute_amount(self):
         for item in self:
             item.amount = item.qty * item.unit_price
+
+    @api.depends('move_id', 'move_id.state')
+    def _compute_bill_state(self):
+        for item in self:
+            item.bill_state = item.move_id.state if item.move_id else 'none'
+
+    @api.depends('move_id', 'move_id.state', 'move_id.amount_total',
+                 'move_id.amount_residual')
+    def _compute_paid_amount(self):
+        for item in self:
+            move = item.move_id
+            # NFR-1：直取差值，不做 abs() 方向修正（in_invoice 两值均正数口径）
+            item.paid_amount = (
+                move.amount_total - move.amount_residual
+                if move and move.state == 'posted' else 0.0)
+
+    @api.depends('move_id', 'move_id.payment_state', 'move_id.amount_residual')
+    def _compute_paid_date(self):
+        for item in self:
+            if not item.move_id:
+                continue  # 无账单：不触碰现值 → 保留迁移/手填直写的历史付款日
+            move = item.move_id
+            dates = move.reconciled_payment_ids.filtered(
+                lambda p: p.state in ('paid', 'reconciled')).mapped('date')
+            item.paid_date = max(dates) if dates else False
 
     def action_confirm(self):
         for item in self:
@@ -98,6 +148,9 @@ class TaDispatchItem(models.Model):
             'journal_id': journal.id,
             'partner_id': partner.id,
             'date': self.date_start or fields.Date.context_today(self),
+            # O20 硬校验（account_move._post）：in_invoice 过账必须填 invoice_date，
+            # 否则"Bill/Refund date is required"拦截，付款闭环无法走通 → 建单即带上。
+            'invoice_date': self.date_start or fields.Date.context_today(self),
             'ref': f"计调单 {self.departure_id.code or ''} {self.name}",
             'invoice_line_ids': [(0, 0, {
                 'name': self.name,

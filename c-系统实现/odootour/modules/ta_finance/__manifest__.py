@@ -4,7 +4,7 @@
     'version': '20.0.0.1.0',
     'category': 'Travel Agency',
     'author': 'TMS Team',
-    'depends': ['ta_order', 'account'],
+    'depends': ['ta_order', 'ta_dispatch', 'account'],
     'data': [
         'security/ir.access.csv',
         'security/ta_finance_groups.xml',
@@ -15,6 +15,7 @@
         'views/ta_receivable_aging_views.xml',
         'views/ta_receivable_plan_views.xml',
         'views/menuitems.xml',
+        'views/ta_supplier_payable_views.xml',
     ],
     'installable': True,
     'license': 'LGPL-3',

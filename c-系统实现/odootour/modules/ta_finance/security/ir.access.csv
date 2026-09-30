@@ -25,3 +25,7 @@ ta_aging_read_sales,ta.receivable.aging 销售只读,ta.receivable.aging,ta_base
 ta_aging_comp_rule,ta.receivable.aging 多公司限制,ta.receivable.aging,,r,"[('company_id', 'in', company_ids)]"
 ta_plan_accountant,ta.receivable.plan 会计核销,ta.receivable.plan,ta_base.group_ta_accountant,ru,
 ta_plan_comp_rule,ta.receivable.plan 多公司限制,ta.receivable.plan,,r,"[('company_id', 'in', company_ids)]"
+ta_payable_acct,ta.supplier.payable 会计读写,ta.supplier.payable,ta_base.group_ta_accountant,ru,
+ta_payable_mgr,ta.supplier.payable 管理层读写,ta.supplier.payable,ta_base.group_ta_manager,ru,
+ta_payable_disp,ta.supplier.payable 计调只读,ta.supplier.payable,ta_base.group_ta_dispatcher,r,
+ta_payable_comp_rule,ta.supplier.payable 多公司限制,ta.supplier.payable,,ru,"[('company_id', 'in', company_ids)]"

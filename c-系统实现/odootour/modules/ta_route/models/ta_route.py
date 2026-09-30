@@ -1,6 +1,41 @@
 # -*- coding: utf-8 -*-
+import re
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+
+_HTML_TAG_RE = re.compile(r'<[^>]+>')
+_BR_RE = re.compile(r'(?i)<br\s*/?>')
+_P_CLOSE_RE = re.compile(r'(?i)</p\s*>')
+_SCRIPT_RE = re.compile(r'(?is)<(script|style)\b[^>]*>.*?</\1>')
+_SPACE_RE = re.compile(r'[ \t\u3000]+')
+_NL_RE = re.compile(r'\n{3,}')
+
+_HTML_ENTITIES = (
+    ('&nbsp;', ' '), ('&ensp;', ' '), ('&emsp;', ' '),
+    ('&lt;', '<'), ('&gt;', '>'), ('&quot;', '"'), ('&#39;', "'"),
+)
+
+
+def strip_html(text):
+    """简单标签剥离→纯文本（迁移工具，同供导入脚本与测试引用）。
+
+    规则：script/style 整段丢弃；<br>、</p> 转换行；其余标签丢弃；
+    常见实体反转义；压缩连续空格与多余空行。非严格 HTML 解析器，
+    仅服务旧行程正文的粗清洗。
+    """
+    if not text:
+        return ''
+    t = _SCRIPT_RE.sub(' ', str(text))
+    t = _BR_RE.sub('\n', t)
+    t = _P_CLOSE_RE.sub('\n', t)
+    t = _HTML_TAG_RE.sub(' ', t)
+    for src, dst in _HTML_ENTITIES:
+        t = t.replace(src, dst)
+    t = t.replace('&amp;', '&')
+    t = _SPACE_RE.sub(' ', t)
+    t = _NL_RE.sub('\n\n', t)
+    return '\n'.join(line.strip() for line in t.split('\n')).strip()
 
 
 class TaRoute(models.Model):
@@ -76,10 +111,16 @@ class TaRouteStop(models.Model):
     sequence = fields.Integer(default=10)
     day_no = fields.Integer(string='第几天', required=True, default=1)
     name = fields.Char(string='节点', required=True)
+    title = fields.Char(string='当天标题')
     city = fields.Char(string='城市/地点')
-    meal = fields.Char(string='餐食（早/中/晚）')
+    traffic = fields.Char(string='交通')
+    meal = fields.Char(string='餐食（早/中/晚）')  # 旧单栏，保留兼容
+    meal_breakfast = fields.Char(string='早餐')
+    meal_lunch = fields.Char(string='午餐')
+    meal_dinner = fields.Char(string='晚餐')
     accommodation = fields.Char(string='住宿')
     content = fields.Text(string='说明')
+    note = fields.Char(string='来源引用', copy=False)
 
 
 class TaRoutePrice(models.Model):

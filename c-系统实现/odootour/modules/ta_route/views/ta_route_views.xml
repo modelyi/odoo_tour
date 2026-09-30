@@ -61,6 +61,23 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="详细行程" name="stops_detail">
+                            <field name="stop_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="day_no" string="天数"/>
+                                    <field name="title" string="当天标题"/>
+                                    <field name="name" string="节点"/>
+                                    <field name="city" string="城市/地点"/>
+                                    <field name="traffic" string="交通"/>
+                                    <field name="meal_breakfast" string="早餐"/>
+                                    <field name="meal_lunch" string="午餐"/>
+                                    <field name="meal_dinner" string="晚餐"/>
+                                    <field name="accommodation" string="住宿"/>
+                                    <field name="content" string="说明" width="400"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="价格体系" name="prices">
                             <field name="price_ids">
                                 <list editable="bottom">

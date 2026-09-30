@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_supplier_payable_list" model="ir.ui.view">
+        <field name="name">ta.supplier.payable.list</field>
+        <field name="model">ta.supplier.payable</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="departure_date"/>
+                <field name="departure_id"/>
+                <field name="route_name" optional="show"/>
+                <field name="supplier_id"/>
+                <field name="kinds" optional="show"/>
+                <field name="item_total" sum="合计"/>
+                <field name="bill_total" optional="show" sum="合计"/>
+                <field name="paid_total" sum="合计"/>
+                <field name="open_amount" sum="合计"/>
+                <field name="bill_state" widget="badge"
+                       decoration-info="bill_state == 'draft'"
+                       decoration-success="bill_state == 'posted'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_supplier_payable_pivot" model="ir.ui.view">
+        <field name="name">ta.supplier.payable.pivot</field>
+        <field name="model">ta.supplier.payable</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="supplier_id" type="row"/>
+                <field name="bill_state" type="col"/>
+                <field name="item_total" type="measure"/>
+                <field name="paid_total" type="measure"/>
+                <field name="open_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_supplier_payable_search" model="ir.ui.view">
+        <field name="name">ta.supplier.payable.search</field>
+        <field name="model">ta.supplier.payable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="supplier_id" string="供应商"/>
+                <field name="route_name" string="线路"/>
+                <field name="departure_id" string="发团计划"/>
+                <filter name="filter_unpaid" string="有未付余额"
+                        domain="[('open_amount', '&gt;', 0.01)]"/>
+                <filter name="filter_bill_draft" string="账单草稿"
+                        domain="[('bill_state', '=', 'draft')]"/>
+                <filter name="filter_bill_posted" string="账单已过账"
+                        domain="[('bill_state', '=', 'posted')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_supplier_payable" model="ir.actions.act_window">
+        <field name="name">供应商付款(按团)</field>
+        <field name="res_model">ta.supplier.payable</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="view_ta_supplier_payable_search"/>
+        <field name="context">{'create': False, 'edit': False}</field>
+    </record>
+
+    <menuitem id="menu_ta_supplier_payable" name="供应商付款(按团)"
+              parent="menu_ta_finance" action="action_ta_supplier_payable"
+              sequence="40"/>
+</odoo>
