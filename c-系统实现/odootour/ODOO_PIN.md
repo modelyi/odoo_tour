@@ -113,3 +113,10 @@
      无 code 日记账，别名 `bank-none` 撞存量 → 迁移后测试造银行数据须复用存量日记账；
      迁移后 tour20 常驻真实数据，dev-test 造数一律 get-or-create（按 code search-first），
      聚合断言选存量未覆盖的远未来月份，防数据污染型 FAIL。
+- 2026-09-30 **批3-4 正式迁移（成本明细/借支）坑位**：
+  ㊲ store=True compute 字段（如 ta.guide.loan.deducted_amount/outstanding，依赖 One2many 冲抵行）
+     建后 raw SQL 直写，会被后续 flush/重算**静默覆盖回计算值**（迁移直写残留不可靠）；
+     历史存量数值若无来源记录（冲抵行/凭证）不应造直写 → 按模型口径导入 + 差额如实报告；
+  ㊳ 迁移脚本对账项（V 系）判定为"差异!"时 devops 必须停跑回报，不得自行解释放行——
+     阶段B 正是靠此门禁在 V6b 拦截了 ㊲（EXIT=0 不代表对平）；
+  ㊴ odoo 容器内 /tmp 脚本属主 uid=1002 时 `sed -i` 需 `docker exec -u root`（默认 odoo 用户 100 无写权）。

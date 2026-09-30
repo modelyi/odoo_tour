@@ -116,3 +116,26 @@ AC-01 连跑2次 ETM 各表 count 不翻倍；AC-02 §7 V1/V2/V6/V8-12 行数对
   scenic 派工条目 kind='other'（R3 拍板）故 ta.scenic.contribution/ta.guide.performance 对 ETM 团为空，属数据事实。
   可演示性由 scripts/seed_ta_demo_views.py 定向补 demo（DEMO|V 前缀：30 团建 scenic 条目+挂导游+佣金/报账）。
 - 备份：backups/tms_20260928-023532.dump(114.5MB)、tour20_20260928-023532.dump(6.8MB)。
+
+## 11. 批3 口径转向：产品能力补齐，非档案迁移（2026-09-30，协调人）
+用户纠偏定位：**本系统是旅游行业产品，源库 tour_* 是功能调研样本**。"尽量导入"的真义 =
+①旧系统功能不丢失（标准化进现有模型），②数据连续性让产品报表对 86k 历史团成立。
+**不建**任何"历史台账"专用表/菜单。批3 三件事：
+
+1. **行程编排标准化**（ta_route）：`ta.route.stop` 扩 title/traffic/三餐字段，
+   `tour_line_detail`(803 行, 213/213 线路) 导入 → 新旧线路共用"详细行程"。脚本 migrate_tms19_itinerary.py。
+2. **供应商付款闭环**（产品缺口，旧 tour_pay_request 申请-审核-付款 → 新系统由账单+付款权限承载）：
+   计调单加 bill_state/paid_amount/paid_date；SQL 视图 ta.supplier.payable（团×供应商 未付汇总）。
+3. **真实成本明细**：`tour_pay_request` 81,215 行全已付、Σ256,765,071.40 —— 与旧台账 Σcost 255.7M 同量级，
+   **即历史成本本体**（out_price Σ126 万从非可靠成本源，R3 旧结论作废）。逐条导入为标准计调条目
+   （state=confirmed、move_id 空、paid_date=旧 approve_date），**替换批2 的 150 条团级合成条目**
+   （ETM|X 谓词删除，Σ1,260,845.61 与合成基线对平）。零新凭证，posted 借贷差保持 0。
+   脚本 migrate_tms19_costs.py；tour_guide_loan 9 行 → ta.guide.loan 直建。
+
+**历史毛利 -353 万是真实经营**（团亏靠购物返佣补，行业常态），不规避不修饰。
+取证：旧台账 Σcost 255.7M > Σincome 237.9M；pay_request Σ2.568 亿 ≈ 台账成本，差额≈1,038,763.49
+（请款实付 vs 台账估算成本口径差，批3 后以导入明细为准）。
+已知数据现实：pay_request 付款对象经 partner 桥到 supplier 后 sup_type 仅 customer/ditch、
+cost_type 全 other → 导入条目 kind='other' → **历史团景点毛利仍为空**（门票信号缺失属数据事实，
+可演示性由 DEMO|V 承接）；tour_plan_guide_rel=0 → 历史导游排班不存在（§10 R6 同结论）。
+购物佣金规则（旧 tour_commission 5 条）按 BS-08 属批2已规划功能，不在本批、旧数据不搬。

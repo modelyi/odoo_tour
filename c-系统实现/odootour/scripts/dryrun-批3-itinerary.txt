@@ -1,0 +1,39 @@
+2026-09-30 07:17:44,220 129 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-09-30 07:17:44,220 129 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-09-30 07:17:44,221 129 INFO ? odoo: Odoo version 20.0
+2026-09-30 07:17:44,221 129 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf
+2026-09-30 07:17:44,221 129 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/odoo/odoo-server/odoo/addons', '/var/lib/odoo/addons/20.0', '/usr/lib/odoo/odoo-server/addons', '/mnt/extra-addons', '/mnt/vendor-addons'])
+2026-09-30 07:17:44,221 129 INFO ? odoo: database: odoo@db:5432
+2026-09-30 07:17:45,112 129 INFO ? odoo.service.server.PreforkServer: Stopping workers gracefully
+2026-09-30 07:17:45,163 129 INFO tour20 odoo.modules.loading: loading 1 modules...
+2026-09-30 07:17:45,168 129 INFO tour20 odoo.modules.loading: 1 modules loaded in 0.00s, 0 queries (+0 extra)
+2026-09-30 07:17:45,199 129 INFO tour20 odoo.modules.loading: loading 92 modules...
+2026-09-30 07:17:45,765 129 WARNING tour20 odoo.addons.mail.controllers.attachment: markdown2 is not installed, markdown will not be rendered
+2026-09-30 07:17:47,387 129 INFO tour20 odoo.modules.loading: 92 modules loaded in 2.19s, 0 queries (+0 extra)
+2026-09-30 07:17:47,682 129 INFO tour20 odoo.modules.loading: Modules loaded.
+2026-09-30 07:17:47,790 129 INFO tour20 odoo.registry: Registry loaded in 2.669s
+MODE = DRY-RUN（只读预演，不落任何写）
+旧库读取：tour_line_detail=803 行
+== phase0 备份检查 ==
+  pg_dump 双备份（宿主机执行）：
+    TS=$(date +%Y%m%d_%H%M)
+    sudo docker exec tms-db      pg_dump -U odoo -d tms    -Fc -f /tmp/tms_$TS.dump
+    sudo docker exec odootour-db pg_dump -U odoo -d tour20 -Fc -f /tmp/tour20_$TS.dump
+  [DRY-RUN] 只提示，不校验 TMS_MIG_BACKUP_ACK
+== phase1 组装 ==
+  旧行=803 → 可插入=803、route 未匹配=0；src_html-only 正文=0 行（抽样打印见报告）
+== phase2 写入 ==
+  [DRY-RUN] 跳过 DELETE 清理与 INSERT
+== phase3 对平报告 ==
+核对项                                                  基线        实测/预测 判定
+--------------------------------------------------------------------------------------------
+V1 stop 行数 = 组装可插入数                                 803 (dry-run 未写入，预测 803) OK
+V2 旧库读取总数                                           803           参考
+V3 route 未匹配（跳过）                                      0           参考
+V4 覆盖线路数                                            213          213
+V5 src_html-only 行数                                   0            0
+V6 含三餐行                                              52           参考
+V7 含交通行                                             220           参考
+V8 含住宿行                                              42           参考
+V9 含正文行(content 非空)                                  35           参考
+== 完成（dry-run 全程未写入）==

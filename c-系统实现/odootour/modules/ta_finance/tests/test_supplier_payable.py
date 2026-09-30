@@ -52,7 +52,10 @@ class TestSupplierPayable(TransactionCase):
         cls.bank_journal = _get_or_create_journal(
             cls.env, 'bank', '银行测试-payable', 'BNKP',
             default_account_id=cls.bank_account.id)
-        out_lines = cls.bank_journal.outbound_payment_method_line_ids
+        # O20 实测：outbound 方法行缺 payment_account_id（过渡科目）时 _create_payments
+        # 不落凭证、不核销账单（付款空转）→ 必须选/建有过渡科目的方法行
+        out_lines = cls.bank_journal.outbound_payment_method_line_ids.filtered(
+            'payment_account_id')
         if not out_lines:
             out_lines = cls.env['account.payment.method.line'].create({
                 'name': 'Manual OUT: payable测试',
@@ -84,6 +87,9 @@ class TestSupplierPayable(TransactionCase):
             ('departure_id', '=', self.dep.id),
             ('supplier_id', '=', supplier.id)])
         self.assertEqual(len(rows), 1, f'视图应有 {supplier.name} 一行')
+        # 视图行 id 稳定（团_供应商），同事务二次 search 会命中读缓存旧值
+        # → 每次强制重查视图表拿到最新聚合结果
+        rows.invalidate_recordset()
         return rows
 
     def _pay(self, move, date, amount=None):

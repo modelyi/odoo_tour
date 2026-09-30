@@ -1,0 +1,127 @@
+2026-09-30 07:36:19,027 863 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-09-30 07:36:19,028 863 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-09-30 07:36:19,028 863 INFO ? odoo: Odoo version 20.0
+2026-09-30 07:36:19,029 863 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf
+2026-09-30 07:36:19,029 863 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/odoo/odoo-server/odoo/addons', '/var/lib/odoo/addons/20.0', '/usr/lib/odoo/odoo-server/addons', '/mnt/extra-addons', '/mnt/vendor-addons'])
+2026-09-30 07:36:19,029 863 INFO ? odoo: database: odoo@db:5432
+2026-09-30 07:36:20,025 863 INFO ? odoo.service.server.PreforkServer: Stopping workers gracefully
+2026-09-30 07:36:20,089 863 INFO tour20 odoo.modules.loading: loading 1 modules...
+2026-09-30 07:36:20,097 863 INFO tour20 odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra)
+2026-09-30 07:36:20,147 863 INFO tour20 odoo.modules.loading: loading 92 modules...
+2026-09-30 07:36:20,718 863 WARNING tour20 odoo.addons.mail.controllers.attachment: markdown2 is not installed, markdown will not be rendered
+2026-09-30 07:36:22,515 863 INFO tour20 odoo.modules.loading: 92 modules loaded in 2.37s, 0 queries (+0 extra)
+2026-09-30 07:36:22,869 863 INFO tour20 odoo.modules.loading: Modules loaded.
+2026-09-30 07:36:22,990 863 INFO tour20 odoo.registry: Registry loaded in 2.954s
+2026-09-30 07:36:25,131 863 INFO tour20 odoo.models.unlink: User #1 deleted ta.guide.loan records with IDs: [101, 100, 99, 96, 98, 97]
+MODE = 正式迁移(批3-3)
+旧库读取：payreq=81215 loan=9 plan=86927 supplier=3342
+== phase0 备份检查 ==
+  pg_dump 双备份（宿主机执行）：
+    TS=$(date +%Y%m%d_%H%M)
+    sudo docker exec tms-db      pg_dump -U odoo -d tms    -Fc -f /tmp/tms_$TS.dump
+    sudo docker exec odootour-db pg_dump -U odoo -d tour20 -Fc -f /tmp/tour20_$TS.dump
+  备份确认通过（TMS_MIG_BACKUP_ACK=1）
+目标库只读快照：departure(ETM)=18454 sup_partner=3342 guide_partner=2173 合成条目=0(Σ0.00) 既有P条目=81215 既有借支=6 凭证数=406 posted差=0.00
+== phase1 tour_pay_request → ta.dispatch.item 构建 ==
+  请款行=81215 Σamount=256765071.40（基线 81215 / 256765071.40，偏差 0 / 0.00）
+  旧 state 分布：{'paid': 81215}
+  入插=81215（Σ=256765071.40） 跳过：团反查不到=0 供应商未命中=0(率0.000%) 金额≤0=0 无日期兜底=0 跳过额合计=0.00
+== phase2 tour_guide_loan → ta.guide.loan 构建 ==
+  借支=6 行（基线 9），Σamount=31000.00 Σresidual=23300.00，dep 反查命中=0
+  跳过借支=3（旧库 guide_id 为空的员工备用金行，ta.guide.loan.guide_id 必填不可导）：[(25, 'guide未命中'), (28, 'guide未命中'), (29, 'guide未命中')]
+    旧#16  guide=3736 dep=- state旧=disbursed →新=paid      amount=5000.00 residual=300.00
+    旧#17  guide=3714 dep=- state旧=settled   →新=settled   amount=3000.00 residual=0.00
+    旧#18  guide=3674 dep=- state旧=draft     →新=draft     amount=2000.00 residual=2000.00
+    旧#20  guide=4629 dep=- state旧=draft     →新=draft     amount=5000.00 residual=5000.00
+    旧#21  guide=4629 dep=- state旧=approved  →新=approved  amount=10000.00 residual=10000.00
+    旧#22  guide=4629 dep=- state旧=disbursed →新=paid      amount=6000.00 residual=6000.00
+  state 直写结论：ta.guide.loan.state 为 Selection 字段（无 SQL CHECK、无 compute/约束方法拦截，action_* 仅守卫方法入口）→ ORM create 直写 state 合法
+== phase3 幂等清理 ==
+  删前合成条目：count=0 Σamount=0.0（基线 150 / 1260845.61 → 判定 差异!）
+  清理完成（合成条目 + 上一轮 P 条目 + 上一轮借支）
+== phase4 写入 ==
+  dispatch.item 入库 81215 行
+  借支入库 6 行（journal_id/paid_move_id 留空，不重放凭证）；dispatch_cost_total 重算完成
+== phase5 对平报告（V1~V8）==
+核对项                                                                       基线/预测                   实测 判定
+----------------------------------------------------------------------------------------------------------------
+V1 新条目数 = 请款行−跳过(0)                                                       81215                81215 OK
+V2 Σamount = 256765071.40−跳过额0.00                                   256765071.4          256765071.4 OK
+V2b 旧实测Σamount vs 基线(锚差)                                            256765071.4          256765071.4 OK
+V2c 对平锚：基线−跳过额                                                      256765071.4          256765071.4 OK
+V5 合成条目删除额(目标库实况)                                                           0.0           1260845.61 差异!
+V6 借支行数                                                                       6                    6 OK
+V6b Σoutstanding(入插借支, 模型口径=Σamount)                                    31000.0              31000.0 OK
+V6c 旧residual差额(已知偏差, 不直写compute)                                        7700.0                   OK 差异!
+V8a 凭证数不变（运行前后）                                                             406                  406 OK
+V8b 全库 posted Σ借−Σ贷 (应=0)                                                   0.0                  0.0 OK
+V8c 条目 move_id 非空数 (应=0)                                                      0                    0 OK
+----------------------------------------------------------------------------------------------------------------
+V3 sup_type→kind 分布（入插条目）：
+   customer       → other     81147
+   ditch          → other        68
+   kind 合计：{'other': 81215}
+V4 未命中清单：供应商 miss=0（样例 []）；团 miss=0（样例 []）；金额≤0=0（样例 []）
+V7 抽样 3 团新旧成本对比（旧 Σout_price=团级参考口径 vs 新条目 Σ）：
+   dep=ETM|D|856|2023-04-29|2023-05-03    旧out_price=          0.00 新条目Σ=     812002.17
+   dep=ETM|D|856|2023-07-01|2023-07-05    旧out_price=          0.00 新条目Σ=     799430.25
+   dep=ETM|D|856|2023-06-28|2023-07-02    旧out_price=          0.00 新条目Σ=     767591.12
+V8 零凭证断言通过（凭证数不变=406，posted 借贷差=0）
+== 完成（正式迁移(批3-3)）==
+
+===== 第三轮（幂等三态验证 ETM|X|P 先删后插）2026-09-30 07:37:48 UTC =====
+MODE = 正式迁移(批3-3)
+旧库读取：payreq=81215 loan=9 plan=86927 supplier=3342
+== phase0 备份检查 ==
+  pg_dump 双备份（宿主机执行）：
+    TS=$(date +%Y%m%d_%H%M)
+    sudo docker exec tms-db      pg_dump -U odoo -d tms    -Fc -f /tmp/tms_$TS.dump
+    sudo docker exec odootour-db pg_dump -U odoo -d tour20 -Fc -f /tmp/tour20_$TS.dump
+  备份确认通过（TMS_MIG_BACKUP_ACK=1）
+目标库只读快照：departure(ETM)=18454 sup_partner=3342 guide_partner=2173 合成条目=0(Σ0.00) 既有P条目=81215 既有借支=6 凭证数=406 posted差=0.00
+== phase1 tour_pay_request → ta.dispatch.item 构建 ==
+  请款行=81215 Σamount=256765071.40（基线 81215 / 256765071.40，偏差 0 / 0.00）
+  旧 state 分布：{'paid': 81215}
+  入插=81215（Σ=256765071.40） 跳过：团反查不到=0 供应商未命中=0(率0.000%) 金额≤0=0 无日期兜底=0 跳过额合计=0.00
+== phase2 tour_guide_loan → ta.guide.loan 构建 ==
+  借支=6 行（基线 9），Σamount=31000.00 Σresidual=23300.00，dep 反查命中=0
+  跳过借支=3（旧库 guide_id 为空的员工备用金行，ta.guide.loan.guide_id 必填不可导）：[(25, 'guide未命中'), (28, 'guide未命中'), (29, 'guide未命中')]
+    旧#16  guide=3736 dep=- state旧=disbursed →新=paid      amount=5000.00 residual=300.00
+    旧#17  guide=3714 dep=- state旧=settled   →新=settled   amount=3000.00 residual=0.00
+    旧#18  guide=3674 dep=- state旧=draft     →新=draft     amount=2000.00 residual=2000.00
+    旧#20  guide=4629 dep=- state旧=draft     →新=draft     amount=5000.00 residual=5000.00
+    旧#21  guide=4629 dep=- state旧=approved  →新=approved  amount=10000.00 residual=10000.00
+    旧#22  guide=4629 dep=- state旧=disbursed →新=paid      amount=6000.00 residual=6000.00
+  state 直写结论：ta.guide.loan.state 为 Selection 字段（无 SQL CHECK、无 compute/约束方法拦截，action_* 仅守卫方法入口）→ ORM create 直写 state 合法
+== phase3 幂等清理 ==
+  删前合成条目：count=0 Σamount=0.0（基线 150 / 1260845.61 → 判定 差异!）
+  清理完成（合成条目 + 上一轮 P 条目 + 上一轮借支）
+== phase4 写入 ==
+  dispatch.item 入库 81215 行
+  借支入库 6 行（journal_id/paid_move_id 留空，不重放凭证）；dispatch_cost_total 重算完成
+== phase5 对平报告（V1~V8）==
+核对项                                                                       基线/预测                   实测 判定
+----------------------------------------------------------------------------------------------------------------
+V1 新条目数 = 请款行−跳过(0)                                                       81215                81215 OK
+V2 Σamount = 256765071.40−跳过额0.00                                   256765071.4          256765071.4 OK
+V2b 旧实测Σamount vs 基线(锚差)                                            256765071.4          256765071.4 OK
+V2c 对平锚：基线−跳过额                                                      256765071.4          256765071.4 OK
+V5 合成条目删除额(目标库实况)                                                           0.0           1260845.61 差异!
+V6 借支行数                                                                       6                    6 OK
+V6b Σoutstanding(入插借支, 模型口径=Σamount)                                    31000.0              31000.0 OK
+V6c 旧residual差额(已知偏差, 不直写compute)                                        7700.0                   OK 差异!
+V8a 凭证数不变（运行前后）                                                             406                  406 OK
+V8b 全库 posted Σ借−Σ贷 (应=0)                                                   0.0                  0.0 OK
+V8c 条目 move_id 非空数 (应=0)                                                      0                    0 OK
+----------------------------------------------------------------------------------------------------------------
+V3 sup_type→kind 分布（入插条目）：
+   customer       → other     81147
+   ditch          → other        68
+   kind 合计：{'other': 81215}
+V4 未命中清单：供应商 miss=0（样例 []）；团 miss=0（样例 []）；金额≤0=0（样例 []）
+V7 抽样 3 团新旧成本对比（旧 Σout_price=团级参考口径 vs 新条目 Σ）：
+   dep=ETM|D|856|2023-04-29|2023-05-03    旧out_price=          0.00 新条目Σ=     812002.17
+   dep=ETM|D|856|2023-07-01|2023-07-05    旧out_price=          0.00 新条目Σ=     799430.25
+   dep=ETM|D|856|2023-06-28|2023-07-02    旧out_price=          0.00 新条目Σ=     767591.12
+V8 零凭证断言通过（凭证数不变=406，posted 借贷差=0）
+== 完成（正式迁移(批3-3)）==
