@@ -77,12 +77,13 @@ def timed_menu_nav(pg, key, sec, leaf, shot):
     """计时：点击菜单 -> 路由切换 -> 列表首行渲染。返回总秒数；-1 失败"""
     open_app(pg)
     settle(pg, 0.8); dismiss(pg)
-    before = pg.url
+    before = pg.evaluate("() => location.href")
     t0 = time.time()
     if not click_menu_leaf(pg, sec, leaf):
         notes.append(f"{key}: 菜单『{sec}』→『{leaf}』未找到")
         return -1
-    while time.time() - t0 < 60 and pg.url == before:
+    # 注意：同步 API 中 pg.url 属性在 time.sleep 期间不处理事件，必须用 evaluate 轮询真实 URL
+    while time.time() - t0 < CAP and pg.evaluate("() => location.href") == before:
         time.sleep(0.2)
     nav_s = round(time.time() - t0, 1)
     secs = wait_sel(pg, ".o_data_row, .o_view_nocontent", CAP)

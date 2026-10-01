@@ -1,45 +1,45 @@
 {
  "results_s": {
   "①单团损益": {
-   "run1_s": 60.1,
-   "run2_s": 60.1
+   "run1_s": 1.5,
+   "run2_s": 1.0
   },
   "②应收账龄": {
-   "run1_s": 372.4,
-   "run2_s": 60.1
+   "run1_s": 385.6,
+   "run2_s": 1.1
   },
   "③供应商付款按团": {
-   "run1_s": 60.1,
-   "run2_s": 60.1
+   "run1_s": 2.1,
+   "run2_s": 1.0
   },
   "④订单列表": {
-   "run1_s": 60.2,
-   "run2_s": 60.1,
+   "run1_s": 1.1,
+   "run2_s": 1.0,
    "search_35870_run_s": 1.2,
    "search_35870_rows": 80
   },
   "⑤银行流水": {
-   "run1_s": 60.1,
-   "run2_s": 60.1
+   "run1_s": 1.4,
+   "run2_s": 1.0
   },
   "⑤b收款认领(0行)": {
-   "run1_s": 60.1,
-   "run2_s": 60.1
+   "run1_s": 1.0,
+   "run2_s": 1.0
   }
  },
  "notes": [
-  "①单团损益 run1 menu=计调/单团损益 route_switch=60.0s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-542",
-  "①单团损益 run2 menu=计调/单团损益 route_switch=60.0s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-542",
-  "②应收账龄 run1 menu=财务/应收账龄 route_switch=60.1s data_visible=372.4s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-554",
-  "②应收账龄 run2 menu=财务/应收账龄 route_switch=60.1s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-554",
-  "③供应商付款按团 run1 menu=财务/供应商付款(按团) route_switch=60.0s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-557",
-  "③供应商付款按团 run2 menu=财务/供应商付款(按团) route_switch=60.1s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-557",
-  "④订单列表 run1 menu=销售与报名/订单报名 route_switch=60.1s data_visible=60.2s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-540",
-  "④订单列表 run2 menu=销售与报名/订单报名 route_switch=60.0s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-540",
-  "⑤银行流水 run1 menu=财务/收款登记 route_switch=60.0s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-543",
-  "⑤银行流水 run2 menu=财务/收款登记 route_switch=60.1s data_visible=60.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-543",
-  "⑤b收款认领(0行) run1 menu=财务/收款认领 route_switch=60.1s data_visible=60.1s rows=0 nocontent=1 url=http://localhost:8079/odoo/action-544",
-  "⑤b收款认领(0行) run2 menu=财务/收款认领 route_switch=60.1s data_visible=60.1s rows=0 nocontent=1 url=http://localhost:8079/odoo/action-544"
+  "①单团损益 run1 menu=计调/单团损益 route_switch=1.0s data_visible=1.5s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-542",
+  "①单团损益 run2 menu=计调/单团损益 route_switch=1.0s data_visible=1.0s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-542",
+  "②应收账龄 run1 menu=财务/应收账龄 route_switch=1.0s data_visible=385.6s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-554",
+  "②应收账龄 run2 menu=财务/应收账龄 route_switch=1.0s data_visible=1.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-554",
+  "③供应商付款按团 run1 menu=财务/供应商付款(按团) route_switch=1.0s data_visible=2.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-557",
+  "③供应商付款按团 run2 menu=财务/供应商付款(按团) route_switch=1.0s data_visible=1.0s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-557",
+  "④订单列表 run1 menu=销售与报名/订单报名 route_switch=1.1s data_visible=1.1s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-540",
+  "④订单列表 run2 menu=销售与报名/订单报名 route_switch=1.0s data_visible=1.0s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-540",
+  "⑤银行流水 run1 menu=财务/收款登记 route_switch=1.0s data_visible=1.4s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-543",
+  "⑤银行流水 run2 menu=财务/收款登记 route_switch=1.0s data_visible=1.0s rows=80 nocontent=0 url=http://localhost:8079/odoo/action-543",
+  "⑤b收款认领(0行) run1 menu=财务/收款认领 route_switch=1.0s data_visible=1.0s rows=0 nocontent=1 url=http://localhost:8079/odoo/action-544",
+  "⑤b收款认领(0行) run2 menu=财务/收款认领 route_switch=1.0s data_visible=1.0s rows=0 nocontent=1 url=http://localhost:8079/odoo/action-544"
  ],
  "console_errors": [],
  "slow_dataset_requests": [
@@ -47,22 +47,29 @@
    "page": "②应收账龄#run1",
    "model": "ta.receivable.aging",
    "method": "call",
-   "ms": 312134,
+   "ms": 384515,
    "url": "/web/dataset/call_kw/ta.receivable.aging/web_search_read"
   },
   {
-   "page": "②应收账龄#run1",
+   "page": "①单团损益#run2",
    "model": "ta.route",
    "method": "call",
-   "ms": 3305,
+   "ms": 3312,
    "url": "/web/dataset/call_kw/ta.route/get_views"
   },
   {
    "page": "④订单搜索#run2",
    "model": "ta.order",
    "method": "call",
-   "ms": 1030,
+   "ms": 1071,
    "url": "/web/dataset/call_kw/ta.order/web_search_read"
+  },
+  {
+   "page": "③供应商付款按团#run1",
+   "model": "ta.supplier.payable",
+   "method": "call",
+   "ms": 1020,
+   "url": "/web/dataset/call_kw/ta.supplier.payable/web_search_read"
   }
  ],
  "dataset_request_count": 96
