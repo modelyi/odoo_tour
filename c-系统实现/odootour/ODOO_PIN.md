@@ -120,3 +120,10 @@
   ㊳ 迁移脚本对账项（V 系）判定为"差异!"时 devops 必须停跑回报，不得自行解释放行——
      阶段B 正是靠此门禁在 V6b 拦截了 ㊲（EXIT=0 不代表对平）；
   ㊴ odoo 容器内 /tmp 脚本属主 uid=1002 时 `sed -i` 需 `docker exec -u root`（默认 odoo 用户 100 无写权）。
+  ㊵ 批2 用 raw SQL 批量插入的表（如 ta_receivable_plan）**不会有 ORM 外键索引**（索引只在
+     ORM create/字段升级时生成）→ 依赖它的 SQL 视图按行做相关子查询时退化为 N×全表扫：
+     应收账龄首屏 ORDER BY+LIMIT 80 实测 3 分钟（冷缓存同量级）。修法两条都要做：
+     ①字段补 `index=True` 并 `-u`（psql 手工建的索引会在下次 schema 升级前一直在，但代码里没有=不可复现）；
+     ②视图把相关子查询改为一次性预聚合 CTE + LEFT JOIN（16k 行视图 3min → 101ms）。
+     另可加偏索引 `ON ta_order (state) WHERE amount_open > 0.01`（未收单只占 20%）。
+     教训：SQL 视图 count(*) 快 ≠ 首屏快，必须按 `_order` + LIMIT 的真实形态测。

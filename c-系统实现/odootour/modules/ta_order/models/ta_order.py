@@ -154,7 +154,8 @@ class TaReceivablePlan(models.Model):
     _order = 'due_date, id'
     _inherit = ['ta.mixin']
 
-    order_id = fields.Many2one('ta.order', string='订单', required=True, ondelete='cascade')
+    order_id = fields.Many2one('ta.order', string='订单', required=True, ondelete='cascade',
+                               index=True)
     name = fields.Char(string='期次', required=True)
     due_date = fields.Date(string='到期日')
     amount = fields.Float(digits=(12, 2), required=True)

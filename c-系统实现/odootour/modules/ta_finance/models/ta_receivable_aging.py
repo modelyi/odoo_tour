@@ -37,18 +37,24 @@ class TaReceivableAging(models.Model):
     company_id = fields.Many2one('res.company', string='公司', readonly=True)
 
     def init(self):
+        # 未收订单占比小（18k/87k）→ 偏索引只覆盖有效口径，账龄首屏排序免全表扫
+        self.env.cr.execute("""
+            CREATE INDEX IF NOT EXISTS ta_order__state_open_index
+                ON ta_order (state) WHERE amount_open > 0.01""")
         self.env.cr.execute("""
             CREATE OR REPLACE VIEW ta_receivable_aging AS
-            WITH anchor AS (
+            WITH plan_min AS (  -- 期次最早未清到期日：预聚合一次，勿按订单逐行子查询
+                SELECT p.order_id, min(p.due_date) AS due_date
+                FROM ta_receivable_plan p
+                WHERE COALESCE(p.amount_paid, 0) < p.amount - 0.01
+                GROUP BY p.order_id
+            ),
+            anchor AS (
                 SELECT o.id AS order_id,
-                       COALESCE(
-                           (SELECT min(p.due_date) FROM ta_receivable_plan p
-                             WHERE p.order_id = o.id
-                               AND COALESCE(p.amount_paid, 0) < p.amount - 0.01),
-                           o.date_confirm,
-                           d.date_start) AS date_oldest
+                       COALESCE(pm.due_date, o.date_confirm, d.date_start) AS date_oldest
                 FROM ta_order o
                 JOIN ta_departure d ON d.id = o.departure_id
+                LEFT JOIN plan_min pm ON pm.order_id = o.id
                 WHERE o.state IN ('confirmed', 'tripping', 'settled')
                   AND o.amount_open > 0.01
             )
