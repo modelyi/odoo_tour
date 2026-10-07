@@ -27,6 +27,21 @@
         </field>
     </record>
 
+    <record id="view_ta_team_pnl_search" model="ir.ui.view">
+        <field name="name">ta.team.pnl.search</field>
+        <field name="model">ta.team.pnl</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code" string="计划号"/>
+                <field name="route_name" string="线路"/>
+                <field name="date_start"/>
+                <field name="state"/>
+                <filter name="group_route" string="线路" context="{'group_by': 'route_name'}"/>
+                <filter name="group_state" string="发团计划状态" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_ta_team_pnl_pivot" model="ir.ui.view">
         <field name="name">ta.team.pnl.pivot</field>
         <field name="model">ta.team.pnl</field>

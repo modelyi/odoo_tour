@@ -10,6 +10,10 @@ class TaTeamPnl(models.Model):
     _description = '单团损益'
     _auto = False
     _order = 'date_start desc'
+    # 批4-B：SQL 视图无 name 字段，显式指定展示名与全文搜索字段，
+    # 搜索框输入计划号/线路名即可过滤（name_search 走 display_name）。
+    _rec_name = 'code'
+    _rec_names_search = ['code', 'route_name']
 
     departure_id = fields.Many2one('ta.departure', string='发团计划', readonly=True)
     route_name = fields.Char(string='线路', readonly=True)

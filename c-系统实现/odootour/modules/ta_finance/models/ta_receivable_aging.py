@@ -13,6 +13,10 @@ class TaReceivableAging(models.Model):
     _description = '应收账龄'
     _auto = False
     _order = 'date_oldest asc'
+    # 批4-B：SQL 视图无 name 字段，全文搜索按订单号过滤，
+    # 下拉建议展示名即订单号（name_search 走 display_name）。
+    _rec_name = 'order_name'
+    _rec_names_search = ['order_name']
 
     order_id = fields.Many2one('ta.order', string='订单', readonly=True)
     order_name = fields.Char(string='订单号', readonly=True)

@@ -28,6 +28,29 @@
         </field>
     </record>
 
+    <record id="view_ta_bank_line_search" model="ir.ui.view">
+        <field name="name">ta.bank.line.search</field>
+        <field name="model">ta.bank.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date"/>
+                <field name="ref" string="流水号/摘要"/>
+                <field name="journal_id"/>
+                <field name="partner_name" string="往来单位"/>
+                <field name="amount"/>
+                <field name="state"/>
+                <field name="registered_by"/>
+                <filter name="state_to_claim" string="待认领" domain="[('state', '=', 'to_claim')]"/>
+                <filter name="state_partial" string="部分认领" domain="[('state', '=', 'partial')]"/>
+                <filter name="state_claimed" string="已认领" domain="[('state', '=', 'claimed')]"/>
+                <separator/>
+                <filter name="group_date" string="到账日期" context="{'group_by': 'date'}"/>
+                <filter name="group_journal" string="收款账户" context="{'group_by': 'journal_id'}"/>
+                <filter name="group_state" string="状态" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_ta_bank_line_form" model="ir.ui.view">
         <field name="name">ta.bank.line.form</field>
         <field name="model">ta.bank.line</field>

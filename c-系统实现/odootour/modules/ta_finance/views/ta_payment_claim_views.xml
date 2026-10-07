@@ -27,6 +27,30 @@
         </field>
     </record>
 
+    <record id="view_ta_payment_claim_search" model="ir.ui.view">
+        <field name="name">ta.payment.claim.search</field>
+        <field name="model">ta.payment.claim</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="认领单号"/>
+                <field name="date"/>
+                <field name="order_ids" string="订单号"/>
+                <field name="partner_ids" string="往来单位"/>
+                <field name="claimed_by"/>
+                <field name="approved_by"/>
+                <field name="amount"/>
+                <field name="state"/>
+                <filter name="state_draft" string="草稿" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_submitted" string="待审核" domain="[('state', '=', 'submitted')]"/>
+                <filter name="state_approved" string="已审核" domain="[('state', '=', 'approved')]"/>
+                <filter name="state_rejected" string="已驳回" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter name="group_date" string="认领日期" context="{'group_by': 'date'}"/>
+                <filter name="group_state" string="状态" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_ta_payment_claim_form" model="ir.ui.view">
         <field name="name">ta.payment.claim.form</field>
         <field name="model">ta.payment.claim</field>

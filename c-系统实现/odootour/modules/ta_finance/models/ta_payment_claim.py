@@ -33,6 +33,19 @@ class TaPaymentClaim(models.Model):
     ], default='draft', required=True, tracking=True, copy=False)
     move_id = fields.Many2one('account.move', string='生成凭证', readonly=True, copy=False)
     note = fields.Char()
+    # 批4-B 搜索辅助：认领单没有直接的订单/客户字段，按认领去向聚合
+    # （store=True 才能进 search view 过滤）。
+    order_ids = fields.Many2many(
+        'ta.order', string='认领订单', compute='_compute_search_refs', store=True)
+    partner_ids = fields.Many2many(
+        'res.partner', string='认领客户', compute='_compute_search_refs', store=True)
+
+    @api.depends('alloc_ids.order_id')
+    def _compute_search_refs(self):
+        for claim in self:
+            orders = claim.alloc_ids.order_id
+            claim.order_ids = orders
+            claim.partner_ids = orders.partner_id
 
     @api.depends('line_ids.bank_line_id.currency_id')
     def _compute_currency(self):
