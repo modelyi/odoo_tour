@@ -1,9 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_ta_shop_search" model="ir.ui.view">
+        <field name="name">ta.shop.search</field>
+        <field name="model">ta.shop</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="shop_partner_id" string="购物店"/>
+                <field name="shop_date" string="购物日期"/>
+                <field name="guide_id" string="导游"/>
+                <field name="departure_id" string="发团计划"/>
+                <field name="plan_code" string="计划号"/>
+                <field name="route_id" string="线路"/>
+                <field name="state"/>
+                <filter name="group_shop" string="按购物店" context="{'group_by': 'shop_partner_id'}"/>
+                <filter name="group_date" string="按日期" context="{'group_by': 'shop_date'}"/>
+                <filter name="group_guide" string="按导游" context="{'group_by': 'guide_id'}"/>
+                <filter name="group_departure" string="按发团计划" context="{'group_by': 'departure_id'}"/>
+                <filter name="group_route" string="按线路" context="{'group_by': 'route_id'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_ta_shop" model="ir.actions.act_window">
         <field name="name">购物记录</field>
         <field name="res_model">ta.shop</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_ta_shop_search"/>
+    </record>
+
+    <!-- 单团购物查询 [3571]：同一模型，默认按发团计划分组 -->
+    <record id="action_ta_shop_by_departure" model="ir.actions.act_window">
+        <field name="name">单团购物查询</field>
+        <field name="res_model">ta.shop</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="context">{'group_by': 'departure_id'}</field>
+        <field name="search_view_id" ref="view_ta_shop_search"/>
+    </record>
+
+    <!-- 按购物店统计 [3385]：同一模型，默认按购物店分组 -->
+    <record id="action_ta_shop_by_shop" model="ir.actions.act_window">
+        <field name="name">按购物店统计</field>
+        <field name="res_model">ta.shop</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="context">{'group_by': 'shop_partner_id'}</field>
+        <field name="search_view_id" ref="view_ta_shop_search"/>
+    </record>
+
+    <record id="view_ta_shop_pivot" model="ir.ui.view">
+        <field name="name">ta.shop.pivot</field>
+        <field name="model">ta.shop</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="shop_partner_id" type="row"/>
+                <field name="route_id" type="row"/>
+                <field name="guide_id" type="row"/>
+                <field name="departure_id" type="row"/>
+                <field name="shop_date" type="col" interval="month"/>
+                <field name="total_amount" type="measure"/>
+                <field name="guest_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_graph" model="ir.ui.view">
+        <field name="name">ta.shop.graph</field>
+        <field name="model">ta.shop</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="shop_date"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
     </record>
 
     <record id="view_ta_shop_list" model="ir.ui.view">
@@ -145,6 +212,65 @@
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- 批5-迭代3（P1-1）：购物项目统计 [3386] -->
+    <record id="view_ta_shop_item_search" model="ir.ui.view">
+        <field name="name">ta.shop.item.search</field>
+        <field name="model">ta.shop.item</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="商品名称"/>
+                <field name="shop_id" string="购物记录"/>
+                <filter name="group_name" string="按商品" context="{'group_by': 'name'}"/>
+                <filter name="group_shop" string="按购物记录" context="{'group_by': 'shop_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_item" model="ir.actions.act_window">
+        <field name="name">购物项目统计</field>
+        <field name="res_model">ta.shop.item</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_ta_shop_item_search"/>
+    </record>
+
+    <record id="view_ta_shop_item_list" model="ir.ui.view">
+        <field name="name">ta.shop.item.list</field>
+        <field name="model">ta.shop.item</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="shop_id"/>
+                <field name="name"/>
+                <field name="quantity" sum="合计"/>
+                <field name="unit_price"/>
+                <field name="amount" sum="合计"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_item_pivot" model="ir.ui.view">
+        <field name="name">ta.shop.item.pivot</field>
+        <field name="model">ta.shop.item</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="name" type="row"/>
+                <field name="shop_id" type="row"/>
+                <field name="quantity" type="measure"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_item_graph" model="ir.ui.view">
+        <field name="name">ta.shop.item.graph</field>
+        <field name="model">ta.shop.item</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="name"/>
+                <field name="amount" type="measure"/>
+            </graph>
         </field>
     </record>
 </odoo>

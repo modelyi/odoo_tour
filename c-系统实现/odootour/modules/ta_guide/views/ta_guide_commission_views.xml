@@ -1,9 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_ta_guide_commission_search" model="ir.ui.view">
+        <field name="name">ta.guide.commission.search</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="guide_id" string="导游"/>
+                <field name="date" string="日期"/>
+                <field name="departure_id" string="发团计划"/>
+                <field name="shop_partner_id" string="购物店"/>
+                <field name="state"/>
+                <filter name="group_guide_month" string="导游×月份" context="{'group_by': 'guide_id'}"/>
+                <filter name="group_month" string="按月" context="{'group_by': 'date:month'}"/>
+                <filter name="group_shop" string="按购物店" context="{'group_by': 'shop_partner_id'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_ta_guide_commission" model="ir.actions.act_window">
         <field name="name">导游佣金</field>
         <field name="res_model">ta.guide.commission</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_ta_guide_commission_search"/>
+    </record>
+
+    <record id="view_ta_guide_commission_pivot" model="ir.ui.view">
+        <field name="name">ta.guide.commission.pivot</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="guide_id" type="row"/>
+                <field name="date" type="col" interval="month"/>
+                <field name="shop_amount" type="measure"/>
+                <field name="per_capita" type="measure"/>
+                <field name="commission_total" type="measure"/>
+                <field name="allowance" type="measure"/>
+                <field name="tax_amount" type="measure"/>
+                <field name="net_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_commission_graph" model="ir.ui.view">
+        <field name="name">ta.guide.commission.graph</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="date"/>
+                <field name="commission_total" type="measure"/>
+                <field name="allowance" type="measure"/>
+                <field name="net_amount" type="measure"/>
+            </graph>
+        </field>
     </record>
 
     <record id="view_ta_guide_commission_list" model="ir.ui.view">
@@ -90,6 +138,20 @@
                             <field name="company_retain" readonly="1"/>
                         </group>
                     </group>
+                    <group string="分成明细（导游/司机/陪同，引擎生成，只读）" invisible="not staff_line_ids">
+                        <field name="staff_line_ids" nolabel="1" readonly="1">
+                            <list>
+                                <field name="staff_type"/>
+                                <field name="staff_id"/>
+                                <field name="share_rate"/>
+                                <field name="share_before_tax"/>
+                                <field name="premium"/>
+                                <field name="tax_type"/>
+                                <field name="tax_amount"/>
+                                <field name="net_pay"/>
+                            </list>
+                        </field>
+                    </group>
                     <group string="个税代扣代缴记录">
                         <field name="tax_record_ids" nolabel="1" readonly="1">
                             <list>
@@ -124,6 +186,86 @@
                     <chatter/>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- 批5-迭代3（P1-1）：导游购物统计 + 个税汇总 [3572]（AC-10）。
+         申报导出走 Odoo 原生列表导出（Export），本视图字段即导出列。 -->
+    <record id="view_ta_guide_commission_tax_search" model="ir.ui.view">
+        <field name="name">ta.guide.commission.tax.search</field>
+        <field name="model">ta.guide.commission.tax</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="staff_id" string="人员"/>
+                <field name="declare_month" string="申报月份"/>
+                <field name="tax_type"/>
+                <filter name="filter_undeclared" string="未申报"
+                        domain="[('declare_state', '=', 'undeclared')]"/>
+                <filter name="filter_declared" string="已申报"
+                        domain="[('declare_state', '=', 'declared')]"/>
+                <filter name="filter_paid" string="已缴纳"
+                        domain="[('declare_state', '=', 'paid')]"/>
+                <separator/>
+                <filter name="group_staff_month" string="按人员×月份"
+                        context="{'group_by': 'staff_id'}"/>
+                <filter name="group_month" string="按申报月份"
+                        context="{'group_by': 'declare_month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_guide_commission_tax" model="ir.actions.act_window">
+        <field name="name">导游购物统计（个税汇总）</field>
+        <field name="res_model">ta.guide.commission.tax</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_ta_guide_commission_tax_search"/>
+    </record>
+
+    <record id="view_ta_guide_commission_tax_list" model="ir.ui.view">
+        <field name="name">ta.guide.commission.tax.list</field>
+        <field name="model">ta.guide.commission.tax</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="declare_month"/>
+                <field name="staff_id"/>
+                <field name="tax_type"/>
+                <field name="id_number"/>
+                <field name="income_before_tax" sum="合计"/>
+                <field name="tax_amount" sum="合计"/>
+                <field name="net_pay" sum="合计"/>
+                <field name="declare_state" widget="badge"
+                       decoration-success="declare_state == 'paid'"
+                       decoration-info="declare_state == 'declared'"
+                       decoration-warning="declare_state == 'undeclared'"/>
+                <field name="declare_date"/>
+                <field name="commission_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_commission_tax_pivot" model="ir.ui.view">
+        <field name="name">ta.guide.commission.tax.pivot</field>
+        <field name="model">ta.guide.commission.tax</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="staff_id" type="row"/>
+                <field name="declare_month" type="col"/>
+                <field name="income_before_tax" type="measure"/>
+                <field name="tax_amount" type="measure"/>
+                <field name="net_pay" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_guide_commission_tax_graph" model="ir.ui.view">
+        <field name="name">ta.guide.commission.tax.graph</field>
+        <field name="model">ta.guide.commission.tax</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="declare_month"/>
+                <field name="income_before_tax" type="measure"/>
+                <field name="tax_amount" type="measure"/>
+            </graph>
         </field>
     </record>
 </odoo>

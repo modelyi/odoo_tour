@@ -5,11 +5,14 @@
       "cron": "*/20 * * * *",
       "prompt": "批5 进度巡检（任务 #51-55）：检查各后台 agent 状态（TaskList + 未完成的 Agent 任务），如有完成则推进下一迭代派发（51→52→53→54→55 严格顺序）；若全部完成则汇总并删除本 cron。",
       "createdAt": 1791354049403,
+      "lastFiredAt": 1791364848763,
+      "fireCount": 5,
+      "creditsUsed": 6.949331663999999,
       "recurring": true,
-      "createdBy": "agent_tool",
       "createdBySessionId": "9f00da5c-0774-4fba-b162-c8622005589f",
       "createdByPid": 2645837,
-      "createdByProcStart": 1790324453679
+      "createdByProcStart": 1790324453679,
+      "createdBy": "agent_tool"
     }
   ]
 }

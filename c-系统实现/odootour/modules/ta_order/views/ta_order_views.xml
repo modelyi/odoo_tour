@@ -64,6 +64,9 @@
                                     <field name="kind"/>
                                     <field name="unit_price"/>
                                     <field name="amount"/>
+                                    <field name="gender" optional="hide"/>
+                                    <field name="age_group" optional="hide"/>
+                                    <field name="origin_province" optional="hide"/>
                                     <field name="id_card" optional="hide"/>
                                     <field name="phone" optional="hide"/>
                                 </list>

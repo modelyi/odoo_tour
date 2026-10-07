@@ -19,6 +19,7 @@
                 <field name="income" sum="合计"/>
                 <field name="cost_total" sum="合计"/>
                 <field name="cost_net"/>
+                <field name="profit_no_shop" sum="合计"/>
                 <field name="profit" sum="合计"/>
                 <field name="profit_tax_incl"/>
                 <field name="state"/>
@@ -50,6 +51,7 @@
                 <field name="route_name" type="row"/>
                 <field name="income" type="col"/>
                 <field name="cost_total" type="col"/>
+                <field name="profit_no_shop" type="col"/>
                 <field name="profit" type="col"/>
             </pivot>
         </field>
@@ -63,6 +65,7 @@
                 <field name="route_name" type="row"/>
                 <field name="income" type="measure"/>
                 <field name="cost_total" type="measure"/>
+                <field name="profit_no_shop" type="measure"/>
                 <field name="profit" type="measure"/>
             </graph>
         </field>

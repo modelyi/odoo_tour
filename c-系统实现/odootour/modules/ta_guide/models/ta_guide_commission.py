@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import decimal
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError, ValidationError
 
@@ -20,6 +22,16 @@ def _calc_labor_tax(amount):
     if taxable <= 50000:
         return round(taxable * 0.30 - 2000, 2)
     return round(taxable * 0.40 - 7000, 2)
+
+
+def _round_amount(value, round_way='half_up', decimal_places=2):
+    """金额/人均取整（BS-08 §4.8）：half_up 四舍五入（沿用旧口径 round()）、
+    up 向上取整、down 向下取整。"""
+    if round_way == 'half_up':
+        return round(value, decimal_places)
+    quant = decimal.Decimal('1e-%d' % decimal_places)
+    rounding = decimal.ROUND_UP if round_way == 'up' else decimal.ROUND_DOWN
+    return float(decimal.Decimal(str(value)).quantize(quant, rounding=rounding))
 
 
 class TaGuideCommission(models.Model):
@@ -83,6 +95,9 @@ class TaGuideCommission(models.Model):
     deducted_total = fields.Float(compute='_compute_amounts', store=True)
     payable_rest = fields.Float(compute='_compute_amounts', store=True)
     deduct_line_ids = fields.One2many('ta.guide.commission.deduct', 'commission_id', string='冲抵借款明细')
+    staff_line_ids = fields.One2many('ta.commission.staff', 'commission_id', string='分成明细',
+                                     help='多层分成行（P1-2 / BS-08 §3.2）：导游/司机/陪同各自'
+                                          '税前分成、奖金、代扣个税与实发。')
     tax_record_ids = fields.One2many('ta.guide.commission.tax', 'commission_id',
                                      string='个税代扣代缴记录')
     state = fields.Selection([
@@ -100,13 +115,21 @@ class TaGuideCommission(models.Model):
     note = fields.Char()
 
     @api.depends('allowance', 'tax_rate', 'deduct_line_ids.net_deduct',
-                 'shop_partner_id', 'guide_share_before_tax', 'premium', 'guide_tax')
+                 'shop_partner_id', 'guide_share_before_tax', 'premium', 'guide_tax',
+                 'staff_line_ids.tax_amount', 'staff_line_ids.net_pay',
+                 'staff_line_ids.share_before_tax', 'staff_line_ids.premium')
     def _compute_amounts(self):
         for c in self:
             if c.shop_partner_id:
-                c.tax_amount = c.guide_tax or 0.0
-                c.net_amount = round((c.guide_share_before_tax or 0.0)
-                                     + (c.premium or 0.0) - c.tax_amount, 2)
+                if c.staff_line_ids:
+                    # P1-2 多层分成：主单税额/净额 = Σ各分成行（BS-08 §3.2）
+                    c.tax_amount = round(sum(c.staff_line_ids.mapped('tax_amount')), 2)
+                    c.net_amount = round(sum(c.staff_line_ids.mapped('net_pay')), 2)
+                else:
+                    # 无分成行（旧数据/无协议）：退回原单导游口径，向后兼容
+                    c.tax_amount = c.guide_tax or 0.0
+                    c.net_amount = round((c.guide_share_before_tax or 0.0)
+                                         + (c.premium or 0.0) - c.tax_amount, 2)
             else:
                 c.tax_amount = round(c.allowance * c.tax_rate, 2)
                 c.net_amount = c.allowance - c.tax_amount
@@ -118,8 +141,13 @@ class TaGuideCommission(models.Model):
         """shop: ta.shop 单条（分组触发记录）。
 
         1. 汇总该团该店已确认购物金额；2. 查有效期内的购物协议 → 人均阶梯比例；
-        3. 佣金总额 = 购物金额 × 比例；4. 查司陪导协议 → 分成 + 人均线奖金 + 税务类型；
-        5. 劳务报酬按 3 档预扣个税（工资薪金单笔不预扣）；6. 旅行社留存 = 佣金总额 − 税前应发。
+        3. 佣金总额 = 购物金额 × 比例；4. 人均计算按生效 ta.per.capita.calc
+        （简单/加权/分段，取整方式与小数位数可配，§4.8，无配置=旧口径）；
+        5. 人均线（§4.7）仅考核导游：三档比例命中导游行，空档回退协议 share_rate；
+        6. 多层分成（§3.2）：导游（shop.guide_id）+ 发团司机/陪同各自的生效
+        ta.staff.agreement 生成 ta.commission.staff 分成行；奖金规则按人均命中
+        （司机/陪同协议配置了奖金规则同样生效）；劳务报酬按 3 档预扣个税
+        （工资薪金单笔不预扣）；7. 旅行社留存 = 佣金总额 − Σ各行税前应发。
         已存在草稿单则更新（NFR-2 幂等），已确认/已结算单不动（改数走退单/红字流程）。
         """
         shop.ensure_one()
@@ -140,34 +168,132 @@ class TaGuideCommission(models.Model):
         ], limit=1, order='id desc')
         if not agreement:
             return False  # BS-08 §4.9：无协议不计佣
+        departure = shop.departure_id
         team_heads = shop._team_heads()
-        per_capita = round(shop_amount / team_heads, 2) if team_heads else 0.0
+        # ---- 人均算法（BS-08 §4.8 / P1-3）：无生效配置时与旧口径完全一致 ----
+        calc = self.env['ta.per.capita.calc']._resolve_calc(
+            departure.route_id.id, shop.shop_partner_id.id)
+        if calc:
+            calc_mode = 'simple' if calc.calc_mode == 'segment' else calc.calc_mode
+            round_way, decimals = calc.round_way, calc.decimal_places
+            calc_desc = calc.name or ''
+        else:
+            calc_mode, round_way, decimals = 'simple', 'half_up', 2
+            calc_desc = ''
+        if calc_mode == 'weighted':
+            heads = shop._team_heads_weighted()
+        else:
+            heads = float(team_heads)
+        per_capita = _round_amount(shop_amount / heads, round_way, decimals) if heads else 0.0
         rate = agreement._get_rate(per_capita, shop.shop_date)
         commission_total = round(shop_amount * rate / 100.0, 2)
-        staff_agr = self.env['ta.staff.agreement'].search([
-            ('staff_type', '=', 'guide'),
-            ('staff_id', '=', shop.guide_id.id),
-            ('state', '=', 'active'),
-        ], limit=1, order='id desc')
-        share_rate = staff_agr.share_rate or 0.0
-        guide_share_before_tax = round(commission_total * share_rate / 100.0, 2)
-        premium = round(staff_agr._get_premium(per_capita), 2) if staff_agr else 0.0
-        tax_type = staff_agr.tax_type or 'labor'
-        gross = round(guide_share_before_tax + premium, 2)
-        if tax_type == 'labor':
-            guide_tax = _calc_labor_tax(gross)
-            tax_note = ''
+        # ---- 司陪导协议（§4.6）：每类人员取各自最新生效协议 ----
+        Agreement = self.env['ta.staff.agreement']
+
+        def _agreement(staff_type, partner):
+            if not partner:
+                return Agreement.browse()
+            return Agreement.search([
+                ('staff_type', '=', staff_type),
+                ('staff_id', '=', partner.id),
+                ('state', '=', 'active'),
+            ], limit=1, order='id desc')
+
+        guide_agr = _agreement('guide', shop.guide_id)
+        driver_agr = _agreement('driver', departure.driver_id)
+        escort_agr = _agreement('escort', departure.escort_id)
+        # ---- 人均线（BS-08 §4.7 / P1-3）：仅导游考核，三档比例，空档回退协议 ----
+        guide_rate = None
+        pcl_note = ''
+        pcl = self.env['ta.per.capita.line']._match_line(
+            departure.route_id.id, shop.shop_partner_id.id)
+        if pcl and guide_agr:
+            tier_rate, tier_name = pcl._tier_rate(per_capita)
+            if pcl.line_id:
+                where = f"线路[{pcl.line_id.name}]"
+            elif pcl.shop_id:
+                where = f"购物店[{pcl.shop_id.name}]"
+            else:
+                where = "全局"
+            if tier_rate:
+                guide_rate = tier_rate
+                pcl_note = f"人均线({where})：{tier_name}档 {tier_rate}%"
+            else:
+                pcl_note = f"人均线({where})：{tier_name}档未配置比例，回退司陪导协议"
+        # ---- 多层分成行（§3.2）：每个有生效协议的人员一行 ----
+        STAFF_LABEL = {'guide': '导游', 'driver': '司机', 'escort': '陪同'}
+        rows_vals = []
+        guide_row = None
+        for staff_type, partner, agr in (
+                ('guide', shop.guide_id, guide_agr),
+                ('driver', departure.driver_id, driver_agr),
+                ('escort', departure.escort_id, escort_agr)):
+            if not agr:
+                continue
+            if staff_type == 'guide' and guide_rate is not None:
+                share_rate = guide_rate
+            else:
+                share_rate = agr.share_rate or 0.0
+            share_bt = round(commission_total * share_rate / 100.0, 2)
+            premium = round(agr._get_premium(per_capita), 2)
+            gross = round(share_bt + premium, 2)
+            tax_type = agr.tax_type or 'labor'
+            tax = _calc_labor_tax(gross) if tax_type == 'labor' else 0.0
+            row = {
+                'staff_type': staff_type,
+                'staff_id': partner.id,
+                'share_rate': share_rate,
+                'share_before_tax': share_bt,
+                'premium': premium,
+                'tax_type': tax_type,
+                'tax_amount': tax,
+                'net_pay': round(gross - tax, 2),
+            }
+            rows_vals.append(row)
+            if staff_type == 'guide':
+                guide_row = row
+        # ---- 主单 guide_* 兼容字段：= 导游行；无导游协议时沿用旧口径（全 0/无奖金）----
+        if guide_row:
+            g_rate = guide_row['share_rate']
+            g_share = guide_row['share_before_tax']
+            g_premium = guide_row['premium']
+            g_tax_type = guide_row['tax_type']
+            g_tax = guide_row['tax_amount']
         else:
-            guide_tax = 0.0  # BS-08 §4.6：工资薪金并入月度综合所得计税，单笔不预扣
-            tax_note = '（工资薪金并入月度综合所得计税，单笔不预扣）'
+            g_rate = guide_agr.share_rate or 0.0 if guide_agr else 0.0
+            g_share = round(commission_total * g_rate / 100.0, 2)
+            g_premium = round(guide_agr._get_premium(per_capita), 2) if guide_agr else 0.0
+            g_gross = round(g_share + g_premium, 2)
+            g_tax_type = (guide_agr.tax_type or 'labor') if guide_agr else 'labor'
+            g_tax = _calc_labor_tax(g_gross) if g_tax_type == 'labor' else 0.0
+        # §3.2：主单税前应发 = Σ各分成行（分成+奖金）；无行时回退导游旧口径
+        allowance = (round(sum(r['share_before_tax'] + r['premium'] for r in rows_vals), 2)
+                     if rows_vals else round(g_share + g_premium, 2))
+        tax_note = ('（工资薪金并入月度综合所得计税，单笔不预扣）'
+                    if any(r['tax_type'] == 'salary' for r in rows_vals) else '')
         icp = self.env['ir.config_parameter'].sudo()
         vat_rate = icp.get_float('ta_base.default_tax_rate', 0.0)
         commission_tax = round(commission_total * vat_rate / (1 + vat_rate), 2) if vat_rate else 0.0
+        parts = [f"{agreement.name} 返佣 {rate}%×{shop_amount:.2f}={commission_total:.2f}"]
+        if calc_desc:
+            parts.append(f"人均算法：{calc_desc}")
+        if pcl_note:
+            parts.append(pcl_note)
+        staff_parts = []
+        for r in rows_vals:
+            staff_parts.append(
+                f"{STAFF_LABEL[r['staff_type']]}分成 {r['share_rate']}% + 奖金 {r['premium']:.2f}")
+        if staff_parts:
+            parts.append("；".join(staff_parts))
+        elif guide_agr:
+            parts.append(f"导游分成 {g_rate}% + 奖金 {g_premium:.2f}")
+        if tax_note:
+            parts.append(tax_note)
         vals = {
             'guide_id': shop.guide_id.id,
             'departure_id': shop.departure_id.id,
             'date': shop.shop_date,
-            'allowance': gross,
+            'allowance': allowance,
             'shop_partner_id': shop.shop_partner_id.id,
             'shop_amount': shop_amount,
             'guest_count': team_heads,
@@ -176,15 +302,14 @@ class TaGuideCommission(models.Model):
             'commission_rate': rate,
             'commission_total': commission_total,
             'commission_tax': commission_tax,
-            'guide_share_rate': share_rate,
-            'guide_share_before_tax': guide_share_before_tax,
-            'premium': premium,
-            'guide_tax_type': tax_type,
-            'guide_tax': guide_tax,
-            'company_retain': round(commission_total - gross, 2),
-            'rule_note': (
-                f"{agreement.name} 返佣 {rate}%×{shop_amount:.2f}={commission_total:.2f}；"
-                f"导游分成 {share_rate}% + 奖金 {premium:.2f}{tax_note}"),
+            'guide_share_rate': g_rate,
+            'guide_share_before_tax': g_share,
+            'premium': g_premium,
+            'guide_tax_type': g_tax_type,
+            'guide_tax': g_tax,
+            'company_retain': round(commission_total - allowance, 2),
+            'rule_note': "；".join(parts),
+            'staff_line_ids': [(5, 0, 0)] + [(0, 0, r) for r in rows_vals],
         }
         existing = Commission.search([
             ('departure_id', '=', shop.departure_id.id),
@@ -223,9 +348,30 @@ class TaGuideCommission(models.Model):
         return True
 
     def _ensure_tax_record(self):
-        """个税代扣代缴记录（BS-08 §5.1 / AC-10）：确认时按单生成一行，按月汇总申报。"""
+        """个税代扣代缴记录（BS-08 §5.1 / AC-10）：确认时按分成行逐人生成（P1-2），
+        按月汇总申报；无分成行时维持原单导游一条记录（向后兼容旧数据/手工路径）。"""
         for c in self:
             if c.tax_record_ids:
+                continue
+            month = fields.Date.context_today(c).isoformat()[:7]
+            rows = c.staff_line_ids
+            if rows:
+                for row in rows:
+                    staff_agr = self.env['ta.staff.agreement'].search([
+                        ('staff_type', '=', row.staff_type),
+                        ('staff_id', '=', row.staff_id.id),
+                        ('state', '=', 'active'),
+                    ], limit=1, order='id desc')
+                    self.env['ta.guide.commission.tax'].create({
+                        'commission_id': c.id,
+                        'staff_id': row.staff_id.id,
+                        'tax_type': row.tax_type,
+                        'id_number': (staff_agr.id_number or '') if staff_agr else '',
+                        'income_before_tax': round(row.share_before_tax + row.premium, 2),
+                        'tax_amount': row.tax_amount,
+                        'net_pay': row.net_pay,
+                        'declare_month': month,
+                    })
                 continue
             staff_agr = self.env['ta.staff.agreement'].search([
                 ('staff_type', '=', 'guide'),
@@ -242,12 +388,12 @@ class TaGuideCommission(models.Model):
                 'income_before_tax': c.allowance,
                 'tax_amount': c.tax_amount,
                 'net_pay': c.net_amount,
-                'declare_month': fields.Date.context_today(c).isoformat()[:7],
+                'declare_month': month,
             })
 
     # ---- BS-08 §4.10 会计凭证（P0-1 会计分录落地 + P0-2/AC-19 销项税）----
     def _get_commission_account(self, code, name, account_type, keywords=None, **extra):
-        """§4.10 科目解析（按 code+company，带环境级缓存）：
+        """§4.10 科目解析（按 code+company，带游标级缓存，命中校验 exists()）：
         ① 同 code 前缀 + 名称关键词语义匹配 → 直接复用既有科目；
         ② 精确 code 匹配 → 复用；
         ③ 都没有 → sudo 幂等补建（与 noupdate=1 data XML 的 SUPERUSER 载入等价）；
@@ -262,17 +408,14 @@ class TaGuideCommission(models.Model):
         """
         self.ensure_one()
         company = self.company_id
-        try:
-            cache = self.env._ta_commission_account_cache
-        except AttributeError:
-            cache = {}
-            try:
-                self.env._ta_commission_account_cache = cache
-            except AttributeError:
-                pass  # 环境不支持挂属性时退化为无缓存，仍幂等
+        # 游标级缓存（每请求/每事务独立；命中时校验 exists()，防测试 savepoint
+        # 回滚后的过期 id —— 环境级缓存会因 with_user 复用同一 env 对象而跨 savepoint 泄漏）
+        cache = getattr(self.env.cr, '_ta_commission_account_cache', None)
+        if cache is None:
+            cache = self.env.cr._ta_commission_account_cache = {}
         key = (company.id, code)
         account = cache.get(key)
-        if account:
+        if account and account.exists():
             return account
         Account = self.env['account.account'].with_company(company)
         base = [('company_ids', 'in', company.ids)]
@@ -310,13 +453,9 @@ class TaGuideCommission(models.Model):
     def _create_confirm_move(self):
         """确认凭证（BS-08 §4.10.1 佣金收入 + §4.10.2 导游分成应付，两笔分录合一）：
 
-        购物返佣路径（shop_partner_id 有值）5 行：
-          借 1222 其他应收款-购物佣金 = commission_total
-          贷 6051 其他业务收入-佣金 = commission_total − commission_tax（不含税）
-          贷 222101 应交税费-应交增值税(销项税额) = commission_tax（AC-19）
-          借 6407 主营业务成本-导服 = guide_share_before_tax + premium（= allowance）
-          贷 2241 其他应付款-导游分成 = net_amount
-          贷 222102 应交税费-代扣个税 = tax_amount
+        购物返佣路径（shop_partner_id 有值）：前 3 行固定（1222/6051/222101 销项税 AC-19），
+        6407 导服成本 / 2241 应付分成 / 222102 代扣个税按分成行拆行（P1-2：每人三行，
+        partner_id=该人员，借贷合计不变，共 3+3×人数 行）；无分成行退回原单导游三行。
         手工路径（无 shop_partner_id）3 行：
           借 6407 = allowance；贷 2241 = net_amount；贷 222102 = tax_amount。
         税率未配置（commission_tax=0）时销项行为 0、收入行=全额，仍保持平衡（NFR-1）。
@@ -348,14 +487,32 @@ class TaGuideCommission(models.Model):
             ['导游分成', '其他应付款'], reconcile=True)
         acc_wh_tax = self._get_commission_account(
             '222102', '应交税费-代扣个税', 'liability_payable', ['个税', '代扣'])
-        lines += [
-            (0, 0, {'name': f"导服成本 {self.name}", 'partner_id': self.guide_id.id,
-                    'account_id': acc_cost.id, 'debit': self.allowance}),
-            (0, 0, {'name': f"应付导游分成 {self.name}", 'partner_id': self.guide_id.id,
-                    'account_id': acc_payable.id, 'credit': self.net_amount}),
-            (0, 0, {'name': f"代扣个税 {self.name}", 'partner_id': self.guide_id.id,
-                    'account_id': acc_wh_tax.id, 'credit': self.tax_amount}),
-        ]
+        rows = self.staff_line_ids
+        if rows:
+            # P1-2：6407/2241/222102 按分成行拆行，partner_id=该人员
+            for row in rows:
+                gross = round(row.share_before_tax + row.premium, 2)
+                pname = row.staff_id.name or ''
+                lines += [
+                    (0, 0, {'name': f"导服成本 {self.name} {pname}",
+                            'partner_id': row.staff_id.id,
+                            'account_id': acc_cost.id, 'debit': gross}),
+                    (0, 0, {'name': f"应付分成 {self.name} {pname}",
+                            'partner_id': row.staff_id.id,
+                            'account_id': acc_payable.id, 'credit': row.net_pay}),
+                    (0, 0, {'name': f"代扣个税 {self.name} {pname}",
+                            'partner_id': row.staff_id.id,
+                            'account_id': acc_wh_tax.id, 'credit': row.tax_amount}),
+                ]
+        else:
+            lines += [
+                (0, 0, {'name': f"导服成本 {self.name}", 'partner_id': self.guide_id.id,
+                        'account_id': acc_cost.id, 'debit': self.allowance}),
+                (0, 0, {'name': f"应付导游分成 {self.name}", 'partner_id': self.guide_id.id,
+                        'account_id': acc_payable.id, 'credit': self.net_amount}),
+                (0, 0, {'name': f"代扣个税 {self.name}", 'partner_id': self.guide_id.id,
+                        'account_id': acc_wh_tax.id, 'credit': self.tax_amount}),
+            ]
         debit_total = sum(line[2].get('debit', 0.0) for line in lines)
         credit_total = sum(line[2].get('credit', 0.0) for line in lines)
         if abs(debit_total - credit_total) > 0.01:
@@ -414,7 +571,15 @@ class TaGuideCommission(models.Model):
                 raise AccessError("佣金结算需要会计权限。")
             if abs((c.tax_amount + c.net_amount) - c.allowance) > 0.01:
                 raise UserError("税额与净额不平衡，请检查税率。")
-            available = c.net_amount
+            # 多层分成口径（P1-2）：只有导游行的实发才能冲导游借款；
+            # 司机/陪同实发另行支付（BS-08 §4.10.4），不得挪用冲抵。
+            rows = c.staff_line_ids
+            if rows:
+                guide_net = round(sum(rows.filtered(
+                    lambda r: r.staff_type == 'guide').mapped('net_pay')), 2)
+            else:
+                guide_net = c.net_amount
+            available = guide_net
             loans = self.env['ta.guide.loan'].search([
                 ('guide_id', '=', c.guide_id.id),
                 ('state', '=', 'paid'),
@@ -435,10 +600,16 @@ class TaGuideCommission(models.Model):
             if total_deduct > 0.01:
                 c.settle_move_id = c._create_settle_move()
             c.state = 'settled'
+            staff_note = ''
+            if rows:
+                staff_rest = round(sum(rows.filtered(
+                    lambda r: r.staff_type != 'guide').mapped('net_pay')), 2)
+                if staff_rest > 0.01:
+                    staff_note = f"司机/陪同实发 {staff_rest:.2f} 另行走支付流程。"
             c.message_post(body=(
-                f"税后净额 {c.net_amount:.2f} 已冲抵借款 {total_deduct:.2f}，"
+                f"导游税后净额 {guide_net:.2f} 已冲抵借款 {total_deduct:.2f}，"
                 f"余额支付 {c.payable_rest:.2f}。个税 {c.tax_amount:.2f} 于次月 15 日前申报缴纳。"
-                f"冲抵凭证已生成。"))
+                f"{staff_note}冲抵凭证已生成。"))
         return True
 
     def action_cancel(self):
@@ -446,6 +617,43 @@ class TaGuideCommission(models.Model):
             if c.state != 'draft':
                 raise UserError("只有待确认的佣金单可以取消。")
             c.state = 'cancel'
+
+
+class TaCommissionStaff(models.Model):
+    """佣金分成行（P1-2 / BS-08 §3.2）：导游/司机/陪同各自的分成结果。
+
+    引擎按每个有生效 ta.staff.agreement 的人员生成一行：
+    share_before_tax = 佣金总额 × share_rate%；premium 用协议奖金规则按人均命中
+    （司机/陪同协议配置了奖金规则同样生效）；labor 按劳务报酬 3 档预扣、salary 单笔不预扣；
+    net_pay = 税前分成 + 奖金 − 代扣个税。主单 allowance/tax_amount/net_amount 由各行汇总。
+    """
+    _name = 'ta.commission.staff'
+    _description = '佣金分成行'
+    _inherit = ['ta.mixin']
+    _order = 'staff_type, id'
+
+    commission_id = fields.Many2one('ta.guide.commission', string='佣金单',
+                                    ondelete='cascade', required=True, index=True)
+    staff_type = fields.Selection([
+        ('guide', '导游'),
+        ('driver', '司机'),
+        ('escort', '陪同'),
+    ], string='人员类型', required=True)
+    staff_id = fields.Many2one('res.partner', string='人员', required=True)
+    staff_name = fields.Char(related='staff_id.name', string='人员姓名')
+    share_rate = fields.Float(string='分成比例(%)', digits=(5, 2),
+                              help='导游行可被人均线档位比例覆盖（§4.7）；司机/陪同用协议比例。')
+    share_before_tax = fields.Float(string='税前分成', digits=(15, 2), required=True,
+                                    help='= 佣金总额 × 分成比例（BS-08 §3.2）。')
+    premium = fields.Float(string='奖金', digits=(15, 2), default=0.0,
+                           help='协议奖金规则按人均命中金额，合并计税（BS-08 §4.6）。')
+    tax_type = fields.Selection([
+        ('labor', '劳务报酬'),
+        ('salary', '工资薪金'),
+    ], string='税务类型', required=True, default='labor')
+    tax_amount = fields.Float(string='代扣个税', digits=(15, 2), default=0.0)
+    net_pay = fields.Float(string='实发', digits=(15, 2), required=True,
+                           help='= 税前分成 + 奖金 − 代扣个税（BS-08 导游实发口径）。')
 
 
 class TaGuideCommissionDeduct(models.Model):

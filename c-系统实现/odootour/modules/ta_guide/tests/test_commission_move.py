@@ -135,8 +135,9 @@ class TestCommissionMove(TransactionCase):
         """本次凭证各科目只出现一次，按科目 code 建索引。"""
         return {line.account_id.code: line for line in move.line_ids}
 
-    # ---- ① 购物路径：5 行凭证，借贷平衡，科目金额符合 BS-08 §4.10 表 ----
-    def test_shop_confirm_move_5_lines(self):
+    # ---- ① 购物路径：6 行凭证（BS-08 §4.10 表共 6 行，任务标题"5 行"系笔误），
+    #          借贷平衡，科目金额符合 BS-08 §4.10 表 ----
+    def test_shop_confirm_move_6_lines(self):
         shop = self._shop()
         shop.with_user(self.u_acct).action_confirm()
         c = self._commission()
@@ -153,7 +154,7 @@ class TestCommissionMove(TransactionCase):
         self.assertEqual(move.state, 'posted')
         self.assertEqual(move.journal_id, self.gen_journal)
         self.assertIn(c.name, move.ref)
-        self.assertEqual(len(move.line_ids), 5)
+        self.assertEqual(len(move.line_ids), 6)
         lines = self._lines_by_code(move)
         recv = lines['1222']
         self.assertAlmostEqual(recv.debit, 3000.0)
@@ -265,7 +266,7 @@ class TestCommissionMove(TransactionCase):
         self.assertAlmostEqual(c.commission_tax, 0.0)
         c.with_user(self.u_acct).action_confirm()
         move = c.move_id.with_user(self.u_acct)
-        self.assertEqual(len(move.line_ids), 5)
+        self.assertEqual(len(move.line_ids), 6)
         income = move.line_ids.filtered(lambda l: l.account_id.code == '6051')
         vat = move.line_ids.filtered(
             lambda l: l.account_id.code == '222101')

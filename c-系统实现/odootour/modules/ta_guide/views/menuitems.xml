@@ -13,6 +13,34 @@
               action="action_ta_shop_agreement" sequence="32"/>
     <menuitem id="menu_ta_guide_staff_agreement" name="司陪导协议" parent="menu_ta_guide"
               action="action_ta_staff_agreement" sequence="34"/>
+    <menuitem id="menu_ta_per_capita_line" name="导游人均线" parent="menu_ta_guide"
+              action="action_ta_per_capita_line" sequence="36"/>
+    <menuitem id="menu_ta_per_capita_calc" name="人均算法设置" parent="menu_ta_guide"
+              action="action_ta_per_capita_calc" sequence="38"/>
     <menuitem id="menu_ta_guide_performance" name="导游绩效" parent="menu_ta_guide"
               action="action_ta_guide_performance" sequence="40"/>
+
+    <!-- 批5-迭代3（P1-1）：购物统计报表包，挂 财务→购物统计（BS-08 §7 对标清单） -->
+    <menuitem id="menu_ta_shop_stats" name="购物统计" parent="ta_finance.menu_ta_finance"
+              sequence="40"/>
+    <menuitem id="menu_ta_shop_detail" name="购物明细查询" parent="menu_ta_shop_stats"
+              action="action_ta_shop" sequence="10"/>
+    <menuitem id="menu_ta_shop_by_departure" name="单团购物查询" parent="menu_ta_shop_stats"
+              action="action_ta_shop_by_departure" sequence="20"/>
+    <menuitem id="menu_ta_shop_item_stats" name="购物项目统计" parent="menu_ta_shop_stats"
+              action="action_ta_shop_item" sequence="30"/>
+    <menuitem id="menu_ta_shop_by_shop" name="按购物店统计" parent="menu_ta_shop_stats"
+              action="action_ta_shop_by_shop" sequence="40"/>
+    <menuitem id="menu_ta_guide_perf_stats" name="导游业绩统计" parent="menu_ta_shop_stats"
+              action="action_ta_guide_commission" sequence="50"/>
+    <menuitem id="menu_ta_guide_tax_stats" name="导游购物统计（个税汇总）" parent="menu_ta_shop_stats"
+              action="action_ta_guide_commission_tax" sequence="60"/>
+    <menuitem id="menu_ta_shop_reconciliation" name="购物对账" parent="menu_ta_shop_stats"
+              action="action_ta_shop_reconciliation" sequence="70"/>
+    <menuitem id="menu_ta_shop_analysis_partner" name="组团社购物分析" parent="menu_ta_shop_stats"
+              action="action_ta_shop_analysis_partner" sequence="80"/>
+    <menuitem id="menu_ta_shop_analysis_origin" name="客源地购物统计" parent="menu_ta_shop_stats"
+              action="action_ta_shop_analysis_origin" sequence="90"/>
+    <menuitem id="menu_ta_shop_analysis_multi" name="年龄/性别/线路购物统计" parent="menu_ta_shop_stats"
+              action="action_ta_shop_analysis" sequence="100"/>
 </odoo>

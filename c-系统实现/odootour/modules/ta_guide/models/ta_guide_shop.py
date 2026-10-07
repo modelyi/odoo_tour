@@ -2,6 +2,22 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
 
+# BS-08 §4.8 加权人数映射：成人=1.0、儿童=0.5（含儿童含床）、老人=0.8。
+# ta.order.line.kind 实际价别：adult/child/child_bed/single/same_tour —— 无老人档，
+# 按 1.0 兜底（single 单房差、same_tour 同团升级均为成人属性价别，按 1.0）。
+_KIND_WEIGHT = {
+    'adult': 1.0,
+    'child': 0.5,
+    'child_bed': 0.5,
+    'single': 1.0,
+    'same_tour': 1.0,
+}
+
+
+def _kind_weight(kind):
+    """价别加权系数（BS-08 §4.8）；未知价别（含未来的老人档）按 1.0 兜底。"""
+    return _KIND_WEIGHT.get(kind, 1.0)
+
 
 class TaShop(models.Model):
     """购物记录（BS-08 §4.1）：导游 APP 录入 / 计调系统补录 → 会计确认 → 退单（§4.2 简化）。
@@ -19,6 +35,9 @@ class TaShop(models.Model):
         'ta.departure', string='发团计划', required=True, tracking=True,
         domain="[('state', 'in', ('confirmed', 'departed', 'settled'))]")
     plan_code = fields.Char(related='departure_id.code', string='计划号')
+    # 批5-迭代3（P1-1）：透出线路维度，供购物统计 pivot 按线路分组（[3384][3571]）
+    route_id = fields.Many2one('ta.route', related='departure_id.route_id',
+                               store=True, string='线路')
     shop_partner_id = fields.Many2one(
         'res.partner', string='购物店', required=True, tracking=True,
         domain="[('supplier_rank', '>', 0)]")
@@ -69,6 +88,18 @@ class TaShop(models.Model):
             ('state', 'in', ('confirmed', 'tripping', 'settled')),
         ]).mapped('heads'))
         return heads or self.departure_id.seats_used
+
+    def _team_heads_weighted(self):
+        """BS-08 §4.8 加权人数：已确认/行程中/已结算订单的报名名单按价别加权求和
+        （成人 1.0、儿童 0.5、其余/老人兜底 1.0）；无名单时兜底简单人数口径。"""
+        self.ensure_one()
+        lines = self.env['ta.order.line'].search([
+            ('order_id.departure_id', '=', self.departure_id.id),
+            ('order_id.state', 'in', ('confirmed', 'tripping', 'settled')),
+        ])
+        if lines:
+            return sum(_kind_weight(line.kind) for line in lines)
+        return float(self._team_heads())
 
     @api.constrains('guest_count', 'departure_id')
     def _check_guest_count(self):
@@ -135,7 +166,8 @@ class TaShopItem(models.Model):
     name = fields.Char(string='商品名称', required=True)
     quantity = fields.Integer(string='数量', default=1, required=True)
     unit_price = fields.Float(string='单价', digits=(15, 2))
-    amount = fields.Float(string='金额', compute='_compute_amount', digits=(15, 2))
+    # 批5-迭代3（P1-1）：store 化以支撑 pivot 按商品汇总金额（[3386]）
+    amount = fields.Float(string='金额', compute='_compute_amount', store=True, digits=(15, 2))
 
     @api.depends('quantity', 'unit_price')
     def _compute_amount(self):

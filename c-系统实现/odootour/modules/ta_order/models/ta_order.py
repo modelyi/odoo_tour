@@ -128,6 +128,19 @@ class TaOrderLine(models.Model):
         ('single', '单房差'),
         ('same_tour', '同团升级'),
     ], string='价别', default='adult', required=True)
+    # 批5-迭代3（P1-1 AC-15）：报名名单客源地维度，供多维度购物统计（ta.shop.analysis）
+    gender = fields.Selection([
+        ('male', '男'),
+        ('female', '女'),
+    ], string='性别')
+    age_group = fields.Selection([
+        ('child', '儿童'),
+        ('youth', '青年'),
+        ('middle', '中年'),
+        ('senior', '老年'),
+    ], string='年龄段',
+        help='儿童 0-17 / 青年 18-35 / 中年 36-59 / 老年 60+。')
+    origin_province = fields.Char(string='客源地', help='省市名，如：浙江、江苏。')
     unit_price = fields.Float(digits=(12, 2),
                               compute='_compute_unit_price', store=True, readonly=False)
     amount = fields.Float(compute='_compute_amount', store=True, digits=(12, 2))

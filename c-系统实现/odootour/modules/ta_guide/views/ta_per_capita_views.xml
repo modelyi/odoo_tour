@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ 导游人均线（BS-08 §4.7 / 菜单 [3852]） ============ -->
+    <record id="action_ta_per_capita_line" model="ir.actions.act_window">
+        <field name="name">导游人均线</field>
+        <field name="res_model">ta.per.capita.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_per_capita_line_list" model="ir.ui.view">
+        <field name="name">ta.per.capita.line.list</field>
+        <field name="model">ta.per.capita.line</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'inactive'">
+                <field name="name"/>
+                <field name="line_id" optional="show"/>
+                <field name="shop_id" optional="show"/>
+                <field name="base_line"/>
+                <field name="excellent_line"/>
+                <field name="base_rate"/>
+                <field name="standard_rate"/>
+                <field name="excellent_rate"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'" decoration-muted="state == 'inactive'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_per_capita_line_form" model="ir.ui.view">
+        <field name="name">ta.per.capita.line.form</field>
+        <field name="model">ta.per.capita.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_active" string="生效" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_inactive" string="置为已失效" type="object"
+                            invisible="state != 'active'" groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="line_id" readonly="state != 'draft'"/>
+                            <field name="shop_id" readonly="state != 'draft'"/>
+                            <field name="base_line" readonly="state != 'draft'"/>
+                            <field name="excellent_line" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="base_rate" readonly="state != 'draft'"/>
+                            <field name="standard_rate" readonly="state != 'draft'"/>
+                            <field name="excellent_rate" readonly="state != 'draft'"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ 人均算法设置（BS-08 §4.8 / 菜单 [3853]） ============ -->
+    <record id="action_ta_per_capita_calc" model="ir.actions.act_window">
+        <field name="name">人均算法设置</field>
+        <field name="res_model">ta.per.capita.calc</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_per_capita_calc_list" model="ir.ui.view">
+        <field name="name">ta.per.capita.calc.list</field>
+        <field name="model">ta.per.capita.calc</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'inactive'">
+                <field name="name"/>
+                <field name="line_id" optional="show"/>
+                <field name="shop_id" optional="show"/>
+                <field name="calc_mode"/>
+                <field name="round_way"/>
+                <field name="decimal_places"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'" decoration-muted="state == 'inactive'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_per_capita_calc_form" model="ir.ui.view">
+        <field name="name">ta.per.capita.calc.form</field>
+        <field name="model">ta.per.capita.calc</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_active" string="生效" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_inactive" string="置为已失效" type="object"
+                            invisible="state != 'active'" groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="line_id" readonly="state != 'draft'"/>
+                            <field name="shop_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="calc_mode" readonly="state != 'draft'"/>
+                            <field name="round_way" readonly="state != 'draft'"/>
+                            <field name="decimal_places" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

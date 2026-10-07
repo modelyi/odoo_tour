@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- P1-2：发团计划表单增加司机/陪同（多层分成取数来源，行程中可改） -->
+    <record id="view_ta_departure_form_guide" model="ir.ui.view">
+        <field name="name">ta.departure.form.guide</field>
+        <field name="model">ta.departure</field>
+        <field name="inherit_id" ref="ta_route.view_ta_departure_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='guide_ids']" position="after">
+                <field name="driver_id"/>
+                <field name="escort_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

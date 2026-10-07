@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ 购物对账 [4316]（AC-13）+ 经营收入列报 ============ -->
+    <record id="view_ta_shop_reconciliation_search" model="ir.ui.view">
+        <field name="name">ta.shop.reconciliation.search</field>
+        <field name="model">ta.shop.reconciliation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="shop_partner_id" string="购物店"/>
+                <field name="last_commission_date" string="最近佣金日期"/>
+                <filter name="group_shop" string="按购物店" context="{'group_by': 'shop_partner_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_reconciliation" model="ir.actions.act_window">
+        <field name="name">购物对账</field>
+        <field name="res_model">ta.shop.reconciliation</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_ta_shop_reconciliation_search"/>
+    </record>
+
+    <record id="view_ta_shop_reconciliation_list" model="ir.ui.view">
+        <field name="name">ta.shop.reconciliation.list</field>
+        <field name="model">ta.shop.reconciliation</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="shop_partner_id"/>
+                <field name="commission_payable" sum="合计"/>
+                <field name="commission_tax" sum="合计"/>
+                <field name="staff_share" sum="合计"/>
+                <field name="company_retain" sum="合计"/>
+                <field name="paid_total" sum="合计"/>
+                <field name="commission_count" sum="合计"/>
+                <field name="last_commission_date"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_reconciliation_pivot" model="ir.ui.view">
+        <field name="name">ta.shop.reconciliation.pivot</field>
+        <field name="model">ta.shop.reconciliation</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="shop_partner_id" type="row"/>
+                <field name="commission_payable" type="measure"/>
+                <field name="commission_tax" type="measure"/>
+                <field name="staff_share" type="measure"/>
+                <field name="company_retain" type="measure"/>
+                <field name="paid_total" type="measure"/>
+                <field name="commission_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_reconciliation_graph" model="ir.ui.view">
+        <field name="name">ta.shop.reconciliation.graph</field>
+        <field name="model">ta.shop.reconciliation</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="shop_partner_id"/>
+                <field name="commission_payable" type="measure"/>
+                <field name="paid_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ 多维度购物分析 [4307][4308][4309-4311]（AC-15） ============ -->
+    <record id="view_ta_shop_analysis_search" model="ir.ui.view">
+        <field name="name">ta.shop.analysis.search</field>
+        <field name="model">ta.shop.analysis</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="shop_name" string="购物店"/>
+                <field name="route_name" string="线路"/>
+                <field name="partner_id" string="组团社"/>
+                <field name="origin_province" string="客源地"/>
+                <field name="shop_date" string="购物日期"/>
+                <filter name="group_partner" string="按组团社" context="{'group_by': 'partner_id'}"/>
+                <filter name="group_origin" string="按客源地" context="{'group_by': 'origin_province'}"/>
+                <filter name="group_gender" string="按性别" context="{'group_by': 'gender'}"/>
+                <filter name="group_age" string="按年龄段" context="{'group_by': 'age_group'}"/>
+                <filter name="group_route" string="按线路" context="{'group_by': 'route_name'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_analysis" model="ir.actions.act_window">
+        <field name="name">多维度购物分析</field>
+        <field name="res_model">ta.shop.analysis</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_ta_shop_analysis_search"/>
+    </record>
+
+    <record id="action_ta_shop_analysis_partner" model="ir.actions.act_window">
+        <field name="name">组团社购物分析</field>
+        <field name="res_model">ta.shop.analysis</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="context">{'group_by': 'partner_id'}</field>
+        <field name="search_view_id" ref="view_ta_shop_analysis_search"/>
+    </record>
+
+    <record id="action_ta_shop_analysis_origin" model="ir.actions.act_window">
+        <field name="name">客源地购物统计</field>
+        <field name="res_model">ta.shop.analysis</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="context">{'group_by': 'origin_province'}</field>
+        <field name="search_view_id" ref="view_ta_shop_analysis_search"/>
+    </record>
+
+    <record id="view_ta_shop_analysis_list" model="ir.ui.view">
+        <field name="name">ta.shop.analysis.list</field>
+        <field name="model">ta.shop.analysis</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="shop_date"/>
+                <field name="shop_name"/>
+                <field name="departure_id"/>
+                <field name="route_name"/>
+                <field name="partner_id"/>
+                <field name="gender"/>
+                <field name="age_group"/>
+                <field name="origin_province"/>
+                <field name="kind"/>
+                <field name="est_amount" sum="合计"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_analysis_pivot" model="ir.ui.view">
+        <field name="name">ta.shop.analysis.pivot</field>
+        <field name="model">ta.shop.analysis</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="partner_id" type="row"/>
+                <field name="origin_province" type="row"/>
+                <field name="route_name" type="row"/>
+                <field name="gender" type="col"/>
+                <field name="age_group" type="col"/>
+                <field name="est_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_analysis_graph" model="ir.ui.view">
+        <field name="name">ta.shop.analysis.graph</field>
+        <field name="model">ta.shop.analysis</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="origin_province"/>
+                <field name="est_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>

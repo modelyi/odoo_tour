@@ -40,3 +40,19 @@ ta_staff_premium_comp_rule,ta.staff.agreement.premium 多公司限制,ta.staff.a
 ta_commission_tax_acct,ta.guide.commission.tax 会计,ta.guide.commission.tax,ta_base.group_ta_accountant,crud,
 ta_commission_tax_guide_own,ta.guide.commission.tax 导游本人,ta.guide.commission.tax,ta_base.group_ta_guide,r,"[('commission_id.guide_id', '=', user.partner_id.id)]"
 ta_commission_tax_comp_rule,ta.guide.commission.tax 多公司限制,ta.guide.commission.tax,,crud,"[('company_id', 'in', company_ids)]"
+ta_commission_staff_acct,ta.commission.staff 会计,ta.commission.staff,ta_base.group_ta_accountant,crud,
+ta_commission_staff_guide_own,ta.commission.staff 导游本人查看,ta.commission.staff,ta_base.group_ta_guide,r,"[('commission_id.guide_id', '=', user.partner_id.id)]"
+ta_commission_staff_comp_rule,ta.commission.staff 多公司限制,ta.commission.staff,,crud,"[('company_id', 'in', company_ids)]"
+ta_per_capita_line_acct,ta.per.capita.line 会计维护,ta.per.capita.line,ta_base.group_ta_accountant,crud,
+ta_per_capita_line_disp,ta.per.capita.line 计调读,ta.per.capita.line,ta_base.group_ta_dispatcher,r,
+ta_per_capita_line_comp_rule,ta.per.capita.line 多公司限制,ta.per.capita.line,,crud,"[('company_id', 'in', company_ids)]"
+ta_per_capita_calc_acct,ta.per.capita.calc 会计维护,ta.per.capita.calc,ta_base.group_ta_accountant,crud,
+ta_per_capita_calc_disp,ta.per.capita.calc 计调读,ta.per.capita.calc,ta_base.group_ta_dispatcher,r,
+ta_per_capita_calc_comp_rule,ta.per.capita.calc 多公司限制,ta.per.capita.calc,,crud,"[('company_id', 'in', company_ids)]"
+ta_order_line_acct_read,ta.order.line 会计读（加权人均）,ta.order.line,ta_base.group_ta_accountant,r,
+ta_shop_recon_acct,ta.shop.reconciliation 会计读,ta.shop.reconciliation,ta_base.group_ta_accountant,r,
+ta_shop_recon_mgr,ta.shop.reconciliation 管理层读,ta.shop.reconciliation,ta_base.group_ta_manager,r,
+ta_shop_recon_comp_rule,ta.shop.reconciliation 多公司限制,ta.shop.reconciliation,,r,"[('company_id', 'in', company_ids)]"
+ta_shop_analysis_acct,ta.shop.analysis 会计读,ta.shop.analysis,ta_base.group_ta_accountant,r,
+ta_shop_analysis_mgr,ta.shop.analysis 管理层读,ta.shop.analysis,ta_base.group_ta_manager,r,
+ta_shop_analysis_comp_rule,ta.shop.analysis 多公司限制,ta.shop.analysis,,r,"[('company_id', 'in', company_ids)]"

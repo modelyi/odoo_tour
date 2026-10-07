@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 批5-迭代3（P0-3 AC-16）：单团损益列表透出购物佣金三列。
+         三列由 ta_guide 的 SQL 视图挂载（ta_dispatch 列表不引用跨模块字段）。 -->
+    <record id="view_ta_team_pnl_shop_columns" model="ir.ui.view">
+        <field name="name">ta.team.pnl.list.shop.columns</field>
+        <field name="model">ta.team.pnl</field>
+        <field name="inherit_id" ref="ta_dispatch.view_ta_team_pnl_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='profit']" position="after">
+                <field name="shop_commission" optional="show" sum="合计"/>
+                <field name="shop_commission_tax" optional="show" sum="合计"/>
+                <field name="shop_staff_cost" optional="show" sum="合计"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
