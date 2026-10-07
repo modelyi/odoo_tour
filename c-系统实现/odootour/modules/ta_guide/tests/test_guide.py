@@ -121,6 +121,8 @@ class TestGuide(TransactionCase):
             'allowance': 3000.0, 'tax_rate': 0.10})
         self.assertAlmostEqual(c.tax_amount, 300.0)
         self.assertAlmostEqual(c.net_amount, 2700.0)
+        c.with_user(self.u_acct).action_confirm()
+        self.assertEqual(c.state, 'confirmed')
         c.with_user(self.u_acct).action_settle()
         self.assertEqual(c.state, 'settled')
         self.assertAlmostEqual(c.deducted_total, 2000.0)
@@ -137,6 +139,7 @@ class TestGuide(TransactionCase):
         c = self.env['ta.guide.commission'].create({
             'guide_id': self.guide.id, 'departure_id': self.dep.id,
             'allowance': 1000.0, 'tax_rate': 0.0})
+        c.with_user(self.u_acct).action_confirm()
         c.with_user(self.u_acct).action_settle()
         self.assertAlmostEqual(c.deducted_total, 1000.0)
         self.assertAlmostEqual(loan.outstanding, 4000.0)

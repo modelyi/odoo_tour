@@ -19,3 +19,24 @@ ta_guide_deduct_comp_rule,ta.guide.commission.deduct 多公司限制,ta.guide.co
 ta_guide_perf_acct,ta.guide.performance 会计读,ta.guide.performance,ta_base.group_ta_accountant,r,
 ta_guide_perf_mgr,ta.guide.performance 管理层读,ta.guide.performance,ta_base.group_ta_manager,r,
 ta_guide_perf_comp_rule,ta.guide.performance 多公司限制,ta.guide.performance,,r,"[('company_id', 'in', company_ids)]"
+ta_shop_acct,ta.shop 会计,ta.shop,ta_base.group_ta_accountant,crud,
+ta_shop_disp,ta.shop 计调,ta.shop,ta_base.group_ta_dispatcher,crud,
+ta_shop_guide_own,ta.shop 导游本人,ta.shop,ta_base.group_ta_guide,crud,"[('guide_id', '=', user.partner_id.id)]"
+ta_shop_comp_rule,ta.shop 多公司限制,ta.shop,,crud,"[('company_id', 'in', company_ids)]"
+ta_shop_item_acct,ta.shop.item 会计,ta.shop.item,ta_base.group_ta_accountant,crud,
+ta_shop_item_disp,ta.shop.item 计调,ta.shop.item,ta_base.group_ta_dispatcher,crud,
+ta_shop_item_guide_own,ta.shop.item 导游本人,ta.shop.item,ta_base.group_ta_guide,crud,"[('shop_id.guide_id', '=', user.partner_id.id)]"
+ta_shop_item_comp_rule,ta.shop.item 多公司限制,ta.shop.item,,crud,"[('company_id', 'in', company_ids)]"
+ta_shop_agreement_acct,ta.shop.agreement 会计维护,ta.shop.agreement,ta_base.group_ta_accountant,crud,
+ta_shop_agreement_disp,ta.shop.agreement 计调读,ta.shop.agreement,ta_base.group_ta_dispatcher,r,
+ta_shop_agreement_comp_rule,ta.shop.agreement 多公司限制,ta.shop.agreement,,crud,"[('company_id', 'in', company_ids)]"
+ta_shop_tier_acct,ta.shop.agreement.tier 会计,ta.shop.agreement.tier,ta_base.group_ta_accountant,crud,
+ta_shop_tier_comp_rule,ta.shop.agreement.tier 多公司限制,ta.shop.agreement.tier,,crud,"[('company_id', 'in', company_ids)]"
+ta_staff_agreement_acct,ta.staff.agreement 会计维护,ta.staff.agreement,ta_base.group_ta_accountant,crud,
+ta_staff_agreement_disp,ta.staff.agreement 计调读,ta.staff.agreement,ta_base.group_ta_dispatcher,r,
+ta_staff_agreement_comp_rule,ta.staff.agreement 多公司限制,ta.staff.agreement,,crud,"[('company_id', 'in', company_ids)]"
+ta_staff_premium_acct,ta.staff.agreement.premium 会计,ta.staff.agreement.premium,ta_base.group_ta_accountant,crud,
+ta_staff_premium_comp_rule,ta.staff.agreement.premium 多公司限制,ta.staff.agreement.premium,,crud,"[('company_id', 'in', company_ids)]"
+ta_commission_tax_acct,ta.guide.commission.tax 会计,ta.guide.commission.tax,ta_base.group_ta_accountant,crud,
+ta_commission_tax_guide_own,ta.guide.commission.tax 导游本人,ta.guide.commission.tax,ta_base.group_ta_guide,r,"[('commission_id.guide_id', '=', user.partner_id.id)]"
+ta_commission_tax_comp_rule,ta.guide.commission.tax 多公司限制,ta.guide.commission.tax,,crud,"[('company_id', 'in', company_ids)]"

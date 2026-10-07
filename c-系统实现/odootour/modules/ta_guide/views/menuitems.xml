@@ -5,8 +5,14 @@
               action="action_ta_guide_loan" sequence="10"/>
     <menuitem id="menu_ta_guide_expense" name="导游报账" parent="menu_ta_guide"
               action="action_ta_guide_expense" sequence="20"/>
+    <menuitem id="menu_ta_guide_shop" name="购物记录" parent="menu_ta_guide"
+              action="action_ta_shop" sequence="25"/>
     <menuitem id="menu_ta_guide_commission" name="导游佣金" parent="menu_ta_guide"
               action="action_ta_guide_commission" sequence="30"/>
+    <menuitem id="menu_ta_guide_shop_agreement" name="购物店返佣协议" parent="menu_ta_guide"
+              action="action_ta_shop_agreement" sequence="32"/>
+    <menuitem id="menu_ta_guide_staff_agreement" name="司陪导协议" parent="menu_ta_guide"
+              action="action_ta_staff_agreement" sequence="34"/>
     <menuitem id="menu_ta_guide_performance" name="导游绩效" parent="menu_ta_guide"
               action="action_ta_guide_performance" sequence="40"/>
 </odoo>

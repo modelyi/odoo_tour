@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_ta_shop" model="ir.sequence">
+        <field name="name">购物单编号</field>
+        <field name="code">ta.shop</field>
+        <field name="prefix">GW</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_ta_shop_agreement" model="ir.sequence">
+        <field name="name">购物店返佣协议编号</field>
+        <field name="code">ta.shop.agreement</field>
+        <field name="prefix">XY</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_ta_staff_agreement" model="ir.sequence">
+        <field name="name">司陪导协议编号</field>
+        <field name="code">ta.staff.agreement</field>
+        <field name="prefix">SP</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

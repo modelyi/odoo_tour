@@ -100,6 +100,7 @@ class TestGuidePerformance(TransactionCase):
         c = cls.env['ta.guide.commission'].with_user(cls.u_acct).create({
             'guide_id': cls.guide.id, 'departure_id': cls.dep6.id,
             'date': '2026-06-10', 'allowance': 3000.0, 'tax_rate': 0.10})
+        c.with_user(cls.u_acct).action_confirm()
         c.with_user(cls.u_acct).action_settle()  # 无借款：净额 2700 全结
 
         loan = cls.env['ta.guide.loan'].with_user(cls.u_acct).create({

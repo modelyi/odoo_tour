@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_staff_agreement" model="ir.actions.act_window">
+        <field name="name">司陪导协议</field>
+        <field name="res_model">ta.staff.agreement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_staff_agreement_list" model="ir.ui.view">
+        <field name="name">ta.staff.agreement.list</field>
+        <field name="model">ta.staff.agreement</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'inactive'">
+                <field name="name"/>
+                <field name="staff_type"/>
+                <field name="staff_id"/>
+                <field name="share_rate"/>
+                <field name="tax_type"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_staff_agreement_form" model="ir.ui.view">
+        <field name="name">ta.staff.agreement.form</field>
+        <field name="model">ta.staff.agreement</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_active" string="生效" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_inactive" string="置为已失效" type="object"
+                            invisible="state != 'active'" groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="staff_type" readonly="state != 'draft'"/>
+                            <field name="staff_id" readonly="state != 'draft'"/>
+                            <field name="id_number" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="share_rate" readonly="state != 'draft'"/>
+                            <field name="tax_type" readonly="state != 'draft'"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <group string="奖金规则（达到人均购物下限发放，奖金合并计税）">
+                        <field name="premium_rule_ids" nolabel="1" readonly="state != 'draft'">
+                            <list>
+                                <field name="min_per_capita"/>
+                                <field name="premium_amount"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

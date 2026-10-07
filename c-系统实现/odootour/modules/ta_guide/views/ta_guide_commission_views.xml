@@ -15,12 +15,15 @@
                 <field name="date"/>
                 <field name="guide_id"/>
                 <field name="departure_id"/>
+                <field name="shop_partner_id" optional="show"/>
+                <field name="commission_total" optional="show" sum="合计"/>
                 <field name="allowance" sum="合计"/>
                 <field name="tax_amount" sum="合计"/>
                 <field name="net_amount" sum="合计"/>
                 <field name="deducted_total"/>
                 <field name="payable_rest" sum="合计"/>
-                <field name="state" widget="badge" decoration-success="state == 'settled'"/>
+                <field name="state" widget="badge" decoration-success="state == 'settled'"
+                       decoration-info="state == 'confirmed'" decoration-muted="state == 'cancel'"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </list>
         </field>
@@ -32,10 +35,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_settle" string="结算并冲抵借款" type="object"
+                    <button name="action_confirm" string="确认佣金" type="object"
                             invisible="state != 'draft'" class="oe_highlight"
                             groups="ta_base.group_ta_accountant"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,settled"/>
+                    <button name="action_settle" string="结算并冲抵借款" type="object"
+                            invisible="state != 'confirmed'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_cancel" string="取消" type="object"
+                            invisible="state != 'draft'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,settled,cancel"/>
                 </header>
                 <sheet>
                     <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
@@ -46,8 +55,8 @@
                             <field name="date"/>
                         </group>
                         <group>
-                            <field name="allowance"/>
-                            <field name="tax_rate"/>
+                            <field name="allowance" readonly="shop_partner_id"/>
+                            <field name="tax_rate" invisible="shop_partner_id"/>
                             <field name="rule_note"/>
                         </group>
                     </group>
@@ -60,6 +69,40 @@
                             <field name="deducted_total"/>
                             <field name="payable_rest"/>
                         </group>
+                    </group>
+                    <group string="购物返佣（BS-08 引擎生成，只读）" invisible="not shop_partner_id">
+                        <group>
+                            <field name="shop_partner_id" readonly="1"/>
+                            <field name="agreement_id" readonly="1"/>
+                            <field name="shop_amount" readonly="1"/>
+                            <field name="guest_count" readonly="1"/>
+                            <field name="per_capita" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="commission_rate" readonly="1"/>
+                            <field name="commission_total" readonly="1"/>
+                            <field name="commission_tax" readonly="1"/>
+                            <field name="guide_share_rate" readonly="1"/>
+                            <field name="guide_share_before_tax" readonly="1"/>
+                            <field name="premium" readonly="1"/>
+                            <field name="guide_tax_type" readonly="1"/>
+                            <field name="guide_tax" readonly="1"/>
+                            <field name="company_retain" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="个税代扣代缴记录">
+                        <field name="tax_record_ids" nolabel="1" readonly="1">
+                            <list>
+                                <field name="declare_month"/>
+                                <field name="staff_id"/>
+                                <field name="tax_type"/>
+                                <field name="income_before_tax"/>
+                                <field name="tax_amount"/>
+                                <field name="net_pay"/>
+                                <field name="declare_state" widget="badge"/>
+                                <field name="declare_date"/>
+                            </list>
+                        </field>
                     </group>
                     <group string="冲抵借款">
                         <field name="deduct_line_ids" nolabel="1" readonly="1">

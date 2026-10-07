@@ -8,8 +8,11 @@
     'depends': ['ta_dispatch'],
     'data': [
         'security/ir.access.csv',
+        'data/ir_sequence_data.xml',
         'views/ta_guide_loan_views.xml',
         'views/ta_guide_expense_views.xml',
+        'views/ta_guide_shop_views.xml',
+        'views/ta_guide_staff_agreement_views.xml',
         'views/ta_guide_commission_views.xml',
         'views/ta_guide_performance_views.xml',
         'views/menuitems.xml',

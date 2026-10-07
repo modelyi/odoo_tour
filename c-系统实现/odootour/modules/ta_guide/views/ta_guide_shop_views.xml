@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_shop" model="ir.actions.act_window">
+        <field name="name">购物记录</field>
+        <field name="res_model">ta.shop</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_shop_list" model="ir.ui.view">
+        <field name="name">ta.shop.list</field>
+        <field name="model">ta.shop</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'returned'">
+                <field name="name"/>
+                <field name="shop_date"/>
+                <field name="departure_id"/>
+                <field name="plan_code" optional="show"/>
+                <field name="shop_partner_id"/>
+                <field name="guide_id" optional="show"/>
+                <field name="guest_count"/>
+                <field name="total_amount" sum="合计"/>
+                <field name="per_capita"/>
+                <field name="source"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmed'"
+                       decoration-danger="state == 'returned'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_form" model="ir.ui.view">
+        <field name="name">ta.shop.form</field>
+        <field name="model">ta.shop</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="确认并生成佣金" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_return" string="退单" type="object"
+                            invisible="state != 'confirmed'" confirm="退单将取消关联草稿佣金单并重算，确定？"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="departure_id"/>
+                            <field name="plan_code" readonly="1"/>
+                            <field name="shop_partner_id" readonly="state != 'draft'"/>
+                            <field name="shop_date" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="guide_id" readonly="state != 'draft'"/>
+                            <field name="guest_count" readonly="state != 'draft'"/>
+                            <field name="total_amount" readonly="state != 'draft'"/>
+                            <field name="per_capita"/>
+                            <field name="source" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group string="商品明细（可选）">
+                        <field name="item_line_ids" nolabel="1" readonly="state != 'draft'">
+                            <list>
+                                <field name="name"/>
+                                <field name="quantity"/>
+                                <field name="unit_price"/>
+                                <field name="amount" sum="合计"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="退单信息" invisible="state not in ('confirmed', 'returned')">
+                        <group>
+                            <field name="return_date"/>
+                        </group>
+                        <group>
+                            <field name="return_reason" readonly="state == 'returned'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="remark"/>
+                    </group>
+                    <chatter/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_agreement" model="ir.actions.act_window">
+        <field name="name">购物店返佣协议</field>
+        <field name="res_model">ta.shop.agreement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_shop_agreement_list" model="ir.ui.view">
+        <field name="name">ta.shop.agreement.list</field>
+        <field name="model">ta.shop.agreement</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'expired'">
+                <field name="name"/>
+                <field name="shop_partner_id"/>
+                <field name="begin_date"/>
+                <field name="end_date"/>
+                <field name="base_rate"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_agreement_form" model="ir.ui.view">
+        <field name="name">ta.shop.agreement.form</field>
+        <field name="model">ta.shop.agreement</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_active" string="生效" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_expire" string="置为已过期" type="object"
+                            invisible="state != 'active'" groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="shop_partner_id" readonly="state != 'draft'"/>
+                            <field name="begin_date" readonly="state != 'draft'"/>
+                            <field name="end_date" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="base_rate" readonly="state != 'draft'"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <group string="阶梯规则（按人均购物匹配返佣比例）">
+                        <field name="tier_rule_ids" nolabel="1" readonly="state != 'draft'">
+                            <list>
+                                <field name="min_per_capita"/>
+                                <field name="max_per_capita"/>
+                                <field name="commission_rate"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
