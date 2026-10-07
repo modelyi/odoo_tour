@@ -2,7 +2,7 @@
 {
     'name': '旅行社导游借款与报账',
     'summary': '导游借款-发放-报账审核-佣金结算与税后净额冲抵借款（BS-08）',
-    'version': '20.0.0.1.0',
+    'version': '20.0.0.2.0',
     'category': 'Travel Agency',
     'author': 'TMS Team',
     'depends': ['ta_dispatch'],

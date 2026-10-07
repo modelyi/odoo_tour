@@ -112,6 +112,12 @@
                             </list>
                         </field>
                     </group>
+                    <group string="会计凭证（BS-08 §4.10）" groups="ta_base.group_ta_accountant">
+                        <group>
+                            <field name="move_id" readonly="1"/>
+                            <field name="settle_move_id" readonly="1"/>
+                        </group>
+                    </group>
                     <group>
                         <field name="note"/>
                     </group>

@@ -37,6 +37,13 @@ class TestShopCommission(TransactionCase):
             'company_id': cls.company.id,
             'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
                                   cls.env.ref('ta_base.group_ta_accountant').id])]})
+        # 批5-迭代1：佣金确认/冲抵凭证需要杂项日记账（BS-08 §4.10）
+        cls.gen_journal = cls.env['account.journal'].search(
+            [('type', '=', 'general'), ('company_id', '=', cls.company.id)], limit=1)
+        if not cls.gen_journal:
+            cls.gen_journal = cls.env['account.journal'].create({
+                'name': '杂项日记账S', 'code': 'GENS',
+                'type': 'general', 'company_id': cls.company.id})
         cls.dep.guide_ids = [(6, 0, [cls.u_guide.id])]
 
         cls.customer = cls.env['res.partner'].create({'name': '购物客户'})

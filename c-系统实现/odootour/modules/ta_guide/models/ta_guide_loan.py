@@ -95,6 +95,24 @@ class TaGuideLoan(models.Model):
             loan.state = 'paid'
         return True
 
+    def _resolve_loan_account(self):
+        """借款应收科目（1221 口径）：优先取借款发放凭证（action_pay 生成）的借方行科目，
+        保证佣金冲抵分录（贷 1221）精确对冲发放分录（借 1221）的同一科目；
+        无凭证时回退 ICP ta_guide.loan_account_id，仍无则报错（绝不生成单边分录）。"""
+        self.ensure_one()
+        if self.paid_move_id:
+            accounts = self.paid_move_id.line_ids.filtered(
+                lambda l: l.debit > 0).mapped('account_id')
+            if len(accounts) == 1:
+                return accounts
+        acc_id = self.env['ir.config_parameter'].sudo().get_int('ta_guide.loan_account_id', 0)
+        account = self.env['account.account'].browse(acc_id).exists()
+        if not account:
+            raise UserError(
+                f"借款单 {self.name} 未挂发放凭证，且未配置导游借款科目（1221 其他应收款-导游借款），"
+                f"无法生成冲抵凭证。请会计先补建借款凭证或配置科目。")
+        return account
+
     def action_cancel(self):
         for loan in self:
             if loan.state not in ('draft', 'approved'):

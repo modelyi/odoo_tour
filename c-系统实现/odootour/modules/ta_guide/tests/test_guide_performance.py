@@ -42,6 +42,9 @@ class TestGuidePerformance(TransactionCase):
         cls.journal = _get_or_create_journal(
             cls.env, 'bank', '绩效发放', 'BKPG',
             default_account_id=cls.bank_account.id)
+        # 批5-迭代1：佣金确认/冲抵凭证需要杂项日记账（BS-08 §4.10）
+        cls.gen_journal = _get_or_create_journal(
+            cls.env, 'general', '杂项日记账P', 'GENP')
         route = cls.env['ta.route'].create({
             'name': '绩效线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],

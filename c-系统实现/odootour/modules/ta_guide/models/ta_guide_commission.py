@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-from odoo.exceptions import UserError, AccessError
+from odoo.exceptions import UserError, AccessError, ValidationError
 
 
 def _calc_labor_tax(amount):
@@ -93,6 +93,10 @@ class TaGuideCommission(models.Model):
     ], default='draft', required=True, tracking=True, copy=False)
     confirm_uid = fields.Many2one('res.users', string='确认人', readonly=True, copy=False)
     confirm_date = fields.Datetime(string='确认时间', readonly=True, copy=False)
+    move_id = fields.Many2one('account.move', string='确认凭证', readonly=True, copy=False,
+                              help='确认时生成的会计凭证（BS-08 §4.10.1/4.10.2，含销项税 AC-19）。')
+    settle_move_id = fields.Many2one('account.move', string='冲抵凭证', readonly=True, copy=False,
+                                     help='结算时生成的借款冲抵凭证（BS-08 §4.10.4：借 2241 / 贷 1221）。')
     note = fields.Char()
 
     @api.depends('allowance', 'tax_rate', 'deduct_line_ids.net_deduct',
@@ -196,7 +200,8 @@ class TaGuideCommission(models.Model):
 
     # ---- 状态机（BS-08 步骤4/5、AC-12）----
     def action_confirm(self):
-        """会计确认佣金：平衡校验 → 记确认人/时间 → 生成个税代扣记录（AC-10）。"""
+        """会计确认佣金：平衡校验 → 记确认人/时间 → 生成确认凭证（§4.10.1/4.10.2，
+        含销项税 AC-19）→ 生成个税代扣记录（AC-10）。凭证仅确认时生成一次（NFR-2）。"""
         for c in self:
             if c.state != 'draft':
                 raise UserError("只有待确认的佣金单可以确认。")
@@ -208,12 +213,13 @@ class TaGuideCommission(models.Model):
                 raise UserError("税额与净额不平衡，请检查税率。")
             c.confirm_uid = self.env.user
             c.confirm_date = fields.Datetime.now()
+            c.move_id = c._create_confirm_move()
             c._ensure_tax_record()
             c.state = 'confirmed'
             c.message_post(body=(
                 f"佣金单已确认：佣金总额 {c.commission_total:.2f}，"
                 f"导游税前 {c.allowance:.2f}，代扣个税 {c.tax_amount:.2f}，"
-                f"税后净额 {c.net_amount:.2f}。"))
+                f"税后净额 {c.net_amount:.2f}。确认凭证已生成。"))
         return True
 
     def _ensure_tax_record(self):
@@ -239,8 +245,168 @@ class TaGuideCommission(models.Model):
                 'declare_month': fields.Date.context_today(c).isoformat()[:7],
             })
 
+    # ---- BS-08 §4.10 会计凭证（P0-1 会计分录落地 + P0-2/AC-19 销项税）----
+    def _get_commission_account(self, code, name, account_type, keywords=None, **extra):
+        """§4.10 科目解析（按 code+company，带环境级缓存）：
+        ① 同 code 前缀 + 名称关键词语义匹配 → 直接复用既有科目；
+        ② 精确 code 匹配 → 复用；
+        ③ 都没有 → sudo 幂等补建（与 noupdate=1 data XML 的 SUPERUSER 载入等价）；
+        ④ 创建受限/失败 → 中文 UserError 提示会计补科目，绝不静默跳过。
+
+        不采用 data XML 的理由：
+        - 本版 Odoo 20 的 account.code 是公司级计算字段（code_store jsonb），
+          XML 建科目依赖公司上下文，跨公司（ta.mixin SaaS 预留）不可控；
+        - 科目须按佣金单 company_id 运行时解析，XML 只能钉死公司 id=1；
+        - tour20 已有前序批次存量科目（1221/2241），"存在即复用"XML 表达不了；
+        - 影子库反复 -u 升级时动态方式天然幂等，无 XML 冲突风险。
+        """
+        self.ensure_one()
+        company = self.company_id
+        try:
+            cache = self.env._ta_commission_account_cache
+        except AttributeError:
+            cache = {}
+            try:
+                self.env._ta_commission_account_cache = cache
+            except AttributeError:
+                pass  # 环境不支持挂属性时退化为无缓存，仍幂等
+        key = (company.id, code)
+        account = cache.get(key)
+        if account:
+            return account
+        Account = self.env['account.account'].with_company(company)
+        base = [('company_ids', 'in', company.ids)]
+        prefix = code[:4]
+        for kw in (keywords or [name]):
+            hit = Account.search(
+                base + [('code', '=like', f'{prefix}%'), ('name', 'ilike', kw)], limit=1)
+            if hit:
+                cache[key] = hit
+                return hit
+        hit = Account.search(base + [('code', '=', code)], limit=1)
+        if hit:
+            cache[key] = hit
+            return hit
+        vals = {'code': code, 'name': name, 'account_type': account_type,
+                'company_ids': [(6, 0, company.ids)]}
+        vals.update(extra)
+        try:
+            account = Account.sudo().create(vals)
+        except (AccessError, ValidationError) as exc:
+            msg = exc.args[0] if exc.args else exc
+            raise UserError(
+                f"缺少会计科目 {code} {name}（公司：{company.name}），自动创建失败：{msg}。"
+                f"请会计在会计科目表中补建该科目后重试。") from exc
+        cache[key] = account
+        return account
+
+    def _get_general_journal(self):
+        journal = self.env['account.journal'].search(
+            [('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
+        if not journal:
+            raise UserError("当前公司没有杂项日记账（general），无法生成佣金凭证。")
+        return journal
+
+    def _create_confirm_move(self):
+        """确认凭证（BS-08 §4.10.1 佣金收入 + §4.10.2 导游分成应付，两笔分录合一）：
+
+        购物返佣路径（shop_partner_id 有值）5 行：
+          借 1222 其他应收款-购物佣金 = commission_total
+          贷 6051 其他业务收入-佣金 = commission_total − commission_tax（不含税）
+          贷 222101 应交税费-应交增值税(销项税额) = commission_tax（AC-19）
+          借 6407 主营业务成本-导服 = guide_share_before_tax + premium（= allowance）
+          贷 2241 其他应付款-导游分成 = net_amount
+          贷 222102 应交税费-代扣个税 = tax_amount
+        手工路径（无 shop_partner_id）3 行：
+          借 6407 = allowance；贷 2241 = net_amount；贷 222102 = tax_amount。
+        税率未配置（commission_tax=0）时销项行为 0、收入行=全额，仍保持平衡（NFR-1）。
+        """
+        self.ensure_one()
+        lines = []
+        if self.shop_partner_id:
+            acc_receivable = self._get_commission_account(
+                '1222', '其他应收款-购物佣金', 'asset_receivable', ['购物佣金'], reconcile=True)
+            acc_income = self._get_commission_account(
+                '6051', '其他业务收入-佣金', 'income_other', ['其他业务收入', '佣金'])
+            acc_vat = self._get_commission_account(
+                '222101', '应交税费-应交增值税(销项税额)', 'liability_payable',
+                ['销项', '增值税'])
+            income = round(self.commission_total - self.commission_tax, 2)
+            lines += [
+                (0, 0, {'name': f"佣金 {self.name} 购物店应收",
+                        'partner_id': self.shop_partner_id.id,
+                        'account_id': acc_receivable.id, 'debit': self.commission_total}),
+                (0, 0, {'name': f"佣金收入 {self.name}",
+                        'account_id': acc_income.id, 'credit': income}),
+                (0, 0, {'name': f"销项税额 {self.name}",
+                        'account_id': acc_vat.id, 'credit': self.commission_tax}),
+            ]
+        acc_cost = self._get_commission_account(
+            '6407', '主营业务成本-导服', 'expense', ['导服', '劳务成本'])
+        acc_payable = self._get_commission_account(
+            '2241', '其他应付款-导游分成', 'liability_payable',
+            ['导游分成', '其他应付款'], reconcile=True)
+        acc_wh_tax = self._get_commission_account(
+            '222102', '应交税费-代扣个税', 'liability_payable', ['个税', '代扣'])
+        lines += [
+            (0, 0, {'name': f"导服成本 {self.name}", 'partner_id': self.guide_id.id,
+                    'account_id': acc_cost.id, 'debit': self.allowance}),
+            (0, 0, {'name': f"应付导游分成 {self.name}", 'partner_id': self.guide_id.id,
+                    'account_id': acc_payable.id, 'credit': self.net_amount}),
+            (0, 0, {'name': f"代扣个税 {self.name}", 'partner_id': self.guide_id.id,
+                    'account_id': acc_wh_tax.id, 'credit': self.tax_amount}),
+        ]
+        debit_total = sum(line[2].get('debit', 0.0) for line in lines)
+        credit_total = sum(line[2].get('credit', 0.0) for line in lines)
+        if abs(debit_total - credit_total) > 0.01:
+            raise UserError("佣金确认凭证借贷不平衡，无法生成凭证（NFR-1）。")
+        move = self.env['account.move'].create({
+            'journal_id': self._get_general_journal().id,
+            'date': self.date,
+            'ref': f"佣金确认 {self.name} / {self.guide_id.name}",
+            'line_ids': lines,
+        })
+        move.action_post()
+        return move
+
+    def _create_settle_move(self):
+        """借款冲抵凭证（BS-08 §4.10.4 / AC-18）：借 2241 其他应付款-导游分成 /
+        贷 1221 其他应收款-导游借款，按冲抵明细一对一生成（借贷恒平衡）。
+
+        前提：借款发放（ta.guide.loan.action_pay）已生成 1221 借方凭证，
+        贷方科目取自借款发放凭证的借方行，保证精确对冲同一科目。
+        """
+        self.ensure_one()
+        acc_payable = self._get_commission_account(
+            '2241', '其他应付款-导游分成', 'liability_payable',
+            ['导游分成', '其他应付款'], reconcile=True)
+        lines = []
+        for dl in self.deduct_line_ids:
+            acc_loan = dl.loan_id._resolve_loan_account()
+            lines += [
+                (0, 0, {'name': f"冲抵分成 {self.name} / {dl.loan_id.name}",
+                        'partner_id': self.guide_id.id,
+                        'account_id': acc_payable.id, 'debit': dl.net_deduct}),
+                (0, 0, {'name': f"冲抵借款 {dl.loan_id.name}",
+                        'partner_id': self.guide_id.id,
+                        'account_id': acc_loan.id, 'credit': dl.net_deduct}),
+            ]
+        debit_total = sum(line[2].get('debit', 0.0) for line in lines)
+        credit_total = sum(line[2].get('credit', 0.0) for line in lines)
+        if abs(debit_total - credit_total) > 0.01:
+            raise UserError("借款冲抵凭证借贷不平衡，无法生成凭证（NFR-1）。")
+        move = self.env['account.move'].create({
+            'journal_id': self._get_general_journal().id,
+            'date': self.date,
+            'ref': f"佣金冲抵借款 {self.name} / {self.guide_id.name}",
+            'line_ids': lines,
+        })
+        move.action_post()
+        return move
+
     def action_settle(self):
-        """已确认佣金单：税后净额按最先到期借款优先冲抵；不足部分留余额支付（AC-18）。"""
+        """已确认佣金单：税后净额按最先到期借款优先冲抵（AC-18），并生成
+        4.10.4 冲抵凭证（借 2241 导游分成 / 贷 1221 导游借款）；不足部分留余额支付。"""
         for c in self:
             if c.state != 'confirmed':
                 raise UserError("只有已确认的佣金单可以结算冲抵借款（先确认，AC-12）。")
@@ -265,10 +431,14 @@ class TaGuideCommission(models.Model):
                 if loan.outstanding <= 0.01:
                     loan.state = 'settled'
                     loan.message_post(body=f"借款 {loan.name} 已由佣金单 {c.name} 结清。")
+            total_deduct = sum(c.deduct_line_ids.mapped('net_deduct'))
+            if total_deduct > 0.01:
+                c.settle_move_id = c._create_settle_move()
             c.state = 'settled'
             c.message_post(body=(
-                f"税后净额 {c.net_amount:.2f} 已冲抵借款 {c.deducted_total:.2f}，"
-                f"余额支付 {c.payable_rest:.2f}。个税 {c.tax_amount:.2f} 于次月 15 日前申报缴纳。"))
+                f"税后净额 {c.net_amount:.2f} 已冲抵借款 {total_deduct:.2f}，"
+                f"余额支付 {c.payable_rest:.2f}。个税 {c.tax_amount:.2f} 于次月 15 日前申报缴纳。"
+                f"冲抵凭证已生成。"))
         return True
 
     def action_cancel(self):

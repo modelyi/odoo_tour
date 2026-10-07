@@ -2,3 +2,4 @@
 from . import test_guide
 from . import test_guide_performance
 from . import test_shop_commission
+from . import test_commission_move
