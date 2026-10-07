@@ -1,18 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "ec85226b",
-      "cron": "0 */3 * * *",
-      "prompt": "批4 进度巡检（后台任务驱动，用户可能已关闭浏览器）：检查任务清单 #46 A付款方法行缺陷修复 → #47 B搜索修复 → #48 C购物返佣BS-08 → #49 D验收收尾的状态与后台 agent 结果。若某阶段完成则推进下一阶段（派新后台 agent 或执行协调人侧收尾）；若卡住则诊断根因或简要记录待用户决策项；完成后更新任务状态，全部完成时删除本 cron 并落批4 验收报告、提交推送。",
-      "createdAt": 1791340609834,
-      "lastFiredAt": 1791348273849,
-      "fireCount": 1,
-      "recurring": true,
-      "createdBySessionId": "9f00da5c-0774-4fba-b162-c8622005589f",
-      "createdByPid": 2645837,
-      "createdByProcStart": 1790324453679,
-      "createdBy": "agent_tool",
-      "creditsUsed": 0.8175249059999999
-    }
-  ]
+  "tasks": []
 }
