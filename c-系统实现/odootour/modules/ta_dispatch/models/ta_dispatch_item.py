@@ -137,9 +137,11 @@ class TaDispatchItem(models.Model):
         partner = self.supplier_id
         # 批6 P0-6：成本科目按业务模式分流（BS-14）：41 代订 → 2241.01 代收代付
         # （成本经代收代付转出，不进损益）；其余模式 → 6401 主营业务成本。
+        # O20 约束：采购单据里 liability_payable 行必须是 payment_term 行，而
+        # invoice_line_ids 只接受 product 行 → 224101 用 liability_current。
         if self.departure_id.biz_mode_id.code == '41':
             expense = self._ta_get_account(
-                '224101', '其他应付款-代收代付', 'liability_payable')
+                '224101', '其他应付款-代收代付', 'liability_current')
         else:
             expense = self._ta_get_account('6401', '主营业务成本', 'expense')
         journal = self.env['account.journal'].search(
@@ -159,11 +161,8 @@ class TaDispatchItem(models.Model):
             'invoice_line_ids': [(0, 0, {
                 'name': self.name,
                 'account_id': expense.id,
-                # O20 坑：负债类科目（224101）行会被自动归类 display_type='payment_term'，
-                # 不满足 invoice_line_ids 的 comodel domain；显式钉回 'product' 行。
+                # 显式钉 product 行，避免 O20 自动归类干扰 invoice_line_ids 域。
                 'display_type': 'product',
-                # O20 校验：Payable 科目分录必须带到期日。
-                'date_maturity': fields.Date.context_today(self),
                 'quantity': self.qty,
                 'price_unit': self.unit_price,
             })],

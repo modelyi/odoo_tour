@@ -153,7 +153,7 @@ class TaDepartureRevenue(models.Model):
         acc_tax = self._ta_get_account(
             '222101', '应交税费-应交增值税(销项税额)', 'liability_payable')
         acc_dd = self._ta_get_account(
-            '224101', '其他应付款-代收代付', 'liability_payable')
+            '224101', '其他应付款-代收代付', 'liability_current')
         acc_receivable_fb = self._ta_get_account(
             '1122', '应收账款', 'asset_receivable')
         lines = []
