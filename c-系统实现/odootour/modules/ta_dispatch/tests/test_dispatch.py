@@ -2,6 +2,7 @@
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools import mute_logger
 from odoo.exceptions import UserError
+from odoo import fields
 
 
 def _get_or_create_account(env, code, name, account_type, **extra):
@@ -89,6 +90,21 @@ class TestDispatch(TransactionCase):
         item.action_reset_draft()
         self.assertEqual(item.state, 'draft')
 
+    def test_bill_date_is_today_not_departure(self):
+        # 批6 P1-7：未来发团日的账单日期取操作当日，避免未来日期账单
+        dep_future = self.env['ta.departure'].create({
+            'route_id': self.dep.route_id.id, 'date_start': '2027-01-01',
+            'date_end': '2027-01-03', 'seats_total': 10, 'seats_min': 1})
+        dep_future.action_open()
+        item = self.env['ta.dispatch.item'].create({
+            'departure_id': dep_future.id, 'kind': 'vehicle',
+            'supplier_id': self.supplier.id, 'name': '未来团大巴',
+            'qty': 1.0, 'unit_price': 500.0})
+        item.action_confirm()
+        today = fields.Date.today()
+        self.assertEqual(item.move_id.date, today)
+        self.assertEqual(item.move_id.invoice_date, today)
+
     def test_pnl_bs19(self):
         item = self._item(price=530.0, qty=2.0)  # cost_total = 1060
         item.action_confirm()
@@ -115,3 +131,23 @@ class TestDispatch(TransactionCase):
         with mute_logger('odoo.sql_db'), \
                 self.assertRaises(IntegrityError), self.env.cr.savepoint():
             self._item(price=-1.0)
+
+    def test_bill_account_split_by_biz_mode(self):
+        # 批6 P0-6：41 代订成本走 224101 代收代付，其余走 6401 主营成本
+        mode41 = self.env['ta.biz.mode'].search([('code', '=', '41')], limit=1)
+        if not mode41:
+            mode41 = self.env['ta.biz.mode'].create({'code': '41', 'name': '代订'})
+        dep41 = self.env['ta.departure'].create({
+            'route_id': self.dep.route_id.id, 'date_start': '2026-10-02',
+            'seats_total': 10, 'seats_min': 1, 'biz_mode_id': mode41.id})
+        dep41.action_open()
+        item41 = self.env['ta.dispatch.item'].create({
+            'departure_id': dep41.id, 'kind': 'ticket',
+            'supplier_id': self.supplier.id, 'name': '门票',
+            'qty': 1.0, 'unit_price': 500.0})
+        item41.action_confirm()
+        self.assertEqual(item41.move_id.invoice_line_ids.account_id.code, '224101')
+        item_norm = self._item()
+        item_norm.action_confirm()
+        self.assertEqual(
+            item_norm.move_id.invoice_line_ids.account_id.code, '6401')

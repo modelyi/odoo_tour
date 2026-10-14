@@ -69,13 +69,14 @@ class TaGuidePerformance(models.Model):
                    max(t.company_id) AS company_id
             FROM tours t
             LEFT JOIN (
-                SELECT g.guide_id, to_char(g.date, 'YYYY-MM') AS ym,
+                -- 报账单数按带团月归属（发团日所在月），与成本口径一致（批6 P1-6）
+                SELECT g.guide_id, to_char(d.date_start, 'YYYY-MM') AS ym,
                        count(*) AS expense_count,
                        avg(g.date - d.date_end)::float AS avg_lag
                 FROM ta_guide_expense g
                 JOIN ta_departure d ON d.id = g.departure_id
                 WHERE g.state IN ('submitted','approved')
-                GROUP BY g.guide_id, to_char(g.date, 'YYYY-MM')
+                GROUP BY g.guide_id, to_char(d.date_start, 'YYYY-MM')
             ) ex ON ex.guide_id = t.guide_id AND ex.ym = t.ym
             LEFT JOIN (
                 SELECT c.guide_id, to_char(d.date_start, 'YYYY-MM') AS ym,

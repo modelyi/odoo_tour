@@ -29,3 +29,7 @@ ta_payable_acct,ta.supplier.payable 会计读写,ta.supplier.payable,ta_base.gro
 ta_payable_mgr,ta.supplier.payable 管理层读写,ta.supplier.payable,ta_base.group_ta_manager,ru,
 ta_payable_disp,ta.supplier.payable 计调只读,ta.supplier.payable,ta_base.group_ta_dispatcher,r,
 ta_payable_comp_rule,ta.supplier.payable 多公司限制,ta.supplier.payable,,ru,"[('company_id', 'in', company_ids)]"
+ta_revrec_acct,ta.revenue.recognition 会计读写,ta.revenue.recognition,ta_base.group_ta_accountant,ru,
+ta_revrec_mgr,ta.revenue.recognition 管理层读写,ta.revenue.recognition,ta_base.group_ta_manager,ru,
+ta_revrec_sales,ta.revenue.recognition 销售只读,ta.revenue.recognition,ta_base.group_ta_sales,r,
+ta_revrec_comp_rule,ta.revenue.recognition 多公司限制,ta.revenue.recognition,,ru,"[('company_id', 'in', company_ids)]"

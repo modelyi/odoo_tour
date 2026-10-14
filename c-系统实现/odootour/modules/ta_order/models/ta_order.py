@@ -147,9 +147,10 @@ class TaOrderLine(models.Model):
 
     @api.depends('kind', 'order_id.route_id')
     def _compute_unit_price(self):
+        # 批6 P1-8：改 kind/线路即按价目表回填，手工改价在 kind/线路不变时保留
         for line in self:
             route = line.order_id.route_id
-            if not route or line.unit_price:
+            if not route:
                 continue
             price = route.price_ids.filtered(
                 lambda p, k=line.kind: p.kind == k and p.active)

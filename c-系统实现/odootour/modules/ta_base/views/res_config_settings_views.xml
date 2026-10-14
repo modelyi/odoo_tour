@@ -16,6 +16,22 @@
                             </div>
                         </setting>
                     </block>
+                    <block title="收入成本确认（BS-14 / BS-10 §7.2）" name="ta_revenue_block">
+                        <setting string="纳税人身份" help="决定收入确认默认税率：一般纳税人 6%、小规模 3%；切换身份会重设默认税率，可再手改。">
+                            <field name="ta_taxpayer_type"/>
+                        </setting>
+                        <setting string="收入增值税率" help="收入确认拆税率（小数，如 0.06）。0 表示不拆税。">
+                            <field name="ta_vat_rate"/>
+                        </setting>
+                        <setting string="41 代订差价拆销项税"
+                                 help="默认关：差价含税全额进 6001.03 代订收入；开票体系（BS-12）落地后按需启用。">
+                            <field name="ta_revenue_dd_split_tax"/>
+                        </setting>
+                        <setting string="发团自动确认收入"
+                                 help="勾选后发团动作自动生成收入确认凭证；不勾选则仅在发团表单手动点击「确认收入」。">
+                            <field name="ta_revenue_auto_on_depart"/>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

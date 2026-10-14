@@ -137,3 +137,18 @@ class TestGuidePerformance(TransactionCase):
         self.assertAlmostEqual(row7.income, 0.0)
         self.assertAlmostEqual(row7.commission_net, 0.0)
         self.assertAlmostEqual(row7.loan_outstanding, 1000.0)
+
+    def test_expense_count_by_departure_month(self):
+        # 批6 P1-6：报账日期跨月（08月）仍按带团月（06月）归属
+        exp2 = self.env['ta.guide.expense'].with_user(self.u_guide).create({
+            'departure_id': self.dep6.id, 'date': '2026-08-03',
+            'line_ids': [(0, 0, {'name': '跨月垫付', 'amount': 100.0})]})
+        exp2.with_user(self.u_guide).action_submit()
+        exp2.with_user(self.u_acct).action_approve()
+        self.env.flush_all()  # SQL 视图需先落盘同事务写入
+        row6 = self._row('2026-06')
+        self.assertEqual(row6.expense_count, 2)
+        self.assertAlmostEqual(row6.cost_total, 1560.0)
+        aug = self.env['ta.guide.performance'].search(
+            [('guide_id', '=', self.guide.id), ('ym', '=', '2026-08')])
+        self.assertEqual(len(aug), 0)

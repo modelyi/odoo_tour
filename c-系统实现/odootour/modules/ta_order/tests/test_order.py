@@ -70,3 +70,15 @@ class TestOrder(TransactionCase):
             order._ta_apply_paid(3001)
         with self.assertRaises(UserError):
             order._ta_apply_paid(-1)
+
+    def test_kind_change_refills_unit_price(self):
+        # 批6 P1-8：改价别按价目表回填单价；未改价别时手工价保留
+        order = self._mk_order(['adult'])
+        line = order.line_ids
+        self.assertAlmostEqual(line.unit_price, 3000.0)
+        line.kind = 'child'
+        self.assertAlmostEqual(line.unit_price, 2000.0)
+        line.unit_price = 1800.0  # 手工改价
+        self.assertAlmostEqual(line.unit_price, 1800.0)
+        line.kind = 'single'
+        self.assertAlmostEqual(line.unit_price, 500.0)

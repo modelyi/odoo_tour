@@ -135,10 +135,13 @@ class TaDispatchItem(models.Model):
     def _create_supplier_bill(self):
         self.ensure_one()
         partner = self.supplier_id
-        # Odoo 20：费用科目走公司默认值（res.company.expense_account_id），partner 级已移除
-        expense = self.company_id.expense_account_id
-        if not expense:
-            raise UserError("公司未设置默认费用科目（会计设置→费用科目），无法生成账单。")
+        # 批6 P0-6：成本科目按业务模式分流（BS-14）：41 代订 → 2241.01 代收代付
+        # （成本经代收代付转出，不进损益）；其余模式 → 6401 主营业务成本。
+        if self.departure_id.biz_mode_id.code == '41':
+            expense = self._ta_get_account(
+                '224101', '其他应付款-代收代付', 'liability_payable')
+        else:
+            expense = self._ta_get_account('6401', '主营业务成本', 'expense')
         journal = self.env['account.journal'].search(
             [('type', '=', 'purchase'), ('company_id', '=', self.company_id.id)], limit=1)
         if not journal:
@@ -147,14 +150,20 @@ class TaDispatchItem(models.Model):
             'move_type': 'in_invoice',
             'journal_id': journal.id,
             'partner_id': partner.id,
-            'date': self.date_start or fields.Date.context_today(self),
+            # 批6 P1-7：账单日期取操作当日，不再取发团日（避免未来日期账单）
+            'date': fields.Date.context_today(self),
             # O20 硬校验（account_move._post）：in_invoice 过账必须填 invoice_date，
             # 否则"Bill/Refund date is required"拦截，付款闭环无法走通 → 建单即带上。
-            'invoice_date': self.date_start or fields.Date.context_today(self),
+            'invoice_date': fields.Date.context_today(self),
             'ref': f"计调单 {self.departure_id.code or ''} {self.name}",
             'invoice_line_ids': [(0, 0, {
                 'name': self.name,
                 'account_id': expense.id,
+                # O20 坑：负债类科目（224101）行会被自动归类 display_type='payment_term'，
+                # 不满足 invoice_line_ids 的 comodel domain；显式钉回 'product' 行。
+                'display_type': 'product',
+                # O20 校验：Payable 科目分录必须带到期日。
+                'date_maturity': fields.Date.context_today(self),
                 'quantity': self.qty,
                 'price_unit': self.unit_price,
             })],

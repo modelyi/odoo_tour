@@ -9,4 +9,6 @@
               action="action_ta_expense" sequence="30"/>
     <menuitem id="menu_ta_receivable_aging" name="应收账龄" parent="menu_ta_finance"
               action="action_ta_receivable_aging" sequence="35"/>
+    <menuitem id="menu_ta_revenue_recognition" name="收入确认" parent="menu_ta_finance"
+              action="action_ta_revenue_recognition" sequence="40"/>
 </odoo>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ta_revenue_recognition_tree" model="ir.ui.view">
+        <field name="name">ta.revenue.recognition.tree</field>
+        <field name="model">ta.revenue.recognition</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="departure_id"/>
+                <field name="biz_mode_code"/>
+                <field name="mode"/>
+                <field name="gross_amount" sum="合计"/>
+                <field name="net_amount" sum="合计"/>
+                <field name="tax_amount" sum="合计"/>
+                <field name="move_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-muted="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_revenue_recognition_form" model="ir.ui.view">
+        <field name="name">ta.revenue.recognition.form</field>
+        <field name="model">ta.revenue.recognition</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_cancel" type="object" string="冲销确认"
+                            invisible="state != 'posted'" groups="ta_base.group_ta_manager"
+                            confirm="确认冲销该收入确认？将红冲凭证（已核销收款不受影响）。"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="departure_id"/>
+                            <field name="date"/>
+                            <field name="biz_mode_code"/>
+                            <field name="mode"/>
+                        </group>
+                        <group>
+                            <field name="gross_amount"/>
+                            <field name="net_amount"/>
+                            <field name="tax_amount"/>
+                            <field name="move_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ta_revenue_recognition" model="ir.actions.act_window">
+        <field name="name">收入确认</field>
+        <field name="res_model">ta.revenue.recognition</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_ta_departure_form_inherit_revenue" model="ir.ui.view">
+        <field name="name">ta.departure.form.inherit.revenue</field>
+        <field name="model">ta.departure</field>
+        <field name="inherit_id" ref="ta_route.view_ta_departure_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_settle']" position="after">
+                <button name="action_recognize_revenue" type="object" string="确认收入"
+                        class="btn-primary" groups="ta_base.group_ta_accountant"
+                        invisible="state not in ('departed','settled') or recognition_ids.state == 'posted'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

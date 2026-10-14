@@ -61,8 +61,8 @@
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
-                                    <field name="kind"/>
-                                    <field name="unit_price"/>
+                                    <field name="kind" on_change="1"/>
+                                    <field name="unit_price" on_change="1"/>
                                     <field name="amount"/>
                                     <field name="gender" optional="hide"/>
                                     <field name="age_group" optional="hide"/>
