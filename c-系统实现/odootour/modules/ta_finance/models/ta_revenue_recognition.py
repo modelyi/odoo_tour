@@ -99,6 +99,26 @@ class TaDepartureRevenue(models.Model):
     def _ta_prepare_revenue_recognition(self):
         """计算并落凭证（金额口径 BS-14 R 表；无金额可确认时返回空 dict）。"""
         self.ensure_one()
+        amounts = self._ta_revenue_recognition_amounts()
+        if not amounts:
+            return {}
+        move = self._ta_create_revenue_move(
+            amounts['mode'], amounts['orders'],
+            amounts['gross'], amounts['net'], amounts['tax'])
+        return {
+            'departure_id': self.id,
+            'date': self.date_start,
+            'biz_mode_code': amounts['mode_code'],
+            'mode': amounts['mode'],
+            'gross_amount': amounts['gross'],
+            'net_amount': amounts['net'],
+            'tax_amount': amounts['tax'],
+            'move_id': move.id,
+        }
+
+    def _ta_revenue_recognition_amounts(self):
+        """纯金额计算（不落凭证，供补记脚本 DRY_RUN 复用）。"""
+        self.ensure_one()
         company = self.company_id
         mode_code = self.biz_mode_id.code or ''
         orders = self.env['ta.order'].search([
@@ -124,16 +144,13 @@ class TaDepartureRevenue(models.Model):
             return {}
         if gross <= 0.005 and mode == 'gross':
             return {}
-        move = self._ta_create_revenue_move(mode, orders, gross, net, tax)
         return {
-            'departure_id': self.id,
-            'date': self.date_start,
-            'biz_mode_code': mode_code,
+            'mode_code': mode_code,
             'mode': mode,
-            'gross_amount': gross,
-            'net_amount': net,
-            'tax_amount': tax,
-            'move_id': move.id,
+            'orders': orders,
+            'gross': gross,
+            'net': net,
+            'tax': tax,
         }
 
     def _ta_revenue_gross(self, company, base):
