@@ -54,26 +54,28 @@ journal = env['account.journal'].search([
 if not journal:
     print('!! 无带默认科目的银行/现金日记账，收款场景中止')
 else:
-    remaining = round(b5_commission.commission_total
-                      - sum(b5_commission.receipt_ids.mapped('amount')), 2)
-    take = min(500.0, remaining)
-    if b5_commission and take > 0:
-        receipt = env['ta.commission.receipt'].create({
-            'commission_id': b5_commission.id,
-            'date': '2026-10-15',
-            'amount': take,
-            'journal_id': journal.id,
-            'remark': f'{PREFIX} 到账登记',
-        })
-        m = receipt.move_id
-        deb = sum(l.debit for l in m.line_ids)
-        cred = sum(l.credit for l in m.line_ids)
-        print(f"佣金收款：{receipt.name} {take:.2f}（凭证 {m.name} 借 {deb} 贷 {cred} "
-              f"差 {round(deb - cred, 2)} 状态 {m.state}）")
-        print(f"佣金单 {b5_commission.name} 已收 {b5_commission.received_total:.2f}"
-              f" / 总额 {b5_commission.commission_total:.2f}")
+    if b5_commission.receipt_ids:
+        print(f"佣金单 {b5_commission.name} 已有收款（幂等跳过）："
+              f"已收 {b5_commission.received_total:.2f}")
     else:
-        print('批5 佣金单已收满或缺失，收款场景跳过')
+        take = min(500.0, round(b5_commission.commission_total, 2))
+        if take > 0:
+            receipt = env['ta.commission.receipt'].create({
+                'commission_id': b5_commission.id,
+                'date': '2026-10-15',
+                'amount': take,
+                'journal_id': journal.id,
+                'remark': f'{PREFIX} 到账登记',
+            })
+            m = receipt.move_id
+            deb = sum(l.debit for l in m.line_ids)
+            cred = sum(l.credit for l in m.line_ids)
+            print(f"佣金收款：{receipt.name} {take:.2f}（凭证 {m.name} 借 {deb} 贷 {cred} "
+                  f"差 {round(deb - cred, 2)} 状态 {m.state}）")
+            print(f"佣金单 {b5_commission.name} 已收 {b5_commission.received_total:.2f}"
+                  f" / 总额 {b5_commission.commission_total:.2f}")
+        else:
+            print('批5 佣金单已收满或缺失，收款场景跳过')
 
 # ---- 场景 C：P0-4 退单红冲 + 个税抵扣（新购物店，避免与场景 B 收款冲突）----
 b6_guide, _ = goc('res.partner', [('name', '=', f'{PREFIX}导游')],
@@ -120,7 +122,7 @@ if b6_commission:
           f"实发 {guide_row.net_pay:.2f}")
 
 b6_return, br_c = goc('ta.shop.return',
-    [('shop_id', '=', b6_shop.id), ('state', '=', 'draft')],
+    [('shop_id', '=', b6_shop.id)],
     {'shop_id': b6_shop.id, 'return_date': '2026-10-15',
      'return_amount': 2000.0, 'reason': f'{PREFIX} 客户退货 2000（红冲演示）'})
 if br_c:
@@ -144,6 +146,15 @@ if new_commission:
 deducts = env['ta.guide.commission.tax.deduct'].search([('return_id', '=', b6_return.id)])
 for d in deducts:
     print(f"个税抵扣：{d.staff_id.name} 可抵 {d.amount:.2f}（{d.state}）")
+
+# ---- 场景 C2：退单后新草稿佣金单再确认（重确认路径 + 对账视图含购物成本）----
+if new_commission and new_commission.state == 'draft':
+    new_commission.with_user(ADMIN).action_confirm()
+    print(f"新佣金单已重新确认：{new_commission.name} 购物金额 "
+          f"{new_commission.shop_amount:.2f} 佣金总额 {new_commission.commission_total:.2f} "
+          f"个税 {new_commission.tax_amount:.2f}")
+elif new_commission:
+    print(f"新佣金单状态 {new_commission.state}（跳过确认）")
 
 # ---- 场景 D：P0-6 收入确认复验（发团日口径，含补记存量）----
 rr = env['ta.revenue.recognition'].sudo().search([])
