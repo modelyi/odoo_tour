@@ -2,17 +2,17 @@
 
 约定与 tms-platform/tour-platform 的 A0-5 一致：**一切镜像按 digest 固定，升级必须显式换 pin 并走一遍冒烟。**
 
-## 当前 pin（2026-09-25 更新）
+## 当前 pin（2026-10-15 更新）
 
 | 项 | 值 |
 |----|----|
 | 来源 | https://github.com/odoo/odoo（社区版，零 patch） |
 | 分支 | `20.0` |
-| commit | `c7f7429776e018c20dbad9ae5a9873345635b661`（2026-09-25 分支头；上一 pin `87a1773bda6c`） |
+| commit | `122e465365d552cd4e40c9ee34dc5e79b1336cc1`（2026-10-15 分支头；上一 pin `c7f7429776e0`） |
 | 构建方式 | 自建镜像 `Dockerfile.odoo`（Docker Hub 无官方 odoo:20 镜像，2026-09-25 用 registry API 核实；最新为 19.0-20260908） |
 | 基础镜像 | `python:3.12.14-bookworm` @ `sha256:dbbe4ceb97851e2e5fa83798b239811f871cb743b259ba3563737349f6bcfaa0` |
 | 数据库 | `postgres:16-alpine` @ `sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea` |
-| 镜像产物 | `odootour:20.0-a2` = image ID `98049665c16d`（新增 tour 侧 pip 依赖 qifparse==0.5/pandas==2.2.3/numpy==1.26.4，pin 同 tour-platform/requirements20.txt；旧产物 `20.0-a1`=`d1966975a5fb` 保留作回退） |
+| 镜像产物 | `odootour:20.0-a3` = image ID `82b1a97418db`（2026-10-15 升级 pin，配方与 a2 完全相同；旧产物 `20.0-a2`=`98049665c16d` 保留作回退） |
 | 访问 | https://tour.solepro.cloud → nginx → 127.0.0.1:8079 |
 
 ## 升级 runbook（20.0.x 小步推进）
@@ -127,3 +127,10 @@
      ②视图把相关子查询改为一次性预聚合 CTE + LEFT JOIN（16k 行视图 3min → 101ms）。
      另可加偏索引 `ON ta_order (state) WHERE amount_open > 0.01`（未收单只占 20%）。
      教训：SQL 视图 count(*) 快 ≠ 首屏快，必须按 `_order` + LIMIT 的真实形态测。
+- 2026-10-15 **常规升级 a3**：pin 升到 20.0@122e4653（上游 20.0 分支 20 天增量官方 FIX）。
+  升级前备份 `backup/tour20-20261015-132153.sql.gz` + `filestore-20261015-132153.tgz`；
+  镜像 `20.0-a3`，compose tag 已同步。冒烟：容器内 HEAD=122e4653、启动 0 ERROR、
+  92 modules loaded、`/web/login` 200（127.0.0.1:8079 与 https://tour.solepro.cloud 均验）。
+  回退：`docker compose up -d` 指回 tag `20.0-a2`（a2 镜像保留）。
+  已知无害 WARNING（a2 起即有，非本次引入）：odoo.conf `gevent_interface` 未知选项、
+  markdown2 未装、ta_* 字段 `tracking` 参数不识别。

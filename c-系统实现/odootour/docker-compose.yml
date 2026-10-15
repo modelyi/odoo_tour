@@ -29,8 +29,8 @@ services:
       context: .
       dockerfile: Dockerfile.odoo
       args:
-        ODOO_COMMIT: ${ODOO_COMMIT:-c7f7429776e018c20dbad9ae5a9873345635b661}
-    image: odootour:20.0-a2
+        ODOO_COMMIT: ${ODOO_COMMIT:-122e465365d552cd4e40c9ee34dc5e79b1336cc1}
+    image: odootour:20.0-a3
     container_name: odootour-odoo
     restart: unless-stopped
     environment:
