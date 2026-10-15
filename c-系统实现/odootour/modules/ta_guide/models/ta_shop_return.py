@@ -91,10 +91,12 @@ class TaShopReturn(models.Model):
                 raise UserError(
                     f"退单金额 {r.return_amount:.2f} 超过可退额度 {cap:.2f}。")
             shop = r.shop_id
-            commission = r._ta_handle_commissions(shop)
+            # 先置 confirmed 再触发重算：return_amount_total 为存储计算字段，
+            # 引擎读取有效金额时必须已含本退单（BS-08 §4.2）。
             r.state = 'confirmed'
             r.auditor_id = self.env.user
             r.audit_date = fields.Datetime.now()
+            commission = r._ta_handle_commissions(shop)
             shop.message_post(body=(
                 f"退单 {r.name} 已确认：退单金额 {r.return_amount:.2f}，"
                 f"购物有效金额（总金额−已确认退单）由 {shop.total_amount:.2f} 调整为 "

@@ -199,6 +199,8 @@ class TestCommissionMove(TransactionCase):
     def test_missing_account_raises_chinese_usererror(self):
         c = self._manual(allowance=1000.0, tax_rate=0.0)
         Account = type(self.env['account.account'])
+        # 游标级科目缓存会跨 savepoint 泄漏（前序用例已解析同 code 科目）→ 先清空
+        self.env.cr._ta_commission_account_cache = {}
         # 恢复库可能已有存量佣金科目 → 同时屏蔽 search，强制走建科目分支
         empty = self.env['account.account'].browse()
         with mock.patch.object(Account, 'create',
