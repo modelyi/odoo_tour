@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 批6 P1-4：购物成本录入（BS-08 §4.4 菜单 [4305]）。
+         只录入统计、不生成凭证；合规口径见 amount 字段 help。 -->
+    <record id="view_ta_shop_cost_search" model="ir.ui.view">
+        <field name="name">ta.shop.cost.search</field>
+        <field name="model">ta.shop.cost</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="departure_id" string="发团计划"/>
+                <field name="plan_code" string="计划号"/>
+                <field name="route_id" string="线路"/>
+                <field name="supplier_id" string="购物店"/>
+                <field name="cost_type" string="成本类型"/>
+                <filter name="group_departure" string="按发团计划" context="{'group_by': 'departure_id'}"/>
+                <filter name="group_supplier" string="按购物店" context="{'group_by': 'supplier_id'}"/>
+                <filter name="group_cost_type" string="按成本类型" context="{'group_by': 'cost_type'}"/>
+                <filter name="group_route" string="按线路" context="{'group_by': 'route_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_cost" model="ir.actions.act_window">
+        <field name="name">购物成本</field>
+        <field name="res_model">ta.shop.cost</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="search_view_id" ref="view_ta_shop_cost_search"/>
+    </record>
+
+    <record id="view_ta_shop_cost_list" model="ir.ui.view">
+        <field name="name">ta.shop.cost.list</field>
+        <field name="model">ta.shop.cost</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="plan_code"/>
+                <field name="route_id" optional="hide"/>
+                <field name="supplier_id"/>
+                <field name="cost_type"/>
+                <field name="amount" sum="合计"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="remark" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_cost_pivot" model="ir.ui.view">
+        <field name="name">ta.shop.cost.pivot</field>
+        <field name="model">ta.shop.cost</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="supplier_id" type="row"/>
+                <field name="route_id" type="row"/>
+                <field name="cost_type" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_cost_form" model="ir.ui.view">
+        <field name="name">ta.shop.cost.form</field>
+        <field name="model">ta.shop.cost</field>
+        <field name="arch" type="xml">
+            <form string="购物成本">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="departure_id"/>
+                            <field name="plan_code"/>
+                            <field name="route_id"/>
+                        </group>
+                        <group>
+                            <field name="supplier_id"/>
+                            <field name="cost_type"/>
+                            <field name="amount"/>
+                        </group>
+                    </group>
+                    <group string="备注">
+                        <field name="remark" nolabel="1" colspan="2"
+                               placeholder="回扣/礼品/其他成本说明…"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

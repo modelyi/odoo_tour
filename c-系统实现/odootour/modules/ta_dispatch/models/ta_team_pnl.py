@@ -19,6 +19,12 @@ _SHOP_COMMISSION_COLS = """,
                     AND c.state IN ('confirmed','settled')), 0) AS shop_staff_cost
 """
 
+# 批6 P1-4：购物成本列（BS-08 §4.4）。回扣/礼品/其他成本单列，不与佣金列混挂。
+_SHOP_COST_COLS = """,
+       COALESCE((SELECT sum(sc.amount) FROM ta_shop_cost sc
+                  WHERE sc.departure_id = d.id), 0) AS shop_cost
+"""
+
 
 def _ta_team_pnl_view_sql(cr):
     """单团损益视图 SQL（供 ta_dispatch / ta_guide 共用，防两处口径漂移）。
@@ -26,12 +32,17 @@ def _ta_team_pnl_view_sql(cr):
     购物佣金三列仅在 ta_guide 已安装（ta_guide_commission 表存在）时挂载：
     ta_dispatch 独立安装/更新时不引用未创建的表；ta_guide 安装后任何一方
     -u 触发的视图重建都会自动带上三列（表存在性探测）。
+    购物成本列同理按 ta_shop_cost 表存在性挂载（批6 P1-4）。
     """
-    cr.execute("""
-        SELECT 1 FROM information_schema.tables
-        WHERE table_schema = current_schema() AND table_name = 'ta_guide_commission'
-    """)
-    shop_cols = _SHOP_COMMISSION_COLS if cr.fetchone() else ""
+    def table_exists(name):
+        cr.execute("""
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = current_schema() AND table_name = %s
+        """, (name,))
+        return bool(cr.fetchone())
+
+    shop_cols = _SHOP_COMMISSION_COLS if table_exists('ta_guide_commission') else ""
+    shop_cols += _SHOP_COST_COLS if table_exists('ta_shop_cost') else ""
     return f"""
         CREATE OR REPLACE VIEW ta_team_pnl AS
         SELECT d.id AS id,
@@ -96,12 +107,13 @@ class TaTeamPnl(models.Model):
             pnl.profit_no_shop = pnl.income - cost_net
             # AC-16 含购物口径：净佣金收入（佣金总额 − 销项税）− 司陪分成成本。
             # 购物三列由 ta_guide 经 SQL 视图挂载；本模块独立运行时无该列，取 0
-            # （无购物数据时两口径恒等）。
+            # （无购物数据时两口径恒等）。批6 P1-4：购物成本一并从含购物毛利扣除。
             shop_commission = getattr(pnl, 'shop_commission', 0.0) or 0.0
             shop_tax = getattr(pnl, 'shop_commission_tax', 0.0) or 0.0
             shop_staff = getattr(pnl, 'shop_staff_cost', 0.0) or 0.0
+            shop_cost = getattr(pnl, 'shop_cost', 0.0) or 0.0
             pnl.profit = (pnl.profit_no_shop
-                          + (shop_commission - shop_tax) - shop_staff)
+                          + (shop_commission - shop_tax) - shop_staff - shop_cost)
             pnl.profit_tax_incl = pnl.income - pnl.cost_total
 
     cost_net = fields.Float(string='成本（不含税净额）', compute='_compute_tax_split')

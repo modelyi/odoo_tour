@@ -51,6 +51,9 @@ class TestCommissionMove(TransactionCase):
             cls.env, 'bank', '银行发放', 'BNKGM', default_account_id=cls.bank_account.id)
         # AC-19：购物路径增值税率 6%（价税分离），引擎据此计算 commission_tax
         cls.env['ir.config_parameter'].sudo().set_float('ta_base.default_tax_rate', 0.06)
+        # 恢复库带入全局生效人均线会覆盖分成档/奖金 → 测试内屏蔽
+        cls.env['ta.per.capita.line'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
 
         route = cls.env['ta.route'].create({
             'name': '佣金凭证测试线路',
@@ -196,8 +199,12 @@ class TestCommissionMove(TransactionCase):
     def test_missing_account_raises_chinese_usererror(self):
         c = self._manual(allowance=1000.0, tax_rate=0.0)
         Account = type(self.env['account.account'])
+        # 恢复库可能已有存量佣金科目 → 同时屏蔽 search，强制走建科目分支
+        empty = self.env['account.account'].browse()
         with mock.patch.object(Account, 'create',
-                               side_effect=AccessError('创建受限')):
+                               side_effect=AccessError('创建受限')), \
+             mock.patch.object(Account, 'search',
+                               side_effect=lambda *a, **k: empty):
             with self.assertRaises(UserError) as ctx:
                 c.with_user(self.u_acct).action_confirm()
         self.assertIn('科目', ctx.exception.args[0])

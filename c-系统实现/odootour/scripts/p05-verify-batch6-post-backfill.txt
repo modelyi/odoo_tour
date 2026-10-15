@@ -1,0 +1,87 @@
+ Container odootour-db Running 
+ Container odootour-db Waiting 
+ Container odootour-db Healthy 
+ Container odootour-odoo-run-2682dcaba996 Creating 
+ Container odootour-odoo-run-2682dcaba996 Created 
+2026-10-15 02:37:44,061 1 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-10-15 02:37:44,061 1 WARNING ? odoo.tools.config: unknown option 'gevent_interface' in the config file at /etc/odoo/odoo.conf, option stored as-is, without parsing
+2026-10-15 02:37:44,061 1 INFO ? odoo: Odoo version 20.0
+2026-10-15 02:37:44,062 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf
+2026-10-15 02:37:44,062 1 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/odoo/odoo-server/odoo/addons', '/var/lib/odoo/addons/20.0', '/usr/lib/odoo/odoo-server/addons', '/mnt/extra-addons', '/mnt/vendor-addons'])
+2026-10-15 02:37:44,062 1 INFO ? odoo: database: odoo@db:5432
+2026-10-15 02:37:45,194 1 INFO ? odoo.service.server.PreforkServer: Stopping workers gracefully
+2026-10-15 02:37:45,250 1 INFO tour20 odoo.modules.loading: loading 1 modules...
+2026-10-15 02:37:45,256 1 INFO tour20 odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra)
+2026-10-15 02:37:45,298 1 INFO tour20 odoo.modules.loading: loading 92 modules...
+2026-10-15 02:37:45,883 1 WARNING tour20 odoo.addons.mail.controllers.attachment: markdown2 is not installed, markdown will not be rendered
+2026-10-15 02:37:47,749 1 INFO tour20 odoo.modules.loading: 92 modules loaded in 2.45s, 0 queries (+0 extra)
+2026-10-15 02:37:47,969 1 WARNING tour20 odoo.fields: Field ta.per.capita.line.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-15 02:37:47,969 1 WARNING tour20 odoo.fields: Field ta.per.capita.calc.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-15 02:37:48,029 1 INFO tour20 odoo.modules.loading: Modules loaded.
+2026-10-15 02:37:48,140 1 INFO tour20 odoo.registry: Registry loaded in 2.935s
+========================================================================
+== 批6 P0-5 期初三表验证（只读） — 补记前基线
+========================================================================
+公司: My Company (id=1)；数据库: tour20
+
+[C1] 期初建账凭证
+  [PASS] C1-唯一: 期初凭证 1 张（id=199 OPEN/2026/09/0001 ref=期初建账）
+  [PASS] C1-posted: state=posted（OPEN/2026/09/0001）
+  [PASS] C1-journal: journal=OPEN
+  [PASS] C1-平衡: 借=84480833.37 贷=84480833.37 差=0.0
+    OPEN/2026/09/0001 | ref=期初建账 state=posted journal=OPEN 借=84480833.37 贷=84480833.37
+
+[C2] 全库 posted 借贷差
+  [PASS] C2: 借=92690404.87 贷=92690404.87 差=0.0（2048 张 posted 凭证）
+
+[C4] 期初凭证无损益行
+  [PASS] C4: 期初凭证损益行数 = 0（期望 0）
+
+[C5] 银行 1002 余额
+  [PASS] C5: 1002=9,228,332.70（BS-16 期望 +9,228,332.70）
+
+[C3] 资产 = 负债 + 权益（恒等）
+    资产=89,289,625.49  负债=1,596,816.67  权益(含本年损益)=87,692,808.82
+    资产-负债-权益 = 0.00
+  [PASS] C3: 恒等差 = 0.0
+
+== 三表试算（posted） ==
+
+[资产负债表] 科目编码余额（dr-cr；负=贷方余额）
+    1002     asset_cash               9,228,332.70
+    1012     —
+    1122     asset_receivable        75,255,127.17
+    1123     —
+    1221     asset_receivable             3,000.00
+    1222     asset_receivable             3,000.00
+    2202     liability_payable       -1,260,845.61
+    2203     —
+    2211     —
+    222101   liability_payable         -365,266.14
+    222102   liability_payable              -80.00
+    2241     liability_payable           -1,570.00
+    224101   liability_current           32,245.08
+    4001     —
+    4104     equity                 -83,219,987.76
+    合计       资产                      89,289,625.49
+    合计       负债                       1,596,816.67
+    合计       权益(含本年损益)         87,692,808.82
+
+[利润表] 收入/成本科目余额（dr-cr；负=贷方发生）
+    600101   income                  -6,087,770.13
+    600103   income                     -32,245.08
+    6051     income_other                -3,000.00
+    6401     —
+    6407     expense                      1,650.00
+
+== 参考对照（仅输出差异，不硬断言） ==
+[权益] BS-16 初版参考 = 52,718,463.79；当前(含本年损益) = 87,692,808.82；差异 = 34,974,345.03
+        （迁移迭代6 已按轧平口径落 4104=83,219,987.76，恒等以 C3 为准；差异含迁移口径尾差与批3-5 仿真损益）
+[P0-6 补记目标] 当前余额 vs BS-14 目标（补记前应近 0，补记后接近目标）
+    6001.01  当前=            0.00  目标=  235,972,275.00（贷） 组团收入净额（BS-14 R2）
+    6001.03  当前=            0.00  目标=    1,210,748.00（贷） 代订差价（BS-14，含税）
+    2221     当前=     -365,346.14  目标=   14,158,338.00（贷） 销项税（BS-14 R3，前缀组）
+    6401     当前=            0.00  目标=  255,423,213.00（借） 主营成本（BS-14 全额）
+
+== RESULT ==
+PASS: 期初三表验证全部通过（硬断言 C1-C5）

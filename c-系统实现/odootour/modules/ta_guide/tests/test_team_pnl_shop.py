@@ -43,6 +43,10 @@ class TestTeamPnlShop(TransactionCase):
         cls.gen_journal = _get_or_create_journal(cls.env, 'general', '杂项日记账PNL', 'GENPNL')
 
         cls.env.user.group_ids = [(4, cls.env.ref('ta_base.group_ta_manager').id)]
+        # 人均线是全局生效口径：预置生效行（如生产数据）会覆盖协议分成档，
+        # 本组用例校验协议 40% 分成 → 先停用存量生效行（随类回滚）。
+        cls.env['ta.per.capita.line'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
         route = cls.env['ta.route'].create({
             'name': '损益双口径测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],
@@ -134,6 +138,22 @@ class TestTeamPnlShop(TransactionCase):
         # AC-16 含购物口径：4940 + (2000 − 0) − 800 = 6140
         self.assertAlmostEqual(pnl.profit, 6140.0)
         self.assertAlmostEqual(pnl.profit_tax_incl, 4940.0)
+
+    def test_pnl_shop_cost(self):
+        """批6 P1-4：购物成本列并入单团损益——
+        profit = profit_no_shop + (佣金 − 税) − 分成 − 购物成本。"""
+        self._shopping_flow()
+        self.env['ta.shop.cost'].create({
+            'departure_id': self.dep.id,
+            'supplier_id': self.shop_partner.id,
+            'cost_type': 'gift',
+            'amount': 300.0,
+        })
+        pnl = self._pnl()
+        self.assertAlmostEqual(pnl.shop_cost, 300.0)
+        # 含购物毛利：4940 + (2000 − 0) − 800 − 300 = 5840
+        self.assertAlmostEqual(pnl.profit, 5840.0)
+        self.assertAlmostEqual(pnl.profit_no_shop, 4940.0)
 
     def test_pnl_no_shop_equals(self):
         """无购物佣金时含购物口径 == 不含购物口径（profit == profit_no_shop）。"""

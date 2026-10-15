@@ -30,6 +30,8 @@
                 <field name="commission_tax" sum="合计"/>
                 <field name="staff_share" sum="合计"/>
                 <field name="company_retain" sum="合计"/>
+                <field name="shop_cost_total" sum="合计"/>
+                <field name="net_profit" sum="合计"/>
                 <field name="paid_total" sum="合计"/>
                 <field name="commission_count" sum="合计"/>
                 <field name="last_commission_date"/>
@@ -48,6 +50,8 @@
                 <field name="commission_tax" type="measure"/>
                 <field name="staff_share" type="measure"/>
                 <field name="company_retain" type="measure"/>
+                <field name="shop_cost_total" type="measure"/>
+                <field name="net_profit" type="measure"/>
                 <field name="paid_total" type="measure"/>
                 <field name="commission_count" type="measure"/>
             </pivot>

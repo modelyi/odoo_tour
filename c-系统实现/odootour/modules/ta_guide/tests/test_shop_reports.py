@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -29,6 +30,10 @@ class TestShopReports(TransactionCase):
             cls.env, 'general', '杂项日记账RPT', 'GENRPT')
 
         cls.env.user.group_ids = [(4, cls.env.ref('ta_base.group_ta_manager').id)]
+        # 人均线是全局生效口径：预置生效行（如生产数据）会覆盖协议分成档，
+        # 本组用例校验协议 40% 分成 → 先停用存量生效行（随类回滚）。
+        cls.env['ta.per.capita.line'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
         route = cls.env['ta.route'].create({
             'name': '购物报表测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],
@@ -111,6 +116,29 @@ class TestShopReports(TransactionCase):
         # 名称搜索（_rec_names_search）
         hit = self.env['ta.shop.reconciliation'].name_search('水晶购物店')
         self.assertIn(row.id, [r[0] for r in hit])
+
+    def test_reconciliation_shop_cost(self):
+        """批6 P1-4：购物成本并入对账——shop_cost_total / net_profit 两列正确，
+        净利润 = 佣金总额 − 购物成本 − 分成（BS-08 §4.4 业务规则 2）。"""
+        Cost = self.env['ta.shop.cost']
+        # 模型约束：金额必须大于 0
+        with self.assertRaises(UserError):
+            Cost.create({'departure_id': self.dep.id,
+                         'supplier_id': self.shop_partner.id,
+                         'cost_type': 'gift', 'amount': 0.0})
+        Cost.create({'departure_id': self.dep.id,
+                     'supplier_id': self.shop_partner.id,
+                     'cost_type': 'rebate', 'amount': 300.0,
+                     'remark': '茶壶回扣'})
+        Cost.create({'departure_id': self.dep.id,
+                     'supplier_id': self.shop_partner.id,
+                     'cost_type': 'gift', 'amount': 100.0})
+        self.env.flush_all()
+        row = self.env['ta.shop.reconciliation'].search([
+            ('shop_partner_id', '=', self.shop_partner.id)])
+        self.assertAlmostEqual(row.shop_cost_total, 400.0)
+        # 净利润 = 佣金 2000 − 购物成本 400 − 分成 800
+        self.assertAlmostEqual(row.net_profit, 800.0)
 
     def test_analysis_est_amount(self):
         """多维度分析：行数 = 名单行×购物组；est_amount = 人均购物 × 客人数。"""

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 批6 P1-5：佣金收款（BS-08 AC-17 菜单 [3622]）。
+         凭证在模型层生成（借 收款日记账默认科目 / 贷 1222 购物佣金应收），
+         界面只读展示；录入走佣金单「收款」按钮或批量收款向导。 -->
+
+    <record id="view_ta_commission_receipt_search" model="ir.ui.view">
+        <field name="name">ta.commission.receipt.search</field>
+        <field name="model">ta.commission.receipt</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="commission_id" string="佣金单"/>
+                <field name="shop_partner_id" string="购物店"/>
+                <field name="guide_id" string="导游"/>
+                <field name="date" string="收款日期"/>
+                <field name="journal_id" string="收款日记账"/>
+                <filter name="group_shop" string="按购物店" context="{'group_by': 'shop_partner_id'}"/>
+                <filter name="group_month" string="按月" context="{'group_by': 'date:month'}"/>
+                <filter name="group_journal" string="按日记账" context="{'group_by': 'journal_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_commission_receipt" model="ir.actions.act_window">
+        <field name="name">佣金收款</field>
+        <field name="res_model">ta.commission.receipt</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="search_view_id" ref="view_ta_commission_receipt_search"/>
+    </record>
+
+    <record id="view_ta_commission_receipt_list" model="ir.ui.view">
+        <field name="name">ta.commission.receipt.list</field>
+        <field name="model">ta.commission.receipt</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="commission_id" optional="show"/>
+                <field name="shop_partner_id"/>
+                <field name="guide_id" optional="hide"/>
+                <field name="journal_id"/>
+                <field name="amount" sum="合计"/>
+                <field name="move_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="remark" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_commission_receipt_pivot" model="ir.ui.view">
+        <field name="name">ta.commission.receipt.pivot</field>
+        <field name="model">ta.commission.receipt</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="shop_partner_id" type="row"/>
+                <field name="date" type="col" interval="month"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_commission_receipt_form" model="ir.ui.view">
+        <field name="name">ta.commission.receipt.form</field>
+        <field name="model">ta.commission.receipt</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="commission_id"
+                                   domain="[('shop_partner_id', '!=', False), ('state', 'in', ('confirmed', 'settled'))]"
+                                   options="{'no_create': True}"/>
+                            <field name="shop_partner_id"/>
+                            <field name="guide_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="amount"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="remark"/>
+                    </group>
+                    <group string="收款凭证（BS-08 AC-17）" groups="ta_base.group_ta_accountant">
+                        <field name="move_id" readonly="1"/>
+                        <button name="action_open_move" string="查看凭证" type="object"
+                                class="btn-link" invisible="not move_id"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- 批量收款向导（菜单 [3622] 入口 + 佣金单按钮入口共用） -->
+    <record id="action_ta_commission_collect_wizard" model="ir.actions.act_window">
+        <field name="name">购物批量收款</field>
+        <field name="res_model">ta.commission.collect.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_ta_commission_collect_wizard_form" model="ir.ui.view">
+        <field name="name">ta.commission.collect.wizard.form</field>
+        <field name="model">ta.commission.collect.wizard</field>
+        <field name="arch" type="xml">
+            <form string="购物批量收款">
+                <group>
+                    <group>
+                        <field name="date"/>
+                        <field name="journal_id"/>
+                    </group>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field name="commission_id"
+                               domain="[('shop_partner_id', '!=', False), ('state', 'in', ('confirmed', 'settled'))]"
+                               options="{'no_create': True}"/>
+                        <field name="shop_partner_id"/>
+                        <field name="guide_id" optional="hide"/>
+                        <field name="commission_total"/>
+                        <field name="received_total"/>
+                        <field name="amount"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_collect" string="生成收款" type="object"
+                            class="oe_highlight"/>
+                    <button string="取消" class="oe_cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 佣金单表单：收款按钮 + 已收金额/收款记录（P1-5） -->
+    <record id="view_ta_guide_commission_receipt_button" model="ir.ui.view">
+        <field name="name">ta.guide.commission.form.receipt</field>
+        <field name="model">ta.guide.commission</field>
+        <field name="inherit_id" ref="view_ta_guide_commission_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_collect_receipt" string="收款" type="object"
+                        invisible="not shop_partner_id or state not in ('confirmed', 'settled')"
+                        groups="ta_base.group_ta_accountant"/>
+            </xpath>
+            <xpath expr="//field[@name='deducted_total']" position="after">
+                <field name="received_total" invisible="not shop_partner_id"/>
+            </xpath>
+            <xpath expr="//field[@name='deduct_line_ids']/.." position="after">
+                <group string="佣金收款（AC-17，与借款冲抵正交）" invisible="not shop_partner_id">
+                    <field name="receipt_ids" nolabel="1" colspan="2" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="amount" sum="合计"/>
+                            <field name="move_id"/>
+                        </list>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -14,6 +14,11 @@ class TestShopCommission(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # 恢复库带入全局生效人均线/算法配置会覆盖分成档与人均口径 → 测试内屏蔽
+        cls.env['ta.per.capita.line'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
+        cls.env['ta.per.capita.calc'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
         route = cls.env['ta.route'].create({
             'name': '购物测试线路',
             'stop_ids': [(0, 0, {'day_no': 1, 'name': '出发'})],

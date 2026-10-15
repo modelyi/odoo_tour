@@ -11,6 +11,7 @@
                 <field name="shop_commission" optional="show" sum="合计"/>
                 <field name="shop_commission_tax" optional="show" sum="合计"/>
                 <field name="shop_staff_cost" optional="show" sum="合计"/>
+                <field name="shop_cost" optional="show" sum="合计"/>
             </xpath>
         </field>
     </record>

@@ -18,4 +18,16 @@
         <field name="prefix">SP</field>
         <field name="padding">4</field>
     </record>
+    <record id="seq_ta_commission_receipt" model="ir.sequence">
+        <field name="name">佣金收款编号</field>
+        <field name="code">ta.commission.receipt</field>
+        <field name="prefix">SK</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_ta_shop_return" model="ir.sequence">
+        <field name="name">购物退单编号</field>
+        <field name="code">ta.shop.return</field>
+        <field name="prefix">TD</field>
+        <field name="padding">5</field>
+    </record>
 </odoo>

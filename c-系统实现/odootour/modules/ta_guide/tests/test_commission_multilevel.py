@@ -23,6 +23,11 @@ class TestMultilevelCommission(TransactionCase):
                 'name': '杂项日记账M', 'code': 'GENM',
                 'type': 'general', 'company_id': cls.company.id})
         cls.env['ir.config_parameter'].sudo().set_float('ta_base.default_tax_rate', 0.06)
+        # 恢复库带入全局生效人均线/算法配置会覆盖分成档与人均口径 → 测试内屏蔽
+        cls.env['ta.per.capita.line'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
+        cls.env['ta.per.capita.calc'].search(
+            [('state', '=', 'active')]).write({'state': 'inactive'})
 
         route = cls.env['ta.route'].create({
             'name': '多层分成测试线路',

@@ -56,3 +56,18 @@ ta_shop_recon_comp_rule,ta.shop.reconciliation 多公司限制,ta.shop.reconcili
 ta_shop_analysis_acct,ta.shop.analysis 会计读,ta.shop.analysis,ta_base.group_ta_accountant,r,
 ta_shop_analysis_mgr,ta.shop.analysis 管理层读,ta.shop.analysis,ta_base.group_ta_manager,r,
 ta_shop_analysis_comp_rule,ta.shop.analysis 多公司限制,ta.shop.analysis,,r,"[('company_id', 'in', company_ids)]"
+ta_shop_cost_acct,ta.shop.cost 会计维护,ta.shop.cost,ta_base.group_ta_accountant,crud,
+ta_shop_cost_disp,ta.shop.cost 计调查看,ta.shop.cost,ta_base.group_ta_dispatcher,r,
+ta_shop_cost_comp_rule,ta.shop.cost 多公司限制,ta.shop.cost,,crud,"[('company_id', 'in', company_ids)]"
+ta_commission_receipt_acct,ta.commission.receipt 会计,ta.commission.receipt,ta_base.group_ta_accountant,crud,
+ta_commission_receipt_cashier,ta.commission.receipt 出纳录入,ta.commission.receipt,ta_base.group_ta_cashier,cr,
+ta_commission_receipt_disp,ta.commission.receipt 计调查看,ta.commission.receipt,ta_base.group_ta_dispatcher,r,
+ta_commission_receipt_comp_rule,ta.commission.receipt 多公司限制,ta.commission.receipt,,crud,"[('company_id', 'in', company_ids)]"
+ta_commission_collect_wizard_acct,ta.commission.collect.wizard 会计,ta.commission.collect.wizard,ta_base.group_ta_accountant,crud,
+ta_commission_collect_wizard_cashier,ta.commission.collect.wizard 出纳,ta.commission.collect.wizard,ta_base.group_ta_cashier,crud,
+ta_commission_collect_wizard_line_acct,ta.commission.collect.wizard.line 会计,ta.commission.collect.wizard.line,ta_base.group_ta_accountant,crud,
+ta_commission_collect_wizard_line_cashier,ta.commission.collect.wizard.line 出纳,ta.commission.collect.wizard.line,ta_base.group_ta_cashier,crud,
+ta_shop_return_acct,ta.shop.return 会计,ta.shop.return,ta_base.group_ta_accountant,crud,
+ta_shop_return_comp_rule,ta.shop.return 多公司限制,ta.shop.return,,crud,"[('company_id', 'in', company_ids)]"
+ta_commission_tax_deduct_acct,ta.guide.commission.tax.deduct 会计,ta.guide.commission.tax.deduct,ta_base.group_ta_accountant,crud,
+ta_commission_tax_deduct_comp_rule,ta.guide.commission.tax.deduct 多公司限制,ta.guide.commission.tax.deduct,,crud,"[('company_id', 'in', company_ids)]"

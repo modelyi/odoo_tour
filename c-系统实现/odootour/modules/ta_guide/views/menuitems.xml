@@ -7,6 +7,12 @@
               action="action_ta_guide_expense" sequence="20"/>
     <menuitem id="menu_ta_guide_shop" name="购物记录" parent="menu_ta_guide"
               action="action_ta_shop" sequence="25"/>
+    <!-- 批6 P1-4：购物成本录入（BS-08 §4.4 菜单 [4305]） -->
+    <menuitem id="menu_ta_guide_shop_cost" name="购物成本" parent="menu_ta_guide"
+              action="action_ta_shop_cost" sequence="26"/>
+    <!-- 批6 P0-4：购物退单（BS-08 §4.2 菜单 [4303]） -->
+    <menuitem id="menu_ta_guide_shop_return" name="购物退单" parent="menu_ta_guide"
+              action="action_ta_shop_return" sequence="27"/>
     <menuitem id="menu_ta_guide_commission" name="导游佣金" parent="menu_ta_guide"
               action="action_ta_guide_commission" sequence="30"/>
     <menuitem id="menu_ta_guide_shop_agreement" name="购物店返佣协议" parent="menu_ta_guide"
@@ -37,6 +43,9 @@
               action="action_ta_guide_commission_tax" sequence="60"/>
     <menuitem id="menu_ta_shop_reconciliation" name="购物对账" parent="menu_ta_shop_stats"
               action="action_ta_shop_reconciliation" sequence="70"/>
+    <!-- 批6 P1-5：佣金批量收款向导（BS-08 AC-17 菜单 [3622]） -->
+    <menuitem id="menu_ta_commission_collect" name="购物批量收款" parent="menu_ta_shop_stats"
+              action="action_ta_commission_collect_wizard" sequence="72"/>
     <menuitem id="menu_ta_shop_analysis_partner" name="组团社购物分析" parent="menu_ta_shop_stats"
               action="action_ta_shop_analysis_partner" sequence="80"/>
     <menuitem id="menu_ta_shop_analysis_origin" name="客源地购物统计" parent="menu_ta_shop_stats"

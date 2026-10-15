@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 批6 P0-4：购物退单（BS-08 §4.2 菜单 [4303]）。
+         确认动作做红冲/重算/个税抵扣（模型层）；红字发票仅提示（随 BS-12）。 -->
+
+    <record id="view_ta_shop_return_search" model="ir.ui.view">
+        <field name="name">ta.shop.return.search</field>
+        <field name="model">ta.shop.return</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="shop_id" string="购物记录"/>
+                <field name="departure_id" string="发团计划"/>
+                <field name="shop_partner_id" string="购物店"/>
+                <field name="guide_id" string="导游"/>
+                <field name="return_date" string="退单日期"/>
+                <filter name="filter_draft" string="待审核"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="已确认"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter name="group_shop_partner" string="按购物店"
+                        context="{'group_by': 'shop_partner_id'}"/>
+                <filter name="group_month" string="按月"
+                        context="{'group_by': 'return_date:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ta_shop_return" model="ir.actions.act_window">
+        <field name="name">购物退单</field>
+        <field name="res_model">ta.shop.return</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ta_shop_return_search"/>
+    </record>
+
+    <record id="view_ta_shop_return_list" model="ir.ui.view">
+        <field name="name">ta.shop.return.list</field>
+        <field name="model">ta.shop.return</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="return_date"/>
+                <field name="shop_id" optional="show"/>
+                <field name="departure_id" optional="hide"/>
+                <field name="shop_partner_id"/>
+                <field name="guide_id" optional="hide"/>
+                <field name="shop_amount"/>
+                <field name="return_amount" sum="合计"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'confirmed'"
+                       decoration-warning="state == 'draft'"
+                       decoration-muted="state == 'rejected'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_shop_return_form" model="ir.ui.view">
+        <field name="name">ta.shop.return.form</field>
+        <field name="model">ta.shop.return</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="确认退单" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            confirm="确认后将对已确认佣金单做红冲并生成新草稿单，继续？"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_reject" string="驳回" type="object"
+                            invisible="state != 'draft'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <button name="action_request_tax_refund" string="对未抵扣个税申请退税"
+                            type="object" invisible="state != 'confirmed'"
+                            groups="ta_base.group_ta_accountant"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="shop_id"
+                                   domain="[('state', '=', 'confirmed')]"
+                                   options="{'no_create': True}"
+                                   invisible="state != 'draft'"/>
+                            <field name="shop_id" readonly="1" invisible="state == 'draft'"/>
+                            <field name="departure_id"/>
+                            <field name="plan_code"/>
+                            <field name="guide_id"/>
+                        </group>
+                        <group>
+                            <field name="shop_amount"/>
+                            <field name="return_amount"/>
+                            <field name="return_date"/>
+                        </group>
+                    </group>
+                    <group string="退单原因（内控-审计轨迹，必填）">
+                        <field name="reason" nolabel="1" colspan="2"
+                               placeholder="客户退货/质量问题/重复录入…"/>
+                    </group>
+                    <group string="个税抵扣（BS-08 §4.2：原个税 × 退单金额/原购物金额）">
+                        <field name="deduct_line_ids" nolabel="1" colspan="2" readonly="1">
+                            <list>
+                                <field name="staff_id"/>
+                                <field name="tax_record_id" optional="hide"/>
+                                <field name="amount" sum="合计"/>
+                                <field name="state" widget="badge"
+                                       decoration-success="state == 'used'"
+                                       decoration-info="state == 'pending'"
+                                       decoration-warning="state == 'refund_requested'"/>
+                            </list>
+                        </field>
+                        <group>
+                            <field name="deduct_total"/>
+                            <field name="auditor_id"/>
+                            <field name="audit_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

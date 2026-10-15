@@ -157,7 +157,9 @@ class TaGuideCommission(models.Model):
             ('shop_partner_id', '=', shop.shop_partner_id.id),
             ('state', '=', 'confirmed'),
         ])
-        shop_amount = round(sum(group.mapped('total_amount')), 2)
+        # P0-4（BS-08 §4.2）：有效金额 = 总金额 − 已确认退单（退单红字口径）
+        shop_amount = round(sum(
+            g.total_amount - g.return_amount_total for g in group), 2)
         if shop_amount <= 0.01:
             return False
         agreement = self.env['ta.shop.agreement'].search([
@@ -336,6 +338,8 @@ class TaGuideCommission(models.Model):
                 raise AccessError("确认人不能是导游本人。")
             if abs((c.tax_amount + c.net_amount) - c.allowance) > 0.01:
                 raise UserError("税额与净额不平衡，请检查税率。")
+            if c.shop_partner_id:
+                c._ta_apply_tax_deduction()
             c.confirm_uid = self.env.user
             c.confirm_date = fields.Datetime.now()
             c.move_id = c._create_confirm_move()
@@ -346,6 +350,35 @@ class TaGuideCommission(models.Model):
                 f"导游税前 {c.allowance:.2f}，代扣个税 {c.tax_amount:.2f}，"
                 f"税后净额 {c.net_amount:.2f}。确认凭证已生成。"))
         return True
+
+    def _ta_apply_tax_deduction(self):
+        """P0-4（BS-08 §4.2）：退单个税抵扣——同人 pending 抵扣记录按金额顺序
+        整条冲减本次分成行代扣个税（下限 0，凭证 222102 少贷、净额多付一致联动）；
+        用不完的记录留 pending（可申请退税）。改写须先于 _create_confirm_move。"""
+        self.ensure_one()
+        Deduct = self.env['ta.guide.commission.tax.deduct']
+        for row in self.staff_line_ids:
+            if row.tax_amount <= 0.005:
+                continue
+            pending = Deduct.search([
+                ('staff_id', '=', row.staff_id.id),
+                ('state', '=', 'pending'),
+            ], order='id asc')
+            reduction = 0.0
+            for d in pending:
+                if d.amount > row.tax_amount - reduction + 0.005:
+                    break  # 单条超出本次税额 → 整条留 pending
+                reduction = round(reduction + d.amount, 2)
+                d.state = 'used'
+            if reduction > 0.005:
+                old_tax = row.tax_amount
+                new_tax = round(old_tax - reduction, 2)
+                gross = round(row.share_before_tax + row.premium, 2)
+                row.write({'tax_amount': new_tax,
+                           'net_pay': round(gross - new_tax, 2)})
+                self.message_post(body=(
+                    f"退单个税抵扣：{row.staff_id.name} 本次代扣个税由 {old_tax:.2f}"
+                    f" 抵减 {reduction:.2f} 至 {new_tax:.2f}（BS-08 §4.2）。"))
 
     def _ensure_tax_record(self):
         """个税代扣代缴记录（BS-08 §5.1 / AC-10）：确认时按分成行逐人生成（P1-2），

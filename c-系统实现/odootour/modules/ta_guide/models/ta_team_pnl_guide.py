@@ -15,6 +15,8 @@ class TaTeamPnlGuide(models.Model):
                                        help='= Σ 佣金增值税额（价税分离参考值，AC-19）。')
     shop_staff_cost = fields.Float(string='购物司陪分成', readonly=True, digits=(15, 2),
                                    help='= Σ 佣金单 allowance（各分成行税前应发合计）。')
+    shop_cost = fields.Float(string='购物成本', readonly=True, digits=(15, 2),
+                             help='= Σ 该团购物成本（回扣/礼品/其他，BS-08 §4.4，批6 P1-4）。')
 
     guide_expense_total = fields.Float(string='导游报账（审核后）', compute='_compute_guide_expense')
 
@@ -33,7 +35,8 @@ class TaTeamPnlGuide(models.Model):
             pnl.guide_expense_total = sum(a['amount_total'] for a in amounts)
 
     @api.depends('income', 'cost_total', 'guide_expense_total',
-                 'shop_commission', 'shop_commission_tax', 'shop_staff_cost')
+                 'shop_commission', 'shop_commission_tax', 'shop_staff_cost',
+                 'shop_cost')
     @api.depends_context('company')
     def _compute_tax_split(self):
         icp = self.env['ir.config_parameter'].sudo()
@@ -43,9 +46,10 @@ class TaTeamPnlGuide(models.Model):
             cost_gross = pnl.cost_total + pnl.guide_expense_total
             cost_net = cost_gross / (1.0 + rate) if (split and rate) else cost_gross
             pnl.cost_net = cost_net
-            # AC-16 双口径：不含购物（BS-19 原口径）与含购物（净佣金收入 − 司陪分成）
+            # AC-16 双口径：不含购物（BS-19 原口径）与含购物
+            # （净佣金收入 − 司陪分成 − 购物成本，批6 P1-4）
             pnl.profit_no_shop = pnl.income - cost_net
             pnl.profit = (pnl.profit_no_shop
                           + (pnl.shop_commission - pnl.shop_commission_tax)
-                          - pnl.shop_staff_cost)
+                          - pnl.shop_staff_cost - pnl.shop_cost)
             pnl.profit_tax_incl = pnl.income - cost_gross
