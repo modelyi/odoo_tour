@@ -134,3 +134,8 @@
   回退：`docker compose up -d` 指回 tag `20.0-a2`（a2 镜像保留）。
   已知无害 WARNING（a2 起即有，非本次引入）：odoo.conf `gevent_interface` 未知选项、
   markdown2 未装、ta_* 字段 `tracking` 参数不识别。
+- 2026-10-15 **退役归档 ~/odoo20 源码 dev 实例**（master 20.1a1@c89bb6b64，2026-09-23 起停用）：
+  旧实例全量归档至 `~/odoo20-retired-20261015/`（源码+filestore tgz、odoo20-db 全部 24 库
+  pg_dump -Fc 253M、SHA256SUMS、恢复说明 README），随后删除 `~/odoo20` 目录、
+  `odoo20-db` 容器与 `odoo20-pgdata` 卷，释放约 8G，端口 5434 已释放。
+  上表"旧数据保留在 odoo20-db 容器不动"的约定自此由归档目录承接。
