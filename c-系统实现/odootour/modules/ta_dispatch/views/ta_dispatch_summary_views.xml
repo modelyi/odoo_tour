@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ta_dispatch_summary" model="ir.actions.act_window">
+        <field name="name">计调成本分析</field>
+        <field name="res_model">ta.dispatch.summary</field>
+        <field name="view_mode">pivot,graph,list</field>
+    </record>
+
+    <record id="view_ta_dispatch_summary_search" model="ir.ui.view">
+        <field name="name">ta.dispatch.summary.search</field>
+        <field name="model">ta.dispatch.summary</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="supplier_id"/>
+                <filter string="有未付账单" name="has_unpaid"
+                        domain="[('unpaid_total', '>', 0)]"/>
+                <separator/>
+                <filter string="资源类型" name="group_kind" context="{'group_by': 'kind'}"/>
+                <filter string="供应商" name="group_supplier" context="{'group_by': 'supplier_id'}"/>
+                <filter string="发团月" name="group_month" context="{'group_by': 'month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_ta_dispatch_summary_list" model="ir.ui.view">
+        <field name="name">ta.dispatch.summary.list</field>
+        <field name="model">ta.dispatch.summary</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="month"/>
+                <field name="kind"/>
+                <field name="supplier_id"/>
+                <field name="item_count" sum="合计"/>
+                <field name="confirmed_count" sum="合计"/>
+                <field name="cancelled_count" sum="合计" optional="hide"/>
+                <field name="confirm_rate" widget="progressbar"/>
+                <field name="amount_total" sum="合计"/>
+                <field name="bill_total" sum="合计"/>
+                <field name="paid_total" sum="合计"/>
+                <field name="unpaid_total" sum="合计"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ta_dispatch_summary_pivot" model="ir.ui.view">
+        <field name="name">ta.dispatch.summary.pivot</field>
+        <field name="model">ta.dispatch.summary</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="kind" type="row"/>
+                <field name="supplier_id" type="row"/>
+                <field name="month" type="col"/>
+                <field name="amount_total" type="measure"/>
+                <field name="bill_total" type="measure"/>
+                <field name="paid_total" type="measure"/>
+                <field name="unpaid_total" type="measure"/>
+                <field name="item_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_ta_dispatch_summary_graph" model="ir.ui.view">
+        <field name="name">ta.dispatch.summary.graph</field>
+        <field name="model">ta.dispatch.summary</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="kind"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>

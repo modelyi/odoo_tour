@@ -40,7 +40,8 @@ class TaGuidePerformance(models.Model):
                                   WHERE o.departure_id = d.id
                                     AND o.state IN ('confirmed','tripping','settled')), 0) AS income,
                        COALESCE((SELECT sum(i.amount) FROM ta_dispatch_item i
-                                  WHERE i.departure_id = d.id AND i.state = 'confirmed'), 0)
+                                  WHERE i.departure_id = d.id
+                                    AND i.state IN ('confirmed', 'completed')), 0)
                        + COALESCE((SELECT sum(g.amount_total) FROM ta_guide_expense g
                                     WHERE g.departure_id = d.id AND g.state = 'approved'), 0)
                        AS cost

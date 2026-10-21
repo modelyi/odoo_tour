@@ -59,7 +59,8 @@ def _ta_team_pnl_view_sql(cr):
                           WHERE o.departure_id = d.id
                             AND o.state IN ('confirmed','tripping','settled')), 0) AS order_total,
                COALESCE((SELECT sum(i.amount) FROM ta_dispatch_item i
-                          WHERE i.departure_id = d.id AND i.state = 'confirmed'), 0) AS cost_total
+                          WHERE i.departure_id = d.id
+                            AND i.state IN ('confirmed', 'completed')), 0) AS cost_total
                {shop_cols}
         FROM ta_departure d
         JOIN ta_route r ON r.id = d.route_id

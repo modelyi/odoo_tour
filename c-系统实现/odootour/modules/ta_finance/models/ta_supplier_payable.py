@@ -66,7 +66,7 @@ class TaSupplierPayable(models.Model):
                          ELSE 'none' END AS bill_state
                 FROM ta_dispatch_item i
                 LEFT JOIN account_move mv ON mv.id = i.move_id
-                WHERE i.state = 'confirmed'
+                WHERE i.state IN ('confirmed', 'completed')
                 GROUP BY i.departure_id, i.supplier_id
             )
             SELECT (a.departure_id::text || '_' || a.supplier_id::text) AS id,

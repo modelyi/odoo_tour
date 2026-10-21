@@ -5,4 +5,6 @@
               action="action_ta_dispatch_item" sequence="10"/>
     <menuitem id="menu_ta_team_pnl" name="单团损益" parent="menu_ta_dispatch"
               action="action_ta_team_pnl" sequence="20"/>
+    <menuitem id="menu_ta_dispatch_summary" name="计调成本分析" parent="menu_ta_dispatch"
+              action="action_ta_dispatch_summary" sequence="30"/>
 </odoo>

@@ -132,7 +132,7 @@ class TaDepartureRevenue(models.Model):
         elif mode_code in NET_MODES:
             mode = 'net'
             dispatch_sum = round(sum(self.dispatch_item_ids.filtered(
-                lambda i: i.state == 'confirmed').mapped('amount')), 2)
+                lambda i: i.state in ('confirmed', 'completed')).mapped('amount')), 2)
             diff = round(ord_sum - dispatch_sum, 2)
             if diff <= 0.005:
                 return {}

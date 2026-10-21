@@ -11,3 +11,7 @@ ta_scenic_contrib_acct,ta.scenic.contribution 会计读,ta.scenic.contribution,t
 ta_scenic_contrib_mgr,ta.scenic.contribution 管理层读,ta.scenic.contribution,ta_base.group_ta_manager,r,
 ta_scenic_contrib_disp,ta.scenic.contribution 计调读,ta.scenic.contribution,ta_base.group_ta_dispatcher,r,
 ta_scenic_contrib_comp_rule,ta.scenic.contribution 多公司限制,ta.scenic.contribution,,r,"[('company_id', 'in', company_ids)]"
+ta_dispatch_summary_disp,ta.dispatch.summary 计调读,ta.dispatch.summary,ta_base.group_ta_dispatcher,r
+ta_dispatch_summary_acct,ta.dispatch.summary 会计读,ta.dispatch.summary,ta_base.group_ta_accountant,r
+ta_dispatch_summary_mgr,ta.dispatch.summary 管理层读,ta.dispatch.summary,ta_base.group_ta_manager,r
+ta_dispatch_summary_comp_rule,ta.dispatch.summary 多公司限制,ta.dispatch.summary,,r,"[('company_id', 'in', company_ids)]"

@@ -6,6 +6,38 @@
         <field name="view_mode">list,form</field>
     </record>
 
+    <!-- 批7：搜索视图（批3.5 发现 5.4 的教训：高频检索字段必须配 search view） -->
+    <record id="view_ta_dispatch_item_search" model="ir.ui.view">
+        <field name="name">ta.dispatch.item.search</field>
+        <field name="model">ta.dispatch.item</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="departure_id"/>
+                <field name="route_id"/>
+                <field name="supplier_id"/>
+                <field name="name" string="项目说明"/>
+                <filter string="草稿" name="state_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="已确认" name="state_confirmed"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="已完成" name="state_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="已取消" name="state_cancel"
+                        domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter string="待营运确认（酒店/景区）" name="booking_unconfirmed"
+                        domain="[('confirm_state', '=', 'unconfirmed'),
+                                 ('kind', 'in', ('hotel', 'scenic')),
+                                 ('state', '!=', 'cancel')]"/>
+                <separator/>
+                <filter string="资源类型" name="group_kind" context="{'group_by': 'kind'}"/>
+                <filter string="供应商" name="group_supplier" context="{'group_by': 'supplier_id'}"/>
+                <filter string="发团计划" name="group_departure" context="{'group_by': 'departure_id'}"/>
+                <filter string="状态" name="group_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_ta_dispatch_item_list" model="ir.ui.view">
         <field name="name">ta.dispatch.item.list</field>
         <field name="model">ta.dispatch.item</field>
@@ -16,7 +48,9 @@
                 <field name="kind"/>
                 <field name="supplier_id"/>
                 <field name="name"/>
-                <field name="qty"/>
+                <field name="date_end" optional="hide"/>
+                <field name="guest_count" optional="hide" sum="合计"/>
+                <field name="qty" sum="合计"/>
                 <field name="unit_price"/>
                 <field name="amount" sum="合计"/>
                 <field name="bill_state" widget="badge" optional="show"
@@ -24,9 +58,14 @@
                        decoration-success="bill_state == 'posted'"
                        decoration-muted="bill_state == 'none'"/>
                 <field name="paid_amount" sum="合计" optional="show"/>
+                <field name="confirm_state" widget="badge" optional="hide"
+                       invisible="kind not in ('hotel', 'scenic')"
+                       decoration-success="confirm_state == 'confirmed'"
+                       decoration-danger="confirm_state == 'rejected'"
+                       decoration-muted="confirm_state == 'unconfirmed'"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
-                       decoration-success="state == 'confirmed'"
+                       decoration-success="state in ('confirmed', 'completed')"
                        decoration-danger="state == 'cancel'"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </list>
@@ -42,11 +81,22 @@
                     <button name="action_confirm" string="确认计调单" type="object"
                             invisible="state != 'draft'" class="oe_highlight"
                             groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
+                    <button name="action_complete" string="标记完成" type="object"
+                            invisible="state != 'confirmed'"
+                            groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
                     <button name="action_cancel" string="取消" type="object"
-                            invisible="state != 'confirmed'"/>
+                            invisible="state not in ('confirmed', 'completed')"/>
                     <button name="action_reset_draft" string="恢复草稿" type="object"
                             invisible="state != 'cancel'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                    <!-- 批7：营运中心二次确认（US-03-08，仅酒店/景区） -->
+                    <button name="action_confirm_booking" string="确认预订" type="object"
+                            invisible="kind not in ('hotel', 'scenic') or confirm_state != 'unconfirmed'"
+                            groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
+                    <button name="action_reject_booking" string="取消预订" type="object"
+                            invisible="kind not in ('hotel', 'scenic') or confirm_state != 'unconfirmed'"
+                            groups="ta_base.group_ta_dispatcher,ta_base.group_ta_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,completed"/>
                 </header>
                 <sheet>
                     <group>
@@ -58,6 +108,8 @@
                         </group>
                         <group>
                             <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="guest_count"/>
                             <field name="qty"/>
                             <field name="unit_price"/>
                             <field name="amount"/>
@@ -65,8 +117,56 @@
                             <field name="bill_state"/>
                             <field name="paid_amount"/>
                             <field name="paid_date" readonly="1"/>
+                            <field name="confirm_state" widget="badge"
+                                   invisible="kind not in ('hotel', 'scenic')"/>
                         </group>
                     </group>
+
+                    <!-- 批7：类型明细（BS-03 §3.1，按 kind 条件显示） -->
+                    <group string="酒店明细" invisible="kind != 'hotel'">
+                        <group>
+                            <field name="room_single"/>
+                            <field name="room_standard"/>
+                            <field name="room_triangle"/>
+                            <field name="room_accompany"/>
+                            <field name="room_additional"/>
+                        </group>
+                        <group>
+                            <field name="night_num"/>
+                            <field name="room_price"/>
+                        </group>
+                    </group>
+                    <group string="用餐明细" invisible="kind != 'meal'">
+                        <group>
+                            <field name="meal_type"/>
+                            <field name="table_count"/>
+                        </group>
+                        <group>
+                            <field name="price_per_table"/>
+                        </group>
+                    </group>
+                    <group string="门票明细" invisible="kind not in ('scenic', 'ticket')">
+                        <group>
+                            <field name="ticket_adult"/>
+                            <field name="ticket_child"/>
+                        </group>
+                        <group>
+                            <field name="ticket_old"/>
+                            <field name="ticket_student"/>
+                        </group>
+                    </group>
+                    <group string="接送信息" invisible="kind != 'vehicle'">
+                        <group>
+                            <field name="seat_num"/>
+                            <field name="pick_time"/>
+                            <field name="pick_place"/>
+                        </group>
+                        <group>
+                            <field name="drop_time"/>
+                            <field name="drop_place"/>
+                        </group>
+                    </group>
+
                     <group>
                         <field name="name"/>
                         <field name="note"/>
@@ -77,7 +177,7 @@
         </field>
     </record>
 
-    <!-- 发团计划表单追加计调单页签与导游/领队指派 -->
+    <!-- 发团计划表单追加计调单页签、进度看板与导游/领队指派 -->
     <record id="view_ta_departure_form_inherit_dispatch" model="ir.ui.view">
         <field name="name">ta.departure.form.dispatch</field>
         <field name="model">ta.departure</field>
@@ -85,7 +185,15 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet/group[2]" position="after">
                 <group>
-                    <field name="dispatch_cost_total"/>
+                    <group string="计调进度（US-03-01）">
+                        <field name="dispatch_active_count"/>
+                        <field name="dispatch_done_count"/>
+                        <field name="dispatch_completion_rate" widget="progressbar"/>
+                    </group>
+                    <group>
+                        <field name="dispatch_cost_total"/>
+                        <field name="dispatch_kind_summary" colspan="2"/>
+                    </group>
                 </group>
                 <group string="计调">
                     <field name="dispatch_item_ids"
@@ -95,8 +203,9 @@
                             <field name="kind"/>
                             <field name="supplier_id"/>
                             <field name="name"/>
+                            <field name="date_end" optional="hide"/>
                             <field name="qty"/>
-                            <field name="unit_price"/>
+                            <field name="unit_price" on_change="1"/>
                             <field name="amount"/>
                             <field name="bill_state"/>
                             <field name="paid_amount"/>
