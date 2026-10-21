@@ -170,3 +170,167 @@ class TaExpenseAsk(models.Model):
             'rows': rows[:topn],
             'note': '仅统计已审核报销；属公司期间费用，不计入单团损益。',
         }
+
+
+# ---------------------------------------------------------------------------
+# 问数 2.0（领域机器人）：财务域 4 个 + 导游域 3 个新函数，及启用的一期暂缓函数
+# ---------------------------------------------------------------------------
+
+class TaReceivableAgingAsk(models.Model):
+    _inherit = 'ta.receivable.aging'
+
+    def _ask_aging_top(self, args):
+        topn = args.get('topn') or 10
+        domain = [('amount_open', '>', 0.01)]
+        if args.get('bucket'):
+            domain.append(('bucket', '=', args['bucket']))
+        self.env.flush_all()  # SQL 视图模型：读取前先落盘（ODOO_PIN 陷阱⑨）
+        recs = self.search(domain, order='amount_open desc', limit=topn)
+        labels = dict(self._fields['bucket'].selection)
+        rows = [[r.order_name, r.partner_id.display_name or '-', labels.get(r.bucket, ''),
+                 r.days_overdue, r.amount_total, r.amount_paid, r.amount_open]
+                for r in recs]
+        return {
+            'title': '应收账龄 TOP%d（未收余额）' % topn,
+            'columns': ['订单号', '客户', '账龄桶', '逾期天数',
+                        '应收总额', '已收', '未收余额'],
+            'rows': rows,
+            'note': '账龄锚点为订单确认日；未收=应收−已审核到账认领。',
+        }
+
+
+class TaSupplierPayableAsk(models.Model):
+    _inherit = 'ta.supplier.payable'
+
+    def _ask_supplier_payable_top(self, args):
+        topn = args.get('topn') or 10
+        self.env.flush_all()  # SQL 视图模型
+        recs = self.search(
+            [('open_amount', '>', 0.01)],
+            order='open_amount desc', limit=topn)
+        rows = [[r.supplier_id.display_name or '-', r.route_name or '-',
+                 str(r.departure_date or ''), r.kinds or '-',
+                 r.item_total, r.bill_total, r.paid_total, r.open_amount]
+                for r in recs]
+        return {
+            'title': '供应商未付余额 TOP%d（按团×供应商）' % topn,
+            'columns': ['供应商', '线路', '出发日', '资源类别',
+                        '条目额', '账单面额', '已付', '未付余额'],
+            'rows': rows,
+            'note': '历史直写付款日（无账单）的条目按条目额全额计入未付口径。',
+        }
+
+
+class TaRevenueRecognitionAsk(models.Model):
+    _inherit = 'ta.revenue.recognition'
+
+    def _ask_revenue_month(self, args):
+        month = args.get('month') or fields.Date.context_today(self).strftime('%Y-%m')
+        first, next_first = _month_bounds(month)
+        recs = self.search([
+            ('state', '=', 'posted'),
+            ('date', '>=', first), ('date', '<', next_first)])
+        return {
+            'title': '%s 月收入确认（BS-14 发团日口径）' % month,
+            'columns': ['月份', '确认凭证数', '收入基数（含税）',
+                        '确认收入（净额）', '销项税额'],
+            'rows': [[month, len(recs), sum(recs.mapped('gross_amount')),
+                      sum(recs.mapped('net_amount')), sum(recs.mapped('tax_amount'))]],
+            'note': '总额法贷 6001.01、净额法（代订）贷 6001.03；已冲销记录不计入。',
+        }
+
+
+class TaDispatchItemAsk(models.Model):
+    _inherit = 'ta.dispatch.item'
+
+    def _ask_dispatch_cost_by_kind(self, args):
+        domain = [('state', 'in', ('confirmed', 'completed'))]
+        if args.get('month'):
+            first, next_first = _month_bounds(args['month'])
+            domain += [('date_start', '>=', first), ('date_start', '<', next_first)]
+        labels = dict(self._fields['kind'].selection)
+        buckets = {}
+        for item in self.search(domain):
+            key = labels.get(item.kind, item.kind)
+            cnt, amt = buckets.get(key, (0, 0.0))
+            buckets[key] = (cnt + 1, amt + item.amount)
+        rows = [[k, v[0], v[1]] for k, v in buckets.items()]
+        rows.sort(key=lambda r: -r[2])
+        return {
+            'title': '计调成本分类汇总（%s）' % (args.get('month') or '全部月份'),
+            'columns': ['资源类型', '条目数', '成本合计'],
+            'rows': rows,
+            'note': '仅已确认/已完成计调单；口径同单团损益 cost_total（含税）。',
+        }
+
+
+class TaGuideLoanAsk(models.Model):
+    _inherit = 'ta.guide.loan'
+
+    def _ask_guide_loan_outstanding(self, args):
+        topn = args.get('topn') or 20
+        domain = [('state', '!=', 'cancel'), ('outstanding', '>', 0.01)]
+        if args.get('guide'):
+            domain.append(('guide_id.name', 'ilike', args['guide']))
+        recs = self.search(domain, limit=topn)
+        rows = [[r.name, r.guide_id.display_name or '-', str(r.date or ''),
+                 r.amount, r.deducted_amount, r.outstanding,
+                 str(r.due_date or ''), '是' if r.is_overdue else '否']
+                for r in recs]
+        rows.sort(key=lambda x: -x[5])
+        return {
+            'title': '导游借支未结清明细',
+            'columns': ['借款单号', '导游', '申请日', '借款金额',
+                        '已冲抵', '未结清', '应结清日', '逾期'],
+            'rows': rows,
+            'note': '未结清=借款金额−已冲抵；冲抵来自佣金单税后净额结算。',
+        }
+
+
+class TaGuideCommissionAsk(models.Model):
+    _inherit = 'ta.guide.commission'
+
+    def _ask_guide_commission_month(self, args):
+        month = args.get('month') or fields.Date.context_today(self).strftime('%Y-%m')
+        domain = [('state', 'in', ('confirmed', 'settled')),
+                  ('date', '>=', month + '-01')]
+        _, next_first = _month_bounds(month)
+        domain.append(('date', '<', next_first))
+        if args.get('guide'):
+            domain.append(('guide_id.name', 'ilike', args['guide']))
+        recs = self.search(domain)
+        return {
+            'title': '%s 月导游佣金月报' % month,
+            'columns': ['月份', '佣金单数', '佣金总额', '销项税',
+                        '导游税前分成', '代扣个税'],
+            'rows': [[month, len(recs), sum(recs.mapped('commission_total')),
+                      sum(recs.mapped('commission_tax')),
+                      sum(recs.mapped('guide_share_before_tax')),
+                      sum(recs.mapped('guide_tax'))]],
+            'note': '仅统计已确认/已结算佣金单；代扣个税为劳务报酬预扣口径（BS-08 §4.9）。',
+        }
+
+
+class TaGuideExpenseAsk(models.Model):
+    _inherit = 'ta.guide.expense'
+
+    def _ask_guide_expense_month(self, args):
+        month = args.get('month') or fields.Date.context_today(self).strftime('%Y-%m')
+        _, next_first = _month_bounds(month)
+        domain = [('state', '=', 'approved'),
+                  ('date', '>=', month + '-01'), ('date', '<', next_first)]
+        if args.get('guide'):
+            domain.append(('guide_id.name', 'ilike', args['guide']))
+        buckets = {}
+        for exp in self.search(domain):
+            guide = exp.guide_id.display_name or '-'
+            cnt, amt = buckets.get(guide, (0, 0.0))
+            buckets[guide] = (cnt + 1, amt + exp.amount_total)
+        rows = [[k, v[0], v[1]] for k, v in buckets.items()]
+        rows.sort(key=lambda r: -r[2])
+        return {
+            'title': '%s 月导游报账月报' % month,
+            'columns': ['导游', '报账单数', '报账金额'],
+            'rows': rows,
+            'note': '仅统计已审核报账；金额计入单团成本（ta.team.pnl cost_net）。',
+        }

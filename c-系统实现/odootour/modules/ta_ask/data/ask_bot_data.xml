@@ -8,5 +8,17 @@
             <!-- 无任何业务组：查询一律切到提问人身份执行（权限口径=提问人） -->
             <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
+        <record id="res_user_finance_bot" model="res.users">
+            <field name="name">财务问数</field>
+            <field name="login">askbot-finance@tour.local</field>
+            <field name="active" eval="True"/>
+            <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <record id="res_user_guide_bot" model="res.users">
+            <field name="name">导游问数</field>
+            <field name="login">askbot-guide@tour.local</field>
+            <field name="active" eval="True"/>
+            <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
     </data>
 </odoo>

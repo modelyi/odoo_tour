@@ -10,7 +10,7 @@ from odoo import api, models, fields
 from odoo.exceptions import AccessError, UserError
 
 from ..services import deepseek
-from . import ask_catalog, ask_format
+from . import ask_catalog, ask_format, ask_bots
 
 _logger = logging.getLogger(__name__)
 
@@ -58,13 +58,18 @@ class TaAskQuery(models.Model):
     ], string='状态', default='pending', required=True, index=True)
     latency_ms = fields.Integer(string='耗时(ms)')
     reply_message_id = fields.Many2one('mail.message', string='回复消息')
+    # 问数 2.0：接单机器人（general=通用助手；finance=财务问数；guide=导游问数）
+    bot_code = fields.Char(string='机器人', readonly=True, copy=False)
+    bot_user_id = fields.Many2one('res.users', string='机器人账号',
+                                  readonly=True, copy=False)
 
     # ------------------------------------------------------------------
     # 分发器
     # ------------------------------------------------------------------
     @api.model
-    def _ask_build_messages(self, asker, question):
-        catalog = ask_catalog.catalog_for_user(asker)
+    def _ask_build_messages(self, asker, question, bot_code=None):
+        """目录 = 领域机器人过滤 ∩ 提问人组过滤；bot 人设注入 system prompt。"""
+        catalog = ask_catalog.catalog_for_user(asker, bot_code)
         slim = [{'name': f['name'], 'description': f['description'],
                  'args': {k: v['desc'] for k, v in f['args'].items()}}
                 for f in catalog]
@@ -75,7 +80,10 @@ class TaAskQuery(models.Model):
                 ex_lines.append('问：%s 答：%s' % (
                     q, json.dumps({'function': f['name'], 'args': ex_args},
                                   ensure_ascii=False)))
-        system = SYSTEM_PROMPT_TMPL.format(
+        persona = ''
+        if bot_code and bot_code in ask_bots.BY_CODE:
+            persona = ask_bots.BY_CODE[bot_code]['intro'] + '\n\n'
+        system = persona + SYSTEM_PROMPT_TMPL.format(
             today=fields.Date.context_today(self),
             catalog=json.dumps(slim, ensure_ascii=False),
             examples='\n'.join(ex_lines) or '（无）')
@@ -83,9 +91,12 @@ class TaAskQuery(models.Model):
                 {'role': 'user', 'content': question}]
 
     def _ask_reply(self, body_markup, channel, parent_message):
-        """以 bot 身份回帖；bot 必须已在频道内。"""
+        """以接单 bot 身份回帖；bot 必须已在频道内（缺省回退通用助手）。"""
         self.ensure_one()
-        bot = self.env.ref('ta_ask.res_user_ask_bot')
+        bot = self.bot_user_id or self.env.ref(
+            'ta_ask.res_user_ask_bot', raise_if_not_found=False)
+        if not bot:
+            return None
         if not channel:
             return None
         return channel.sudo().message_post(
@@ -104,7 +115,8 @@ class TaAskQuery(models.Model):
         asker = self.asker_id
         start = time.time()
         try:
-            messages = self._ask_build_messages(asker, self.question or '')
+            messages = self._ask_build_messages(
+                asker, self.question or '', self.bot_code or None)
             payload = deepseek.chat_json(
                 api_key=icp.get_str('ta_ask.deepseek_api_key', ''),
                 base_url=icp.get_str('ta_ask.deepseek_base_url', 'https://api.deepseek.com/v1'),
@@ -121,7 +133,7 @@ class TaAskQuery(models.Model):
         self._ask_execute_intent(payload, asker, start)
 
     def _ask_execute_intent(self, payload, asker, start):
-        catalog = ask_catalog.catalog_for_user(asker)
+        catalog = ask_catalog.catalog_for_user(asker, self.bot_code or None)
         by_name = {f['name']: f for f in catalog}
         if payload.get('clarify'):
             self.write({'state': 'clarify', 'intent': 'clarify',

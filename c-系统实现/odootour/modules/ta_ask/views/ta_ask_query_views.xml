@@ -7,6 +7,7 @@
             <list create="false" sample="1">
                 <field name="create_date" string="提问时间"/>
                 <field name="asker_id" widget="many2one_avatar_user"/>
+                <field name="bot_user_id" widget="many2one_avatar_user" string="机器人"/>
                 <field name="question"/>
                 <field name="intent"/>
                 <field name="state" widget="badge"
@@ -34,6 +35,7 @@
                         </group>
                         <group>
                             <field name="channel_id"/>
+                            <field name="bot_user_id"/>
                             <field name="message_id"/>
                             <field name="reply_message_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -61,6 +63,7 @@
                 <filter name="filter_done" string="已回答" domain="[('state','=','done')]"/>
                 <filter name="filter_failed" string="未成功" domain="[('state','in',('denied','nointent','error','clarify'))]"/>
                 <filter name="group_asker" string="按提问人" context="{'group_by':'asker_id'}"/>
+                <filter name="group_bot" string="按机器人" context="{'group_by':'bot_user_id'}"/>
                 <filter name="group_state" string="按状态" context="{'group_by':'state'}"/>
             </search>
         </field>

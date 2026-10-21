@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import res_config_settings
+from . import ask_bots
 from . import ask_catalog
 from . import ask_format
 from . import ta_ask_query

@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+"""Discuss 接入：频道 @bot 或私聊 bot，消息即进入问数流水。
+
+批2（问数 2.0）：多机器人——@ 到的是哪位 bot（通用/财务问数/导游问数），
+就由该 bot 的目录回答并以该 bot 身份回帖；权限口径永远是提问人。
+"""
 import logging
 
 from odoo import models
+
+from . import ask_bots
 
 _logger = logging.getLogger(__name__)
 
@@ -25,17 +32,25 @@ class DiscussChannel(models.Model):
             return
         if message.message_type != 'comment':
             return
-        bot = self.env.ref('ta_ask.res_user_ask_bot', raise_if_not_found=False)
-        if not bot or message.author_id == bot.partner_id:
-            return  # 开关未开 / bot 自己的回帖（防递归）
+        # 问数 2.0：多 bot——找到命中的已注册 bot（@ 到谁 / 私聊里有谁）
+        bots = ask_bots.registered_bots(self.env)
+        if not bots:
+            return
+        bot_partners = [user.partner_id for _spec, user in bots]
+        if message.author_id and message.author_id in bot_partners:
+            return  # bot 自己的回帖（防递归）
         if self.channel_type == 'chat':
-            if bot.partner_id not in self.channel_member_ids.partner_id:
-                return
+            member_partners = self.channel_member_ids.partner_id
+            hit = next(((spec, user) for spec, user in bots
+                        if user.partner_id in member_partners), None)
         elif self.channel_type == 'channel':
-            if bot.partner_id not in message.partner_ids:
-                return  # 频道里只回答 @ 到 bot 的消息
+            hit = next(((spec, user) for spec, user in bots
+                        if user.partner_id in message.partner_ids), None)
         else:
             return
+        if not hit:
+            return  # 未 @ 到任何问数 bot
+        spec, bot_user = hit
         from .ta_ask_query import html_to_text
         question = html_to_text(message.body)
         if not question:
@@ -49,5 +64,7 @@ class DiscussChannel(models.Model):
             'message_id': message.id,
             'question': question,
             'company_id': asker.company_id.id or self.env.company.id,
+            'bot_code': spec['code'],
+            'bot_user_id': bot_user.id,
         })
         query._ask_process()
