@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 菜单改名钩子：见 models/ir_ui_menu.py::ta_rename_finance_menu -->
+    <function model="ir.ui.menu" name="ta_rename_finance_menu"/>
+</odoo>

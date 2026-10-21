@@ -1,12 +1,13 @@
 {
     'name': '旅行社收款认领',
     'summary': '收款登记-认领-审核三步闭环，审核后落凭证并核销订单应收',
-    'version': '20.0.0.1.2',
+    'version': '20.0.0.1.3',
     'category': 'Travel Agency',
     'author': 'TMS Team',
     'depends': ['ta_order', 'ta_dispatch', 'account'],
     'data': [
         'security/ir.access.csv',
+        'data/menu_renames.xml',
         'security/ta_finance_groups.xml',
         'data/ir_sequence_expense.xml',
         'views/ta_bank_line_views.xml',
