@@ -89,9 +89,15 @@ class TestTaAsk(TransactionCase):
 
     @staticmethod
     def _llm_patch(payload):
+        # SSE 流式 mock：网关强制 stream=true，响应按 data:{chunk}…data:[DONE] 拼接
+        body = json.dumps(payload, ensure_ascii=False)
         resp = mock.Mock(status_code=200)
-        resp.json.return_value = {
-            'choices': [{'message': {'content': json.dumps(payload, ensure_ascii=False)}}]}
+        resp.iter_lines.return_value = [
+            ('data: ' + json.dumps(
+                {'choices': [{'delta': {'content': body}}]})).encode('utf-8'),
+            b'',
+            b'data: [DONE]',
+        ]
         return mock.patch('odoo.addons.ta_ask.services.deepseek.requests.post', return_value=resp)
 
     def _ask(self, channel, user, body, payload):
