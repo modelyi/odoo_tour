@@ -11,10 +11,10 @@
                              help="在 Discuss 私聊或频道 @ 问数助手提问，按提问人的数据权限回答。LLM 只做问题→白名单查询的映射，不生成 SQL。">
                         <field name="ta_ask_enabled"/>
                     </setting>
-                    <setting string="DeepSeek 接入"
-                             help="API Key 仅存系统参数，不入库不进 git；请在此页面填写。"
+                    <setting string="LLM 服务接入（DeepSeek / CodeBuddy·WorkBuddy）"
+                             help="任何 OpenAI 兼容端点均可。CodeBuddy 网关：Base URL 填 https://www.codebuddy.cn/v2，API Key 填客户端生成的 ck-... 密钥，模型填 codebuddy。API Key 仅存系统参数，不入库不进 git。"
                              invisible="not ta_ask_enabled">
-                        <field name="ta_ask_deepseek_api_key" widget="password" placeholder="sk-..."/>
+                        <field name="ta_ask_deepseek_api_key" widget="password" placeholder="sk-... / ck-..."/>
                         <div class="content-group">
                             <div class="row mt8">
                                 <label for="ta_ask_deepseek_model" class="col-lg-4 o_light_label"/>

@@ -136,3 +136,35 @@ class TestAskBots(TestTaAsk):
         self.assertAlmostEqual(data['rows'][0][2], 1000.0)
         self.assertAlmostEqual(data['rows'][0][3], 943.39)
         self.assertAlmostEqual(data['rows'][0][4], 56.61)
+
+
+@tagged('post_install', '-at_install')
+class TestLLMGatewayCompat(TestTaAsk):
+    """网关兼容：不支持 response_format 的 OpenAI 兼容网关（如 CodeBuddy）
+    首次 400 → 自动去掉该参数重试一次 → 正常解析。"""
+
+    def test_response_format_downgrade(self):
+        from unittest import mock
+        import json as _json
+        from ..services import deepseek as ds
+
+        ok_resp = mock.Mock(status_code=200)
+        ok_resp.json.return_value = {'choices': [{
+            'message': {'content': _json.dumps(
+                {'function': 'order_month_stats', 'args': {}})}}]}
+        bad_resp = mock.Mock(status_code=400)
+        with mock.patch('odoo.addons.ta_ask.services.deepseek.requests.post',
+                        side_effect=[bad_resp, ok_resp]) as posted:
+            data = ds.chat_json(
+                api_key='ck-test', base_url='https://www.codebuddy.cn/v2',
+                model='codebuddy', messages=[{'role': 'user', 'content': 'q'}])
+        self.assertEqual(data['function'], 'order_month_stats')
+        self.assertEqual(posted.call_count, 2)
+        # 第一次带 response_format，第二次（降级重试）不带
+        self.assertIn('response_format',
+                      posted.call_args_list[0].kwargs['json'])
+        self.assertNotIn('response_format',
+                         posted.call_args_list[1].kwargs['json'])
+        # CodeBuddy 网关 URL 拼接正确
+        self.assertEqual(posted.call_args_list[0].args[0],
+                         'https://www.codebuddy.cn/v2/chat/completions')
